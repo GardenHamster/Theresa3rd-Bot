@@ -24,7 +24,6 @@ namespace Theresa3rd_Bot
             IServiceProvider services = new ServiceCollection().AddMiraiBaseFramework()   // 表示使用基于基础框架的构建器
                                                                .Services
                                                                .AddDefaultMiraiHttpFramework() // 表示使用 mirai-api-http 实现的构建器
-                                                               //.ResolveParser<DynamicPlugin>() // 只提前解析 DynamicPlugin 将要用到的消息解析器
                                                                .AddInvoker<MiraiHttpMessageHandlerInvoker>() // 使用默认的调度器
                                                                .AddHandler<BotInvitedJoinGroupEvent>()
                                                                .AddHandler<FriendMessageEvent>()
@@ -50,8 +49,8 @@ namespace Theresa3rd_Bot
             IServiceScope scope = services.CreateScope();
             services = scope.ServiceProvider;
             IMiraiHttpSession session = services.GetRequiredService<IMiraiHttpSession>(); // 大部分服务都基于接口注册, 请使用接口作为类型解析
-            
             await session.ConnectAsync(SettingConfig.MiraiConfig.BotQQ); // 填入期望连接到的机器人QQ号
+
             while (true)
             {
                 if (Console.ReadLine() == "exit")

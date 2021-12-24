@@ -20,6 +20,8 @@ namespace Theresa3rd_Bot
 {
     public class Startup
     {
+        private static Task MiraiTask;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -38,9 +40,6 @@ namespace Theresa3rd_Bot
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Theresa3rd_Bot", Version = "v1" });
             });
-
-            Task task = MiraiHelper.ConnectMirai();
-            task.Wait();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +62,8 @@ namespace Theresa3rd_Bot
             {
                 endpoints.MapControllers();
             });
+
+            MiraiTask = MiraiHelper.ConnectMirai();
         }
 
 

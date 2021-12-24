@@ -21,7 +21,6 @@ D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\runtimes\osx\native\li
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\runtimes\win-arm64\native\libSkiaSharp.dll
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\runtimes\win-x64\native\libSkiaSharp.dll
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\runtimes\win-x86\native\libSkiaSharp.dll
-D:\project\Theresa3rd-Bot\Theresa3rd-Bot\obj\Debug\net5.0\Theresa3rd-Bot.csproj.AssemblyReference.cache
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\obj\Debug\net5.0\Theresa3rd-Bot.GeneratedMSBuildEditorConfig.editorconfig
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\obj\Debug\net5.0\Theresa3rd-Bot.AssemblyInfoInputs.cache
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\obj\Debug\net5.0\Theresa3rd-Bot.AssemblyInfo.cs
@@ -41,3 +40,4 @@ D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\Config\bot.json
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\Config\database.json
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\Config\mirai.json
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\Newtonsoft.Json.dll
+D:\project\Theresa3rd-Bot\Theresa3rd-Bot\obj\Debug\net5.0\Theresa3rd-Bot.csproj.AssemblyReference.cache

@@ -9,7 +9,7 @@
     <PackageReference Include="Mirai-CSharp" Version="2.1.2" />
     <PackageReference Include="Mirai-CSharp.HttpApi" Version="2.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>

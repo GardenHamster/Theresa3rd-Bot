@@ -35,6 +35,7 @@
         "dependencies": {
           "Mirai-CSharp": "2.1.2",
           "Mirai-CSharp.HttpApi": "2.1.2",
+          "Newtonsoft.Json": "13.0.1",
           "Swashbuckle.AspNetCore": "5.6.3",
           "Microsoft.AspNetCore.Antiforgery": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions": "5.0.0.0",
@@ -412,6 +413,17 @@
             "assetType": "native",
             "fileVersion": "0.0.0.0"
           }
+        }
+      },
+      "Newtonsoft.Json/13.0.1": {
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.0.1.25517"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         }
       },
       "SkiaSharp/2.80.3": {
@@ -2274,6 +2286,13 @@
       "sha512": "sha512-yfOFX7F6gwRWcQA5yM/hLcNV+lMdsbKB5fbvVcS4WAMHSe3Vpfrhfs6Zasp+fr0bCpnCJdZho+lIfOtx5JRpyA==",
       "path": "mirai-csharp.nativeassets.win32/1.0.2",
       "hashPath": "mirai-csharp.nativeassets.win32.1.0.2.nupkg.sha512"
+    },
+    "Newtonsoft.Json/13.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A==",
+      "path": "newtonsoft.json/13.0.1",
+      "hashPath": "newtonsoft.json.13.0.1.nupkg.sha512"
     },
     "SkiaSharp/2.80.3": {
       "type": "package",

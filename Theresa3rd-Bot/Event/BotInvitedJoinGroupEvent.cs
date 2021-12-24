@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Event
 {
-    public class NewFriendApplyEvent : IMiraiHttpMessageHandler<INewFriendApplyEventArgs>
+    public class BotInvitedJoinGroupEvent : MiraiHttpMessageHandler<IBotInvitedJoinGroupEventArgs>
     {
-        public Task HandleMessageAsync(IMiraiHttpSession client, INewFriendApplyEventArgs message)
+        public override Task HandleMessageAsync(IMiraiHttpSession client, IBotInvitedJoinGroupEventArgs message)
         {
             throw new NotImplementedException();
         }

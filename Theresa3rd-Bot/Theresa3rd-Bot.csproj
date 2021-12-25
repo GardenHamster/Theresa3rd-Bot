@@ -13,13 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Config\bot.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Config\database.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Config\mirai.json">
+    <Content Update="botsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

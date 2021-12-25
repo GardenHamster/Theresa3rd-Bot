@@ -40,16 +40,16 @@ namespace Theresa3rd_Bot
                                                                // 然后在每一个作用域中!先!配置好 IOptionsSnapshot<MiraiHttpSessionOptions>, 再尝试获取 IMiraiHttpSession
                                                                .Configure<MiraiHttpSessionOptions>(options =>
                                                                {
-                                                                   options.Host = SettingConfig.MiraiConfig.Host;
-                                                                   options.Port = SettingConfig.MiraiConfig.Port;
-                                                                   options.AuthKey = SettingConfig.MiraiConfig.AuthKey;
+                                                                   options.Host = GlobalConfig.MiraiConfig.Host;
+                                                                   options.Port = GlobalConfig.MiraiConfig.Port;
+                                                                   options.AuthKey = GlobalConfig.MiraiConfig.AuthKey;
                                                                })
                                                                .AddLogging()
                                                                .BuildServiceProvider();
             IServiceScope scope = services.CreateScope();
             services = scope.ServiceProvider;
             IMiraiHttpSession session = services.GetRequiredService<IMiraiHttpSession>(); // 大部分服务都基于接口注册, 请使用接口作为类型解析
-            await session.ConnectAsync(SettingConfig.MiraiConfig.BotQQ); // 填入期望连接到的机器人QQ号
+            await session.ConnectAsync(GlobalConfig.MiraiConfig.BotQQ); // 填入期望连接到的机器人QQ号
 
             while (true)
             {

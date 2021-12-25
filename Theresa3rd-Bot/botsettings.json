@@ -1,0 +1,38 @@
+{
+  "Authorization": {
+    "acceptGroups": [ 284196625 ],
+    "refuseGroups": []
+  },
+  "Repeater": {
+    "enable": true,
+    "repeatTime": 3,
+    "repeatMode": 0
+  },
+  "GroupWelcome": {
+    "enable": true,
+    "global": "欢迎入群!",
+    "special": [
+      {
+        "groupId": 284196625,
+        "template": "欢迎欢迎!我们这里又多了一个傻子厨!"
+      }
+    ]
+  },
+  "TimedReminder": {
+    "enable": true,
+    "timers": [
+      {
+        "cron": "0 0 0/1 * * ?",
+        "atAll": false,
+        "atMembers": [ 1524514426 ],
+        "template": "整点报时!"
+      },
+      {
+        "cron": "0 0 18 ? * WED,SUN",
+        "atAll": true,
+        "atMembers": [],
+        "template": "今晚深渊结算!"
+      }
+    ]
+  }
+}

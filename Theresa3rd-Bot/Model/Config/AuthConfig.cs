@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Model.Config
 {
-    public class SettingConfig
+    public class AuthConfig
     {
+        public List<long> AcceptGroups { get; set; }
 
-        public static MiraiConfig MiraiConfig = null;
-
-
-
+        public List<long> RefuseGroups { get; set; }
     }
 }

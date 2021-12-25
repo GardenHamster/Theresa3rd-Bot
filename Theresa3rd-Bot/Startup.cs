@@ -1,18 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Model.Config;
 
@@ -22,19 +16,17 @@ namespace Theresa3rd_Bot
     {
         private static Task MiraiTask;
 
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var miraiJson = File.ReadAllText(Path.Combine("Config", "mirai.json"));
-            SettingConfig.MiraiConfig = JsonConvert.DeserializeObject<MiraiConfig>(miraiJson);
-
+            LoadConfig();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -64,6 +56,23 @@ namespace Theresa3rd_Bot
             });
 
             MiraiTask = MiraiHelper.ConnectMirai();
+        }
+
+        /// <summary>
+        /// 将配置文件中的信息加载到内存
+        /// </summary>
+        private void LoadConfig()
+        {
+            GlobalConfig.MiraiConfig.Host = Configuration["Mirai:host"];
+            GlobalConfig.MiraiConfig.Port = Convert.ToInt32(Configuration["Mirai:port"]);
+            GlobalConfig.MiraiConfig.AuthKey = Configuration["Mirai:authKey"];
+            GlobalConfig.MiraiConfig.BotQQ = Convert.ToInt64(Configuration["Mirai:botQQ"]);
+
+            var botJson = File.ReadAllText("botsettings.json");
+            BotConfig botConfig = JsonConvert.DeserializeObject<BotConfig>(botJson);
+            GlobalConfig.AuthConfig = botConfig.Authorization;
+            GlobalConfig.RepeaterConfig = botConfig.Repeater;
+
         }
 
 

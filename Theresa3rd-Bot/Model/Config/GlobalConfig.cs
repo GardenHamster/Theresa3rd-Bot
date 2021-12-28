@@ -9,8 +9,13 @@ namespace Theresa3rd_Bot.Model.Config
     {
         public static MiraiConfig MiraiConfig = new MiraiConfig();
 
-        public static AuthConfig AuthConfig = new AuthConfig();
+        public static GeneralConfig GeneralConfig = new GeneralConfig();
 
         public static RepeaterConfig RepeaterConfig = new RepeaterConfig();
+
+        public static WelcomeConfig WelcomeConfig = new WelcomeConfig();
+
+        public static ReminderConfig ReminderConfig = new ReminderConfig();
+
     }
 }

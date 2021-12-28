@@ -39,3 +39,4 @@ D:\project\Theresa3rd-Bot\Theresa3rd-Bot\obj\Debug\net5.0\Theresa3rd-Bot.genrunt
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\Newtonsoft.Json.dll
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\appsettings.Production.json
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\botsettings.json
+D:\project\Theresa3rd-Bot\Theresa3rd-Bot\obj\Debug\net5.0\Theresa3rd-Bot.csproj.AssemblyReference.cache

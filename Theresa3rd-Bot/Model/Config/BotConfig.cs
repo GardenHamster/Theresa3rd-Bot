@@ -7,9 +7,13 @@ namespace Theresa3rd_Bot.Model.Config
 {
     public class BotConfig
     {
-        public AuthConfig Authorization { get; set; }
+        public GeneralConfig General { get; set; }
 
         public RepeaterConfig Repeater { get; set; }
+
+        public WelcomeConfig Welcome { get; set; }
+
+        public ReminderConfig Reminder { get; set; }
 
     }
 

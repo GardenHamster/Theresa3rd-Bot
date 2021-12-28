@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Model.Config
 {
-    public class RepeaterConfig : BaseConfig
+    public class BaseConfig
     {
-        public int RepeatTime { get; set; }
-
-        public int RepeatMode { get; set; }
+        public bool Enable { get; set; }
     }
 }

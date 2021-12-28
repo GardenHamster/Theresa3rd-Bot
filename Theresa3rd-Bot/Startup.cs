@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Model.Config;
 
@@ -68,14 +69,13 @@ namespace Theresa3rd_Bot
             GlobalConfig.MiraiConfig.AuthKey = Configuration["Mirai:authKey"];
             GlobalConfig.MiraiConfig.BotQQ = Convert.ToInt64(Configuration["Mirai:botQQ"]);
 
-            var botJson = File.ReadAllText("botsettings.json");
+            var botJson = File.ReadAllText("botsettings.json", Encoding.UTF8);
             BotConfig botConfig = JsonConvert.DeserializeObject<BotConfig>(botJson);
-            GlobalConfig.AuthConfig = botConfig.Authorization;
+            GlobalConfig.GeneralConfig = botConfig.General;
             GlobalConfig.RepeaterConfig = botConfig.Repeater;
-
+            GlobalConfig.WelcomeConfig = botConfig.Welcome;
+            GlobalConfig.ReminderConfig = botConfig.Reminder;
         }
-
-
 
 
     }

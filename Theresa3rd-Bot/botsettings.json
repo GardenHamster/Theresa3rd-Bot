@@ -1,5 +1,7 @@
 {
-  "Authorization": {
+  "General": {
+    "prefix": "#",
+    "receiveAt": true,
     "acceptGroups": [ 284196625 ],
     "refuseGroups": []
   },
@@ -8,7 +10,7 @@
     "repeatTime": 3,
     "repeatMode": 0
   },
-  "GroupWelcome": {
+  "Welcome": {
     "enable": true,
     "global": "ª∂”≠»Î»∫!",
     "special": [
@@ -18,7 +20,7 @@
       }
     ]
   },
-  "TimedReminder": {
+  "Reminder": {
     "enable": true,
     "timers": [
       {

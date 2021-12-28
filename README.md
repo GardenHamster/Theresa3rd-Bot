@@ -16,6 +16,7 @@
 - [ ] 色图 - 以图搜图功能(saucenao)
 - [ ] 色图 - 定时随机发送本地涩图功能（没卵用）
 - [ ] B站 - 订阅功能(自动推送关注up的最新动态)
+- [ ] B站 - 直播推送功能(up开始直播时在群里发送开播提醒)
 - [ ] 米游社 - 订阅功能(自动推送关注用户的最新贴子)
 - [ ] 米游社 - 崩坏3/原神/米游币自动点到功能(以后再说)
 - [ ] 原神模拟抽卡(基于[GardenHamster/GenshinPray](https://github.com/GardenHamster/GenshinPray))
@@ -34,6 +35,21 @@
 - 感谢[Mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)提供的框架
 
 ## 效果图
+![QQ截图20211228172053](https://user-images.githubusercontent.com/89188316/147551335-d0f74a04-f115-4f23-bee7-de4d34860b39.png)
+
+![QQ截图20211228171906](https://user-images.githubusercontent.com/89188316/147551310-72421bd9-e64e-4dcd-8a72-d71fd1f57420.png)
+
+![QQ截图20211228165824](https://user-images.githubusercontent.com/89188316/147551319-41a660be-e9ac-49c1-8308-4ba4b50016fd.png)
+
+![QQ截图20211228171950](https://user-images.githubusercontent.com/89188316/147551327-eb62d44d-1737-4a44-93ea-577b7458d687.png)
+
+![QQ截图20211228171851](https://user-images.githubusercontent.com/89188316/147551360-66c84ad3-fb5b-4a4f-a8ef-584795c7c912.png)
+
+![QQ截图20211228172331](https://user-images.githubusercontent.com/89188316/147551371-df41509a-7a8b-4c1d-8ff9-76b14bf0390a.png)
+
+![QQ截图20211228170040](https://user-images.githubusercontent.com/89188316/147551376-defe06e1-3462-4c7c-b314-c716e9c0daed.png)
+
+![QQ截图20211228172447](https://user-images.githubusercontent.com/89188316/147551382-0772c1f3-81fa-40ec-ae31-00710ba6a383.png)
 
 
 ## 德丽莎世界第一可爱

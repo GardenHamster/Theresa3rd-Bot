@@ -14,6 +14,7 @@
 - [ ] 色图 - pixiv画师订阅功能(自动推送关注画师的最新作品)
 - [ ] 色图 - pixiv标签订阅功能(自动推送关注标签的收藏度较高的最新作品)
 - [ ] 色图 - 以图搜图功能(saucenao)
+- [ ] 色图 - 定时随机发送本地涩图功能（没卵用）
 - [ ] 哔哩哔哩订阅功能(自动推送关注up的最新动态)
 - [ ] 米游社订阅功能(自动推送关注用户的最新贴子)
 - [ ] 原神模拟抽卡(基于[GardenHamster/GenshinPray](https://github.com/GardenHamster/GenshinPray))
@@ -21,10 +22,13 @@
 - [ ] 崩坏3 - 查图鉴以及猜装备功能
 - [ ] 小游戏 - 群狼人杀(以后再说)
 - [ ] 群娱 - 漂流瓶功能(跨群聊天,以后再说)
-- [ ] 其他 - 想到了再加,有想法也可以发issue
 
 ## 其他
 - 有想法或问题可以发issue，安卓官服的舰长可以加个舰团1069989
+
+## 致谢
+- 感谢[mirai](https://github.com/mamoe/mirai)提供的支持
+- 感谢[Mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)提供的框架
 
 ## 效果图
 

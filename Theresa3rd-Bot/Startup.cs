@@ -64,17 +64,18 @@ namespace Theresa3rd_Bot
         /// </summary>
         private void LoadConfig()
         {
-            GlobalConfig.MiraiConfig.Host = Configuration["Mirai:host"];
-            GlobalConfig.MiraiConfig.Port = Convert.ToInt32(Configuration["Mirai:port"]);
-            GlobalConfig.MiraiConfig.AuthKey = Configuration["Mirai:authKey"];
-            GlobalConfig.MiraiConfig.BotQQ = Convert.ToInt64(Configuration["Mirai:botQQ"]);
+            BotConfig.MiraiConfig.Host = Configuration["Mirai:host"];
+            BotConfig.MiraiConfig.Port = Convert.ToInt32(Configuration["Mirai:port"]);
+            BotConfig.MiraiConfig.AuthKey = Configuration["Mirai:authKey"];
+            BotConfig.MiraiConfig.BotQQ = Convert.ToInt64(Configuration["Mirai:botQQ"]);
 
-            var botJson = File.ReadAllText("botsettings.json", Encoding.UTF8);
-            BotConfig botConfig = JsonConvert.DeserializeObject<BotConfig>(botJson);
-            GlobalConfig.GeneralConfig = botConfig.General;
-            GlobalConfig.RepeaterConfig = botConfig.Repeater;
-            GlobalConfig.WelcomeConfig = botConfig.Welcome;
-            GlobalConfig.ReminderConfig = botConfig.Reminder;
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            var botJson = File.ReadAllText("botsettings.json", Encoding.GetEncoding("gb2312"));
+            BotConfigDto botConfig = JsonConvert.DeserializeObject<BotConfigDto>(botJson);
+            BotConfig.GeneralConfig = botConfig.General;
+            BotConfig.RepeaterConfig = botConfig.Repeater;
+            BotConfig.WelcomeConfig = botConfig.Welcome;
+            BotConfig.ReminderConfig = botConfig.Reminder;
         }
 
 

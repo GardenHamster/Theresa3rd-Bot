@@ -10,14 +10,12 @@ using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Event
 {
-    [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IFriendMessageEventArgs, FriendMessageEventArgs>))]
-    public class FriendMessageEvent : IMiraiHttpMessageHandler<IFriendMessageEventArgs>
+    [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IGroupMemberJoinedEventArgs, GroupMemberJoinedEventArgs>))]
+    public class GroupMemberJoinedEvent : IMiraiHttpMessageHandler<IGroupMemberJoinedEventArgs>
     {
-        public Task HandleMessageAsync(IMiraiHttpSession client, IFriendMessageEventArgs message)
+        public Task HandleMessageAsync(IMiraiHttpSession client, IGroupMemberJoinedEventArgs message)
         {
             throw new NotImplementedException();
         }
-
-
     }
 }

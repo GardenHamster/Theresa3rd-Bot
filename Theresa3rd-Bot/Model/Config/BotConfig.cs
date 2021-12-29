@@ -7,14 +7,15 @@ namespace Theresa3rd_Bot.Model.Config
 {
     public class BotConfig
     {
-        public GeneralConfig General { get; set; }
+        public static MiraiConfig MiraiConfig = new MiraiConfig();
 
-        public RepeaterConfig Repeater { get; set; }
+        public static GeneralConfig GeneralConfig = new GeneralConfig();
 
-        public WelcomeConfig Welcome { get; set; }
+        public static RepeaterConfig RepeaterConfig = new RepeaterConfig();
 
-        public ReminderConfig Reminder { get; set; }
+        public static WelcomeConfig WelcomeConfig = new WelcomeConfig();
+
+        public static ReminderConfig ReminderConfig = new ReminderConfig();
 
     }
-
 }

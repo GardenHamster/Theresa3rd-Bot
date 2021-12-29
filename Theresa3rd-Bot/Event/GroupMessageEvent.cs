@@ -1,9 +1,10 @@
 ﻿using Mirai.CSharp.HttpApi.Handlers;
-using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
+using Mirai.CSharp.Models;
+using Mirai.CSharp.Models.ChatMessages;
 using Mirai.CSharp.Session;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,9 @@ namespace Theresa3rd_Bot.Event
     {
         public async Task HandleMessageAsync(IMiraiHttpSession client, IGroupMessageEventArgs message)
         {
-            IChatMessage[] chain = new IChatMessage[]
-            {
-                new PlainMessage($"收到了来自{message.Sender.Name}[{message.Sender.Id}]{{{message.Sender.Permission}}}的群消息:{string.Join(null, (IEnumerable<IChatMessage>)message.Chain)}")
-                //                          / 发送者群名片 /  / 发送者QQ号 /   /   发送者在群内权限   /                                                       / 消息链 /
-                // 你还可以在这里边加入更多的 IMessageBase
-            };
-            await client.SendGroupMessageAsync(message.Sender.Group.Id, chain); // 向消息来源群异步发送由以上chain表示的消息
+            IImageMessage msg = await client.UploadPictureAsync(UploadTarget.Group, "D:\\other\\2c75dbfe43b28a55.jpg");
+            IChatMessage[] chain = new IChatMessage[] { new Mirai.CSharp.HttpApi.Models.ChatMessages.PlainMessage("[mirai:atall]emmmmm"), msg }; // 数组里边可以加上更多的 IMessageBase, 以此达到例如图文并发的情况
+            await client.SendGroupMessageAsync(message.Sender.Group.Id, chain); // 自己填群号, 一般由 IGroupMessageEventArgs 提供
             message.BlockRemainingHandlers = false; // 不阻断消息传递。如需阻断请返回true
         }
 

@@ -3,6 +3,8 @@ General:                                                    #基础设置
     ReceiveAt:      true                                    #是否将@机器人的消息当作一条指令
     AcceptGroups:   [284196625]                             #白名单，只处理这些群的消息
     RefuseGroups:   []                                      #黑名单，不接收这些群的消息，黑名单和白名单同时存在值时则只有白名单生效
+    ErrorGroups:    [284196625]                             #错误日志群，发生错误时会将日志发送到这个群
+    SuperManagers:  [1524514426]                            #超级管理员列表,可以使用管理指令
 Repeater:                                                   #复读机
     Enable:         true                                    #是否启用
     RepeatTime:     3                                       #重复收到N条消息后触发复读功能
@@ -12,7 +14,7 @@ Welcome:                                                    #入群欢迎
     Global:         '欢迎入群！'                             #默认欢迎模版
     Special:                                                #为单独的群设定单独的模版
         - GroupId:    284196625                             #群id(群号)
-          Template:   '欢迎新厨子[image:C:\123.jpg]'        #群欢迎模版
+          Template:   '欢迎新厨子[image:C:\123.jpg]'         #群欢迎模版
 Reminder:                                                   #定时消息
     Enable:         true                                    #是否启用
     Timers:                                                 #定时列表
@@ -22,5 +24,5 @@ Reminder:                                                   #定时消息
           Template:   '整点报时!'                            #消息模版
         - Cron:       '0 0 18 ? * WED,SUN'
           AtAll:      true                                  
-          AtMembers:  []                                    
+          AtMembers:  []
           Template:   '今晚深渊结算！'

@@ -38,5 +38,9 @@ D:\project\Theresa3rd-Bot\Theresa3rd-Bot\obj\Debug\net5.0\Theresa3rd-Bot.pdb
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\obj\Debug\net5.0\Theresa3rd-Bot.genruntimeconfig.cache
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\Newtonsoft.Json.dll
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\appsettings.Production.json
-D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\botsettings.json
+D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\botsettings.yml
+D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\System.Runtime.CompilerServices.Unsafe.dll
+D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\System.Text.Encoding.CodePages.dll
+D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\YamlDotNet.dll
+D:\project\Theresa3rd-Bot\Theresa3rd-Bot\bin\Debug\net5.0\runtimes\win\lib\netcoreapp3.1\System.Text.Encoding.CodePages.dll
 D:\project\Theresa3rd-Bot\Theresa3rd-Bot\obj\Debug\net5.0\Theresa3rd-Bot.csproj.AssemblyReference.cache

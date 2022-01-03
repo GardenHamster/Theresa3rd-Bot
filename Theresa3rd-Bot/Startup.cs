@@ -10,6 +10,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Model.Config;
+using YamlDotNet.Serialization;
 
 namespace Theresa3rd_Bot
 {
@@ -70,8 +71,10 @@ namespace Theresa3rd_Bot
             BotConfig.MiraiConfig.BotQQ = Convert.ToInt64(Configuration["Mirai:botQQ"]);
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            var botJson = File.ReadAllText("botsettings.json", Encoding.GetEncoding("gb2312"));
-            BotConfigDto botConfig = JsonConvert.DeserializeObject<BotConfigDto>(botJson);
+            using FileStream fileStream = new FileStream("botsettings.yml", FileMode.Open, FileAccess.Read);
+            using TextReader reader = new StreamReader(fileStream, Encoding.GetEncoding("gb2312"));
+            Deserializer deserializer = new Deserializer();
+            BotConfigDto botConfig = deserializer.Deserialize<BotConfigDto>(reader);
             BotConfig.GeneralConfig = botConfig.General;
             BotConfig.RepeaterConfig = botConfig.Repeater;
             BotConfig.WelcomeConfig = botConfig.Welcome;

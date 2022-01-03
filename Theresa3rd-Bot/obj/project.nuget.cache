@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "sa54lCwJcn0w/UMJYjaOeVueYVzGda7O/g27PfLN+2z5PA46xS82WAJUZtmDPAV/9dQ9ujIy89q0sFRU77C5HA==",
+  "dgSpecHash": "BwX//NCbKLthjnBDJV7TmBLDA1BfvYjQU0MpKG6ZtvyJ9nY9We0hr0lo+1VlnT5kr98Mw9wX1SZz17x+AJWZrw==",
   "success": true,
   "projectFilePath": "D:\\project\\Theresa3rd-Bot\\Theresa3rd-Bot\\Theresa3rd-Bot.csproj",
   "expectedPackageFiles": [
@@ -21,7 +21,10 @@
     "C:\\Users\\Administrator\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.2.3\\swashbuckle.aspnetcore.swagger.6.2.3.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.2.3\\swashbuckle.aspnetcore.swaggergen.6.2.3.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.2.3\\swashbuckle.aspnetcore.swaggerui.6.2.3.nupkg.sha512",
-    "C:\\Users\\Administrator\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512"
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.text.encoding.codepages\\6.0.0\\system.text.encoding.codepages.6.0.0.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\yamldotnet\\11.2.1\\yamldotnet.11.2.1.nupkg.sha512"
   ],
   "logs": []
 }

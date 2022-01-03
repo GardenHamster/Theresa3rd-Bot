@@ -6,17 +6,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="botsettings.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="botsettings.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mirai-CSharp" Version="2.1.2" />
     <PackageReference Include="Mirai-CSharp.HttpApi" Version="2.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="botsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
 
 </Project>

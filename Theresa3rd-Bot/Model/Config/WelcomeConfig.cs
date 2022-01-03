@@ -7,7 +7,7 @@ namespace Theresa3rd_Bot.Model.Config
 {
     public class WelcomeConfig : BaseConfig
     {
-        public string global { get; set; }
+        public string Global { get; set; }
 
         public List<WelcomeSpecial> Special { get; set; }
     }

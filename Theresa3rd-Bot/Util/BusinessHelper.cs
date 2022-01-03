@@ -13,8 +13,6 @@ namespace Theresa3rd_Bot.Util
         {
             if (cdSecond <= 0) return false;
             e.SendMessageWithAt(string.Format(" 功能冷却中，{0}秒后再来哦~", cdSecond));
-            //Thread.Sleep(5 * 1000);
-            //e.Message.RemoveMessage();
             return true;
         }
 

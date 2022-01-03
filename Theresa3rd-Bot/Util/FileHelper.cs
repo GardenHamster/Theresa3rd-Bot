@@ -5,12 +5,12 @@ namespace Theresa3rd_Bot.Util
 {
     public static class FileHelper
     {
-        public static void clearHistoryImg(CQApi CQApi)
+        public static void clearHistoryImg()
         {
-            clearDownloadImg(CQApi);
+            clearDownloadImg();
         }
 
-        public static void clearDownloadImg(CQApi CQApi)
+        public static void clearDownloadImg()
         {
             try
             {

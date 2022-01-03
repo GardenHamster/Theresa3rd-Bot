@@ -8,11 +8,21 @@ namespace Theresa3rd_Bot.Util
 {
     public static class MathHelper
     {
+        /// <summary>
+        /// 根据byte计算mb
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
         public static double getMbWithByte(double bytes)
         {
             return Math.Round(bytes / 1024 / 1024, 2);
         }
 
+        /// <summary>
+        /// 根据逗号拆分字符串,返回一个long集合
+        /// </summary>
+        /// <param name="idStrs"></param>
+        /// <returns></returns>
         public static List<long> splitListFromStr(string idStrs)
         {
             List<long> idList = new List<long>();
@@ -37,10 +47,10 @@ namespace Theresa3rd_Bot.Util
         /// <param name="num2">除数</param>
         /// <param name="keep">保留多少位小数</param>
         /// <returns></returns>
-        public static double getRate(int num1,int num2,int keep)
+        public static double getRate(int num1, int num2, int keep)
         {
-            double rate = Convert.ToDouble(num1)/ num2;
-            return Math.Round(rate, 2);
+            double rate = Convert.ToDouble(num1) / num2;
+            return Math.Round(rate, keep);
         }
 
         /// <summary>

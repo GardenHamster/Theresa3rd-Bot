@@ -1,14 +1,9 @@
-﻿using Business.Common;
-using Business.Model.Http;
-using Native.Sdk.Cqp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Util
 {
@@ -68,10 +63,10 @@ namespace Theresa3rd_Bot.Util
                     streamReader = new StreamReader(myResponseStream);
                     return streamReader.ReadToEnd();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     retryCount--;
-                    if (retryCount <= 0) throw ex;
+                    if (retryCount <= 0) throw;
                 }
                 finally
                 {
@@ -120,10 +115,10 @@ namespace Theresa3rd_Bot.Util
                     reader = new StreamReader(resSteam, Encoding.UTF8);
                     return reader.ReadToEnd();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     retryCount--;
-                    if (retryCount <= 0) throw ex;
+                    if (retryCount <= 0) throw;
                 }
                 finally
                 {
@@ -224,10 +219,10 @@ namespace Theresa3rd_Bot.Util
                     readerStream = new StreamReader(instream, Encoding.UTF8);
                     return readerStream.ReadToEnd();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     retryCount--;
-                    if (retryCount <= 0) throw ex;
+                    if (retryCount <= 0) throw;
                 }
                 finally
                 {
@@ -279,10 +274,10 @@ namespace Theresa3rd_Bot.Util
                     }
                     return fullSavePath;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     retryCount--;
-                    if (retryCount <= 0) throw ex;
+                    if (retryCount <= 0) throw;
                 }
                 finally
                 {
@@ -319,10 +314,10 @@ namespace Theresa3rd_Bot.Util
                     readStream = new StreamReader(receiveStream, Encoding.UTF8);
                     return readStream.ReadToEnd();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     retryCount--;
-                    if (retryCount <= 0) throw ex;
+                    if (retryCount <= 0) throw;
                 }
                 finally
                 {
@@ -412,9 +407,9 @@ namespace Theresa3rd_Bot.Util
                 webClient.Dispose();
                 return new FileInfo(fullImageSavePath);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
             finally
             {

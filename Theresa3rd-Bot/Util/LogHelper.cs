@@ -100,33 +100,6 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
-        public static void LogChar(long groupId, long memberId, string message)
-        {
-            try
-            {
-                string dateStr = DateTime.Now.ToString("yyyyMMdd");
-                string Folder = FilePath.getCharLogPath() + dateStr;
-                string fileName = $"{Folder}\\Char_{groupId}.txt";
-                if (!System.IO.Directory.Exists(Folder)) System.IO.Directory.CreateDirectory(Folder);
-                if (!File.Exists(fileName))
-                {
-                    FileStream stream = System.IO.File.Create(fileName);
-                    stream.Close();
-                    stream.Dispose();
-                }
-                using (TextWriter fs = new StreamWriter(fileName, true))
-                {
-                    string time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    fs.WriteLine(string.Format("[{0}][{1}][{2}]:{3}", time, groupId, memberId, message));
-                    fs.Close();
-                    fs.Dispose();
-                }
-            }
-            catch (Exception ex)
-            {
-                CQHelper.CQLog.Error("记录群聊日志失败", ex.Message);
-            }
-        }
 
 
 

@@ -1,7 +1,4 @@
-﻿using Business.Common;
-using Native.Sdk.Cqp;
-using Native.Sdk.Cqp.EventArgs;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -16,7 +13,7 @@ namespace Theresa3rd_Bot.Util
             ImageCodecInfo imageCodecInfo = GetEncoderInfo("image/jpeg");
             EncoderParameters myEncoderParameters = new EncoderParameters(1);
             myEncoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 100L);
-            string fullSavePath = savePath + StringHelper.get16UUID() + ".jpg";
+            string fullSavePath = Path.Combine(savePath, StringHelper.get16UUID() + ".jpg");
             bmp.Save(fullSavePath, imageCodecInfo, myEncoderParameters);
             return new FileInfo(fullSavePath);
         }
@@ -26,16 +23,9 @@ namespace Theresa3rd_Bot.Util
             ImageCodecInfo imageCodecInfo = GetEncoderInfo("image/png");
             EncoderParameters myEncoderParameters = new EncoderParameters(1);
             myEncoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 100L);
-            string fullSavePath = savePath + StringHelper.get16UUID() + ".png";
+            string fullSavePath = Path.Combine(savePath, StringHelper.get16UUID() + ".png");
             bmp.Save(fullSavePath, imageCodecInfo, myEncoderParameters);
             return new FileInfo(fullSavePath);
-        }
-
-        public static string getCQImageFromHtml(CQGroupMessageEventArgs e, string linkUrl, int webbrowerWidth, string jqSelector, string jqScript)
-        {
-            Bitmap bitmap = HtmlToImageHelper.GetHtmlImage(linkUrl, webbrowerWidth, jqSelector, jqScript);
-            FileInfo fileInfo = ImageHelper.saveBitmapToJpg(bitmap, FilePath.getDownImgSavePath());
-            return CQApi.CQCode_Image(FilePath.getRelativeDownImgPath(fileInfo.Name)).ToSendString();
         }
 
         private static ImageCodecInfo GetEncoderInfo(String mimeType)
@@ -48,6 +38,14 @@ namespace Theresa3rd_Bot.Util
             return null;
         }
 
+        /// <summary>
+        /// 按照分辨率压缩图片
+        /// </summary>
+        /// <param name="originFile"></param>
+        /// <param name="savePath"></param>
+        /// <param name="size"></param>
+        /// <param name="maxCompressTimes"></param>
+        /// <returns></returns>
         public static FileInfo compressImage(FileInfo originFile, string savePath, double size, int maxCompressTimes)
         {
             FileInfo compressFileInfo = compressImage(originFile, savePath, size);
@@ -60,6 +58,13 @@ namespace Theresa3rd_Bot.Util
             return compressFileInfo;
         }
 
+        /// <summary>
+        /// 按照分辨率压缩图片
+        /// </summary>
+        /// <param name="originFile"></param>
+        /// <param name="savePath"></param>
+        /// <param name="size">目标大小</param>
+        /// <returns></returns>
         private static FileInfo compressImage(FileInfo originFile, string savePath, double size)
         {
             double originSize = originFile.Length;

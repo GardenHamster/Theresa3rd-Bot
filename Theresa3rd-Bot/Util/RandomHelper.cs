@@ -9,12 +9,22 @@ namespace Theresa3rd_Bot.Util
 {
     public static class RandomHelper
     {
+        /// <summary>
+        /// 获取一个范围在minValue与maxValue之间的随机数,包含maxValue
+        /// </summary>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <returns></returns>
         public static int getRandomBetween(int minValue, int maxValue)
         {
             Random random = getRandom();
             return random.Next(minValue, maxValue + 1);
         }
 
+        /// <summary>
+        /// 获取随机数
+        /// </summary>
+        /// <returns></returns>
         public static Random getRandom()
         {
             byte[] buffer = Guid.NewGuid().ToByteArray();

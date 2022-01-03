@@ -197,6 +197,7 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
+
         /// <summary>
         /// 判断str2是否和str1相似
         /// </summary>
@@ -233,18 +234,10 @@ namespace Theresa3rd_Bot.Util
         public static string getMD532bit(string str)
         {
             MD5 md5 = MD5.Create();
-            // 将字符串转换成字节数组
             byte[] byteOld = Encoding.UTF8.GetBytes(str);
-            // 调用加密方法
             byte[] byteNew = md5.ComputeHash(byteOld);
-            // 将加密结果转换为字符串
             StringBuilder sb = new StringBuilder();
-            foreach (byte b in byteNew)
-            {
-                // 将字节转换成16进制表示的字符串，
-                sb.Append(b.ToString("x2"));
-            }
-            // 返回加密的字符串
+            foreach (byte b in byteNew) sb.Append(b.ToString("x2"));
             return sb.ToString();
         }
 
@@ -260,15 +253,6 @@ namespace Theresa3rd_Bot.Util
             return str.Substring(index + word.Length, str.Length - index - word.Length);
         }
 
-        /// <summary>
-        /// url参数转码
-        /// </summary>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        public static string getUrlParamEncode(string param)
-        {
-            return param.Replace("+", "%2B").Replace("/", "%20").Replace("?", "%3F").Replace("%", "%25").Replace("#", "%23").Replace("&", "%26").Replace("-", "%3D");
-        }
 
         /// <summary>
         /// 判断字符串是否纯数字
@@ -279,6 +263,7 @@ namespace Theresa3rd_Bot.Util
         {
             return Regex.IsMatch(str, @"^\d+$");
         }
+
 
         public static string getSupplyNameWithoutSymbol(string itemName)
         {

@@ -16,5 +16,7 @@ namespace Theresa3rd_Bot.Model.Config
         public List<long> RefuseGroups { get; set; }
 
         public List<long> ErrorGroups { get; set; }
+
+        public List<long> SuperManagers { get; set; }
     }
 }

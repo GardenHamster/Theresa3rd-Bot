@@ -4,6 +4,8 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Http;
 
 namespace Theresa3rd_Bot.Util
 {
@@ -330,6 +332,12 @@ namespace Theresa3rd_Bot.Util
             throw new Exception("获取html失败");
         }
 
+        /// <summary>
+        /// 添加请求头
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="headerDic"></param>
+        /// <returns></returns>
         private static HttpWebRequest addHeaders(HttpWebRequest request, Dictionary<string, string> headerDic)
         {
             if (headerDic == null) return request;
@@ -370,7 +378,7 @@ namespace Theresa3rd_Bot.Util
             string suffix = StringHelper.getSuffixByUrl(imgUrl);
             if (string.IsNullOrEmpty(suffix)) suffix = "jpg";
             string fullFileName = StringHelper.get16UUID() + "." + suffix;
-            string fullImageSavePath = FilePath.getDownImgSavePath() + fullFileName;
+            string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
             return HttpHelper.downImg(imgUrl, fullImageSavePath, null, null);
         }
 

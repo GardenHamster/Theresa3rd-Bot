@@ -15,7 +15,7 @@ namespace Theresa3rd_Bot.Event
     {
         public Task HandleMessageAsync(IMiraiHttpSession client, INewFriendApplyEventArgs message)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }

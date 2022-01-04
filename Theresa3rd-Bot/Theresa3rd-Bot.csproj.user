@@ -7,4 +7,9 @@
     <ActiveDebugProfile>Theresa3rd_Bot</ActiveDebugProfile>
     <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Model\Http\MyWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

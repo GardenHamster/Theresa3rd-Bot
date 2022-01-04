@@ -11,7 +11,6 @@ namespace Theresa3rd_Bot.Util
 {
     public static class StringHelper
     {
-        private readonly static Regex CQCodeRegex = new Regex(@"\[CQ[^\u4E00-\u9FA5]*\]", RegexOptions.IgnoreCase);
         private readonly static Regex EmojiRegex = new Regex(@"\[emoji[^\u4E00-\u9FA5]*\]", RegexOptions.IgnoreCase);
 
         /// <summary>
@@ -292,20 +291,6 @@ namespace Theresa3rd_Bot.Util
                 stringBuilder.Append(randomStringTemplate[pos]);
             }
             return stringBuilder.ToString();
-        }
-
-        /// <summary>
-        /// 提取一个消息中的纯文本信息
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public static string getCharText(string message)
-        {
-            if (message == null) return "";
-            if (isShareChar(message)) return "";
-            message = CQCodeRegex.Replace(message, "");
-            message = EmojiRegex.Replace(message, "");
-            return message.Trim();
         }
 
         /// <summary>

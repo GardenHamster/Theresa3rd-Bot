@@ -1,106 +1,49 @@
-﻿using Business.Common;
+﻿using log4net;
+using log4net.Config;
+using log4net.Repository;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Util
 {
     public static class LogHelper
     {
+        private static readonly string RepositoryName = "NETCoreRepository";
+        private static readonly string ConfigFile = "log4net.config";
 
-        public static void LogError(string errorMsg)
+        private static ILog RollingLog { get; set; }
+        private static ILog ConsoleLog { get; set; }
+        private static ILog FileLog { get; set; }
+        private static ILoggerRepository repository { get; set; }
+
+        public static void ConfigureLog()
         {
-            try
-            {
-                string Folder = FilePath.getErrorLogPath() + DateTime.Now.ToString("yyyyMMdd") + "\\";
-                string fileName = Folder + "Error_" + DateTime.Now.ToString("yyyyMMdd") + ".txt";
-                if (!System.IO.Directory.Exists(Folder)) System.IO.Directory.CreateDirectory(Folder);
-                if (!File.Exists(fileName))
-                {
-                    FileStream stream = System.IO.File.Create(fileName);
-                    stream.Close();
-                    stream.Dispose();
-                }
-                using (TextWriter fs = new StreamWriter(fileName, true))
-                {
-                    fs.WriteLine("");
-                    fs.WriteLine(string.Format("[{0}]{1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), errorMsg));
-                    fs.Close();
-                    fs.Dispose();
-                }
-            }
-            catch (Exception ex2)
-            {
-                CQHelper.CQLog.Error("", ex2.Message);
-            }
+            repository = LogManager.CreateRepository(RepositoryName);
+            XmlConfigurator.Configure(repository, new FileInfo(ConfigFile));
+            RollingLog = LogManager.GetLogger(RepositoryName, "RollingLog");
+            ConsoleLog = LogManager.GetLogger(RepositoryName, "ConsoleLog");
+            FileLog = LogManager.GetLogger(RepositoryName, "FileLog");
         }
 
-
-        public static void LogError(Exception ex, string errorMsg)
+        public static void Info(object message)
         {
-            try
-            {
-                string Folder = FilePath.getErrorLogPath() + DateTime.Now.ToString("yyyyMMdd")+"\\";
-                string fileName = Folder + "Error_" + DateTime.Now.ToString("yyyyMMdd") + ".txt";
-                if (!System.IO.Directory.Exists(Folder)) System.IO.Directory.CreateDirectory(Folder);
-                if (!File.Exists(fileName))
-                {
-                    FileStream stream = System.IO.File.Create(fileName);
-                    stream.Close();
-                    stream.Dispose();
-                }
-                using (TextWriter fs = new StreamWriter(fileName, true))
-                {
-                    fs.WriteLine("");
-                    fs.WriteLine(string.Format("[{0}]{1}：{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), errorMsg, ex.Message));
-                    fs.WriteLine(string.Format("[Source]{0}", ex.Source));
-                    fs.WriteLine(string.Format("[TargetSite]{0}", ex.TargetSite));
-                    fs.WriteLine(string.Format("[StackTrace]{0}", ex.StackTrace));
-                    fs.WriteLine(string.Format("[InnerException]{0}", ex.InnerException == null ? "" : ex.InnerException.Message));
-                    fs.Close();
-                    fs.Dispose();
-                }
-            }
-            catch (Exception ex2) {
-                CQHelper.CQLog.Error("", ex2.Message);
-            }
+            FileLog.Info(message);
+            ConsoleLog.Info(message);
         }
 
-        public static void LogError(Exception ex)
+        public static void Error(Exception ex)
         {
-            try
-            {
-                string Folder = FilePath.getErrorLogPath() + DateTime.Now.ToString("yyyyMMdd") + "\\";
-                string fileName = Folder + "Error_" + DateTime.Now.ToString("yyyyMMdd") + ".txt";
-                if (!System.IO.Directory.Exists(Folder)) System.IO.Directory.CreateDirectory(Folder);
-                if (!File.Exists(fileName))
-                {
-                    FileStream stream = System.IO.File.Create(fileName);
-                    stream.Close();
-                    stream.Dispose();
-                }
-                using (TextWriter fs = new StreamWriter(fileName, true))
-                {
-                    fs.WriteLine("");
-                    fs.WriteLine(string.Format("[{0}]：{1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), ex.Message));
-                    fs.WriteLine(string.Format("[Source]{0}", ex.Source));
-                    fs.WriteLine(string.Format("[TargetSite]{0}", ex.TargetSite));
-                    fs.WriteLine(string.Format("[StackTrace]{0}", ex.StackTrace));
-                    fs.WriteLine(string.Format("[InnerException]{0}", ex.InnerException == null ? "" : ex.InnerException.Message));
-                    fs.Close();
-                    fs.Dispose();
-                }
-            }
-            catch (Exception ex2)
-            {
-                CQHelper.CQLog.Error("", ex2.Message);
-            }
+            string logMsg = ex.Message;
+            RollingLog.Error(logMsg, ex);
+            ConsoleLog.Error(logMsg, ex);
         }
 
-
+        public static void Error(Exception ex, string paramStr)
+        {
+            string logMsg = $"{ex.Message}\r\nparam：{paramStr}";
+            RollingLog.Error(logMsg, ex);
+            ConsoleLog.Error(logMsg, ex);
+        }
 
 
 

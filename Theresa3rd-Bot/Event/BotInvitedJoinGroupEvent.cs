@@ -15,7 +15,7 @@ namespace Theresa3rd_Bot.Event
     {
         public override Task HandleMessageAsync(IMiraiHttpSession client, IBotInvitedJoinGroupEventArgs message)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }

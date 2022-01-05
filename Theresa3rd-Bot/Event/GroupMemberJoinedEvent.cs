@@ -17,16 +17,24 @@ namespace Theresa3rd_Bot.Event
     {
         public async Task HandleMessageAsync(IMiraiHttpSession client, IGroupMemberJoinedEventArgs message)
         {
+            long memberId = message.Member.Id;
+            long groupId = message.Member.Group.Id;
+            if (!BusinessHelper.IsHandleMessage(groupId)) return;
+
             WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
             if (welcomeConfig == null || welcomeConfig.Enable == false) return;
-            long groupId = message.Member.Group.Id;
             string template = welcomeConfig.Template;
             WelcomeSpecial welcomeSpecial = welcomeConfig.Special?.Where(m => m.GroupId == groupId).FirstOrDefault();
             if (welcomeSpecial != null) template = welcomeSpecial.Template;
             if (string.IsNullOrEmpty(template)) return;
-            List<IChatMessage> chain = BusinessHelper.SplitToChainAsync(client,template).Result;
-            await client.SendGroupMessageAsync(groupId, chain.ToArray()); // 自己填群号, 一般由 IGroupMessageEventArgs 提供
-            message.BlockRemainingHandlers = false; // 不阻断消息传递。如需阻断请返回true
+            List<IChatMessage> atList = new List<IChatMessage>()
+            {
+                new Mirai.CSharp.HttpApi.Models.ChatMessages.AtMessage(memberId, ""),
+                new Mirai.CSharp.HttpApi.Models.ChatMessages.PlainMessage("\n")
+            };
+            List<IChatMessage> splitList = BusinessHelper.SplitToChainAsync(client, template).Result;
+            await client.SendGroupMessageAsync(groupId, atList.Concat(splitList).ToArray()); // 自己填群号, 一般由 IGroupMessageEventArgs 提供
+            message.BlockRemainingHandlers = true; // 不阻断消息传递。如需阻断请返回true
         }
     }
 }

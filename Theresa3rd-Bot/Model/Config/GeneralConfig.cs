@@ -9,8 +9,6 @@ namespace Theresa3rd_Bot.Model.Config
     {
         public string Prefix { get; set; }
 
-        public bool ReceiveAt { get; set; }
-
         public List<long> AcceptGroups { get; set; }
 
         public List<long> RefuseGroups { get; set; }

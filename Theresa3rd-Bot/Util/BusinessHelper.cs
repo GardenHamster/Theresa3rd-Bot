@@ -1,10 +1,11 @@
-﻿using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models;
+﻿
+using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models.ChatMessages;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Model.Config;
 
 namespace Theresa3rd_Bot.Util
 {
@@ -19,6 +20,24 @@ namespace Theresa3rd_Bot.Util
         /// image头
         /// </summary>
         private static string ImageCodeHeader = @"[image:";
+
+        /// <summary>
+        /// 判断是否可以处理一个群的消息
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static bool IsHandleMessage(long groupId)
+        {
+            GeneralConfig generalConfig = BotConfig.GeneralConfig;
+            if (generalConfig == null) return false;
+            List<long> acceptGroups = generalConfig.AcceptGroups;
+            if (acceptGroups == null) return false;
+            List<long> refuseGroups = generalConfig.RefuseGroups;
+            if (refuseGroups == null) return false;
+            if (refuseGroups.Contains(groupId)) return false;
+            if (acceptGroups.Count > 0 && acceptGroups.Contains(groupId) == false) return false;
+            return true;
+        }
 
         /// <summary>
         /// 将模版转换为消息链
@@ -37,7 +56,7 @@ namespace Theresa3rd_Bot.Util
                 {
                     string path = code.Substring(ImageCodeHeader.Length, code.Length - ImageCodeHeader.Length - 1);
                     if (File.Exists(path) == false) continue;
-                    chatMessages.Add(await session.UploadPictureAsync(UploadTarget.Group, path));
+                    chatMessages.Add(await session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Group, path));
                 }
                 else
                 {

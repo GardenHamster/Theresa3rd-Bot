@@ -58,6 +58,7 @@ namespace Theresa3rd_Bot
             });
 
             MiraiTask = MiraiHelper.ConnectMirai();
+            MiraiTask.Wait();
         }
 
         /// <summary>

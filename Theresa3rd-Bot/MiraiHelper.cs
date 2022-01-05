@@ -17,10 +17,6 @@ namespace Theresa3rd_Bot
     {
         public static async Task ConnectMirai()
         {
-            // 一套能用的框架, 必须要注册至少一个 Invoker, Parser, Client 和 Handler
-            // Invoker 负责消息调度
-            // Parser 负责解析消息到具体接口以便调度器调用相关 Handler 下的处理方法
-            // Client 负责收发原始数据
             IServiceProvider services = new ServiceCollection().AddMiraiBaseFramework()   // 表示使用基于基础框架的构建器
                                                                .Services
                                                                .AddDefaultMiraiHttpFramework() // 表示使用 mirai-api-http 实现的构建器
@@ -30,14 +26,9 @@ namespace Theresa3rd_Bot
                                                                .AddHandler<GroupApplyEvent>()
                                                                .AddHandler<GroupMessageEvent>()
                                                                .AddHandler<NewFriendApplyEvent>()
+                                                               .AddHandler<GroupMemberJoinedEvent>()
                                                                .AddClient<MiraiHttpSession>() // 使用默认的客户端
                                                                .Services
-                                                               // 由于 MiraiHttpSession 使用 IOptions<MiraiHttpSessionOptions>, 其作为 Singleton 被注册
-                                                               // 配置此项将配置基于此 IServiceProvider 全局的连接配置
-                                                               // 如果你想一个作用域一个配置的话
-                                                               // 自行做一个实现类, 继承MiraiHttpSession, 构造参数中使用 IOptionsSnapshot<MiraiHttpSessionOptions>
-                                                               // 并将其传递给父类的构造参数
-                                                               // 然后在每一个作用域中!先!配置好 IOptionsSnapshot<MiraiHttpSessionOptions>, 再尝试获取 IMiraiHttpSession
                                                                .Configure<MiraiHttpSessionOptions>(options =>
                                                                {
                                                                    options.Host = BotConfig.MiraiConfig.Host;

@@ -15,9 +15,15 @@ namespace Theresa3rd_Bot
 {
     public static class MiraiHelper
     {
+        public static IServiceProvider services;
+
+        public static IServiceScope scope;
+
+        public static IMiraiHttpSession session;
+
         public static async Task ConnectMirai()
         {
-            IServiceProvider services = new ServiceCollection().AddMiraiBaseFramework()   // 表示使用基于基础框架的构建器
+            services = new ServiceCollection().AddMiraiBaseFramework()   // 表示使用基于基础框架的构建器
                                                                .Services
                                                                .AddDefaultMiraiHttpFramework() // 表示使用 mirai-api-http 实现的构建器
                                                                .AddInvoker<MiraiHttpMessageHandlerInvoker>() // 使用默认的调度器
@@ -37,10 +43,10 @@ namespace Theresa3rd_Bot
                                                                })
                                                                .AddLogging()
                                                                .BuildServiceProvider();
-            IServiceScope scope = services.CreateScope();
+            scope = services.CreateScope();
             services = scope.ServiceProvider;
-            IMiraiHttpSession session = services.GetRequiredService<IMiraiHttpSession>(); // 大部分服务都基于接口注册, 请使用接口作为类型解析
-            await session.ConnectAsync(BotConfig.MiraiConfig.BotQQ); // 填入期望连接到的机器人QQ号
+            session = services.GetRequiredService<IMiraiHttpSession>(); // 大部分服务都基于接口注册, 请使用接口作为类型解析
+            await session.ConnectAsync(BotConfig.MiraiConfig.BotQQ);
 
             while (true)
             {
@@ -50,10 +56,6 @@ namespace Theresa3rd_Bot
                 }
             }
         }
-
-
-
-
 
 
     }

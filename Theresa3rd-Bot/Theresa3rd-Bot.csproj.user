@@ -6,6 +6,7 @@
   <PropertyGroup>
     <ActiveDebugProfile>Theresa3rd_Bot</ActiveDebugProfile>
     <ShowAllFiles>false</ShowAllFiles>
+    <NameOfLastUsedPublishProfile>D:\project\Theresa3rd-Bot\Theresa3rd-Bot\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="Model\Http\MyWebClient.cs">

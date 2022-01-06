@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Theresa3rd_Bot.Model.Cache;
+using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Cache
@@ -27,20 +28,15 @@ namespace Theresa3rd_Bot.Cache
             {
                 try
                 {
+                    if (BotConfig.RepeaterConfig.Enable == false) return false;
+                    if (BotConfig.RepeaterConfig.RepeatTime == 0) return false;
                     if (MemberRepeatDic.ContainsKey(groupId) == false) MemberRepeatDic[groupId] = new List<RepeatInfo>();
                     RepeatInfo memberRepeat = new RepeatInfo(memberId, word);
                     List<RepeatInfo> memberRepeats = MemberRepeatDic[groupId];
-                    if (memberRepeats.Count == 0)
-                    {
-                        memberRepeats.Add(memberRepeat);
-                        return false;
-                    }
                     RepeatInfo lastRepeat = memberRepeats.LastOrDefault();
-                    if (lastRepeat.Word != memberRepeat.Word)
+                    if (lastRepeat != null && lastRepeat.Word != memberRepeat.Word)
                     {
                         memberRepeats.Clear();
-                        memberRepeats.Add(memberRepeat);
-                        return false;
                     }
                     RepeatInfo sameRepeat = memberRepeats.Where(o => o.MemberId == memberId).FirstOrDefault();
                     if (sameRepeat != null)
@@ -53,7 +49,7 @@ namespace Theresa3rd_Bot.Cache
                         return false;
                     }
                     memberRepeats.Add(memberRepeat);
-                    if (memberRepeats.Count < 3)
+                    if (memberRepeats.Count < BotConfig.RepeaterConfig.RepeatTime)
                     {
                         return false;
                     }

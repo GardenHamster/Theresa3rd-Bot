@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Theresa3rd_Bot.Model.Config;
 
-namespace Theresa3rd_Bot.Model.Config
+namespace Theresa3rd_Bot.Common
 {
     public class BotConfig
     {

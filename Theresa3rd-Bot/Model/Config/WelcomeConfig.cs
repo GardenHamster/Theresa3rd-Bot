@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Model.Config
 {
-    public class WelcomeConfig : BaseConfig
+    public class WelcomeConfig
     {
+        public bool Enable { get; set; }
+
         public string Template { get; set; }
 
         public List<WelcomeSpecial> Special { get; set; }

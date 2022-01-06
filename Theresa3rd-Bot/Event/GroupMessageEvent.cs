@@ -4,12 +4,11 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Cache;
-using Theresa3rd_Bot.Model.Config;
+using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Event

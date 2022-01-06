@@ -4,12 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
+using Theresa3rd_Bot.Timer;
 using YamlDotNet.Serialization;
 
 namespace Theresa3rd_Bot
@@ -58,6 +59,7 @@ namespace Theresa3rd_Bot
             });
 
             MiraiTask = MiraiHelper.ConnectMirai();
+            TimerGroup.init();
         }
 
         /// <summary>

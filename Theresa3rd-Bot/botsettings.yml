@@ -20,11 +20,13 @@ Welcome:                                                      #入群欢迎
 Reminder:                                                     #定时消息
     Enable:             true                                  #是否启用
     Timers:                                                   #定时列表
-        - Cron:         '0 0 0/1 * * ?'                       #cron表达式
+        - Cron:         '0 * * * * ?'                      #cron表达式
+          Groups:       [284196625]                           #群号
           AtAll:        false                                 #是否艾特群体
           AtMembers:    [1524514426]                          #艾特群员列表
-          Template:     '整点报时!'                            #消息模版
-        - Cron:         '0 0 18 ? * WED,SUN'
-          AtAll:        true                                  
+          Template:     '整点报时！'                           #消息模版
+        - Cron:         '30 * * * * ?'
+          Groups:       [284196625]
+          AtAll:        true
           AtMembers:    []
           Template:     '今晚深渊结算！'

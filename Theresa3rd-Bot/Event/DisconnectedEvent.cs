@@ -3,7 +3,7 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using System;
 using System.Threading.Tasks;
-using Theresa3rd_Bot.Model.Config;
+using Theresa3rd_Bot.Common;
 
 namespace Theresa3rd_Bot.Event
 {

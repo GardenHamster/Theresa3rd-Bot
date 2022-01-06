@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
 
 namespace Theresa3rd_Bot.Util

@@ -8,6 +8,7 @@ using System;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Event;
+using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot
 {
@@ -21,7 +22,9 @@ namespace Theresa3rd_Bot
 
         public static async Task ConnectMirai()
         {
-            Services = new ServiceCollection().AddMiraiBaseFramework()   // 表示使用基于基础框架的构建器
+            try
+            {
+                Services = new ServiceCollection().AddMiraiBaseFramework()   // 表示使用基于基础框架的构建器
                                                                .Services
                                                                .AddDefaultMiraiHttpFramework() // 表示使用 mirai-api-http 实现的构建器
                                                                .AddInvoker<MiraiHttpMessageHandlerInvoker>() // 使用默认的调度器
@@ -41,20 +44,25 @@ namespace Theresa3rd_Bot
                                                                })
                                                                .AddLogging()
                                                                .BuildServiceProvider();
-            Scope = Services.CreateScope();
-            Services = Scope.ServiceProvider;
-            Session = Services.GetRequiredService<IMiraiHttpSession>(); // 大部分服务都基于接口注册, 请使用接口作为类型解析
-            await Session.ConnectAsync(BotConfig.MiraiConfig.BotQQ);
+                Scope = Services.CreateScope();
+                Services = Scope.ServiceProvider;
+                Session = Services.GetRequiredService<IMiraiHttpSession>(); // 大部分服务都基于接口注册, 请使用接口作为类型解析
+                await Session.ConnectAsync(BotConfig.MiraiConfig.BotQQ);
 
-            while (true)
-            {
-                if (Console.ReadLine() == "exit")
+                while (true)
                 {
-                    break;
+                    if (Console.ReadLine() == "exit")
+                    {
+                        break;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex,"连接到mcl失败");
+            }
+            
         }
-
 
     }
 }

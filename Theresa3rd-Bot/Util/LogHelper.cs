@@ -2,7 +2,9 @@
 using log4net.Config;
 using log4net.Repository;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using Theresa3rd_Bot.Model.Error;
 
 namespace Theresa3rd_Bot.Util
 {
@@ -10,6 +12,7 @@ namespace Theresa3rd_Bot.Util
     {
         private static readonly string RepositoryName = "NETCoreRepository";
         private static readonly string ConfigFile = "log4net.config";
+        private static List<SendError> SendErrorList = new List<SendError>();
 
         private static ILog RollingLog { get; set; }
         private static ILog ConsoleLog { get; set; }
@@ -33,19 +36,29 @@ namespace Theresa3rd_Bot.Util
 
         public static void Error(Exception ex)
         {
-            string logMsg = $"{ex.Message}\r\n{ex.StackTrace}";
+            string logMsg = $"[Message]\r\n{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}";
             RollingLog.Error(logMsg, ex);
             ConsoleLog.Error(logMsg, ex);
         }
 
         public static void Error(Exception ex, string message)
         {
-            string logMsg = $"{message}:\r\n{ex.Message}\r\n{ex.StackTrace}";
+            string logMsg = $"{message}:\r\n[Message]\r\n{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}";
             RollingLog.Error(logMsg, ex);
             ConsoleLog.Error(logMsg, ex);
         }
 
+        public static void sendError(string title,string message)
+        {
+            try
+            {
 
+            }
+            catch (Exception)
+            {
+
+            }
+        }
 
     }
 }

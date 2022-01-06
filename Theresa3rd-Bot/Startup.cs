@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Timer;
+using Theresa3rd_Bot.Util;
 using YamlDotNet.Serialization;
 
 namespace Theresa3rd_Bot
@@ -29,7 +30,12 @@ namespace Theresa3rd_Bot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            LogHelper.ConfigureLog();//log4net
+            LogHelper.Info($"日志配置完毕...");
+
             LoadConfig();
+            LogHelper.Info($"读取配置文件...");
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

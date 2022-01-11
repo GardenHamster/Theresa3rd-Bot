@@ -42,12 +42,20 @@ namespace Theresa3rd_Bot.Event
                 return;
             }
 
+            if (instructions.StartsWith("test"))
+            {
+                await session.SendGroupMessageAsync(args.Sender.Group.Id, new AtMessage(memberId), new PlainMessage("Hello World!"));
+                return;
+            }
+
             //IChatMessage[] chain = new IChatMessage[] {
             //    new AtMessage(args.Sender.Id,""),
             //    new PlainMessage("emmm\nemmmm")
             //};
             //await session.SendGroupMessageAsync(args.Sender.Group.Id, chain);
+
             args.BlockRemainingHandlers = true;
+
         }
 
 

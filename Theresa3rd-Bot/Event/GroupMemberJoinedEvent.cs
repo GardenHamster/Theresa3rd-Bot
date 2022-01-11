@@ -1,9 +1,9 @@
 ﻿using Mirai.CSharp.HttpApi.Handlers;
+using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models.ChatMessages;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,8 +30,8 @@ namespace Theresa3rd_Bot.Event
             if (string.IsNullOrEmpty(template)) return;
             List<IChatMessage> atList = new List<IChatMessage>()
             {
-                new Mirai.CSharp.HttpApi.Models.ChatMessages.AtMessage(memberId, ""),
-                new Mirai.CSharp.HttpApi.Models.ChatMessages.PlainMessage("\n")
+                new AtMessage(memberId, ""),
+                new PlainMessage("\n")
             };
             List<IChatMessage> templateList = BusinessHelper.SplitToChainAsync(client, template).Result;
             await client.SendGroupMessageAsync(groupId, atList.Concat(templateList).ToArray()); // 自己填群号, 一般由 IGroupMessageEventArgs 提供

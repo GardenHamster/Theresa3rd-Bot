@@ -36,14 +36,14 @@ namespace Theresa3rd_Bot.Util
 
         public static void Error(Exception ex)
         {
-            string logMsg = $"[Message]\r\n{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}";
+            string logMsg = $"[Message]{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}";
             RollingLog.Error(logMsg, ex);
             ConsoleLog.Error(logMsg, ex);
         }
 
         public static void Error(Exception ex, string message)
         {
-            string logMsg = $"{message}:\r\n[Message]\r\n{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}";
+            string logMsg = $"{message}:\r\n[Message]{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}";
             RollingLog.Error(logMsg, ex);
             ConsoleLog.Error(logMsg, ex);
         }

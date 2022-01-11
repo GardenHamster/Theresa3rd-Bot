@@ -27,6 +27,7 @@ namespace Theresa3rd_Bot.Timer
                 chainList.AddRange(BusinessHelper.SplitToChainAsync(MiraiHelper.Session, reminderTimer.Template).Result);
                 foreach (var groupId in reminderTimer.Groups)
                 {
+                    if (!BusinessHelper.IsHandleMessage(groupId)) continue;
                     await MiraiHelper.Session.SendGroupMessageAsync(groupId, chainList.ToArray());
                     await Task.Delay(1000);
                 }

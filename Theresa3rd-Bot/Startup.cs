@@ -4,11 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SqlSugar.IOC;
 using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Dao;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Timer;
 using Theresa3rd_Bot.Util;
@@ -35,7 +37,19 @@ namespace Theresa3rd_Bot
 
             LoadConfig();
             LogHelper.Info($"读取配置文件...");
-            
+
+            LogHelper.Info($"初始化数据库...");
+            services.AddSqlSugar(new IocConfig()//注入Sqlsuger
+            {
+                DbType = IocDbType.MySql,
+                ConnectionString = BotConfig.DBConfig.ConnectionString,
+                IsAutoCloseConnection = true//自动释放
+            });
+            new DBClient().CreateDB();
+            LogHelper.Info($"数据库初始化完毕...");
+
+
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -73,6 +87,8 @@ namespace Theresa3rd_Bot
         /// </summary>
         private void LoadConfig()
         {
+            BotConfig.DBConfig.ConnectionString = Configuration["Database:ConnectionString"];
+
             BotConfig.MiraiConfig.Host = Configuration["Mirai:host"];
             BotConfig.MiraiConfig.Port = Convert.ToInt32(Configuration["Mirai:port"]);
             BotConfig.MiraiConfig.AuthKey = Configuration["Mirai:authKey"];
@@ -87,6 +103,7 @@ namespace Theresa3rd_Bot
             BotConfig.RepeaterConfig = botConfig.Repeater;
             BotConfig.WelcomeConfig = botConfig.Welcome;
             BotConfig.ReminderConfig = botConfig.Reminder;
+
         }
 
 

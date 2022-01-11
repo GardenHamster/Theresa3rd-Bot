@@ -1,6 +1,5 @@
-﻿
+﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models.ChatMessages;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -57,11 +56,11 @@ namespace Theresa3rd_Bot.Util
                 {
                     string path = code.Substring(ImageCodeHeader.Length, code.Length - ImageCodeHeader.Length - 1);
                     if (File.Exists(path) == false) continue;
-                    chatMessages.Add(await session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Group, path));
+                    chatMessages.Add((IChatMessage)await session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Group, path));
                 }
                 else
                 {
-                    chatMessages.Add(new Mirai.CSharp.HttpApi.Models.ChatMessages.PlainMessage(item));
+                    chatMessages.Add(new PlainMessage(item));
                 }
             }
             return chatMessages;

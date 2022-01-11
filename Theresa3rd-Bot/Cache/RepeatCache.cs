@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Cache;
-using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Cache

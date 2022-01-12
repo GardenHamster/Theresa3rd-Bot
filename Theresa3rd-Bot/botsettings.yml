@@ -19,6 +19,7 @@ Welcome:                                                                #入群�
                             欢迎新厨子
                             [image:C:\BotImg\welcome.png]
                             略略略
+
 Reminder:                                                               #定时消息
     Enable:                 true                                        #是否启用
     Timers:                                                             #定时列表
@@ -30,7 +31,7 @@ Reminder:                                                               #定时�
                             今天是深渊结算的日子，舰长打穿红莲了没？
                             [image:C:\BotImg\welcome.png]
 
-Setu:
+Setu:                                                                   #色图相关
     Lolicon:                                                            #Lolicon图床https://api.lolicon.app/#/setu
         Enable:             true                                        #是否启用
         Command:            '瑟图'                                      #命令，用法：#瑟图合法萝莉
@@ -38,7 +39,7 @@ Setu:
         ErrorMsg:           '申请色色失败！请重新尝试'                   #发生错误时返回的消息
         CustomEnable:       true                                        #是否允许查找自定义涩图，如:#涩图可可萝
         CustomDisableMsg:   '自定义功能已关闭！'                         #禁用自定义时返回的消息
-        ProcessingMag:      '正在使用色图探测器探测你要的色图'            #开始查找前返回的消息
+        ProcessingMag:      '正在使用色图探测器探测你要的色图...'         #开始查找前返回的消息
         Template:           ''
         GroupCD:            0                                           #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
         MemberCD:           0                                           #独立CD(秒)，单个群员使用命令后需要等待的CD
@@ -53,7 +54,7 @@ Setu:
         CustomDisableMsg:   '自定义功能已关闭！'                         #禁用自定义时返回的消息
         RandomMode:         1                                           #1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品
         RandomTags:         ['德丽莎','テレサ・アポカリプス']            #没有指定标签时随机获取的标签
-        ProcessingMag:      '正在使用色图探测器探测你要的色图'            #开始查找前返回的消息
+        ProcessingMag:      '正在使用色图探测器探测你要的色图...'         #开始查找前返回的消息
         Template:           ''
         GroupCD:            0                                           #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
         MemberCD:           0                                           #独立CD(秒)，单个群员使用命令后需要等待的CD
@@ -68,12 +69,43 @@ Setu:
         DisableMsg:         '没有，快爬！'                              #功能未启用时返回的消息
         NotFoundMsg:        '色图探测器毫无反应，找不到你想要的色图'      #找不到相应色图时返回的消息
         ErrorMsg:           '申请色色失败！请重新尝试'                   #发生错误时返回的消息
-        ProcessingMag:      '正在使用色图探测器探测你要的色图'            #开始查找前返回的消息
+        ProcessingMag:      '正在使用色图探测器探测你要的色图...'         #开始查找前返回的消息
         Template:           ''
         GroupCD:            0                                           #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
         MemberCD:           0                                           #独立CD(秒)，单个群员使用命令后需要等待的CD
         MaxDaily:           0                                           #每人每日最大使用次数,0表示无限制
         WaitSeconds:        60                                          #等待图片的时长(秒)
         MaxReceive:         0                                           #每次最多接收并查询多少张图片，用户发送的图片数量超出该值时只处理前N张图片
+                            
+Subscribe:                                                              #订阅相关
+    PixivUser:                                                          #p站用户
+        Enable:             true                                        #是否启用
+        AddCommand:         '订阅画师'                                   #订阅命令,需要管理员执行
+        RmCommand:          '退订画师'                                   #退订命令,需要管理员执行
+        Template:           ''
+        ScanInterval:       1800                                        #扫描间隔(秒)
+    PixivTag:                                                           #p站标签
+        Enable:             true                                        #是否启用
+        AddCommand:         '订阅标签'                                   #订阅命令,需要管理员执行
+        RmCommand:          '退订标签'                                   #退订命令,需要管理员执行
+        Template:           ''
+        ScanInterval:       1800                                        #扫描间隔(秒)
+    BiliUp:                                                             #b站up主
+        Enable:             true                                        #是否启用
+        AddCommand:         '订阅up'                                    #订阅命令,需要管理员执行
+        RmCommand:          '退订up'                                    #退订命令,需要管理员执行
+        Template:           ''
+        ScanInterval:       60                                          #扫描间隔(秒)
+    BiliLive:                                                           #b站直播
+        Enable:             true                                        #是否启用
+        AddCommand:         '订阅直播'                                   #订阅命令,需要管理员执行
+        RmCommand:          '退订直播'                                   #退订命令,需要管理员执行
+        Template:           ''
+        ScanInterval:       60                                          #扫描间隔(秒)
+    Mihoyo:                                                             #米游戏社版主
+        Enable:             true                                        #是否启用
+        AddCommand:         '订阅版主'                                   #订阅命令,需要管理员执行
+        RmCommand:          '退订版主'                                   #退订命令,需要管理员执行
+        Template:           ''
+        ScanInterval:       60                                          #扫描间隔(秒)
 
-    

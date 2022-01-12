@@ -1,29 +1,79 @@
-General:                                                      #��������
-    Prefix:             '#'                                   #ָ��ǰ׺��������յ�����Ϣ���и�ǰ׺����Ϊһ��ָ���
-    AcceptGroups:       [284196625]                           #��������ֻ������ЩȺ����Ϣ���������Ͱ�����ͬʱΪ��ʱ��������Ⱥ��Ϣ
-    RefuseGroups:       []                                    #����������������ЩȺ����Ϣ���������Ͱ�����ͬʱ��ֵʱ��ֻ�к�������Ч
-    ErrorGroups:        [284196625]                           #������־Ⱥ����������ʱ�Ὣ��־���͵����Ⱥ
-    SuperManagers:      [1524514426]                          #��������Ա�б�,����ʹ�ù���ָ��
-Repeater:                                                     #������
-    Enable:             true                                  #�Ƿ�����
-    RepeatTime:         3                                     #�ظ��յ�N����Ϣ�󴥷���������
-    RepeatMode:         0                                     #����ģʽ��0����ģʽ
-Welcome:                                                      #��Ⱥ��ӭ
-    Enable:             true                                  #�Ƿ�����
-    Template:           '��ӭ��Ⱥ��'                           #Ĭ�ϻ�ӭģ��
-    Special:                                                  #Ϊ������Ⱥ�趨������ģ��
-        - GroupId:      284196625                             #Ⱥid(Ⱥ��)
-          Template:     |                                     #Ⱥ��ӭģ��
-                        ��ӭ�³���
-                        [image:C:\BotImg\welcome.png]
-                        ������
-Reminder:                                                     #��ʱ��Ϣ
-    Enable:             true                                  #�Ƿ�����
-    Timers:                                                   #��ʱ�б�
-        - Cron:         '0 0 18 ? * WED,SUN'                  #cron����ʽ
-          Groups:       [284196625]                           #Ⱥ��
-          AtAll:        false                                 #�Ƿ���Ⱥ��
-          AtMembers:    []                                    #����ȺԱQQ���б�
-          Template:     |                                     #��Ϣģ��
-                        ��������Ԩ��������ӣ������򴩺�����û��
-                        [image:C:\BotImg\welcome.png]
+﻿General:                                                                #基础设置
+    Prefix:                 '#'                                         #指令前缀，如果接收到的消息带有该前缀将视为一个指令处理
+    AcceptGroups:           [284196625]                                 #白名单，只处理这些群的消息，黑名单和白名单同时为空时则处理所有群消息
+    RefuseGroups:           []                                          #黑名单，不处理这些群的消息，黑名单和白名单同时设值时则只有黑名单生效
+    ErrorGroups:            [284196625]                                 #错误日志群，发生错误时会将日志发送到这个群
+    SuperManagers:          [1524514426]                                #超级管理员列表,可以使用管理指令
+
+Repeater:                                                               #复读机
+    Enable:                 true                                        #是否启用
+    RepeatTime:             3                                           #重复收到N条消息后触发复读功能
+    RepeatMode:             0                                           #复读模式，0：简单模式
+
+Welcome:                                                                #入群欢迎
+    Enable:                 true                                        #是否启用
+    Template:               '欢迎入群！'                                 #默认欢迎模版
+    Special:                                                            #为单独的群设定单独的模版
+        - GroupId:          284196625                                   #群id(群号)
+          Template:         |                                           #群欢迎模版
+                            欢迎新厨子
+                            [image:C:\BotImg\welcome.png]
+                            略略略
+Reminder:                                                               #定时消息
+    Enable:                 true                                        #是否启用
+    Timers:                                                             #定时列表
+        - Cron:             '0 0 18 ? * WED,SUN'                        #cron表达式
+          Groups:           [284196625]                                 #群号
+          AtAll:            false                                       #是否艾特群体
+          AtMembers:        []                                          #艾特群员QQ号列表
+          Template:         |                                           #消息模版
+                            今天是深渊结算的日子，舰长打穿红莲了没？
+                            [image:C:\BotImg\welcome.png]
+
+Setu:
+    Lolicon:                                                            #Lolicon图床https://api.lolicon.app/#/setu
+        Enable:             true                                        #是否启用
+        Command:            '瑟图'                                      #命令，用法：#瑟图合法萝莉
+        DisableMsg:         '不可以色色！'                              #功能未启用时返回的消息
+        ErrorMsg:           '申请色色失败！请重新尝试'                   #发生错误时返回的消息
+        CustomEnable:       true                                        #是否允许查找自定义涩图，如:#涩图可可萝
+        CustomDisableMsg:   '自定义功能已关闭！'                         #禁用自定义时返回的消息
+        ProcessingMag:      '正在使用色图探测器探测你要的色图'            #开始查找前返回的消息
+        Template:           ''
+        GroupCD:            0                                           #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
+        MemberCD:           0                                           #独立CD(秒)，单个群员使用命令后需要等待的CD
+        MaxDaily:           0                                           #每人每日最大使用次数,0表示无限制
+    Pixiv:                                                              #Pixiv图床https://www.pixiv.net
+        Enable:             true                                        #是否启用
+        Command:            '涩图'                                      #命令，用法：#涩图 或 #涩图可可萝
+        DisableMsg:         '不可以色色！'                              #功能未启用时返回的消息
+        NotFoundMsg:        '色图探测器毫无反应，找不到你要的色图'        #找不到相应色图时返回的消息
+        ErrorMsg:           '申请色色失败！请重新尝试'                   #发生错误时返回的消息
+        CustomEnable:       true                                        #是否允许查找自定义涩图，如:#涩图可可萝，值为false将根据 RandomMode 中的设定查找图片
+        CustomDisableMsg:   '自定义功能已关闭！'                         #禁用自定义时返回的消息
+        RandomMode:         1                                           #1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品
+        RandomTags:         ['德丽莎','テレサ・アポカリプス']            #没有指定标签时随机获取的标签
+        ProcessingMag:      '正在使用色图探测器探测你要的色图'            #开始查找前返回的消息
+        Template:           ''
+        GroupCD:            0                                           #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
+        MemberCD:           0                                           #独立CD(秒)，单个群员使用命令后需要等待的CD
+        MinBookmark:        800                                         #最低收藏数，用于判断涩图是否合格(标签搜索时试用)
+        MinBookRate:        0.05                                        #最低收藏率，收藏数/浏览数(标签搜索时试用)
+        CookieExpire:       15                                          #cookie失效天数，超过该天数后需要使用命令更新cookie，建议cookie每15天更新一次
+        CookieExpireMag:    'emmmm,cookie过期了,请艾特管理员省心cookie'  #cookie过期时返回的消息
+        MaxDaily:           0                                           #每人每日最大使用次数,0表示无限制
+    Saucenao:                                                           #Saucenao以图搜图，查找原图功能
+        Enable:             true                                        #是否启用
+        Command:            '原图'                                      #命令，用法：#原图 或 原图+图片
+        DisableMsg:         '没有，快爬！'                              #功能未启用时返回的消息
+        NotFoundMsg:        '色图探测器毫无反应，找不到你想要的色图'      #找不到相应色图时返回的消息
+        ErrorMsg:           '申请色色失败！请重新尝试'                   #发生错误时返回的消息
+        ProcessingMag:      '正在使用色图探测器探测你要的色图'            #开始查找前返回的消息
+        Template:           ''
+        GroupCD:            0                                           #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
+        MemberCD:           0                                           #独立CD(秒)，单个群员使用命令后需要等待的CD
+        MaxDaily:           0                                           #每人每日最大使用次数,0表示无限制
+        WaitSeconds:        60                                          #等待图片的时长(秒)
+        MaxReceive:         0                                           #每次最多接收并查询多少张图片，用户发送的图片数量超出该值时只处理前N张图片
+
+    

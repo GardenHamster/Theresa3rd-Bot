@@ -8,9 +8,8 @@ using System;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Event;
-using Theresa3rd_Bot.Util;
 
-namespace Theresa3rd_Bot
+namespace Theresa3rd_Bot.Util
 {
     public static class MiraiHelper
     {

@@ -1,4 +1,5 @@
-﻿using Mirai.CSharp.HttpApi.Handlers;
+﻿using Mirai.CSharp.Builders;
+using Mirai.CSharp.HttpApi.Handlers;
 using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
@@ -46,7 +47,10 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartsWith("test"))
                 {
-                    await session.SendGroupMessageAsync(args.Sender.Group.Id, new AtMessage(args.Sender.Id, ""), new PlainMessage("Hello World!"));
+                    IMessageChainBuilder builder = session.GetMessageChainBuilder();
+                    builder.AddAtMessage(args.Sender.Id);
+                    builder.AddPlainMessage("Hello World!");
+                    await session.SendGroupMessageAsync(args.Sender.Group.Id, builder);
                     return;
                 }
             }

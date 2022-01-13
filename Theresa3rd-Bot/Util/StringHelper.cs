@@ -51,7 +51,7 @@ namespace Theresa3rd_Bot.Util
         /// <param name="message"></param>
         /// <param name="commandStr"></param>
         /// <returns></returns>
-        public static string splitKeyWord(string message, string commandStr)
+        public static string splitKeyWord(this string message, string commandStr)
         {
             string[] messageSplit = message.Split(new string[] { commandStr }, StringSplitOptions.RemoveEmptyEntries);
             if (messageSplit.Length < 2) return null;
@@ -63,7 +63,7 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="cookie"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> splitCookie(string cookie)
+        public static Dictionary<string, string> splitCookie(this string cookie)
         {
             Dictionary<string, string> cookieDic = new Dictionary<string, string>();
             if (string.IsNullOrEmpty(cookie)) return cookieDic;
@@ -84,7 +84,7 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="httpUrl"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> splitHttpUrl(string httpUrl)
+        public static Dictionary<string, string> splitHttpUrl(this string httpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>();
             if (string.IsNullOrEmpty(httpUrl)) return paramDic;
@@ -108,7 +108,7 @@ namespace Theresa3rd_Bot.Util
             return DateTime.Now.ToString("yyyyMMddHHmmssffff");
         }
 
-        public static string isContainsWord(string str, List<string> containWords)
+        public static string isContainsWord(this string str, List<string> containWords)
         {
             foreach (string word in containWords)
             {
@@ -117,7 +117,7 @@ namespace Theresa3rd_Bot.Util
             return null;
         }
 
-        public static string isContainsWord(string str, string[] containWords)
+        public static string isContainsWord(this string str, string[] containWords)
         {
             foreach (string word in containWords)
             {
@@ -126,7 +126,7 @@ namespace Theresa3rd_Bot.Util
             return null;
         }
 
-        public static string[] isContainsWord(string str, string[][] containWords)
+        public static string[] isContainsWord(this string str, string[][] containWords)
         {
             foreach (string[] words in containWords)
             {
@@ -145,7 +145,7 @@ namespace Theresa3rd_Bot.Util
             return str;
         }
 
-        public static string getHttpUrlWithoutParam(string url)
+        public static string getHttpUrlWithoutParam(this string url)
         {
             if (string.IsNullOrEmpty(url)) return url;
             int questionMarkIndex = url.IndexOf("?");
@@ -153,14 +153,14 @@ namespace Theresa3rd_Bot.Util
             return url.Substring(0, questionMarkIndex);
         }
 
-        public static string getFullFileNameByUrl(string url)
+        public static string getFullFileNameByUrl(this string url)
         {
             if (string.IsNullOrEmpty(url)) return null;
             string[] splitArr = url.Split(new char[] { '/' });
             return splitArr[splitArr.Length - 1];
         }
 
-        public static string getSuffixByUrl(string url)
+        public static string getSuffixByUrl(this string url)
         {
             int lastPointIndex = url.LastIndexOf(".");
             int lastSlashIndex = url.LastIndexOf("/");
@@ -176,7 +176,7 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static string filterEmoji(string str)
+        public static string filterEmoji(this string str)
         {
             try
             {
@@ -230,7 +230,7 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="str">加密字符</param>
         /// <returns></returns>
-        public static string getMD532bit(string str)
+        public static string getMD532bit(this string str)
         {
             MD5 md5 = MD5.Create();
             byte[] byteOld = Encoding.UTF8.GetBytes(str);
@@ -246,7 +246,7 @@ namespace Theresa3rd_Bot.Util
         /// <param name="str"></param>
         /// <param name="word"></param>
         /// <returns></returns>
-        public static string getStrAfterWord(string str,string word)
+        public static string getStrAfterWord(this string str,string word)
         {
             int index = str.IndexOf(word);
             return str.Substring(index + word.Length, str.Length - index - word.Length);
@@ -258,13 +258,13 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool isPureNumber(string str)
+        public static bool isPureNumber(this string str)
         {
             return Regex.IsMatch(str, @"^\d+$");
         }
 
 
-        public static string getSupplyNameWithoutSymbol(string itemName)
+        public static string getSupplyNameWithoutSymbol(this string itemName)
         {
             if (itemName == null) return "";
             itemName = itemName.Replace("(", "");
@@ -297,7 +297,7 @@ namespace Theresa3rd_Bot.Util
         /// 判断聊天记录中是否含有分享内容
         /// </summary>
         /// <returns></returns>
-        public static bool isShareChar(string message)
+        public static bool isShareChar(this string message)
         {
             if (message == null) return false;
             string messageLower = message.ToLower();

@@ -16,5 +16,9 @@ namespace Theresa3rd_Bot.Common
 
         public static ReminderConfig ReminderConfig = new ReminderConfig();
 
+        public static SetuConfig SetuConfig = new SetuConfig();
+
+        public static SubscribeConfig SubscribeConfig = new SubscribeConfig();
+
     }
 }

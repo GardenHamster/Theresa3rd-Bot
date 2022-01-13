@@ -15,6 +15,9 @@ namespace Theresa3rd_Bot.Model.Config
 
         public ReminderConfig Reminder { get; set; }
 
+        public SetuConfig Setu { get; set; }
+
+        public SubscribeConfig Subscribe { get; set; }
     }
 
 }

@@ -2,8 +2,11 @@
     Prefix:                 '#'                                         #指令前缀，如果接收到的消息带有该前缀将视为一个指令处理
     AcceptGroups:           [284196625]                                 #白名单，只处理这些群的消息，黑名单和白名单同时为空时则处理所有群消息
     RefuseGroups:           []                                          #黑名单，不处理这些群的消息，黑名单和白名单同时设值时则只有黑名单生效
-    ErrorGroups:            [284196625]                                 #错误日志群，发生错误时会将日志发送到这个群
     SuperManagers:          [1524514426]                                #超级管理员列表,可以使用管理指令
+    ErrorGroups:            [284196625]                                 #错误日志群，发生错误时会将日志发送到这个群
+    ErrorMsg:               |                                           #处理异常时返回的消息
+                            出了点小问题，稍后再试吧
+                            [image:C:\BotImg\emmm.jpg]
 
 Repeater:                                                               #复读机
     Enable:                 true                                        #是否启用
@@ -108,4 +111,3 @@ Subscribe:                                                              #订阅�
         RmCommand:          '退订版主'                                   #退订命令,需要管理员执行
         Template:           ''
         ScanInterval:       60                                          #扫描间隔(秒)
-

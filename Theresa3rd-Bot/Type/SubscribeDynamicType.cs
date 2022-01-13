@@ -1,6 +1,6 @@
 ﻿namespace Theresa3rd_Bot.Type
 {
-    public enum SubscribeArticleType
+    public enum SubscribeDynamicType
     {
         其他=0,
         动态=1,

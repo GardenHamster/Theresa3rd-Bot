@@ -11,7 +11,7 @@ namespace Theresa3rd_Bot.Model.PO
         public string SubscribeCode { get; set; }
 
         [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "订阅名称")]
-        public string subscribeName { get; set; }
+        public string SubscribeName { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDescription = "订阅类型")]
         public SubscribeType SubscribeType { get; set; }

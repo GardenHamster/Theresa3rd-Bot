@@ -3,6 +3,5 @@
     public enum CommandType
     {
         其他=0
-
     }
 }

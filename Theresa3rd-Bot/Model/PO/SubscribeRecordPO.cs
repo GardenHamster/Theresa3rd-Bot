@@ -26,10 +26,10 @@ namespace Theresa3rd_Bot.Model.PO
         public string LinkUrl { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDescription = "文章类型")]
-        public SubscribeArticleType ArticleType { get; set; }
+        public SubscribeDynamicType DynamicType { get; set; }
 
-        [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "文章编码,唯一标识")]
-        public string ArticleCode { get; set; }
+        [SugarColumn(IsNullable = false, Length = 200, IndexGroupNameList = new string[] { "index_dynamicCode" }, ColumnDescription = "文章编码,唯一标识")]
+        public string DynamicCode { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDescription = "添加时间")]
         public DateTime CreateDate { get; set; }

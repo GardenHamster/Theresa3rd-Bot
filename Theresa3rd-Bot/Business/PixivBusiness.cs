@@ -3,16 +3,20 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
 using Theresa3rd_Bot.Model.Pixiv;
+using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
 {
     public class PixivBusiness
     {
-        /*
+        
         private SubscribeRecordDao subscribeRecordDao;
+
+        private WebsiteDao websiteDao;
 
         /// <summary>
         /// 获取作品信息的线程数
@@ -62,19 +66,19 @@ namespace Theresa3rd_Bot.Business
             bookUp800List = new List<PixivWorkInfoDto>();
             bookUpList = new List<PixivWorkInfoDto>();
             subscribeRecordDao = new SubscribeRecordDao();
+            websiteDao = new WebsiteDao();
         }
 
         public async Task setPixivCookieAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
         {
-            string cookie = message.splitKeyWord("pixivcookie");
+            string cookie = message.splitKeyWord(Command.PixivCookie);
             if (string.IsNullOrWhiteSpace(cookie))
             {
-                await session.SendGroupMessageAsync(args.Sender.Group.Id, new AtMessage(args.Sender.Id, ""), new PlainMessage("Hello World!"));
-                e.FromQQ.SendPrivateMessage("未检测到cookie,请使用pixivcookie + cookie形式发送");
+                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用${Command.PixivCookie} + cookie形式发送"));
                 return;
             }
-            string baseCookie = splitBaseCookie(cookie);//分离出固定不变的cookie部分
-            Website website = new WebsiteBusiness().updateWebsite(WebsiteType.Pixiv, baseCookie, 2 * 7 * 24 * 60);
+
+            WebsitePO website = new WebsiteBusiness().updateWebsite(WebsiteType.Pixiv, cookie, BotConfig.SetuConfig.Pixiv.CookieExpireDay);
             SettingHelper.loadWebsiteAndCookie();
             e.SendMessageWithAt(string.Format("cookie更新完毕,过期时间为{0}", website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss")));
             return;
@@ -739,7 +743,7 @@ namespace Theresa3rd_Bot.Business
             headerDic.Add("x-user-id", Setting.Pixiv.XUserId);
             return headerDic;
         }
-        */
+        
 
     }
 }

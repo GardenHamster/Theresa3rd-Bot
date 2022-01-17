@@ -63,8 +63,8 @@ Setu:                                                                   #色图�
         MemberCD:           0                                           #独立CD(秒)，单个群员使用命令后需要等待的CD
         MinBookmark:        800                                         #最低收藏数，用于判断涩图是否合格(标签搜索时试用)
         MinBookRate:        0.05                                        #最低收藏率，收藏数/浏览数(标签搜索时试用)
-        CookieExpireDay:    15                                          #cookie失效天数，超过该天数后需要使用命令更新cookie，建议cookie每15天更新一次
-        CookieExpireMag:    'emmmm,cookie过期了,请艾特管理员省心cookie'    #cookie过期时返回的消息
+        CookieExpireMin:    21600                                       #cookie失效时间(分钟)，超过该天数后需要使用命令更新cookie，建议cookie每15天更新一次
+        CookieExpireMsg:    'emmmm,cookie过期了,请艾特管理员更新cookie'   #cookie过期时返回的消息
         MaxDaily:           0                                           #每人每日最大使用次数,0表示无限制
     Saucenao:                                                           #Saucenao以图搜图，查找原图功能
         Enable:             true                                        #是否启用

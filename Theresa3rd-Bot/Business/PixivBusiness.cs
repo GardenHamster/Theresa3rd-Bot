@@ -1,12 +1,14 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.PO;
+using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
@@ -69,21 +71,7 @@ namespace Theresa3rd_Bot.Business
             websiteDao = new WebsiteDao();
         }
 
-        public async Task setPixivCookieAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
-        {
-            string cookie = message.splitKeyWord(Command.PixivCookie);
-            if (string.IsNullOrWhiteSpace(cookie))
-            {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用${Command.PixivCookie} + cookie形式发送"));
-                return;
-            }
-
-            WebsitePO website = new WebsiteBusiness().updateWebsite(WebsiteType.Pixiv, cookie, BotConfig.SetuConfig.Pixiv.CookieExpireDay);
-            SettingHelper.loadWebsiteAndCookie();
-            e.SendMessageWithAt(string.Format("cookie更新完毕,过期时间为{0}", website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss")));
-            return;
-        }
-
+        /*
         public void setBilibiliCookie(CQGroupMessageEventArgs e)
         {
             string cookie = StringHelper.splitKeyWord(e.Message.Text.Trim(), "bilicookie");
@@ -743,6 +731,7 @@ namespace Theresa3rd_Bot.Business
             headerDic.Add("x-user-id", Setting.Pixiv.XUserId);
             return headerDic;
         }
+        */
         
 
     }

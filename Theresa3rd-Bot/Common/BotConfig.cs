@@ -1,4 +1,5 @@
 ﻿using Theresa3rd_Bot.Model.Config;
+using Theresa3rd_Bot.Model.PO;
 
 namespace Theresa3rd_Bot.Common
 {
@@ -20,5 +21,9 @@ namespace Theresa3rd_Bot.Common
 
         public static SubscribeConfig SubscribeConfig = new SubscribeConfig();
 
+
+        public static WebsitePO PixivWebsite = new WebsitePO();
+
+        public static WebsitePO BiliWebsite = new WebsitePO();
     }
 }

@@ -1,6 +1,9 @@
 ﻿namespace Theresa3rd_Bot.Type
 {
-    public class WebsiteType
+    public enum WebsiteType
     {
+        Other = 0,
+        Pixiv = 1,
+        Bili = 2
     }
 }

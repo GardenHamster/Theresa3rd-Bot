@@ -4,7 +4,7 @@
     {
         public static readonly string PixivCookie = "pixivcookie";
 
-
+        public static readonly string BiliCookie = "bilicookie";
 
 
     }

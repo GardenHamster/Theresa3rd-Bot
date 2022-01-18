@@ -32,28 +32,41 @@ namespace Theresa3rd_Bot.Event
             string prefix = BotConfig.GeneralConfig.Prefix;
             List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
             List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
-            string messageStr = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
+            string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
             string instructions = plainList.FirstOrDefault();
             bool isInstruct = instructions != null && prefix != null && prefix.Trim().Length > 0 && instructions.StartsWith(prefix);
             if (isInstruct) instructions = instructions.Remove(0, prefix.Length);
 
-
             if (instructions.StartsWith(Command.PixivCookie))
             {
-                string cookie = messageStr.splitKeyWord(Command.PixivCookie);
-                if (string.IsNullOrWhiteSpace(cookie))
-                {
-                    await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用${Command.PixivCookie} + cookie形式发送"));
-                    return;
-                }
-                WebsitePO website = websiteBusiness.updateWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv), cookie, BotConfig.SetuConfig.Pixiv.CookieExpireMin);
-                ConfigHelper.loadWebsite();
-                string expireDate = website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss");
-                await session.SendFriendMessageAsync(memberId, new PlainMessage($"cookie更新完毕,过期时间为${expireDate}"));
+                await UpdateCookieAsync(session, args, WebsiteType.Pixiv, Command.PixivCookie, message, BotConfig.SetuConfig.Pixiv.CookieExpire);
+                return;
+            }
+
+            if (instructions.StartsWith(Command.BiliCookie))
+            {
+                await UpdateCookieAsync(session, args, WebsiteType.Bili, Command.BiliCookie, message, 60);
                 return;
             }
 
         }
+
+        private async Task UpdateCookieAsync(IMiraiHttpSession session, IFriendMessageEventArgs args, WebsiteType websiteType, string command, string message, int cookieExpire)
+        {
+            string cookie = message.splitKeyWord(command);
+            if (string.IsNullOrWhiteSpace(cookie))
+            {
+                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用${command} + cookie形式发送"));
+                return;
+            }
+            WebsitePO website = websiteBusiness.updateWebsite(Enum.GetName(typeof(WebsiteType), websiteType), cookie, cookieExpire);
+            ConfigHelper.loadWebsite();
+            string expireDate = website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss");
+            await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie更新完毕,过期时间为{expireDate}"));
+        }
+
+
+
 
 
     }

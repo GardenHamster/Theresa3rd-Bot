@@ -36,7 +36,7 @@ namespace Theresa3rd_Bot.Model.Config
 
         public double MinBookRate { get; set; }
 
-        public int CookieExpireMin { get; set; }
+        public int CookieExpire { get; set; }
 
         public string CookieExpireMsg { get; set; }
 

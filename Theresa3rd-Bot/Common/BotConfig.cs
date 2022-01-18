@@ -3,7 +3,7 @@ using Theresa3rd_Bot.Model.PO;
 
 namespace Theresa3rd_Bot.Common
 {
-    public class BotConfig
+    public static class BotConfig
     {
         public static DBConfig DBConfig = new DBConfig();
 
@@ -21,9 +21,9 @@ namespace Theresa3rd_Bot.Common
 
         public static SubscribeConfig SubscribeConfig = new SubscribeConfig();
 
+        public static WebsiteConfig WebsiteConfig = new WebsiteConfig();
 
-        public static WebsitePO PixivWebsite = new WebsitePO();
 
-        public static WebsitePO BiliWebsite = new WebsitePO();
+
     }
 }

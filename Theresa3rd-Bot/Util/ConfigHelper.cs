@@ -16,8 +16,8 @@ namespace Theresa3rd_Bot.Util
                 WebsiteBusiness websiteBusiness = new WebsiteBusiness();
                 WebsitePO pixivWebsite = new WebsiteBusiness().getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv));
                 WebsitePO biliWebsite = new WebsiteBusiness().getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Bili));
-                BotConfig.PixivWebsite = pixivWebsite;
-                BotConfig.BiliWebsite = biliWebsite;
+                BotConfig.WebsiteConfig.Pixiv = pixivWebsite;
+                BotConfig.WebsiteConfig.Bili = biliWebsite;
                 LogHelper.Info("加载cookie完毕");
             }
             catch (Exception ex)
@@ -25,6 +25,7 @@ namespace Theresa3rd_Bot.Util
                 LogHelper.Error(ex, "加载cookie失败");
             }
         }
+
         /*
         public static void loadSubscribeTask()
         {

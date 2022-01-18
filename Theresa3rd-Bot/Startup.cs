@@ -48,6 +48,9 @@ namespace Theresa3rd_Bot
             new DBClient().CreateDB();
             LogHelper.Info($"数据库初始化完毕...");
 
+            ConfigHelper.loadWebsite();
+
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

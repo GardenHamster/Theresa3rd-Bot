@@ -2,6 +2,8 @@
 {
     public enum CommandType
     {
-        其他=0
+        Other = 0,
+        SetPixivCookie = 1,
+        SetBiliCookie = 2
     }
 }

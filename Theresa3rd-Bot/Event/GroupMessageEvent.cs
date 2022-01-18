@@ -7,7 +7,9 @@ using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Util;
@@ -17,6 +19,15 @@ namespace Theresa3rd_Bot.Event
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IGroupMessageEventArgs, GroupMessageEventArgs>))]
     public class GroupMessageEvent : IMiraiHttpMessageHandler<IGroupMessageEventArgs>
     {
+        private SubscribeBusiness subscribeBusiness;
+        private RequestRecordBusiness requestRecordBusiness;
+
+        public GroupMessageEvent()
+        {
+            this.subscribeBusiness = new SubscribeBusiness();
+            this.requestRecordBusiness = new RequestRecordBusiness();
+        }
+
         public async Task HandleMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             try
@@ -30,14 +41,14 @@ namespace Theresa3rd_Bot.Event
                 bool isAt = args.Chain.Where(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber).Any();
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
-                string messageStr = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
+                string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
                 string instructions = plainList.FirstOrDefault();
                 bool isInstruct = instructions != null && prefix != null && prefix.Trim().Length > 0 && instructions.StartsWith(prefix);
                 if (isInstruct) instructions = instructions.Remove(0, prefix.Length);
 
-                if (isAt == false && isInstruct == false) //没有@也不是一条指令
+                if (isAt == false && isInstruct == false)//没有@也不是一条指令
                 {
-                    if (RepeatCache.CheckCanRepeat(groupId, botId, memberId, messageStr))
+                    if (RepeatCache.CheckCanRepeat(groupId, botId, memberId, message))
                     {
                         IChatMessage[] repeatChain = args.Chain.Length > 1 ? args.Chain.Skip(1).ToArray() : new IChatMessage[0];
                         await session.SendGroupMessageAsync(args.Sender.Group.Id, repeatChain);//复读机
@@ -45,12 +56,26 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                if (instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.AddCommand))
+                {
+                    await subscribeBusiness.subscribePixivUserAsync(session, args, message);
+                    return;
+                }
+
+                if (instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.RmCommand))
+                {
+                    await subscribeBusiness.cancleSubscribePixivUserAsync(session, args, message);
+                    return;
+                }
+
                 if (instructions.StartsWith("test"))
                 {
                     IMessageChainBuilder builder = session.GetMessageChainBuilder();
-                    builder.AddAtMessage(args.Sender.Id);
+                    //builder.AddAtMessage(args.Sender.Id);
                     builder.AddPlainMessage("Hello World!");
-                    await session.SendGroupMessageAsync(args.Sender.Group.Id, builder);
+                    int msgId = await session.SendGroupMessageAsync(args.Sender.Group.Id, builder);
+                    Thread.Sleep(1000);
+                    await session.RevokeMessageAsync(msgId);
                     return;
                 }
             }

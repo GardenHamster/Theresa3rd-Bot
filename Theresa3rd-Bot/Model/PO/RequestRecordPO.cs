@@ -16,6 +16,9 @@ namespace Theresa3rd_Bot.Model.PO
         [SugarColumn(IsNullable = false, ColumnDescription = "指令类型")]
         public CommandType CommandType { get; set; }
 
+        [SugarColumn(IsNullable = false, Length = 50, ColumnDescription = "指令")]
+        public string Command { get; set; }
+
         [SugarColumn(IsNullable = false, Length = 100, ColumnDescription = "消息记录")]
         public string SendWord { get; set; }
 

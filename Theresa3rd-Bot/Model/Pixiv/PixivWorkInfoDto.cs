@@ -51,10 +51,11 @@ namespace Theresa3rd_Bot.Model.Pixiv
             return tags.tags.Where(o => o.tag == "うごイラ" || o.tag == "动图").FirstOrDefault() != null;
         }
 
-        //public bool hasBanTag()
-        //{
-        //    return tags.tags.Where(o => Setting.Pixiv.BanTag.Contains(o.tag.ToUpper())).FirstOrDefault() != null;
-        //}
+        public bool hasBanTag()
+        {
+            //return tags.tags.Where(o => Setting.Pixiv.BanTag.Contains(o.tag.ToUpper())).FirstOrDefault() != null;
+            return false;
+        }
 
     }
 

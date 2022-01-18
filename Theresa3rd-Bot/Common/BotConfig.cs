@@ -1,5 +1,8 @@
-﻿using Theresa3rd_Bot.Model.Config;
+﻿using System.Collections.Generic;
+using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Model.PO;
+using Theresa3rd_Bot.Model.Subscribe;
+using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Common
 {
@@ -19,11 +22,16 @@ namespace Theresa3rd_Bot.Common
 
         public static SetuConfig SetuConfig = new SetuConfig();
 
+        public static SaucenaoConfig SaucenaoConfig = new SaucenaoConfig();
+
         public static SubscribeConfig SubscribeConfig = new SubscribeConfig();
 
         public static WebsiteConfig WebsiteConfig = new WebsiteConfig();
 
-
+        /// <summary>
+        /// 订阅任务
+        /// </summary>
+        public static Dictionary<SubscribeType, List<SubscribeTask>> SubscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
 
     }
 }

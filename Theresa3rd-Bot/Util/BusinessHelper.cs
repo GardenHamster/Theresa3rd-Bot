@@ -1,5 +1,7 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -40,12 +42,27 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 检查pixiv cookie是否已经过期
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public static async Task<bool> CheckPixivCookieExpireAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            if (DateTime.Now <= BotConfig.WebsiteConfig.Pixiv.CookieExpireDate) return false;
+            string cookieExpireMsg = BotConfig.SetuConfig?.Pixiv?.CookieExpireMsg ?? "";
+            if (string.IsNullOrWhiteSpace(cookieExpireMsg)) cookieExpireMsg = "cookie过期了，让管理员更新cookie吧~";
+            List<IChatMessage> chatList = session.SplitToChainAsync(cookieExpireMsg).Result;
+            await session.SendMessageWithAtAsync(args, chatList);
+            return true;
+        }
+
+        /// <summary>
         /// 将模版转换为消息链
         /// </summary>
         /// <param name="session"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static async Task<List<IChatMessage>> SplitToChainAsync(IMiraiHttpSession session,string template)
+        public static async Task<List<IChatMessage>> SplitToChainAsync(this IMiraiHttpSession session,string template)
         {
             List<IChatMessage> chatMessages = new List<IChatMessage>();
             List<string> splitList = SplitImageCode(template);
@@ -71,7 +88,7 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static List<string> SplitImageCode(string template)
+        public static List<string> SplitImageCode(this string template)
         {
             if (string.IsNullOrEmpty(template)) return new List<string>();
             string[] textArr = Regex.Split(template, ImageCodeRegex);

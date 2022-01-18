@@ -34,6 +34,13 @@ namespace Theresa3rd_Bot.Model.PO
         [SugarColumn(IsNullable = false, ColumnDescription = "添加时间")]
         public DateTime CreateDate { get; set; }
 
+        public SubscribeRecordPO(int subscribeId)
+        {
+            this.Describe = "";
+            this.SubscribeId = subscribeId;
+            this.CreateDate = DateTime.Now;
+        }
+
 
     }
 }

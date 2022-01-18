@@ -17,6 +17,8 @@ namespace Theresa3rd_Bot.Model.Config
 
         public SetuConfig Setu { get; set; }
 
+        public SaucenaoConfig Saucenao { get; set; }
+
         public SubscribeConfig Subscribe { get; set; }
     }
 

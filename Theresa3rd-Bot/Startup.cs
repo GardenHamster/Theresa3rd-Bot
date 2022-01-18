@@ -49,6 +49,7 @@ namespace Theresa3rd_Bot
             LogHelper.Info($"数据库初始化完毕...");
 
             ConfigHelper.loadWebsite();
+            ConfigHelper.loadSubscribeTask();
 
 
             services.AddControllers();
@@ -105,6 +106,7 @@ namespace Theresa3rd_Bot
             BotConfig.WelcomeConfig = botConfig.Welcome;
             BotConfig.ReminderConfig = botConfig.Reminder;
             BotConfig.SetuConfig = botConfig.Setu;
+            BotConfig.SaucenaoConfig = botConfig.Saucenao;
             BotConfig.SubscribeConfig = botConfig.Subscribe;
         }
 

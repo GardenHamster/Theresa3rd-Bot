@@ -20,5 +20,6 @@ namespace Theresa3rd_Bot.Dao
             return Db.Queryable<RequestRecordPO>().Where(o => o.GroupId == groupId && o.MemberId == memberId && o.CommandType == commandType).OrderBy(o => o.CreateDate, SqlSugar.OrderByType.Desc).First();
         }
 
+
     }
 }

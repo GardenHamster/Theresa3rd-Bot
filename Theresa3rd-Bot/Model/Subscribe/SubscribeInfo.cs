@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Model.Subscribe
 {
@@ -10,8 +11,8 @@ namespace Theresa3rd_Bot.Model.Subscribe
     {
         public int SubscribeId { get; set; }
         public string SubscribeCode { get; set; }
-        public int SubscribeType { get; set; }
-        public int SubscribeSubType { get; set; }
+        public SubscribeType SubscribeType { get; set; }
+        public SubscribeSubType SubscribeSubType { get; set; }
         public string SubscribeName { get; set; }
         public string SubscribeDescription { get; set; }
         public long GroupId { get; set; }

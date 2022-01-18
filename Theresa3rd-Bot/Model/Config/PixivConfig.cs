@@ -14,6 +14,8 @@ namespace Theresa3rd_Bot.Model.Config
 
         public string ErrorMsg { get; set; }
 
+        public string DownErrorImg { get; set; }
+        
         public bool CustomEnable { get; set; }
 
         public string CustomDisableMsg { get; set; }
@@ -25,10 +27,6 @@ namespace Theresa3rd_Bot.Model.Config
         public string ProcessingMag { get; set; }
 
         public string Template { get; set; }
-
-        public int GroupCD { get; set; }
-
-        public int MemberCD { get; set; }
 
         public int MaxDaily { get; set; }
 

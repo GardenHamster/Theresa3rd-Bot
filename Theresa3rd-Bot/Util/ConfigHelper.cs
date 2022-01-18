@@ -18,7 +18,7 @@ namespace Theresa3rd_Bot.Util
                 WebsitePO biliWebsite = new WebsiteBusiness().getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Bili));
                 BotConfig.WebsiteConfig.Pixiv = pixivWebsite;
                 BotConfig.WebsiteConfig.Bili = biliWebsite;
-                LogHelper.Info("加载cookie完毕");
+                LogHelper.Info("网站cookie加载完成...");
             }
             catch (Exception ex)
             {
@@ -26,20 +26,21 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
-        /*
+        
         public static void loadSubscribeTask()
         {
             try
             {
-                Setting.Subscribe.SubscribeTaskMap = new SubscribeController().getSubscribeTask();
-                CQHelper.CQLog.InfoSuccess("加载订阅任务完成");
+                BotConfig.SubscribeTaskMap = new SubscribeBusiness().getSubscribeTask();
+                LogHelper.Info("订阅任务加载完成...");
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex,"加载订阅任务失败");
+                LogHelper.Error(ex, "订阅任务加载失败");
             }
         }
 
+        /*
         public static void loadBanWord()
         {
             try

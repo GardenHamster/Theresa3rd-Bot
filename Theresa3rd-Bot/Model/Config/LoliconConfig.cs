@@ -18,10 +18,6 @@
 
         public string Template { get; set; }
 
-        public int GroupCD { get; set; }
-
-        public int MemberCD { get; set; }
-
         public int MaxDaily { get; set; }
 
     }

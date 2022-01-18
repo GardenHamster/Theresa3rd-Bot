@@ -18,7 +18,5 @@
 
         public string Template { get; set; }
 
-        public int MaxDaily { get; set; }
-
     }
 }

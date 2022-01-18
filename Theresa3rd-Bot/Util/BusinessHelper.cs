@@ -56,6 +56,34 @@ namespace Theresa3rd_Bot.Util
             return true;
         }
 
+        public static bool CheckSTBanWord(this IMiraiHttpSession session, IGroupMessageEventArgs args,string message)
+        {
+            //string message = e.Message.Text.Trim().ToLower();
+            //if (message.Contains("r18") || message.Contains("r17")) return true;
+            //string banWord = StringHelper.isContainsWord(e.Message.Text, Setting.Word.BanSTKeyWord);
+            //return string.IsNullOrEmpty(banWord) == false;
+            return false;
+        }
+
+        public static bool CheckSTAllowCustom(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            //if (Setting.Permissions.STCustomGroups.Contains(e.FromGroup.Id)) return true;
+            //e.SendMessageWithAt(" 自定义涩图功能暂时关闭，请直接使用 #涩图 命令");
+            //return false;
+            return true;
+        }
+
+        public static int GetSTLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            //if (Setting.Permissions.LimitlessGroups.Contains(e.FromGroup.Id)) return Setting.Robot.MaxSTUseOneDay;
+            //FunctionRecordBusiness functionRecordBusiness = new FunctionRecordBusiness();
+            //int[] functionTypeArr = new int[] { FunctionType.PixivicST.TypeId, FunctionType.PixivGeneralST.TypeId, FunctionType.PixivR18ST.TypeId };
+            //int todayUseCount = functionRecordBusiness.getUsedCountToday(e.FromGroup.Id, e.FromQQ.Id, functionTypeArr);
+            //int leftToday = Setting.Robot.MaxSTUseOneDay - todayUseCount - 1;
+            //return leftToday < 0 ? 0 : leftToday;
+            return BotConfig.SetuConfig.MaxDaily;
+        }
+
         /// <summary>
         /// 将模版转换为消息链
         /// </summary>

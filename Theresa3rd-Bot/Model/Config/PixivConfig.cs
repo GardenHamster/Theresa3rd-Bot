@@ -28,8 +28,6 @@ namespace Theresa3rd_Bot.Model.Config
 
         public string Template { get; set; }
 
-        public int MaxDaily { get; set; }
-
         public double MinBookmark { get; set; }
 
         public double MinBookRate { get; set; }

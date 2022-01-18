@@ -8,6 +8,8 @@ namespace Theresa3rd_Bot.Model.Config
 
         public int MemberCD { get; set; }
 
+        public int MaxDaily { get; set; }
+
         public List<long> NoneCDGroups { get; set; }
 
         public List<long> NoneCDMembers { get; set; }

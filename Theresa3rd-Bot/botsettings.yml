@@ -39,6 +39,7 @@ Setu:                                                                   #色图�
     MemberCD:               0                                           #独立CD(秒)，单个群员使用命令后需要等待的CD
     NoneCDGroups:           []                                          #0CD群
     NoneCDMembers:          []                                          #0CD群员
+    MaxDaily:               0                                           #每人每日最大使用次数,0表示无限制
     Lolicon:                                                            #Lolicon图床https://api.lolicon.app/#/setu
         Enable:             true                                        #是否启用
         Command:            '瑟图'                                      #命令，用法：#瑟图合法萝莉
@@ -48,7 +49,6 @@ Setu:                                                                   #色图�
         CustomDisableMsg:   '自定义功能已关闭！'                          #禁用自定义时返回的消息
         ProcessingMag:      '正在使用色图探测器探测你要的色图...'           #开始查找前返回的消息
         Template:           ''
-        MaxDaily:           0                                           #每人每日最大使用次数,0表示无限制
     Pixiv:                                                              #Pixiv图床https://www.pixiv.net
         Enable:             true                                        #是否启用
         Command:            '涩图'                                      #命令，用法：#涩图 或 #涩图可可萝
@@ -66,7 +66,6 @@ Setu:                                                                   #色图�
         MinBookRate:        0.05                                        #最低收藏率，收藏数/浏览数(标签搜索时试用)
         CookieExpire:       21600                                       #cookie失效时间(分钟)，超过该天数后需要使用命令更新cookie，建议cookie每15天更新一次
         CookieExpireMsg:    'emmmm,cookie过期了,请艾特管理员更新cookie'   #cookie过期时返回的消息
-        MaxDaily:           0                                           #每人每日最大使用次数,0表示无限制
                             
 Saucenao:                                                               #Saucenao以图搜图，查找原图功能
     Enable:                 true                                            #是否启用

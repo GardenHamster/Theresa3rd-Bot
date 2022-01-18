@@ -1,9 +1,11 @@
-﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+﻿using AnimatedGif;
+using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -88,7 +90,7 @@ namespace Theresa3rd_Bot.Business
         }
 
 
-        public void sendGeneralPixivImage(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        public async Task sendGeneralPixivImageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
         {
             try
             {
@@ -96,9 +98,9 @@ namespace Theresa3rd_Bot.Business
                 CoolingCache.setHanding(args.Sender.Group.Id, args.Sender.Id);
                 if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
                 string[] splitArr = message.Split(new string[] { "涩图" }, StringSplitOptions.RemoveEmptyEntries);
-                if (splitArr.Length > 1 && BusinessHelper.checkSTBanWord(e))
+                if (splitArr.Length > 1 && BusinessHelper.CheckSTBanWord(session,args,message))
                 {
-                    e.SendMessageWithAt(" 禁止查找这个类型的涩图哦，换个标签试试吧~");
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 禁止查找这个类型的涩图哦，换个标签试试吧~"));
                     return;
                 }
 
@@ -112,23 +114,22 @@ namespace Theresa3rd_Bot.Business
                 }
                 else if (string.IsNullOrEmpty(tagName))
                 {
-                    pixivWorkInfoDto = getRandomWorkInFollow(e);//获取随机一个关注的画师的作品
+                    pixivWorkInfoDto = getRandomWorkInFollow();//获取随机一个关注的画师的作品
                 }
                 else
                 {
-                    if (BusinessHelper.isGroupAllowCustomST(e) == false) return;
-                    pixivWorkInfoDto = getRandomWork(e, tagName, false);//获取随机一个作品
+                    if (BusinessHelper.CheckSTAllowCustom(session, args) == false) return;
+                    pixivWorkInfoDto = getRandomWork(tagName, false);//获取随机一个作品
                 }
 
                 if (pixivWorkInfoDto == null)
                 {
-                    e.SendMessageWithAt(CQApi.CQCode_Image("face/face06.gif").ToSendString() + "找不到这类型的图片或者图片收藏比过低，换个标签试试吧~");
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 找不到这类型的图片或者图片收藏比过低，换个标签试试吧~"));
                     return;
                 }
 
-                int todayLeftCount = BusinessHelper.getSTLeftUseToday(e, 1);
+                int todayLeftCount = BusinessHelper.GetSTLeftToday(session, args);
                 FileInfo fileInfo = downImg(pixivWorkInfoDto);
-                string atStr = CQApi.CQCode_At(e.FromQQ.Id).ToSendString();
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
                 string warnMsg = string.Format("{0} {1}秒后再来哦，今天剩余使用次数{2}次，本消息将在{3}秒后撤回，尽快保存哦\r\n", atStr, Setting.Robot.GetSTInterval, todayLeftCount, Setting.Robot.RemovePixivSTInterval);
                 string workInfoStr = getWorkInfoStr(pixivWorkInfo, fileInfo, DateTimeHelper.GetSecondDiff(startDateTime, DateTime.Now));
@@ -193,15 +194,15 @@ namespace Theresa3rd_Bot.Business
         {
             int loopUserTimes = 3;
             int loopWorkTimes = 5;
-            TypeModel subscribeType = SubscribeSourceType.PixivUser;
-            if (Setting.Subscribe.SubscribeTaskMap.ContainsKey(subscribeType.TypeId) == false) return null;
-            List<SubscribeTask> subscribeTaskList = Setting.Subscribe.SubscribeTaskMap[subscribeType.TypeId];
+            SubscribeType subscribeType = SubscribeType.P站画师;
+            if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return null;
+            List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];
             if (subscribeTaskList == null || subscribeTaskList.Count == 0) return null;
             for (int i = 0; i < loopUserTimes; i++)
             {
                 int randomUserIndex = RandomHelper.getRandomBetween(0, subscribeTaskList.Count - 1);
                 SubscribeTask subscribeTask = subscribeTaskList[randomUserIndex];
-                PixivUserWorkInfoDto pixivWorkInfo = getPixivUserWorkInfoDto(subscribeTask.SubscribeCode);
+                PixivUserWorkInfoDto pixivWorkInfo = getPixivUserWorkInfoDto(subscribeTask.SubscribeInfo.SubscribeCode);
                 if (pixivWorkInfo == null) continue;
                 Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
                 if (illusts == null || illusts.Count == 0) continue;
@@ -275,7 +276,7 @@ namespace Theresa3rd_Bot.Business
             for (int i = 0; i < taskList.Length; i++)
             {
                 List<PixivIllust> illustList = taskList[i];
-                tasks[i] = Task.Factory.StartNew(() => getPixivWorkInfoMethod(e, illustList, isScreen, isR18));
+                tasks[i] = Task.Factory.StartNew(() => getPixivWorkInfoMethod(illustList, isScreen, isR18));
                 Thread.Sleep(RandomHelper.getRandomBetween(500, 1000));//将每条线程的间隔错开
             }
             Task.WaitAll(tasks);

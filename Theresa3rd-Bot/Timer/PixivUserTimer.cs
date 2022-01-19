@@ -1,4 +1,12 @@
-﻿using Theresa3rd_Bot.Common;
+﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Theresa3rd_Bot.Business;
+using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Subscribe;
+using Theresa3rd_Bot.Type;
+using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Timer
 {
@@ -17,33 +25,66 @@ namespace Theresa3rd_Bot.Timer
 
         private static void HandlerMethod(object source, System.Timers.ElapsedEventArgs e)
         {
-            TypeModel subscribeType = SubscribeSourceType.PixivUser;
-            if (Setting.Subscribe.SubscribeTaskMap.ContainsKey(subscribeType.TypeId) == false) return;
-            List<SubscribeTask> subscribeTaskList = Setting.Subscribe.SubscribeTaskMap[subscribeType.TypeId];
+            try
+            {
+                timer.Enabled = false;
+                SubscribeMethodAsync(source,e).Wait();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "PixivUserTimer.HandlerMethod方法异常");
+            }
+            finally
+            {
+                timer.Enabled = true;
+            }
+        }
+
+        private static async Task SubscribeMethodAsync(object source, System.Timers.ElapsedEventArgs e)
+        {
+            PixivBusiness pixivBusiness = new PixivBusiness();
+            SubscribeType subscribeType = SubscribeType.P站画师;
+            if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return;
+            List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];
             if (subscribeTaskList == null || subscribeTaskList.Count == 0) return;
             foreach (SubscribeTask subscribeTask in subscribeTaskList)
             {
                 try
                 {
-                    List<PixivSubscribe> pixivSubscribeList = pixivBusiness.getPixivUserNewestWork(subscribeTask.SubscribeCode, subscribeTask.SubscribeId, Setting.Subscribe.PixivEachRead);
+                    List<PixivSubscribe> pixivSubscribeList = pixivBusiness.getPixivUserNewestWork(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
-                    sendGroupPixivUserSubscribe(subscribeTask, pixivSubscribeList);
+                    await sendGroupSubscribeAsync(subscribeTask, pixivSubscribeList);
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.LogError(ex);
-                    string errorMessage = string.Format("pixiv用户{0}订阅失败", subscribeTask.SubscribeCode);
-                    CQLog.Error(errorMessage, ex.Message, ex.StackTrace);
-                    BusinessHelper.sendErrorMessage(CQApi, ex, errorMessage);
+                    LogHelper.Error(ex,$"获取pixiv用户[{subscribeTask.SubscribeInfo.SubscribeCode}]订阅失败");
                 }
                 finally
                 {
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000);
                 }
             }
         }
 
-
+        private static async Task sendGroupSubscribeAsync(SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList)
+        {
+            foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
+            {
+                if (pixivSubscribe.PixivWorkInfoDto.body.isR18()) continue;
+                if (pixivSubscribe.PixivWorkInfoDto.body.createDate < DateTime.Now.AddMinutes(-1 * BotConfig.SubscribeConfig.PixivUser.ShelfLife)) continue;
+                foreach (long groupId in subscribeTask.GroupIdList)
+                {
+                    List<IChatMessage> chailList = new List<IChatMessage>();
+                    chailList.Add(new PlainMessage($"pixiv画师[{subscribeTask.SubscribeInfo.SubscribeName}]发布了新作品："));
+                    chailList.Add(new PlainMessage(pixivSubscribe.WorkInfo));
+                    if (pixivSubscribe.WorkFileInfo != null)
+                    {
+                        chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Group, pixivSubscribe.WorkFileInfo.FullName));
+                    }
+                    await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
+                }
+            }
+        }
 
 
 

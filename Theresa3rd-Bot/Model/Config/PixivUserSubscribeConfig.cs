@@ -4,6 +4,6 @@
     {
         public string DownErrorImg { get; set; }
 
-
+        public int ShelfLife { get; set; }
     }
 }

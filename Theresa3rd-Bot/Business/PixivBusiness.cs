@@ -174,7 +174,7 @@ namespace Theresa3rd_Bot.Business
                 PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
                 if (pixivSubscribe.PixivWorkInfoDto.body.isR18()) return new List<IChatMessage> { new PlainMessage(" 该作品为R-18作品，不显示相关内容") };
                 chatList.Add(new PlainMessage($"pixiv画师[{pixivSubscribe.PixivWorkInfoDto.body.userName}]的最新作品："));
-                chatList.Add(new PlainMessage($"{pixivSubscribe.WorkInfo}"));
+                chatList.Add(new PlainMessage(pixivSubscribe.WorkInfo));
                 if (pixivSubscribe.WorkFileInfo == null)
                 {
                     chatList.AddRange(session.SplitToChainAsync(BotConfig.SetuConfig.Pixiv.DownErrorImg).Result);

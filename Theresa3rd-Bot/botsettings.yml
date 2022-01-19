@@ -91,6 +91,7 @@ Subscribe:                                                              #订阅�
         RmCommand:          '退订画师'                                   #退订命令,需要管理员执行
         Template:           ''
         ScanInterval:       1800                                        #扫描间隔(秒)
+        ShelfLife:          1440                                        #保质期(分钟),超过保质期将不会推送
     PixivTag:                                                           #p站标签
         Enable:             true                                        #是否启用
         AddCommand:         '订阅标签'                                   #订阅命令,需要管理员执行

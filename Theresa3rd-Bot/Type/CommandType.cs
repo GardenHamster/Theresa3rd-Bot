@@ -3,7 +3,8 @@
     public enum CommandType
     {
         Other = 0,
-        SetPixivCookie = 1,
-        SetBiliCookie = 2
+        SetCookie = 1,
+        Subscribe = 2,
+        Setu = 3,
     }
 }

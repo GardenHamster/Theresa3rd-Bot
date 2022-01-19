@@ -81,7 +81,7 @@ namespace Theresa3rd_Bot
             });
 
             MiraiTask = MiraiHelper.ConnectMirai();
-            TimerGroup.init();
+            TimerManager.init();
         }
 
         /// <summary>

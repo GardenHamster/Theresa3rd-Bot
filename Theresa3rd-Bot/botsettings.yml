@@ -27,6 +27,7 @@ Reminder:                                                               #定时�
     Enable:                 true                                        #是否启用
     Timers:                                                             #定时列表
         - Cron:             '0 0 18 ? * WED,SUN'                        #cron表达式
+          Name:             '深渊结算提醒'                               #定时器名称
           Groups:           [284196625]                                 #群号
           AtAll:            false                                       #是否艾特群体
           AtMembers:        []                                          #艾特群员QQ号列表
@@ -46,7 +47,7 @@ Setu:                                                                   #色图�
         Enable:             true                                        #是否启用
         Command:            '瑟图'                                      #命令，用法：#瑟图合法萝莉
         DisableMsg:         '不可以色色！'                               #功能未启用时返回的消息
-        ErrorMsg:           '申请色色失败！请重新尝试'                     #发生错误时返回的消息
+        ErrorMsg:           '申请色色失败！请重新尝试'                    #发生错误时返回的消息
         CustomEnable:       true                                        #是否允许查找自定义涩图，如:#涩图可可萝
         CustomDisableMsg:   '自定义功能已关闭！'                          #禁用自定义时返回的消息
         ProcessingMag:      '正在使用色图探测器探测你要的色图...'           #开始查找前返回的消息

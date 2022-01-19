@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Event
@@ -61,18 +62,21 @@ namespace Theresa3rd_Bot.Event
                 if (instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.AddCommand))
                 {
                     await subscribeBusiness.subscribePixivUserAsync(session, args, message);
+                    requestRecordBusiness.addRecord(args, CommandType.Subscribe, message);
                     return;
                 }
 
                 if (instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.RmCommand))
                 {
                     await subscribeBusiness.cancleSubscribePixivUserAsync(session, args, message);
+                    requestRecordBusiness.addRecord(args, CommandType.Subscribe, message);
                     return;
                 }
 
                 if (instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
                 {
                     await pixivBusiness.sendGeneralPixivImageAsync(session, args, message);
+                    requestRecordBusiness.addRecord(args, CommandType.Setu, message);
                     return;
                 }
 

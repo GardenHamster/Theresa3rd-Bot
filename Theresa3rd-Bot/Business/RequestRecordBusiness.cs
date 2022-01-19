@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mirai.CSharp.HttpApi.Models.EventArgs;
+using System;
 using Theresa3rd_Bot.Dao;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Type;
@@ -24,17 +25,27 @@ namespace Theresa3rd_Bot.Business
             lock (this) return requestRecordDao.getLastRecord(groupId, memberId, commandType);
         }
 
-        public RequestRecordPO addRecord(long groupId, long memberId, CommandType commandType, string command, string sendWord)
+        public RequestRecordPO addRecord(IGroupMessageEventArgs args, CommandType commandType, string sendWord)
         {
-            if (command == null) command = "";
+            long groupId = args.Sender.Group.Id;
+            long memberId = args.Sender.Id;
+            return addRecord(groupId, memberId, commandType, sendWord);
+        }
+
+        public RequestRecordPO addRecord(IFriendMessageEventArgs args, CommandType commandType, string sendWord)
+        {
+            long memberId = args.Sender.Id;
+            return addRecord(0, memberId, commandType, sendWord);
+        }
+
+        public RequestRecordPO addRecord(long groupId, long memberId, CommandType commandType, string sendWord)
+        {
             if (sendWord == null) sendWord = "";
-            if (command.Length > 50) sendWord = command.Substring(0, 50);
             if (sendWord.Length > 100) sendWord = sendWord.Substring(0, 100);
             RequestRecordPO requestRecord = new RequestRecordPO();
             requestRecord.GroupId = groupId;
             requestRecord.MemberId = memberId;
             requestRecord.CommandType = commandType;
-            requestRecord.Command = command;
             requestRecord.SendWord = sendWord;
             requestRecord.CreateDate = DateTime.Now;
             return requestRecordDao.Insert(requestRecord);

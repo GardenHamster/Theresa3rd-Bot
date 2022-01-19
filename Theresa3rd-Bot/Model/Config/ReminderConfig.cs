@@ -14,6 +14,8 @@ namespace Theresa3rd_Bot.Model.Config
 
     public class ReminderTimer
     {
+        public string Name { get; set; }
+
         public string Cron { get; set; }
 
         public List<long> Groups { get; set; }

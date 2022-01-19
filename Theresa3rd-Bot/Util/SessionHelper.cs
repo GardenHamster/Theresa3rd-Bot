@@ -21,5 +21,12 @@ namespace Theresa3rd_Bot.Util
             return await session.SendGroupMessageAsync(args.Sender.Group.Id, chailList.ToArray());
         }
 
+        public static async Task<int> SendTemplateWithAtAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, string template, string defaultmsg)
+        {
+            if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
+            List<IChatMessage> chatList = session.SplitToChainAsync(template).Result;
+            return await session.SendMessageWithAtAsync(args, chatList);
+        }
+
     }
 }

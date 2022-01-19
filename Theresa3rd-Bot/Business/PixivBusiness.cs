@@ -97,7 +97,7 @@ namespace Theresa3rd_Bot.Business
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.setHanding(args.Sender.Group.Id, args.Sender.Id);//请求处理中
                 if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
-                string[] splitArr = message.Split(new string[] { "涩图" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] splitArr = message.Split(new string[] { BotConfig.SetuConfig.Pixiv.Command }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitArr.Length > 1 && BusinessHelper.CheckSTBanWord(session, args, message))
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage($" 禁止查找这个类型的涩图哦，换个标签试试吧~"));
@@ -124,7 +124,8 @@ namespace Theresa3rd_Bot.Business
 
                 if (pixivWorkInfoDto == null)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 找不到这类型的图片或者图片收藏比过低，换个标签试试吧~"));
+                    string template = BotConfig.SetuConfig.Pixiv.NotFoundMsg;
+                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.NotFoundMsg, " 找不到这类型的图片或者收藏比过低，换个标签试试吧~");
                     return;
                 }
 
@@ -154,7 +155,7 @@ namespace Theresa3rd_Bot.Business
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "sendGeneralPixivImageAsync异常");
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 获取图片出错了，再试一次吧~"));
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.ErrorMsg, " 获取图片出错了，再试一次吧~");
             }
             finally
             {

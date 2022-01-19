@@ -42,14 +42,14 @@ namespace Theresa3rd_Bot.Event
             if (instructions.StartsWith(Command.PixivCookie))
             {
                 await UpdateCookieAsync(session, args, WebsiteType.Pixiv, Command.PixivCookie, message, BotConfig.SetuConfig.Pixiv.CookieExpire);
-                requestRecordBusiness.addRecord(0, memberId, CommandType.SetPixivCookie, Command.PixivCookie, message);
+                requestRecordBusiness.addRecord(args, CommandType.SetCookie, message);
                 return;
             }
 
             if (instructions.StartsWith(Command.BiliCookie))
             {
                 await UpdateCookieAsync(session, args, WebsiteType.Bili, Command.BiliCookie, message, 60);
-                requestRecordBusiness.addRecord(0, memberId, CommandType.SetBiliCookie, Command.BiliCookie, message);
+                requestRecordBusiness.addRecord(args, CommandType.SetCookie, message);
                 return;
             }
 

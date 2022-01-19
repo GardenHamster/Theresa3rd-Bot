@@ -40,6 +40,8 @@ Setu:                                                                   #色图�
     NoneCDGroups:           []                                          #0CD群
     NoneCDMembers:          []                                          #0CD群员
     MaxDaily:               0                                           #每人每日最大使用次数,0表示无限制
+    ImgSavePath:            'C:\BotImg\DownImg'                         #图片存放目录
+    RevokeInterval:         0                                           #N秒后撤回,0表示不撤回
     Lolicon:                                                            #Lolicon图床https://api.lolicon.app/#/setu
         Enable:             true                                        #是否启用
         Command:            '瑟图'                                      #命令，用法：#瑟图合法萝莉

@@ -15,7 +15,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getDownImgSavePath()
         {
-            string path = "download";
+            string path = Path.Combine(BotConfig.SetuConfig.ImgSavePath, "download");
             if (Directory.Exists(path) == false) Directory.CreateDirectory(path);
             return path;
         }

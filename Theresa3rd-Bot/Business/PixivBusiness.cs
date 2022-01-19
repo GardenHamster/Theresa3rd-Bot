@@ -95,10 +95,10 @@ namespace Theresa3rd_Bot.Business
             try
             {
                 DateTime startDateTime = DateTime.Now;
-                CoolingCache.setHanding(args.Sender.Group.Id, args.Sender.Id);
+                CoolingCache.setHanding(args.Sender.Group.Id, args.Sender.Id);//请求处理中
                 if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
                 string[] splitArr = message.Split(new string[] { "涩图" }, StringSplitOptions.RemoveEmptyEntries);
-                if (splitArr.Length > 1 && BusinessHelper.CheckSTBanWord(session,args,message))
+                if (splitArr.Length > 1 && BusinessHelper.CheckSTBanWord(session, args, message))
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage($" 禁止查找这个类型的涩图哦，换个标签试试吧~"));
                     return;
@@ -131,28 +131,34 @@ namespace Theresa3rd_Bot.Business
                 int todayLeftCount = BusinessHelper.GetSTLeftToday(session, args);
                 FileInfo fileInfo = downImg(pixivWorkInfoDto);
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
-                string warnMsg = string.Format("{0} {1}秒后再来哦，今天剩余使用次数{2}次，本消息将在{3}秒后撤回，尽快保存哦\r\n", atStr, Setting.Robot.GetSTInterval, todayLeftCount, Setting.Robot.RemovePixivSTInterval);
-                string workInfoStr = getWorkInfoStr(pixivWorkInfo, fileInfo, DateTimeHelper.GetSecondDiff(startDateTime, DateTime.Now));
-                string imgStr = fileInfo == null ? FaceHelper.faceImgFail() : CQApi.CQCode_Image(FilePath.getRelativeDownImgPath(fileInfo.Name)).ToSendString();
-                if (pixivWorkInfoDto.body.isR18()) imgStr = "";
-                string sendMessage = warnMsg + workInfoStr + imgStr;
-                QQMessage qqMessage = e.CQApi.SendGroupMessage(e.FromGroup.Id, new Object[] { sendMessage.ToString() });
-                Thread.Sleep(2000);//防止请求过快被检测
-                e.FromQQ.SendPrivateMessage(workInfoStr + imgStr);
-                CoolingCache.setMemberSTCooling(e.FromGroup.Id, e.FromQQ.Id);
-                new FunctionRecordBusiness().addRecord(e.FromGroup.Id, e.FromQQ.Id, FunctionType.PixivGeneralST.TypeId, message);
-                if (Setting.Permissions.NoRemoveSTGroups.Contains(e.FromGroup.Id)) return;
-                //Thread.Sleep(Setting.Robot.RemovePixivSTInterval * 1000);
-                //e.FromGroup.CQApi.RemoveMessage(qqMessage);
+
+                List<IChatMessage> chailList = new List<IChatMessage>();
+                chailList.Add(new PlainMessage($" {BotConfig.SetuConfig.MemberCD}秒后再来哦，今天剩余使用次数{todayLeftCount}次，本消息将在{3}秒后撤回，尽快保存哦"));
+                chailList.Add(new PlainMessage(getWorkInfoStr(pixivWorkInfo, fileInfo, DateTimeHelper.GetSecondDiff(startDateTime, DateTime.Now))));
+                if (pixivWorkInfoDto.body.isR18() == false && fileInfo != null)
+                {
+                    chailList.Add((IChatMessage)await session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Group, fileInfo.FullName));
+                }
+
+                int groupMsgId = await session.SendMessageWithAtAsync(args, chailList);
+                await Task.Delay(1000);
+
+                int memberMsgId = await session.SendFriendMessageAsync(args.Sender.Id, chailList.ToArray());
+
+                CoolingCache.setMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);//进入CD状态
+
+                if (BotConfig.SetuConfig.RevokeInterval == 0) return;
+                await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
+                await session.RevokeMessageAsync(groupMsgId);
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex);
-                e.SendMessageWithAt(CQApi.CQCode_Image("face/face06.gif").ToSendString() + "获取图片出错了，再试一次吧~");
+                LogHelper.Error(ex, "sendGeneralPixivImageAsync异常");
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 获取图片出错了，再试一次吧~"));
             }
             finally
             {
-                CoolingCache.setHandFinish(e.FromGroup.Id, e.FromQQ.Id);
+                CoolingCache.setHandFinish(args.Sender.Group.Id, args.Sender.Id);//请求处理完成
             }
         }
 
@@ -180,7 +186,7 @@ namespace Theresa3rd_Bot.Business
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex,"获取画师最新作品时出现异常");
+                LogHelper.Error(ex, "获取画师最新作品时出现异常");
                 throw;
             }
         }
@@ -514,11 +520,11 @@ namespace Theresa3rd_Bot.Business
                     Thread.Sleep(100);
                 }
             }
-            string tomcatGifSavePath = FilePath.getGifImgPath();
-            if (Directory.Exists(tomcatGifSavePath) == false) Directory.CreateDirectory(tomcatGifSavePath);
-            string fullTomcatGifSavePath = tomcatGifSavePath + pixivWorkInfo.body.illustId + ".gif";
-            if (File.Exists(fullTomcatGifSavePath)) File.Delete(fullTomcatGifSavePath);
-            File.Copy(fullGifSavePath, fullTomcatGifSavePath);
+            //string tomcatGifSavePath = FilePath.getGifImgPath();
+            //if (Directory.Exists(tomcatGifSavePath) == false) Directory.CreateDirectory(tomcatGifSavePath);
+            //string fullTomcatGifSavePath = tomcatGifSavePath + pixivWorkInfo.body.illustId + ".gif";
+            //if (File.Exists(fullTomcatGifSavePath)) File.Delete(fullTomcatGifSavePath);
+            //File.Copy(fullGifSavePath, fullTomcatGifSavePath);
             return new FileInfo(fullGifSavePath);
         }
 
@@ -548,7 +554,7 @@ namespace Theresa3rd_Bot.Business
             int imgCount = pixivWorkInfo.pageCount;
             int endCount = imgCount > maxShowCount ? maxShowCount : imgCount;
             string LineInfo = string.Format("该作品列表中包含{0}张图片，前{1}张图片链接如下:", imgCount, endCount);
-            if (pixivWorkInfo.isGif()) LinkStr.Append("\r\n" + HttpUrl.getTomcatGifUrl(pixivWorkInfo.illustId));
+            //if (pixivWorkInfo.isGif()) LinkStr.Append("\r\n" + HttpUrl.getTomcatGifUrl(pixivWorkInfo.illustId));
             for (int i = 0; i < endCount; i++)
             {
                 string imgUrl = pixivWorkInfo.urls.original.Replace("https:", "http:").Replace("i.pximg.net", "pixiv2.theresa3rd.cn");
@@ -630,8 +636,8 @@ namespace Theresa3rd_Bot.Business
             //headerDic.Add("x-user-id", Setting.Pixiv.XUserId);
             return headerDic;
         }
-        
-        
+
+
 
     }
 }

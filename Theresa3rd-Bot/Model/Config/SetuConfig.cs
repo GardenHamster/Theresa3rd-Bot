@@ -10,6 +10,10 @@ namespace Theresa3rd_Bot.Model.Config
 
         public int MaxDaily { get; set; }
 
+        public int RevokeInterval { get; set; }
+
+        public string ImgSavePath { get; set; }
+
         public List<long> NoneCDGroups { get; set; }
 
         public List<long> NoneCDMembers { get; set; }

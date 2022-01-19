@@ -128,6 +128,7 @@ namespace Theresa3rd_Bot.Business
                     }
                     catch (Exception ex)
                     {
+                        LogHelper.Error(ex, $"pixiv画师[{pixivUserId}]订阅异常");
                         await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师id[{pixivUserId}]订阅失败~"));
                     }
                     finally

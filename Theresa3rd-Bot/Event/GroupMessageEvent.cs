@@ -19,11 +19,13 @@ namespace Theresa3rd_Bot.Event
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IGroupMessageEventArgs, GroupMessageEventArgs>))]
     public class GroupMessageEvent : IMiraiHttpMessageHandler<IGroupMessageEventArgs>
     {
+        private PixivBusiness pixivBusiness;
         private SubscribeBusiness subscribeBusiness;
         private RequestRecordBusiness requestRecordBusiness;
 
         public GroupMessageEvent()
         {
+            this.pixivBusiness = new PixivBusiness();
             this.subscribeBusiness = new SubscribeBusiness();
             this.requestRecordBusiness = new RequestRecordBusiness();
         }
@@ -68,14 +70,17 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                if (instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
+                {
+                    await pixivBusiness.sendGeneralPixivImageAsync(session, args, message);
+                    return;
+                }
+
                 if (instructions.StartsWith("test"))
                 {
                     IMessageChainBuilder builder = session.GetMessageChainBuilder();
-                    //builder.AddAtMessage(args.Sender.Id);
                     builder.AddPlainMessage("Hello World!");
                     int msgId = await session.SendGroupMessageAsync(args.Sender.Group.Id, builder);
-                    Thread.Sleep(1000);
-                    await session.RevokeMessageAsync(msgId);
                     return;
                 }
             }

@@ -103,7 +103,6 @@ namespace Theresa3rd_Bot.Business
                     await session.SendMessageWithAtAsync(args, new PlainMessage($" 禁止查找这个类型的涩图哦，换个标签试试吧~"));
                     return;
                 }
-
                 PixivWorkInfoDto pixivWorkInfoDto = null;
                 string tagName = splitArr.Length > 1 ? splitArr[1].Trim() : "";
                 tagName = tagName.Replace("（", ")").Replace("）", ")");
@@ -114,7 +113,7 @@ namespace Theresa3rd_Bot.Business
                 }
                 else if (string.IsNullOrEmpty(tagName))
                 {
-                    pixivWorkInfoDto = getRandomWorkInFollow();//获取随机一个关注的画师的作品
+                    pixivWorkInfoDto = getRandomWorkInFollow(args.Sender.Group.Id);//获取随机一个关注的画师的作品
                 }
                 else
                 {
@@ -197,13 +196,13 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        protected PixivWorkInfoDto getRandomWorkInFollow()
+        protected PixivWorkInfoDto getRandomWorkInFollow(long groupId)
         {
             int loopUserTimes = 3;
             int loopWorkTimes = 5;
             SubscribeType subscribeType = SubscribeType.P站画师;
             if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return null;
-            List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];
+            List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType].Where(m => m.GroupIdList.Contains(groupId)).ToList();
             if (subscribeTaskList == null || subscribeTaskList.Count == 0) return null;
             for (int i = 0; i < loopUserTimes; i++)
             {
@@ -242,17 +241,16 @@ namespace Theresa3rd_Bot.Business
             int total = pageOne.body.getIllust().total;
             int maxPage = (int)Math.Ceiling(Convert.ToDecimal(total) / pixivPageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
-            Thread.Sleep(1000);//防止请求过快被检测
+            Thread.Sleep(1000);
+
+            //获取随机页中的所有作品
             int[] pageArr = getRandomPageNo(maxPage, pageCount);
             List<PixivIllust> tempIllustList = new List<PixivIllust>();
             foreach (int page in pageArr)
             {
                 PixivSearchDto pixivSearchDto = getPixivSearchDto(tagName, page, false, isR18);
-                foreach (PixivIllust pixivIllust in pixivSearchDto.body.getIllust().data)
-                {
-                    if (pixivIllust != null) tempIllustList.Add(pixivIllust);
-                }
-                Thread.Sleep(1000);//防止请求过快被检测
+                tempIllustList.AddRange(pixivSearchDto.body.getIllust().data);
+                Thread.Sleep(1000);
             }
 
             //乱序
@@ -265,12 +263,16 @@ namespace Theresa3rd_Bot.Business
                 tempIllustList.RemoveAt(randomIndex);
             }
 
+            //提取前30个作品
+            pixivIllustList = pixivIllustList.Take(30).ToList();
+
             //创建线程池
             List<PixivIllust>[] taskList = new List<PixivIllust>[threadCount];
             for (int i = 0; i < taskList.Length; i++)
             {
                 taskList[i] = new List<PixivIllust>();
             }
+
             //将作品分配给线程
             for (int i = 0; i < pixivIllustList.Count; i++)
             {
@@ -278,16 +280,21 @@ namespace Theresa3rd_Bot.Business
                 taskList[i % threadCount].Add(pixivIllustList[i]);
             }
 
-            bool isScreen = total > workScreenMoreThen;//是否优先筛选较高收藏
+            //是否优先筛选较高收藏
+            bool isScreen = total > workScreenMoreThen;
+
+
+            //开启所有线程
             Task[] tasks = new Task[threadCount];
             for (int i = 0; i < taskList.Length; i++)
             {
                 List<PixivIllust> illustList = taskList[i];
-                tasks[i] = Task.Factory.StartNew(() => getPixivWorkInfoMethod(illustList, isScreen, isR18));
+                tasks[i] = Task.Factory.StartNew(() => getPixivWorkInfoMethod(illustList, isScreen));
                 Thread.Sleep(RandomHelper.getRandomBetween(500, 1000));//将每条线程的间隔错开
             }
             Task.WaitAll(tasks);
 
+            //获取收藏度最高的作品
             PixivWorkInfoDto randomWork = bookUp2000List.FirstOrDefault();
             if (randomWork == null) randomWork = bookUp1500List.FirstOrDefault();
             if (randomWork == null) randomWork = bookUp1000List.FirstOrDefault();
@@ -297,17 +304,21 @@ namespace Theresa3rd_Bot.Business
             return randomWork;
         }
 
-        protected void getPixivWorkInfoMethod(List<PixivIllust> pixivIllustList, bool isScreen, bool isR18)
+        /// <summary>
+        /// 线程函数
+        /// </summary>
+        /// <param name="pixivIllustList"></param>
+        /// <param name="isScreen"></param>
+        protected void getPixivWorkInfoMethod(List<PixivIllust> pixivIllustList, bool isScreen)
         {
             for (int i = 0; i < pixivIllustList.Count; i++)
             {
                 try
                 {
                     if (isScreen == true && bookUp2000List.Count > 0) return;//如果启用筛选,获取到一个2000+就结束全部线程
-                    if (isScreen == true && bookUp800List.Count > 0 && bookUpList.Count >= 30) return;
                     if (isScreen == false && bookUp800List.Count > 0) return;//如果不启用筛选,获取到一个800+就结束全部线程
                     PixivWorkInfoDto pixivWorkInfo = getPixivWorkInfoDto(pixivIllustList[i].id);
-                    if (checkRandomWorkIsOk(pixivWorkInfo, isR18) && pixivWorkInfo.error == false)
+                    if (checkRandomWorkIsOk(pixivWorkInfo) && pixivWorkInfo.error == false)
                     {
                         if (pixivWorkInfo.body.likeCount >= 2000)
                         {
@@ -339,6 +350,12 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
+        /// <summary>
+        /// 从最大页数maxPage获取pageCount个随机页码
+        /// </summary>
+        /// <param name="maxPage"></param>
+        /// <param name="pageCount"></param>
+        /// <returns></returns>
         protected int[] getRandomPageNo(int maxPage, int pageCount)
         {
             if (maxPage <= pageCount)
@@ -370,6 +387,13 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
+        /// <summary>
+        /// 获取画师的最新作品
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="subscribeId"></param>
+        /// <param name="getCount"></param>
+        /// <returns></returns>
         public List<PixivSubscribe> getPixivUserNewestWork(string userId, int subscribeId, int getCount = 2)
         {
             int index = 0;
@@ -406,6 +430,12 @@ namespace Theresa3rd_Bot.Business
             return pixivSubscribeList;
         }
 
+        /// <summary>
+        /// 获取标签的最新作品
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <param name="subscribeId"></param>
+        /// <returns></returns>
         public List<PixivSubscribe> getPixivTagNewestWork(string tagName, int subscribeId)
         {
             DateTime startDateTime = DateTime.Now;
@@ -448,16 +478,14 @@ namespace Theresa3rd_Bot.Business
         /// <param name="pixivWorkInfo"></param>
         /// <param name="isR18"></param>
         /// <returns></returns>
-        protected bool checkRandomWorkIsOk(PixivWorkInfoDto pixivWorkInfo, bool isR18)
+        protected bool checkRandomWorkIsOk(PixivWorkInfoDto pixivWorkInfo)
         {
             if (pixivWorkInfo == null) return false;
             if (pixivWorkInfo.body == null) return false;
             bool isNotBantag = pixivWorkInfo.body.hasBanTag() == false;
-            bool isAllowR18 = isR18 || pixivWorkInfo.body.isR18() == false;
-            bool isPopularity = pixivWorkInfo.body.likeCount >= 500 && pixivWorkInfo.body.bookmarkCount >= 800;
-            bool isLikeProportional = Convert.ToDouble(pixivWorkInfo.body.likeCount) / pixivWorkInfo.body.viewCount >= 0.04;
-            bool isBookProportional = Convert.ToDouble(pixivWorkInfo.body.bookmarkCount) / pixivWorkInfo.body.viewCount >= 0.05;
-            return isPopularity && isAllowR18 && isBookProportional && isLikeProportional && isNotBantag;
+            bool isPopularity = pixivWorkInfo.body.bookmarkCount >= BotConfig.SetuConfig.Pixiv.MinBookmark;
+            bool isBookProportional = Convert.ToDouble(pixivWorkInfo.body.bookmarkCount) / pixivWorkInfo.body.viewCount >= BotConfig.SetuConfig.Pixiv.MinBookRate;
+            return isPopularity && isBookProportional && isNotBantag;
         }
 
         /// <summary>
@@ -543,7 +571,7 @@ namespace Theresa3rd_Bot.Business
             workInfoStr.Append(string.Format("耗时：{0}s", costSecond, pixivWorkInfo.pageCount));
             if (pixivWorkInfo.RelevantCount > 0) workInfoStr.Append(string.Format("，相关图片：{0}张", pixivWorkInfo.RelevantCount));
             workInfoStr.AppendLine();
-            //workInfoStr.AppendLine(string.Format("标签：{0}", getTagsStr(pixivWorkInfo.tags)));
+            workInfoStr.AppendLine(string.Format("标签：{0}", getTagsStr(pixivWorkInfo.tags)));
             workInfoStr.Append(getWorkUrlStr(pixivWorkInfo));
             return workInfoStr.ToString();
         }

@@ -47,7 +47,7 @@ namespace Theresa3rd_Bot.Business
                     subscribeTask = new SubscribeTask(subscribeInfo);
                     subscribeTaskList.Add(subscribeTask);
                 }
-                else
+                if (subscribeTask.GroupIdList.Contains(subscribeInfo.GroupId) == false)
                 {
                     subscribeTask.GroupIdList.Add(subscribeInfo.GroupId);
                 }

@@ -13,7 +13,7 @@ namespace Theresa3rd_Bot.Timer
         public static void init()
         {
             initCustomJob();//初始化配置列表中的定时器
-            PixivUserTimer.init();//初始化pixiv画师订阅任务
+            initSubscribeTimers();//初始化订阅任务
         }
 
         private static void initCustomJob()
@@ -28,6 +28,16 @@ namespace Theresa3rd_Bot.Timer
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"定时功能异常");
+            }
+        }
+
+        private static void initSubscribeTimers()
+        {
+            SubscribeConfig subscribeConfig = BotConfig.SubscribeConfig;
+            if (subscribeConfig == null) return;
+            if (subscribeConfig.PixivUser != null && subscribeConfig.PixivUser.Enable)
+            {
+                PixivUserTimer.init();
             }
         }
 

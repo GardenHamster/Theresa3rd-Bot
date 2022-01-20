@@ -75,6 +75,12 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
                 {
+                    if (BusinessHelper.IsSTAllowAsync(session, args).Result == false) return;
+                    if (BusinessHelper.IsMemberSTCoolingAsync(session, args).Result) return;
+                    if (BusinessHelper.IsGroupSTCoolingAsync(session, args).Result) return;
+                    if (BusinessHelper.IsSTUseUpAsync(session, args).Result) return;
+                    if (BusinessHelper.IsHandingAsync(session, args).Result) return;
+                    CoolingCache.SetGroupSTCooling(groupId, memberId);
                     await pixivBusiness.sendGeneralPixivImageAsync(session, args, message);
                     requestRecordBusiness.addRecord(args, CommandType.Setu, message);
                     return;
@@ -90,6 +96,7 @@ namespace Theresa3rd_Bot.Event
             }
             catch (System.Exception ex)
             {
+                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.ErrorMsg, " 出了点小问题，再试一次吧~");
                 LogHelper.Error(ex, "GroupMessageEvent异常");
             }
 

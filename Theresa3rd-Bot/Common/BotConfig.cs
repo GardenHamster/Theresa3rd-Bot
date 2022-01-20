@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Theresa3rd_Bot.Model.Config;
-using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Model.Subscribe;
 using Theresa3rd_Bot.Type;
 
@@ -14,6 +13,8 @@ namespace Theresa3rd_Bot.Common
 
         public static GeneralConfig GeneralConfig = new GeneralConfig();
 
+        public static PermissionsConfig PermissionsConfig = new PermissionsConfig();
+        
         public static RepeaterConfig RepeaterConfig = new RepeaterConfig();
 
         public static WelcomeConfig WelcomeConfig = new WelcomeConfig();

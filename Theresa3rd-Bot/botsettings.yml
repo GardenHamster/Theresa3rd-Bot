@@ -1,12 +1,17 @@
 ﻿General:                                                                #基础设置
     Prefix:                 '#'                                         #指令前缀，如果接收到的消息带有该前缀将视为一个指令处理
-    AcceptGroups:           [284196625]                                 #白名单，只处理这些群的消息，黑名单和白名单同时为空时则处理所有群消息
-    RefuseGroups:           []                                          #黑名单，不处理这些群的消息，黑名单和白名单同时设值时则只有黑名单生效
-    SuperManagers:          [1524514426]                                #超级管理员列表,可以使用管理指令
     ErrorGroups:            [284196625]                                 #错误日志群，发生错误时会将日志发送到这个群
     ErrorMsg:               |                                           #处理异常时返回的消息
                             出了点小问题，稍后再试吧
                             [image:C:\BotImg\emmm.jpg]
+
+Permissions:
+    AcceptGroups:           [284196625]                                 #白名单，只处理这些群的消息，黑名单和白名单同时为空时则处理所有群消息
+    RefuseGroups:           []                                          #黑名单，不处理这些群的消息，黑名单和白名单同时设值时则只有黑名单生效
+    SuperManagers:          [1524514426]                                #超级管理员列表,可以使用管理指令
+    SetuGroups:             [284196625]                                 #拥有涩图权限的群
+    SaucenaoGroups:         [284196625]                                 #拥有以图搜图权限的群
+    SubscribeGroups:        [284196625]                                 #拥有订阅权限的群
 
 Repeater:                                                               #复读机
     Enable:                 true                                        #是否启用
@@ -36,21 +41,21 @@ Reminder:                                                               #定时�
                             [image:C:\BotImg\welcome.png]
 
 Setu:                                                                   #色图相关
-    GroupCD:                0                                           #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
-    MemberCD:               0                                           #独立CD(秒)，单个群员使用命令后需要等待的CD
+    GroupCD:                5                                           #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
+    MemberCD:               30                                           #独立CD(秒)，单个群员使用命令后需要等待的CD
     NoneCDGroups:           []                                          #0CD群
     NoneCDMembers:          []                                          #0CD群员
     MaxDaily:               0                                           #每人每日最大使用次数,0表示无限制
     ImgSavePath:            'C:\BotImg\DownImg'                         #图片存放目录
-    RevokeInterval:         0                                           #N秒后撤回,0表示不撤回
+    RevokeInterval:         30                                          #N秒后撤回,0表示不撤回
     Lolicon:                                                            #Lolicon图床https://api.lolicon.app/#/setu
         Enable:             true                                        #是否启用
         Command:            '瑟图'                                      #命令，用法：#瑟图合法萝莉
         DisableMsg:         '不可以色色！'                               #功能未启用时返回的消息
-        ErrorMsg:           '申请色色失败！请重新尝试'                    #发生错误时返回的消息
+        ErrorMsg:           '申请色色失败！请重新尝试'                   #发生错误时返回的消息
         CustomEnable:       true                                        #是否允许查找自定义涩图，如:#涩图可可萝
-        CustomDisableMsg:   '自定义功能已关闭！'                          #禁用自定义时返回的消息
-        ProcessingMag:      '正在使用色图探测器探测你要的色图...'           #开始查找前返回的消息
+        CustomDisableMsg:   '自定义功能已关闭！'                         #禁用自定义时返回的消息
+        ProcessingMag:      '正在使用色图探测器探测你要的色图...'         #开始查找前返回的消息
         Template:           ''
     Pixiv:                                                              #Pixiv图床https://www.pixiv.net
         Enable:             true                                        #是否启用
@@ -70,7 +75,7 @@ Setu:                                                                   #色图�
         CookieExpire:       21600                                       #cookie失效时间(分钟)，超过该天数后需要使用命令更新cookie，建议cookie每15天更新一次
         CookieExpireMsg:    'emmmm,cookie过期了,请艾特管理员更新cookie'   #cookie过期时返回的消息
                             
-Saucenao:                                                               #Saucenao以图搜图，查找原图功能
+Saucenao:                                                                  #Saucenao以图搜图，查找原图功能
     Enable:                 true                                            #是否启用
     Command:                '原图'                                          #命令，用法：#原图 或 原图+图片
     DisableMsg:             '没有，快爬！'                                  #功能未启用时返回的消息
@@ -90,8 +95,8 @@ Subscribe:                                                              #订阅�
         AddCommand:         '订阅画师'                                   #订阅命令,需要管理员执行
         RmCommand:          '退订画师'                                   #退订命令,需要管理员执行
         Template:           ''
-        ScanInterval:       1800                                        #扫描间隔(秒)
-        ShelfLife:          1440                                        #保质期(分钟),超过保质期将不会推送
+        ScanInterval:       18                                        #扫描间隔(秒)
+        ShelfLife:          0                                        #保质期(分钟),超过保质期将不会推送,0表示永不过期
     PixivTag:                                                           #p站标签
         Enable:             true                                        #是否启用
         AddCommand:         '订阅标签'                                   #订阅命令,需要管理员执行

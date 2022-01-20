@@ -17,7 +17,7 @@ namespace Theresa3rd_Bot.Timer
         public static void init()
         {
             timer = new System.Timers.Timer();
-            timer.Interval = BotConfig.SubscribeConfig.PixivUser.ScanInterval;
+            timer.Interval = BotConfig.SubscribeConfig.PixivUser.ScanInterval * 1000;
             timer.AutoReset = true;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(HandlerMethod);
             timer.Enabled = true;
@@ -70,8 +70,9 @@ namespace Theresa3rd_Bot.Timer
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
+                int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
                 if (pixivSubscribe.PixivWorkInfoDto.body.isR18()) continue;
-                if (pixivSubscribe.PixivWorkInfoDto.body.createDate < DateTime.Now.AddMinutes(-1 * BotConfig.SubscribeConfig.PixivUser.ShelfLife)) continue;
+                if (shelfLife > 0 && pixivSubscribe.PixivWorkInfoDto.body.createDate < DateTime.Now.AddMinutes(-1 * shelfLife)) continue;
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
                     List<IChatMessage> chailList = new List<IChatMessage>();

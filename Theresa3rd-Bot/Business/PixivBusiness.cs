@@ -95,7 +95,7 @@ namespace Theresa3rd_Bot.Business
             try
             {
                 DateTime startDateTime = DateTime.Now;
-                CoolingCache.setHanding(args.Sender.Group.Id, args.Sender.Id);//请求处理中
+                CoolingCache.SetHanding(args.Sender.Group.Id, args.Sender.Id);//请求处理中
                 if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
                 string[] splitArr = message.Split(new string[] { BotConfig.SetuConfig.Pixiv.Command }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitArr.Length > 1 && BusinessHelper.CheckSTBanWord(session, args, message))
@@ -113,7 +113,7 @@ namespace Theresa3rd_Bot.Business
                 }
                 else if (string.IsNullOrEmpty(tagName))
                 {
-                    pixivWorkInfoDto = getRandomWorkInFollow(args.Sender.Group.Id);//获取随机一个关注的画师的作品
+                    pixivWorkInfoDto = getRandomWorkInSubscribe(args.Sender.Group.Id);//获取随机一个订阅中的画师的作品
                 }
                 else
                 {
@@ -153,7 +153,7 @@ namespace Theresa3rd_Bot.Business
                 int memberMsgId = await session.SendFriendMessageAsync(args.Sender.Id, memberList.ToArray());
                 await Task.Delay(1000);
 
-                CoolingCache.setMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);//进入CD状态
+                CoolingCache.SetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);//进入CD状态
 
                 if (BotConfig.SetuConfig.RevokeInterval == 0) return;
                 await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
@@ -166,7 +166,7 @@ namespace Theresa3rd_Bot.Business
             }
             finally
             {
-                CoolingCache.setHandFinish(args.Sender.Group.Id, args.Sender.Id);//请求处理完成
+                CoolingCache.SetHandFinish(args.Sender.Group.Id, args.Sender.Id);//请求处理完成
             }
         }
 
@@ -204,7 +204,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        protected PixivWorkInfoDto getRandomWorkInFollow(long groupId)
+        protected PixivWorkInfoDto getRandomWorkInSubscribe(long groupId)
         {
             int loopUserTimes = 3;
             int loopWorkTimes = 5;

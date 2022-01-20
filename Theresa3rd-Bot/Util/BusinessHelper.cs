@@ -6,8 +6,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Business;
+using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Cache;
 using Theresa3rd_Bot.Model.Config;
+using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Util
 {
@@ -30,11 +34,11 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool IsHandleMessage(long groupId)
         {
-            GeneralConfig generalConfig = BotConfig.GeneralConfig;
-            if (generalConfig == null) return false;
-            List<long> acceptGroups = generalConfig.AcceptGroups;
+            PermissionsConfig permissionsConfig = BotConfig.PermissionsConfig;
+            if (permissionsConfig == null) return false;
+            List<long> acceptGroups = permissionsConfig.AcceptGroups;
             if (acceptGroups == null) return false;
-            List<long> refuseGroups = generalConfig.RefuseGroups;
+            List<long> refuseGroups = permissionsConfig.RefuseGroups;
             if (refuseGroups == null) return false;
             if (refuseGroups.Contains(groupId)) return false;
             if (acceptGroups.Count > 0 && acceptGroups.Contains(groupId) == false) return false;
@@ -53,6 +57,46 @@ namespace Theresa3rd_Bot.Util
             if (string.IsNullOrWhiteSpace(cookieExpireMsg)) cookieExpireMsg = "cookie过期了，让管理员更新cookie吧~";
             List<IChatMessage> chatList = session.SplitToChainAsync(cookieExpireMsg).Result;
             await session.SendMessageWithAtAsync(args, chatList);
+            return true;
+        }
+
+
+        public static async Task<bool> IsSTAllowAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            if (BotConfig.PermissionsConfig.SetuGroups.Contains(args.Sender.Group.Id)) return true;
+            await session.SendMessageWithAtAsync(args, new PlainMessage(" 这个功能暂时未开启哦~"));
+            return false;
+        }
+
+        public static async Task<bool> IsMemberSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            int cdSecond = CoolingCache.GetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);
+            if (cdSecond <= 0) return false;
+            await session.SendMessageWithAtAsync(args, new PlainMessage($" 功能冷却中，{cdSecond}秒后再来哦~"));
+            return true;
+        }
+
+        public static async Task<bool> IsGroupSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            int cdSecond = CoolingCache.GetGroupSTCooling(args.Sender.Group.Id, args.Sender.Id);
+            if (cdSecond <= 0) return false;
+            await session.SendMessageWithAtAsync(args, new PlainMessage($" 群功能冷却中，{cdSecond}秒后再来哦~"));
+            return true;
+        }
+
+        public static async Task<bool> IsSTUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            if (BotConfig.SetuConfig.MaxDaily == 0) return false;
+            int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
+            if (useCount < BotConfig.SetuConfig.MaxDaily) return false;
+            await session.SendMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));
+            return true;
+        }
+
+        public static async Task<bool> IsHandingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            if (CoolingCache.IsHanding(args.Sender.Group.Id, args.Sender.Id) == false) return false;
+            await session.SendMessageWithAtAsync(args, new PlainMessage(" 你的一个请求正在处理中，稍后再来吧"));
             return true;
         }
 

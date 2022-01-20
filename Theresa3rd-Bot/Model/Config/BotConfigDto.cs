@@ -9,6 +9,8 @@ namespace Theresa3rd_Bot.Model.Config
     {
         public GeneralConfig General { get; set; }
 
+        public PermissionsConfig Permissions { get; set; }
+        
         public RepeaterConfig Repeater { get; set; }
 
         public WelcomeConfig Welcome { get; set; }

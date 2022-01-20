@@ -3,7 +3,7 @@
     ErrorGroups:            [284196625]                                 #错误日志群，发生错误时会将日志发送到这个群
     ErrorMsg:               |                                           #处理异常时返回的消息
                             出了点小问题，稍后再试吧
-                            [image:C:\BotImg\emmm.jpg]
+                            [image:C:\BotImg\face\emmm.jpg]
 
 Permissions:
     AcceptGroups:           [284196625]                                 #白名单，只处理这些群的消息，黑名单和白名单同时为空时则处理所有群消息
@@ -25,7 +25,7 @@ Welcome:                                                                #入群�
         - GroupId:          284196625                                   #群id(群号)
           Template:         |                                           #群欢迎模版
                             欢迎新厨子
-                            [image:C:\BotImg\welcome.png]
+                            [image:C:\BotImg\face\welcome.png]
                             略略略
 
 Reminder:                                                               #定时消息
@@ -38,7 +38,7 @@ Reminder:                                                               #定时�
           AtMembers:        []                                          #艾特群员QQ号列表
           Template:         |                                           #消息模版
                             今天是深渊结算的日子，舰长打穿红莲了没？
-                            [image:C:\BotImg\welcome.png]
+                            [image:C:\BotImg\face\shenyuanjiesuan.png]
 
 Setu:                                                                   #色图相关
     GroupCD:                5                                           #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
@@ -46,7 +46,7 @@ Setu:                                                                   #色图�
     NoneCDGroups:           []                                          #0CD群
     NoneCDMembers:          []                                          #0CD群员
     MaxDaily:               0                                           #每人每日最大使用次数,0表示无限制
-    ImgSavePath:            'C:\BotImg\DownImg'                         #图片存放目录
+    ImgSavePath:            'C:\BotImg\download'                         #图片存放目录
     RevokeInterval:         30                                          #N秒后撤回,0表示不撤回
     Lolicon:                                                            #Lolicon图床https://api.lolicon.app/#/setu
         Enable:             true                                        #是否启用
@@ -74,7 +74,7 @@ Setu:                                                                   #色图�
         MinBookmark:        800                                         #最低收藏数，用于判断涩图是否合格(标签搜索时试用)
         MinBookRate:        0.05                                        #最低收藏率，收藏数/浏览数(标签搜索时试用)
         CookieExpire:       1296000                                     #cookie失效时间(秒)，超过该天数后需要使用命令更新cookie，建议cookie每15天更新一次
-        CookieExpireMsg:    'emmmm,cookie过期了,请艾特管理员更新cookie[image:C:\BotImg\welcome.png]'   #cookie过期时返回的消息
+        CookieExpireMsg:    'emmmm,cookie过期了,请艾特管理员更新cookie'   #cookie过期时返回的消息
                             
 Saucenao:                                                                  #Saucenao以图搜图，查找原图功能
     Enable:                 true                                            #是否启用
@@ -82,7 +82,7 @@ Saucenao:                                                                  #Sauc
     DisableMsg:             '没有，快爬！'                                  #功能未启用时返回的消息
     NotFoundMsg:            '色图探测器毫无反应，找不到你想要的色图'          #找不到相应色图时返回的消息
     ErrorMsg:               '申请色色失败！请重新尝试'                       #发生错误时返回的消息
-    DownErrorImg:           '[image:C:\BotImg\downError.png]'              #图片下载失败是的替代图片
+    DownErrorImg:           '[image:C:\BotImg\face\downError.png]'        #图片下载失败是的替代图片
     ProcessingMag:          '正在使用色图探测器探测你要的色图...'            #开始查找前返回的消息
     Template:               ''
     GroupCD:                0                                              #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
@@ -97,7 +97,7 @@ Subscribe:                                                              #订阅�
         AddCommand:         '订阅画师'                                   #订阅命令,需要管理员执行
         RmCommand:          '退订画师'                                   #退订命令,需要管理员执行
         Template:           ''
-        DownErrorImg:       '[image:C:\BotImg\downError.png]'           #图片下载失败是的替代图片
+        DownErrorImg:       '[image:C:\BotImg\face\downError.png]'           #图片下载失败是的替代图片
         ScanInterval:       3600                                        #扫描间隔(秒)
         ShelfLife:          43200                                       #保质期(秒),超过保质期将不会推送,0表示永不过期
     PixivTag:                                                           #p站标签
@@ -105,7 +105,7 @@ Subscribe:                                                              #订阅�
         AddCommand:         '订阅标签'                                   #订阅命令,需要管理员执行
         RmCommand:          '退订标签'                                   #退订命令,需要管理员执行
         Template:           ''
-        DownErrorImg:       '[image:C:\BotImg\downError.png]'           #图片下载失败是的替代图片
+        DownErrorImg:       '[image:C:\BotImg\face\downError.png]'      #图片下载失败是的替代图片
         ScanInterval:       1800                                        #扫描间隔(秒)
     BiliUp:                                                             #b站up主
         Enable:             true                                        #是否启用

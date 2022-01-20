@@ -62,6 +62,7 @@ namespace Theresa3rd_Bot.Event
                 if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.AddCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.AddCommand))
                 {
                     if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
+                    if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId) == false) return;
                     await subscribeBusiness.subscribePixivUserAsync(session, args, message);
                     requestRecordBusiness.addRecord(args, CommandType.Subscribe, message);
                     return;
@@ -69,6 +70,7 @@ namespace Theresa3rd_Bot.Event
 
                 if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.RmCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.RmCommand))
                 {
+                    if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId) == false) return;
                     await subscribeBusiness.cancleSubscribePixivUserAsync(session, args, message);
                     requestRecordBusiness.addRecord(args, CommandType.Subscribe, message);
                     return;

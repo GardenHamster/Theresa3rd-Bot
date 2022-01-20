@@ -447,6 +447,46 @@ namespace Theresa3rd_Bot.Business
             {
                 if (++index > getCount) break;
                 if (workInfo.Value == null) continue;
+                PixivWorkInfoDto pixivWorkInfoDto = getPixivWorkInfoDto(workInfo.Value.id);
+                if (pixivWorkInfoDto == null) continue;
+                FileInfo fileInfo = downImg(pixivWorkInfoDto);
+                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
+                subscribeRecord.Content = subscribeRecord.Title;
+                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
+                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
+                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
+                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                PixivSubscribe pixivSubscribe = new PixivSubscribe();
+                pixivSubscribe.SubscribeRecord = subscribeRecord;
+                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                pixivSubscribe.WorkFileInfo = fileInfo;
+                pixivSubscribe.WorkInfo = getWorkInfoStr(pixivWorkInfoDto.body, fileInfo, DateTimeHelper.GetSecondDiff(startDateTime, DateTime.Now));
+                pixivSubscribeList.Add(pixivSubscribe);
+            }
+            return pixivSubscribeList;
+        }
+
+        /// <summary>
+        /// 获取画师的最新作品
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="subscribeId"></param>
+        /// <param name="getCount"></param>
+        /// <returns></returns>
+        public List<PixivSubscribe> getPixivUserSubscribeWork(string userId, int subscribeId, int getCount = 2)
+        {
+            int index = 0;
+            DateTime startDateTime = DateTime.Now;
+            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
+            PixivUserWorkInfoDto pixivWorkInfo = getPixivUserWorkInfoDto(userId);
+            if (pixivWorkInfo == null) return pixivSubscribeList;
+            Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
+            if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
+            foreach (KeyValuePair<string, PixivUserWorkInfo> workInfo in illusts)
+            {
+                if (++index > getCount) break;
+                if (workInfo.Value == null) continue;
                 SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, workInfo.Value.id);
                 if (dbSubscribe != null) continue;
                 PixivWorkInfoDto pixivWorkInfoDto = getPixivWorkInfoDto(workInfo.Value.id);

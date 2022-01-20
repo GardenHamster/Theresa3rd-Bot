@@ -52,7 +52,7 @@ namespace Theresa3rd_Bot.Timer
             {
                 try
                 {
-                    List<PixivSubscribe> pixivSubscribeList = pixivBusiness.getPixivUserNewestWork(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
+                    List<PixivSubscribe> pixivSubscribeList = pixivBusiness.getPixivUserSubscribeWork(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(subscribeTask, pixivSubscribeList);
                 }

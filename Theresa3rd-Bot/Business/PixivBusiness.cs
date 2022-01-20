@@ -132,18 +132,26 @@ namespace Theresa3rd_Bot.Business
                 FileInfo fileInfo = downImg(pixivWorkInfoDto);
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
 
-                List<IChatMessage> chailList = new List<IChatMessage>();
-                chailList.Add(new PlainMessage($" {BotConfig.SetuConfig.MemberCD}秒后再来哦，今天剩余使用次数{todayLeftCount}次，本消息将在{3}秒后撤回，尽快保存哦"));
-                chailList.Add(new PlainMessage(getWorkInfoStr(pixivWorkInfo, fileInfo, DateTimeHelper.GetSecondDiff(startDateTime, DateTime.Now))));
+                List<IChatMessage> chatList = new List<IChatMessage>();
+                chatList.Add(new PlainMessage($" {BotConfig.SetuConfig.MemberCD}秒后再来哦，今天剩余使用次数{todayLeftCount}次，本消息将在{3}秒后撤回，尽快保存哦"));
+                chatList.Add(new PlainMessage(getWorkInfoStr(pixivWorkInfo, fileInfo, DateTimeHelper.GetSecondDiff(startDateTime, DateTime.Now))));
+
+                List<IChatMessage> groupList = new List<IChatMessage>(chatList);
                 if (pixivWorkInfoDto.body.isR18() == false && fileInfo != null)
                 {
-                    chailList.Add((IChatMessage)await session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Group, fileInfo.FullName));
+                    groupList.Add((IChatMessage)await session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Group, fileInfo.FullName));
                 }
-
-                int groupMsgId = await session.SendMessageWithAtAsync(args, chailList);
+                int groupMsgId = await session.SendMessageWithAtAsync(args, groupList);
                 await Task.Delay(1000);
 
-                int memberMsgId = await session.SendFriendMessageAsync(args.Sender.Id, chailList.ToArray());
+
+                List<IChatMessage> memberList = new List<IChatMessage>(chatList);
+                if (pixivWorkInfoDto.body.isR18() == false && fileInfo != null)
+                {
+                    memberList.Add((IChatMessage)await session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Friend, fileInfo.FullName));
+                }
+                int memberMsgId = await session.SendFriendMessageAsync(args.Sender.Id, memberList.ToArray());
+                await Task.Delay(1000);
 
                 CoolingCache.setMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);//进入CD状态
 

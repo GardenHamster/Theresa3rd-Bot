@@ -1,6 +1,6 @@
 ﻿namespace Theresa3rd_Bot.Model.Config
 {
-    public class PixivUserSubscribeConfig: BaseSubscribeConfig
+    public class PixivSubscribeConfig: BaseSubscribeConfig
     {
         public string DownErrorImg { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Model.Config
 {
@@ -15,12 +16,14 @@ namespace Theresa3rd_Bot.Model.Config
         public string ErrorMsg { get; set; }
 
         public string DownErrorImg { get; set; }
-        
+
+        public bool DownWithPixivCat { get; set; }
+
         public bool CustomEnable { get; set; }
 
         public string CustomDisableMsg { get; set; }
 
-        public int RandomMode { get; set; }
+        public PixivRandomMode RandomMode { get; set; }
 
         public List<string> RandomTags { get; set; }
 

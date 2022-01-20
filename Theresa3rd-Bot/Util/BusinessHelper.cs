@@ -1,6 +1,7 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
+using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,14 +62,14 @@ namespace Theresa3rd_Bot.Util
         }
 
 
-        public static async Task<bool> IsSTAllowAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckSTEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
-            if (BotConfig.PermissionsConfig.SetuGroups.Contains(args.Sender.Group.Id)) return true;
-            await session.SendMessageWithAtAsync(args, new PlainMessage(" 这个功能暂时未开启哦~"));
+            if (BotConfig.SetuConfig != null && BotConfig.SetuConfig.Pixiv.Enable) return true;
+            await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.DisableMsg, " 这个功能暂时未开启哦~");
             return false;
         }
 
-        public static async Task<bool> IsMemberSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckMemberSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             int cdSecond = CoolingCache.GetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
@@ -76,7 +77,7 @@ namespace Theresa3rd_Bot.Util
             return true;
         }
 
-        public static async Task<bool> IsGroupSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> ChecekGroupSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             int cdSecond = CoolingCache.GetGroupSTCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
@@ -84,7 +85,7 @@ namespace Theresa3rd_Bot.Util
             return true;
         }
 
-        public static async Task<bool> IsSTUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckSTUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return false;
             int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
@@ -93,7 +94,7 @@ namespace Theresa3rd_Bot.Util
             return true;
         }
 
-        public static async Task<bool> IsHandingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckHandingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (CoolingCache.IsHanding(args.Sender.Group.Id, args.Sender.Id) == false) return false;
             await session.SendMessageWithAtAsync(args, new PlainMessage(" 你的一个请求正在处理中，稍后再来吧"));
@@ -109,12 +110,11 @@ namespace Theresa3rd_Bot.Util
             return false;
         }
 
-        public static bool CheckSTAllowCustom(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckSTCustomEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
-            //if (Setting.Permissions.STCustomGroups.Contains(e.FromGroup.Id)) return true;
-            //e.SendMessageWithAt(" 自定义涩图功能暂时关闭，请直接使用 #涩图 命令");
-            //return false;
-            return true;
+            if (BotConfig.SetuConfig.Pixiv.CustomEnable) return true;
+            await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CustomDisableMsg, " 自定义功能已关闭~");
+            return false;
         }
 
         public static int GetSTLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
@@ -134,18 +134,19 @@ namespace Theresa3rd_Bot.Util
         /// <param name="session"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static async Task<List<IChatMessage>> SplitToChainAsync(this IMiraiHttpSession session,string template)
+        public static async Task<List<IChatMessage>> SplitToChainAsync(this IMiraiHttpSession session, string template, UploadTarget uploadTarget = UploadTarget.Group)
         {
             List<IChatMessage> chatMessages = new List<IChatMessage>();
             List<string> splitList = SplitImageCode(template);
             foreach (var item in splitList)
             {
                 string code = item.Trim();
+                if (string.IsNullOrEmpty(item)) continue;
                 if (Regex.Match(code, ImageCodeRegex).Success)
                 {
                     string path = code.Substring(ImageCodeHeader.Length, code.Length - ImageCodeHeader.Length - 1);
                     if (File.Exists(path) == false) continue;
-                    chatMessages.Add((IChatMessage)await session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Group, path));
+                    chatMessages.Add((IChatMessage)await session.UploadPictureAsync(uploadTarget, path));
                 }
                 else
                 {

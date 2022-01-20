@@ -22,7 +22,7 @@ namespace Theresa3rd_Bot.Common
         /// </summary>
         /// <param name="searchWord"></param>
         /// <returns></returns>
-        public static string getPixivSearchUrl(string searchWord, int pageNo, bool isMatchAll, bool isR18)
+        public static string getPixivSearchUrl(string searchWord, int pageNo, bool isMatchAll, bool isR18 = false)
         {
             string keyword = System.Web.HttpUtility.UrlEncode(searchWord).Replace("+", " ");
             string mode = isR18 ? "r18" : "safe";

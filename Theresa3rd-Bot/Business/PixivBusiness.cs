@@ -2,6 +2,7 @@
 using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
+using Mirai.CSharp.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -115,10 +116,15 @@ namespace Theresa3rd_Bot.Business
                 {
                     pixivWorkInfoDto = getRandomWorkInSubscribe(args.Sender.Group.Id);//获取随机一个订阅中的画师的作品
                 }
+                else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.随机订阅)
+                {
+                    ---
+                    pixivWorkInfoDto = getRandomWorkInSubscribe(args.Sender.Group.Id);//获取随机一个订阅中的画师的作品
+                }
                 else
                 {
-                    if (BusinessHelper.CheckSTAllowCustom(session, args) == false) return;
-                    pixivWorkInfoDto = getRandomWork(tagName, false);//获取随机一个作品
+                    if (BusinessHelper.CheckSTCustomEnableAsync(session, args).Result == false) return;
+                    pixivWorkInfoDto = getRandomWork(tagName);//获取随机一个作品
                 }
 
                 if (pixivWorkInfoDto == null)
@@ -129,7 +135,7 @@ namespace Theresa3rd_Bot.Business
                 }
 
                 int todayLeftCount = BusinessHelper.GetSTLeftToday(session, args);
-                FileInfo fileInfo = downImg(pixivWorkInfoDto);
+                FileInfo fileInfo = downImg(pixivWorkInfoDto, BotConfig.SetuConfig.Pixiv.DownWithPixivCat);
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
 
                 List<IChatMessage> chatList = new List<IChatMessage>();
@@ -137,18 +143,26 @@ namespace Theresa3rd_Bot.Business
                 chatList.Add(new PlainMessage(getWorkInfoStr(pixivWorkInfo, fileInfo, DateTimeHelper.GetSecondDiff(startDateTime, DateTime.Now))));
 
                 List<IChatMessage> groupList = new List<IChatMessage>(chatList);
-                if (pixivWorkInfoDto.body.isR18() == false && fileInfo != null)
+                if (fileInfo == null)
                 {
-                    groupList.Add((IChatMessage)await session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Group, fileInfo.FullName));
+                    groupList.AddRange(session.SplitToChainAsync(BotConfig.SetuConfig.Pixiv.DownErrorImg).Result);
+                }
+                else if (pixivWorkInfoDto.body.isR18() == false)
+                {
+                    groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                 }
                 int groupMsgId = await session.SendMessageWithAtAsync(args, groupList);
                 await Task.Delay(1000);
 
 
                 List<IChatMessage> memberList = new List<IChatMessage>(chatList);
+                if (fileInfo == null)
+                {
+                    groupList.AddRange(session.SplitToChainAsync(BotConfig.SetuConfig.Pixiv.DownErrorImg, UploadTarget.Friend).Result);
+                }
                 if (pixivWorkInfoDto.body.isR18() == false && fileInfo != null)
                 {
-                    memberList.Add((IChatMessage)await session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Friend, fileInfo.FullName));
+                    memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Friend, fileInfo.FullName));
                 }
                 int memberMsgId = await session.SendFriendMessageAsync(args.Sender.Id, memberList.ToArray());
                 await Task.Delay(1000);
@@ -229,7 +243,7 @@ namespace Theresa3rd_Bot.Business
                     if (pixivUserWorkInfo.isR18()) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = getPixivWorkInfoDto(pixivUserWorkInfo.id);
                     if (pixivWorkInfoDto == null) continue;
-                    bool isPopularity = pixivWorkInfoDto.body.likeCount >= 400 && pixivWorkInfoDto.body.bookmarkCount >= 600;
+                    bool isPopularity = pixivWorkInfoDto.body.bookmarkCount >= 100;
                     if (isPopularity == false) continue;
                     return pixivWorkInfoDto;
                 }
@@ -242,10 +256,10 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivicSearchDto"></param>
         /// <returns></returns>
-        protected PixivWorkInfoDto getRandomWork(string tagName, bool isR18)
+        protected PixivWorkInfoDto getRandomWork(string tagName)
         {
             int pageCount = 3;
-            PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, false, isR18);
+            PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, false);
             int total = pageOne.body.getIllust().total;
             int maxPage = (int)Math.Ceiling(Convert.ToDecimal(total) / pixivPageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
@@ -256,7 +270,7 @@ namespace Theresa3rd_Bot.Business
             List<PixivIllust> tempIllustList = new List<PixivIllust>();
             foreach (int page in pageArr)
             {
-                PixivSearchDto pixivSearchDto = getPixivSearchDto(tagName, page, false, isR18);
+                PixivSearchDto pixivSearchDto = getPixivSearchDto(tagName, page, false);
                 tempIllustList.AddRange(pixivSearchDto.body.getIllust().data);
                 Thread.Sleep(1000);
             }
@@ -514,7 +528,7 @@ namespace Theresa3rd_Bot.Business
             return isPopularity && isNotR18 && isBookProportional && isLikeProportional;
         }
 
-        protected FileInfo downImg(PixivWorkInfoDto pixivWorkInfo)
+        protected FileInfo downImg(PixivWorkInfoDto pixivWorkInfo, bool usePixivCat = false)
         {
             try
             {
@@ -522,7 +536,7 @@ namespace Theresa3rd_Bot.Business
                 string fullFileName = pixivWorkInfo.body.illustId + ".jpg";
                 string imgReferer = HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId);
                 string imgUrl = pixivWorkInfo.body.urls.original;
-                //string imgUrl = pixivWorkInfo.body.urls.original.Replace("i.pximg.net", "i.pixiv.cat");
+                if (usePixivCat) imgUrl = imgUrl.Replace("i.pximg.net", "i.pixiv.cat");
                 string fullImageSavePath = FilePath.getDownImgSavePath() + fullFileName;
                 return HttpHelper.downImg(imgUrl, fullImageSavePath, imgReferer, BotConfig.WebsiteConfig.Pixiv.Cookie);
             }
@@ -612,11 +626,11 @@ namespace Theresa3rd_Bot.Business
             return tagstr;
         }
 
-        public PixivSearchDto getPixivSearchDto(string keyword, int pageNo, bool isMatchAll, bool isR18)
+        public PixivSearchDto getPixivSearchDto(string keyword, int pageNo, bool isMatchAll)
         {
             string referer = HttpUrl.getPixivSearchReferer(keyword);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll, isR18);
+            string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll);
             string json = HttpHelper.HttpGet(postUrl, headerDic, 10 * 1000);
             return JsonConvert.DeserializeObject<PixivSearchDto>(json);
         }

@@ -12,6 +12,8 @@
 
         public string ErrorMsg { get; set; }
 
+        public string DownErrorImg { get; set; }
+
         public string ProcessingMag { get; set; }
 
         public string Template { get; set; }

@@ -2,9 +2,9 @@
 {
     public class SubscribeConfig
     {
-        public PixivUserSubscribeConfig PixivUser { get; set; }
+        public PixivSubscribeConfig PixivUser { get; set; }
 
-        public BaseSubscribeConfig PixivTag { get; set; }
+        public PixivSubscribeConfig PixivTag { get; set; }
 
         public BaseSubscribeConfig BiliUp { get; set; }
 

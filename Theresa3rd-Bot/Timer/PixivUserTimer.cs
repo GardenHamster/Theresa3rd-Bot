@@ -1,4 +1,5 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -78,9 +79,13 @@ namespace Theresa3rd_Bot.Timer
                     List<IChatMessage> chailList = new List<IChatMessage>();
                     chailList.Add(new PlainMessage($"pixiv画师[{subscribeTask.SubscribeInfo.SubscribeName}]发布了新作品："));
                     chailList.Add(new PlainMessage(pixivSubscribe.WorkInfo));
-                    if (pixivSubscribe.WorkFileInfo != null)
+                    if (pixivSubscribe.WorkFileInfo == null)
                     {
-                        chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(Mirai.CSharp.Models.UploadTarget.Group, pixivSubscribe.WorkFileInfo.FullName));
+                        chailList.AddRange(MiraiHelper.Session.SplitToChainAsync(BotConfig.SubscribeConfig.PixivUser.DownErrorImg).Result);
+                    }
+                    else
+                    {
+                        chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, pixivSubscribe.WorkFileInfo.FullName));
                     }
                     await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
                 }

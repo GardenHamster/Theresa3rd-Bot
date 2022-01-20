@@ -128,7 +128,7 @@ namespace Theresa3rd_Bot.Cache
         /// <returns></returns>
         private static int GetCooling(DateTime? datetime, int secondInterval)
         {
-            if (datetime == null) return 0;
+            if (datetime == null || secondInterval == 0) return 0;
             TimeSpan timeSpan = new TimeSpan(DateTime.Now.Ticks) - new TimeSpan(datetime.Value.Ticks);
             return timeSpan.TotalSeconds >= secondInterval ? 0 : secondInterval - (int)timeSpan.TotalSeconds;
         }

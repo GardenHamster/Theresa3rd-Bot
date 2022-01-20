@@ -75,11 +75,12 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
                 {
-                    if (BusinessHelper.IsSTAllowAsync(session, args).Result == false) return;
-                    if (BusinessHelper.IsMemberSTCoolingAsync(session, args).Result) return;
-                    if (BusinessHelper.IsGroupSTCoolingAsync(session, args).Result) return;
-                    if (BusinessHelper.IsSTUseUpAsync(session, args).Result) return;
-                    if (BusinessHelper.IsHandingAsync(session, args).Result) return;
+                    if (BotConfig.PermissionsConfig.SetuGroups.Contains(groupId) == false) return;
+                    if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
+                    if (BusinessHelper.CheckMemberSTCoolingAsync(session, args).Result) return;
+                    if (BusinessHelper.ChecekGroupSTCoolingAsync(session, args).Result) return;
+                    if (BusinessHelper.CheckSTUseUpAsync(session, args).Result) return;
+                    if (BusinessHelper.CheckHandingAsync(session, args).Result) return;
                     CoolingCache.SetGroupSTCooling(groupId, memberId);
                     await pixivBusiness.sendGeneralPixivImageAsync(session, args, message);
                     requestRecordBusiness.addRecord(args, CommandType.Setu, message);

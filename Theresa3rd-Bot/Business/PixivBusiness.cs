@@ -97,13 +97,19 @@ namespace Theresa3rd_Bot.Business
             {
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(args.Sender.Group.Id, args.Sender.Id);//请求处理中
-                if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
                 string[] splitArr = message.Split(new string[] { BotConfig.SetuConfig.Pixiv.Command }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitArr.Length > 1 && BusinessHelper.CheckSTBanWord(session, args, message))
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage($" 禁止查找这个类型的涩图哦，换个标签试试吧~"));
                     return;
                 }
+
+                if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.Pixiv.ProcessingMsg) == false)
+                {
+                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.ProcessingMsg, " 正在拉取涩图~");
+                    await Task.Delay(1000);
+                }
+
                 PixivWorkInfoDto pixivWorkInfoDto = null;
                 string tagName = splitArr.Length > 1 ? splitArr[1].Trim() : "";
                 tagName = tagName.Replace("（", ")").Replace("）", ")");
@@ -112,13 +118,12 @@ namespace Theresa3rd_Bot.Business
                 {
                     pixivWorkInfoDto = getPixivWorkInfoDto(tagName);//根据作品id获取作品
                 }
+                else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.随机标签)
+                {
+                    pixivWorkInfoDto = getRandomWorkInTags();//获取随机一个标签中的作品
+                }
                 else if (string.IsNullOrEmpty(tagName))
                 {
-                    pixivWorkInfoDto = getRandomWorkInSubscribe(args.Sender.Group.Id);//获取随机一个订阅中的画师的作品
-                }
-                else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.随机订阅)
-                {
-                    ---
                     pixivWorkInfoDto = getRandomWorkInSubscribe(args.Sender.Group.Id);//获取随机一个订阅中的画师的作品
                 }
                 else
@@ -211,6 +216,19 @@ namespace Theresa3rd_Bot.Business
                 LogHelper.Error(ex, "获取画师最新作品时出现异常");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 随机获取一个指定标签中的作品
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        protected PixivWorkInfoDto getRandomWorkInTags()
+        {
+            List<string> tagList = BotConfig.SetuConfig.Pixiv.RandomTags;
+            if (tagList == null || tagList.Count == 0) return null;
+            string tagName = tagList[RandomHelper.getRandomBetween(0, tagList.Count)];
+            return getRandomWork(tagName);
         }
 
         /// <summary>
@@ -461,7 +479,7 @@ namespace Theresa3rd_Bot.Business
         public List<PixivSubscribe> getPixivTagNewestWork(string tagName, int subscribeId)
         {
             DateTime startDateTime = DateTime.Now;
-            PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, true, false);
+            PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, true);
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             if (pageOne == null) return pixivSubscribeList;
             foreach (PixivIllust item in pageOne.body.getIllust().data)

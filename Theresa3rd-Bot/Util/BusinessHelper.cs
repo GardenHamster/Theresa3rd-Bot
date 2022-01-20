@@ -54,10 +54,7 @@ namespace Theresa3rd_Bot.Util
         public static async Task<bool> CheckPixivCookieExpireAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (DateTime.Now <= BotConfig.WebsiteConfig.Pixiv.CookieExpireDate) return false;
-            string cookieExpireMsg = BotConfig.SetuConfig?.Pixiv?.CookieExpireMsg ?? "";
-            if (string.IsNullOrWhiteSpace(cookieExpireMsg)) cookieExpireMsg = "cookie过期了，让管理员更新cookie吧~";
-            List<IChatMessage> chatList = session.SplitToChainAsync(cookieExpireMsg).Result;
-            await session.SendMessageWithAtAsync(args, chatList);
+            await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧~");
             return true;
         }
 

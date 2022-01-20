@@ -27,7 +27,7 @@ namespace Theresa3rd_Bot.Model.Config
 
         public List<string> RandomTags { get; set; }
 
-        public string ProcessingMag { get; set; }
+        public string ProcessingMsg { get; set; }
 
         public string Template { get; set; }
 

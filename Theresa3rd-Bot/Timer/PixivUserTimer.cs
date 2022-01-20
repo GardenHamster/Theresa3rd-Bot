@@ -73,7 +73,7 @@ namespace Theresa3rd_Bot.Timer
             {
                 int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
                 if (pixivSubscribe.PixivWorkInfoDto.body.isR18()) continue;
-                if (shelfLife > 0 && pixivSubscribe.PixivWorkInfoDto.body.createDate < DateTime.Now.AddMinutes(-1 * shelfLife)) continue;
+                if (shelfLife > 0 && pixivSubscribe.PixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
                     List<IChatMessage> chailList = new List<IChatMessage>();

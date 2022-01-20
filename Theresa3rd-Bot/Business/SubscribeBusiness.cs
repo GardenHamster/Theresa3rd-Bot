@@ -67,7 +67,7 @@ namespace Theresa3rd_Bot.Business
         {
             try
             {
-                string pixivUserIds = message.splitKeyWord(BotConfig.SubscribeConfig.PixivUser.RmCommand);
+                string pixivUserIds = message.splitKeyWord(BotConfig.SubscribeConfig.PixivUser.AddCommand);
                 if (pixivUserIds == null) pixivUserIds = "";
                 string[] pixivUserIdArr = pixivUserIds.Split(new string[] { ",", "，", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
                 if (pixivUserIdArr == null || pixivUserIdArr.Length == 0)
@@ -105,12 +105,20 @@ namespace Theresa3rd_Bot.Business
                             dbSubscribe.CreateDate = DateTime.Now;
                             dbSubscribe = subscribeDao.Insert(dbSubscribe);
                         }
+
                         if (subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, dbSubscribe.Id) > 0)
                         {
                             //关联订阅
                             await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师id[{pixivUserId}]已经被订阅了~"));
                             continue;
                         }
+
+
+                        SubscribeGroupPO subscribeGroup = new SubscribeGroupPO();
+                        subscribeGroup.GroupId = args.Sender.Group.Id;
+                        subscribeGroup.SubscribeId = dbSubscribe.Id;
+                        subscribeGroup = subscribeGroupDao.Insert(subscribeGroup);
+
 
                         List<IChatMessage> chatList = new List<IChatMessage>();
                         List<IChatMessage> workChatList = await pixivBusiness.getPixivNewestWorkAsync(session, dbSubscribe.SubscribeCode, dbSubscribe.Id);
@@ -120,7 +128,7 @@ namespace Theresa3rd_Bot.Business
                         }
                         else
                         {
-                            chatList.Add(new PlainMessage($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，以下是最新作品"));
+                            chatList.Add(new PlainMessage($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，以下是最新作品\r\n"));
                             chatList.AddRange(workChatList);
                         }
 
@@ -161,7 +169,7 @@ namespace Theresa3rd_Bot.Business
         {
             try
             {
-                string keyWord = message.splitKeyWord(BotConfig.SubscribeConfig.PixivUser.AddCommand);
+                string keyWord = message.splitKeyWord(BotConfig.SubscribeConfig.PixivUser.RmCommand);
                 if (string.IsNullOrEmpty(keyWord))
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要订阅的关键词，请确保指令格式正确"));

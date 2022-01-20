@@ -59,24 +59,26 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
-                if (instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.AddCommand))
+                if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.AddCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.AddCommand))
                 {
+                    if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
                     await subscribeBusiness.subscribePixivUserAsync(session, args, message);
                     requestRecordBusiness.addRecord(args, CommandType.Subscribe, message);
                     return;
                 }
 
-                if (instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.RmCommand))
+                if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.RmCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.RmCommand))
                 {
                     await subscribeBusiness.cancleSubscribePixivUserAsync(session, args, message);
                     requestRecordBusiness.addRecord(args, CommandType.Subscribe, message);
                     return;
                 }
 
-                if (instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
+                if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.Pixiv?.Command) && instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
                 {
                     if (BotConfig.PermissionsConfig.SetuGroups.Contains(groupId) == false) return;
                     if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
+                    if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
                     if (BusinessHelper.CheckMemberSTCoolingAsync(session, args).Result) return;
                     if (BusinessHelper.ChecekGroupSTCoolingAsync(session, args).Result) return;
                     if (BusinessHelper.CheckSTUseUpAsync(session, args).Result) return;

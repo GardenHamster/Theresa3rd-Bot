@@ -14,12 +14,12 @@ namespace Theresa3rd_Bot.Business
             websiteDao = new WebsiteDao();
         }
 
-        public WebsitePO updateWebsite(string code, string cookie, int expireMinutes)
+        public WebsitePO updateWebsite(string code, string cookie, int expireSeconds)
         {
             WebsitePO website = getOrInsertWebsite(code);
             website.Cookie = cookie;
             website.UpdateDate = DateTime.Now;
-            website.CookieExpireDate = DateTimeHelper.getDateTimeAfterMinutes(expireMinutes);
+            website.CookieExpireDate = DateTime.Now.AddSeconds(expireSeconds);
             websiteDao.Update(website);
             return website;
         }

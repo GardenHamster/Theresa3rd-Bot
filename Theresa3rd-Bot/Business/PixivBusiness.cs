@@ -106,7 +106,7 @@ namespace Theresa3rd_Bot.Business
 
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.Pixiv.ProcessingMsg) == false)
                 {
-                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.ProcessingMsg, " 正在拉取涩图~");
+                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.ProcessingMsg, null);
                     await Task.Delay(1000);
                 }
 

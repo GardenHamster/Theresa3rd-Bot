@@ -29,7 +29,9 @@ namespace Theresa3rd_Bot.Timer
             try
             {
                 timer.Enabled = false;
+                LogHelper.Info("开始扫描pixiv画师最新作品...");
                 SubscribeMethodAsync(source,e).Wait();
+                LogHelper.Info("pixiv画师作品扫描完毕...");
             }
             catch (Exception ex)
             {

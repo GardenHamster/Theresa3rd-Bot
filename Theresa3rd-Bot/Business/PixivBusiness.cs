@@ -150,6 +150,7 @@ namespace Theresa3rd_Bot.Business
 
                 try
                 {
+                    //发送群消息
                     List<IChatMessage> groupList = new List<IChatMessage>(chatList);
                     if (fileInfo == null)
                     {
@@ -167,30 +168,38 @@ namespace Theresa3rd_Bot.Business
                     LogHelper.Error(ex, "sendGeneralPixivImageAsync群消息发送失败");
                     throw;
                 }
-                
-                try
+
+
+                if (BotConfig.SetuConfig.SendPrivate)
                 {
-                    List<IChatMessage> memberList = new List<IChatMessage>(chatList);
-                    if (fileInfo == null)
+                    try
                     {
-                        memberList.AddRange(session.SplitToChainAsync(BotConfig.SetuConfig.Pixiv.DownErrorImg, UploadTarget.Temp).Result);
+                        //发送临时会话
+                        List<IChatMessage> memberList = new List<IChatMessage>(chatList);
+                        if (fileInfo == null)
+                        {
+                            memberList.AddRange(session.SplitToChainAsync(BotConfig.SetuConfig.Pixiv.DownErrorImg, UploadTarget.Temp).Result);
+                        }
+                        if (pixivWorkInfoDto.body.isR18() == false && fileInfo != null)
+                        {
+                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
+                        }
+                        await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, memberList.ToArray());
+                        await Task.Delay(1000);
                     }
-                    if (pixivWorkInfoDto.body.isR18() == false && fileInfo != null)
+                    catch (Exception ex)
                     {
-                        memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
+                        LogHelper.Error(ex, "sendGeneralPixivImageAsync临时消息发送失败");
                     }
-                    await session.SendFriendMessageAsync(args.Sender.Id, memberList.ToArray());
-                    await Task.Delay(1000);
                 }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex, "sendGeneralPixivImageAsync临时消息发送失败");
-                }
+
+                //进入CD状态
+                CoolingCache.SetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);
+                if (groupMsgId == 0 || BotConfig.SetuConfig.RevokeInterval == 0) return;
 
                 try
                 {
-                    CoolingCache.SetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);//进入CD状态
-                    if (groupMsgId == 0 || BotConfig.SetuConfig.RevokeInterval == 0) return;
+                    //等待撤回
                     await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
                     await session.RevokeMessageAsync(groupMsgId);
                 }

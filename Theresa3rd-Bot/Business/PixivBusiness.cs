@@ -143,40 +143,62 @@ namespace Theresa3rd_Bot.Business
                 FileInfo fileInfo = downImg(pixivWorkInfoDto, BotConfig.SetuConfig.Pixiv.DownWithPixivCat);
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
 
+                int groupMsgId = 0;
                 List<IChatMessage> chatList = new List<IChatMessage>();
                 chatList.Add(new PlainMessage($" {BotConfig.SetuConfig.MemberCD}秒后再来哦，今天剩余使用次数{todayLeftCount}次，本消息将在{3}秒后撤回，尽快保存哦"));
                 chatList.Add(new PlainMessage(getWorkInfoStr(pixivWorkInfo, fileInfo, DateTimeHelper.GetSecondDiff(startDateTime, DateTime.Now))));
 
-                List<IChatMessage> groupList = new List<IChatMessage>(chatList);
-                if (fileInfo == null)
+                try
                 {
-                    groupList.AddRange(session.SplitToChainAsync(BotConfig.SetuConfig.Pixiv.DownErrorImg).Result);
+                    List<IChatMessage> groupList = new List<IChatMessage>(chatList);
+                    if (fileInfo == null)
+                    {
+                        groupList.AddRange(session.SplitToChainAsync(BotConfig.SetuConfig.Pixiv.DownErrorImg).Result);
+                    }
+                    else if (pixivWorkInfoDto.body.isR18() == false)
+                    {
+                        groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                    }
+                    groupMsgId = await session.SendMessageWithAtAsync(args, groupList);
+                    await Task.Delay(1000);
                 }
-                else if (pixivWorkInfoDto.body.isR18() == false)
+                catch (Exception ex)
                 {
-                    groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                    LogHelper.Error(ex, "sendGeneralPixivImageAsync群消息发送失败");
+                    throw;
                 }
-                int groupMsgId = await session.SendMessageWithAtAsync(args, groupList);
-                await Task.Delay(1000);
-
-
-                List<IChatMessage> memberList = new List<IChatMessage>(chatList);
-                if (fileInfo == null)
+                
+                try
                 {
-                    groupList.AddRange(session.SplitToChainAsync(BotConfig.SetuConfig.Pixiv.DownErrorImg, UploadTarget.Friend).Result);
+                    List<IChatMessage> memberList = new List<IChatMessage>(chatList);
+                    if (fileInfo == null)
+                    {
+                        memberList.AddRange(session.SplitToChainAsync(BotConfig.SetuConfig.Pixiv.DownErrorImg, UploadTarget.Temp).Result);
+                    }
+                    if (pixivWorkInfoDto.body.isR18() == false && fileInfo != null)
+                    {
+                        memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
+                    }
+                    await session.SendFriendMessageAsync(args.Sender.Id, memberList.ToArray());
+                    await Task.Delay(1000);
                 }
-                if (pixivWorkInfoDto.body.isR18() == false && fileInfo != null)
+                catch (Exception ex)
                 {
-                    memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Friend, fileInfo.FullName));
+                    LogHelper.Error(ex, "sendGeneralPixivImageAsync临时消息发送失败");
                 }
-                int memberMsgId = await session.SendFriendMessageAsync(args.Sender.Id, memberList.ToArray());
-                await Task.Delay(1000);
 
-                CoolingCache.SetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);//进入CD状态
+                try
+                {
+                    CoolingCache.SetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);//进入CD状态
+                    if (groupMsgId == 0 || BotConfig.SetuConfig.RevokeInterval == 0) return;
+                    await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
+                    await session.RevokeMessageAsync(groupMsgId);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex, "sendGeneralPixivImageAsync消息撤回失败");
+                }
 
-                if (BotConfig.SetuConfig.RevokeInterval == 0) return;
-                await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
-                await session.RevokeMessageAsync(groupMsgId);
             }
             catch (Exception ex)
             {

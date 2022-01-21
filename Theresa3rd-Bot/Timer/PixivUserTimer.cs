@@ -2,6 +2,7 @@
 using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
@@ -54,9 +55,10 @@ namespace Theresa3rd_Bot.Timer
             {
                 try
                 {
+                    DateTime startTime = DateTime.Now;
                     List<PixivSubscribe> pixivSubscribeList = pixivBusiness.getPixivUserSubscribeWork(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
-                    await sendGroupSubscribeAsync(subscribeTask, pixivSubscribeList);
+                    await sendGroupSubscribeAsync(subscribeTask, pixivSubscribeList, startTime);
                 }
                 catch (Exception ex)
                 {
@@ -69,25 +71,27 @@ namespace Theresa3rd_Bot.Timer
             }
         }
 
-        private static async Task sendGroupSubscribeAsync(SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList)
+        private static async Task sendGroupSubscribeAsync(SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList, DateTime startTime)
         {
+            PixivBusiness pixivBusiness = new PixivBusiness();
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
                 int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
                 if (pixivSubscribe.PixivWorkInfoDto.body.isR18()) continue;
                 if (shelfLife > 0 && pixivSubscribe.PixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+                FileInfo fileInfo = pixivBusiness.downImg(pixivSubscribe.PixivWorkInfoDto);
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
                     List<IChatMessage> chailList = new List<IChatMessage>();
                     chailList.Add(new PlainMessage($"pixiv画师[{subscribeTask.SubscribeInfo.SubscribeName}]发布了新作品："));
-                    chailList.Add(new PlainMessage(pixivSubscribe.WorkInfo));
-                    if (pixivSubscribe.WorkFileInfo == null)
+                    chailList.Add(new PlainMessage(pixivBusiness.getWorkInfoStr(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
+                    if (fileInfo == null)
                     {
                         chailList.AddRange(MiraiHelper.Session.SplitToChainAsync(BotConfig.SubscribeConfig.PixivUser.DownErrorImg).Result);
                     }
                     else
                     {
-                        chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, pixivSubscribe.WorkFileInfo.FullName));
+                        chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                     }
                     await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
                 }

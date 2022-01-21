@@ -8,10 +8,7 @@ namespace Theresa3rd_Bot.Model.Subscribe
     {
         public SubscribeRecordPO SubscribeRecord { get; set; }
 
-        public FileInfo WorkFileInfo { get; set; }
-
         public PixivWorkInfoDto PixivWorkInfoDto { get; set; }
 
-        public string WorkInfo { get; set; }
     }
 }

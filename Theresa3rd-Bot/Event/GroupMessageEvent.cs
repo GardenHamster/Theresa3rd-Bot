@@ -93,9 +93,7 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartsWith("test"))
                 {
-                    IMessageChainBuilder builder = session.GetMessageChainBuilder();
-                    builder.AddPlainMessage("Hello World!");
-                    int msgId = await session.SendGroupMessageAsync(args.Sender.Group.Id, builder);
+                    await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, new PlainMessage("hello word"));
                     return;
                 }
             }
@@ -104,13 +102,6 @@ namespace Theresa3rd_Bot.Event
                 await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.ErrorMsg, " 出了点小问题，再试一次吧~");
                 LogHelper.Error(ex, "GroupMessageEvent异常");
             }
-
-
-            //IChatMessage[] chain = new IChatMessage[] {
-            //    new AtMessage(args.Sender.Id,""),
-            //    new PlainMessage("emmm\nemmmm")
-            //};
-            //await session.SendGroupMessageAsync(args.Sender.Group.Id, chain);
 
             args.BlockRemainingHandlers = true;
 

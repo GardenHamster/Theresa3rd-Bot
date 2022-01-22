@@ -22,7 +22,7 @@ namespace Theresa3rd_Bot.Timer
                 if (reminderTimer.AtAll == true) chainList.Add(new Mirai.CSharp.HttpApi.Models.ChatMessages.AtAllMessage());
                 if (reminderTimer.AtMembers != null && reminderTimer.AtMembers.Count > 0)
                 {
-                    foreach (var memberId in reminderTimer.AtMembers) chainList.Add(new Mirai.CSharp.HttpApi.Models.ChatMessages.AtMessage(memberId, ""));
+                    foreach (var memberId in reminderTimer.AtMembers) chainList.Add(new Mirai.CSharp.HttpApi.Models.ChatMessages.AtMessage(memberId));
                 }
                 chainList.AddRange(BusinessHelper.SplitToChainAsync(MiraiHelper.Session, reminderTimer.Template).Result);
                 foreach (var groupId in reminderTimer.Groups)

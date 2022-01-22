@@ -30,7 +30,7 @@ namespace Theresa3rd_Bot.Event
             if (string.IsNullOrEmpty(template)) return;
             List<IChatMessage> atList = new List<IChatMessage>()
             {
-                new AtMessage(memberId, ""),
+                new AtMessage(memberId),
                 new PlainMessage("\n")
             };
             List<IChatMessage> templateList = BusinessHelper.SplitToChainAsync(client, template).Result;

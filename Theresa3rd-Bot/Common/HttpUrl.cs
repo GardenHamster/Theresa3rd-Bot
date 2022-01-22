@@ -27,7 +27,7 @@ namespace Theresa3rd_Bot.Common
             string keyword = System.Web.HttpUtility.UrlEncode(searchWord).Replace("+", " ");
             string mode = isR18 ? "r18" : "safe";
             string s_mode = isMatchAll ? "s_tag_full" : "s_tag";//s_tag_full/s_tag/s_tc
-            return String.Format("{0}/ajax/search/illustrations/{1}?order=date_d&mode={2}&p={3}&s_mode={4}&type=illust_and_ugoira&lang=zh", PixivHomeUrl, keyword, mode, pageNo, s_mode);
+            return $"{PixivHomeUrl}/ajax/search/illustrations/{keyword}?order=date_d&mode={mode}&p={pageNo}&s_mode={s_mode}&type=illust_and_ugoira&lang=zh";
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getPixivWorkInfoUrl(string workId)
         {
-            return String.Format("{0}/ajax/illust/{1}?lang=zh", PixivHomeUrl, workId);
+            return $"{PixivHomeUrl}/ajax/illust/{workId}?lang=zh";
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getPixivUserWorkInfoUrl(string userid)
         {
-            return String.Format("{0}/ajax/user/{1}/profile/top?lang=zh", PixivHomeUrl, userid);
+            return $"{PixivHomeUrl}/ajax/user/{userid}/profile/top?lang=zh";
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getPixivUgoiraMetaUrl(string workId)
         {
-            return String.Format("{0}/ajax/illust/{1}/ugoira_meta?lang=zh", PixivHomeUrl, workId);
+            return $"{PixivHomeUrl}/ajax/illust/{workId}/ugoira_meta?lang=zh";
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Theresa3rd_Bot.Common
             string keyword = System.Web.HttpUtility.UrlEncode(searchWord).Replace("+", " ");
             string mode = "safe";
             string s_mode = "s_tag";//s_tag_full/s_tag
-            return String.Format("{0}/tags/{1}/illustrations?mode={2}&s_mode={3}", PixivHomeUrl, keyword, mode, s_mode);
+            return $"{PixivHomeUrl}/tags/{keyword}/illustrations?mode={mode}&s_mode={s_mode}";
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getPixivWorkInfoReferer(string workId)
         {
-            return String.Format("{0}/artworks/{1}", PixivHomeUrl, workId);
+            return $"{PixivHomeUrl}/artworks/{workId}";
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getPixivUserWorkInfoReferer(string userid)
         {
-            return String.Format("{0}/user/{1}", PixivHomeUrl, userid);
+            return $"{PixivHomeUrl}/user/{userid}";
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getPixivUgoiraMetaReferer(string workId)
         {
-            return String.Format("{0}/artworks/{1}", PixivHomeUrl, workId);
+            return $"{PixivHomeUrl}/artworks/{workId}";
         }
 
         /// <summary>
@@ -110,24 +110,8 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getPixivArtworksReferer(string workId)
         {
-            return String.Format("{0}/artworks/{1}", PixivHomeUrl, workId);
+            return $"{PixivHomeUrl}/artworks/{workId}";
         }
-
-        /// <summary>
-        /// pixivcat图片代理地址
-        /// </summary>
-        /// <param name="workId"></param>
-        /// <param name="imgCount"></param>
-        /// <param name="imgIndex"></param>
-        /// <param name="imgSuffix"></param>
-        /// <param name="withHttps"></param>
-        /// <returns></returns>
-        public static string getPixivCatImgUrl(string workId, int imgCount = 1, int imgIndex = 1, string imgSuffix = "png", bool withHttps = true)
-        {
-            string imgNo = imgCount > 1 ? workId + "-" + imgIndex : "";
-            return string.Format("{0}pixiv.cat/{1}{2}.{3}", withHttps ? "https://" : "", workId, imgNo, imgSuffix);
-        }
-
 
         /*---------------------------------------------------------------米游社-----------------------------------------------------------------------*/
 

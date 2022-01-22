@@ -20,17 +20,6 @@ namespace Theresa3rd_Bot.Event
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IGroupMessageEventArgs, GroupMessageEventArgs>))]
     public class GroupMessageEvent : IMiraiHttpMessageHandler<IGroupMessageEventArgs>
     {
-        private PixivBusiness pixivBusiness;
-        private SubscribeBusiness subscribeBusiness;
-        private RequestRecordBusiness requestRecordBusiness;
-
-        public GroupMessageEvent()
-        {
-            this.pixivBusiness = new PixivBusiness();
-            this.subscribeBusiness = new SubscribeBusiness();
-            this.requestRecordBusiness = new RequestRecordBusiness();
-        }
-
         public async Task HandleMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             try
@@ -63,16 +52,16 @@ namespace Theresa3rd_Bot.Event
                 {
                     if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
                     if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId) == false) return;
-                    await subscribeBusiness.subscribePixivUserAsync(session, args, message);
-                    requestRecordBusiness.addRecord(args, CommandType.Subscribe, message);
+                    await new SubscribeBusiness().subscribePixivUserAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     return;
                 }
 
                 if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.RmCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.RmCommand))
                 {
                     if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId) == false) return;
-                    await subscribeBusiness.cancleSubscribePixivUserAsync(session, args, message);
-                    requestRecordBusiness.addRecord(args, CommandType.Subscribe, message);
+                    await new SubscribeBusiness().cancleSubscribePixivUserAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     return;
                 }
 
@@ -86,8 +75,8 @@ namespace Theresa3rd_Bot.Event
                     if (BusinessHelper.CheckSTUseUpAsync(session, args).Result) return;
                     if (BusinessHelper.CheckHandingAsync(session, args).Result) return;
                     CoolingCache.SetGroupSTCooling(groupId, memberId);
-                    await pixivBusiness.sendGeneralPixivImageAsync(session, args, message);
-                    requestRecordBusiness.addRecord(args, CommandType.Setu, message);
+                    await new PixivBusiness().sendGeneralPixivImageAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
                     return;
                 }
 
@@ -102,9 +91,10 @@ namespace Theresa3rd_Bot.Event
                 await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.ErrorMsg, " 出了点小问题，再试一次吧~");
                 LogHelper.Error(ex, "GroupMessageEvent异常");
             }
-
-            args.BlockRemainingHandlers = true;
-
+            finally
+            {
+                args.BlockRemainingHandlers = true;
+            }
         }
 
 

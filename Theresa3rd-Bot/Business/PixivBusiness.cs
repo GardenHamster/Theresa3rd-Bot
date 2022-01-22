@@ -130,7 +130,7 @@ namespace Theresa3rd_Bot.Business
                 else
                 {
                     if (BusinessHelper.CheckSTCustomEnableAsync(session, args).Result == false) return;
-                    pixivWorkInfoDto = getRandomWork(tagName);//获取随机一个作品
+                    pixivWorkInfoDto = getRandomWorkAsync(tagName).Result;//获取随机一个作品
                 }
 
                 if (pixivWorkInfoDto == null)
@@ -267,8 +267,8 @@ namespace Theresa3rd_Bot.Business
         {
             List<string> tagList = BotConfig.SetuConfig.Pixiv.RandomTags;
             if (tagList == null || tagList.Count == 0) return null;
-            string tagName = tagList[RandomHelper.getRandomBetween(0, tagList.Count)];
-            return getRandomWork(tagName);
+            string tagName = tagList[new Random().Next(0, tagList.Count)];
+            return getRandomWorkAsync(tagName).Result;
         }
 
         /// <summary>
@@ -314,7 +314,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivicSearchDto"></param>
         /// <returns></returns>
-        protected PixivWorkInfoDto getRandomWork(string tagName)
+        protected async Task<PixivWorkInfoDto> getRandomWorkAsync(string tagName)
         {
             int pageCount = 3;
             PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, false);
@@ -368,9 +368,8 @@ namespace Theresa3rd_Bot.Business
             Task[] tasks = new Task[threadCount];
             for (int i = 0; i < taskList.Length; i++)
             {
-                List<PixivIllust> illustList = taskList[i];
-                tasks[i] = Task.Factory.StartNew(() => getPixivWorkInfoMethod(illustList, isScreen));
-                Thread.Sleep(RandomHelper.getRandomBetween(500, 1000));//将每条线程的间隔错开
+                tasks[i] = Task.Factory.StartNew(() => getPixivWorkInfoMethod(taskList[i], isScreen));
+                await Task.Delay(RandomHelper.getRandomBetween(500, 1000));//将每条线程的间隔错开
             }
             Task.WaitAll(tasks);
 

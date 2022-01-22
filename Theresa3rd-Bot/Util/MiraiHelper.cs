@@ -23,17 +23,17 @@ namespace Theresa3rd_Bot.Util
         {
             try
             {
-                Services = new ServiceCollection().AddMiraiBaseFramework()   // 表示使用基于基础框架的构建器
+                Services = new ServiceCollection().AddMiraiBaseFramework()
                                                                .Services
-                                                               .AddDefaultMiraiHttpFramework() // 表示使用 mirai-api-http 实现的构建器
-                                                               .AddInvoker<MiraiHttpMessageHandlerInvoker>() // 使用默认的调度器
+                                                               .AddDefaultMiraiHttpFramework()
+                                                               .AddInvoker<MiraiHttpMessageHandlerInvoker>()
                                                                .AddHandler<BotInvitedJoinGroupEvent>()
                                                                .AddHandler<FriendMessageEvent>()
                                                                .AddHandler<GroupApplyEvent>()
                                                                .AddHandler<GroupMessageEvent>()
                                                                .AddHandler<NewFriendApplyEvent>()
                                                                .AddHandler<GroupMemberJoinedEvent>()
-                                                               .AddClient<MiraiHttpSession>() // 使用默认的客户端
+                                                               .AddClient<MiraiHttpSession>()
                                                                .Services
                                                                .Configure<MiraiHttpSessionOptions>(options =>
                                                                {
@@ -43,11 +43,10 @@ namespace Theresa3rd_Bot.Util
                                                                })
                                                                .AddLogging()
                                                                .BuildServiceProvider();
-                Scope = Services.CreateScope();
+                Scope = Services.CreateAsyncScope();
                 Services = Scope.ServiceProvider;
-                Session = Services.GetRequiredService<IMiraiHttpSession>(); // 大部分服务都基于接口注册, 请使用接口作为类型解析
+                Session = Services.GetRequiredService<IMiraiHttpSession>();
                 await Session.ConnectAsync(BotConfig.MiraiConfig.BotQQ);
-
                 while (true)
                 {
                     if (Console.ReadLine() == "exit")
@@ -60,7 +59,6 @@ namespace Theresa3rd_Bot.Util
             {
                 LogHelper.Error(ex,"连接到mcl失败");
             }
-            
         }
 
     }

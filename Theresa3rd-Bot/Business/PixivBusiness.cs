@@ -623,7 +623,7 @@ namespace Theresa3rd_Bot.Business
                 string imgReferer = HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId);
                 string imgUrl = pixivWorkInfo.body.urls.original;
                 if (BotConfig.GeneralConfig.DownWithProxy) imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
-                string fullImageSavePath = FilePath.getDownImgSavePath() + fullFileName;
+                string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
                 return HttpHelper.downImg(imgUrl, fullImageSavePath, imgReferer, BotConfig.WebsiteConfig.Pixiv.Cookie);
             }
             catch (Exception ex)
@@ -638,14 +638,14 @@ namespace Theresa3rd_Bot.Business
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             headerDic.Add("Referer", HttpUrl.getPixivUgoiraMetaReferer(pixivWorkInfo.body.illustId));
             PixivUgoiraMetaDto pixivUgoiraMetaDto = getPixivUgoiraMetaDto(pixivWorkInfo.body.illustId);
-            string fullZipSavePath = FilePath.getDownImgSavePath() + StringHelper.get16UUID() + ".zip";
+            string fullZipSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{StringHelper.get16UUID()}.zip");
             HttpHelper.HttpDownload(pixivUgoiraMetaDto.body.src, fullZipSavePath, headerDic);
-            string unZipDirPath = FilePath.getDownImgSavePath() + pixivWorkInfo.body.illustId;
+            string unZipDirPath = Path.Combine(FilePath.getDownImgSavePath(), pixivWorkInfo.body.illustId);
             ZipHelper.ZipToFile(fullZipSavePath, unZipDirPath);
             DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
             FileInfo[] files = directoryInfo.GetFiles();
             List<PixivUgoiraMetaFrames> frames = pixivUgoiraMetaDto.body.frames;
-            string fullGifSavePath = FilePath.getDownImgSavePath() + pixivWorkInfo.body.illustId + ".gif";
+            string fullGifSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{pixivWorkInfo.body.illustId}.gif");
             using (var gif = AnimatedGif.AnimatedGif.Create(fullGifSavePath, 0))
             {
                 foreach (var file in files)
@@ -659,7 +659,7 @@ namespace Theresa3rd_Bot.Business
             }
             //string tomcatGifSavePath = FilePath.getGifImgPath();
             //if (Directory.Exists(tomcatGifSavePath) == false) Directory.CreateDirectory(tomcatGifSavePath);
-            //string fullTomcatGifSavePath = tomcatGifSavePath + pixivWorkInfo.body.illustId + ".gif";
+            //string fullTomcatGifSavePath = Path.Combine(tomcatGifSavePath, $"{pixivWorkInfo.body.illustId}.gif");
             //if (File.Exists(fullTomcatGifSavePath)) File.Delete(fullTomcatGifSavePath);
             //File.Copy(fullGifSavePath, fullTomcatGifSavePath);
             return new FileInfo(fullGifSavePath);

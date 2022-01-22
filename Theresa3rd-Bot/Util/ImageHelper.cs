@@ -13,7 +13,7 @@ namespace Theresa3rd_Bot.Util
             ImageCodecInfo imageCodecInfo = GetEncoderInfo("image/jpeg");
             EncoderParameters myEncoderParameters = new EncoderParameters(1);
             myEncoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 100L);
-            string fullSavePath = Path.Combine(savePath, StringHelper.get16UUID() + ".jpg");
+            string fullSavePath = Path.Combine(savePath, $"{StringHelper.get16UUID()}.jpg");
             bmp.Save(fullSavePath, imageCodecInfo, myEncoderParameters);
             return new FileInfo(fullSavePath);
         }
@@ -23,7 +23,7 @@ namespace Theresa3rd_Bot.Util
             ImageCodecInfo imageCodecInfo = GetEncoderInfo("image/png");
             EncoderParameters myEncoderParameters = new EncoderParameters(1);
             myEncoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 100L);
-            string fullSavePath = Path.Combine(savePath, StringHelper.get16UUID() + ".png");
+            string fullSavePath = Path.Combine(savePath, $"{StringHelper.get16UUID()}.png");
             bmp.Save(fullSavePath, imageCodecInfo, myEncoderParameters);
             return new FileInfo(fullSavePath);
         }

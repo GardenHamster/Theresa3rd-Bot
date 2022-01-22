@@ -5,7 +5,9 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -82,6 +84,7 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartsWith("test"))
                 {
+                    string aaa = AppContext.BaseDirectory;
                     await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, new PlainMessage("hello word"));
                     return;
                 }

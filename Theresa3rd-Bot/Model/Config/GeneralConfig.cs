@@ -18,5 +18,7 @@ namespace Theresa3rd_Bot.Model.Config
         public string PixivProxy { get; set; }
 
         public bool DownWithProxy { get; set; }
+
+        public string SetuCustomDisableMsg { get; set; }
     }
 }

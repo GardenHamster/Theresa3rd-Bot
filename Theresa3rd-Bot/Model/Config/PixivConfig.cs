@@ -15,10 +15,6 @@ namespace Theresa3rd_Bot.Model.Config
 
         public string ErrorMsg { get; set; }
 
-        public bool CustomEnable { get; set; }
-
-        public string CustomDisableMsg { get; set; }
-
         public PixivRandomMode RandomMode { get; set; }
 
         public List<string> RandomTags { get; set; }

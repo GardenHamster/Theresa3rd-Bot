@@ -10,10 +10,6 @@
 
         public string ErrorMsg { get; set; }
 
-        public bool CustomEnable { get; set; }
-
-        public string CustomDisableMsg { get; set; }
-
         public string ProcessingMag { get; set; }
 
         public string Template { get; set; }

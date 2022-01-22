@@ -109,20 +109,18 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<bool> CheckSTCustomEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
-            if (BotConfig.SetuConfig.Pixiv.CustomEnable) return true;
-            await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CustomDisableMsg, " 自定义功能已关闭~");
+            if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(args.Sender.Group.Id)) return true;
+            await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.SetuCustomDisableMsg, " 自定义功能已关闭~");
             return false;
         }
 
         public static int GetSTLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
-            //if (Setting.Permissions.LimitlessGroups.Contains(e.FromGroup.Id)) return Setting.Robot.MaxSTUseOneDay;
-            //FunctionRecordBusiness functionRecordBusiness = new FunctionRecordBusiness();
-            //int[] functionTypeArr = new int[] { FunctionType.PixivicST.TypeId, FunctionType.PixivGeneralST.TypeId, FunctionType.PixivR18ST.TypeId };
-            //int todayUseCount = functionRecordBusiness.getUsedCountToday(e.FromGroup.Id, e.FromQQ.Id, functionTypeArr);
-            //int leftToday = Setting.Robot.MaxSTUseOneDay - todayUseCount - 1;
-            //return leftToday < 0 ? 0 : leftToday;
-            return BotConfig.SetuConfig.MaxDaily;
+            if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
+            RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
+            int todayUseCount = requestRecordBusiness.getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
+            int leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
+            return leftToday < 0 ? 0 : leftToday;
         }
 
         /// <summary>

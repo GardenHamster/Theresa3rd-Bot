@@ -718,7 +718,14 @@ namespace Theresa3rd_Bot.Business
             {
                 string imgUrl = pixivWorkInfo.urls.original.Replace("https://i.pximg.net", proxy);
                 if (i > 0) imgUrl = imgUrl.Replace("_p0.", $"_p{i}.");
-                LinkStr.AppendLine(imgUrl);
+                if (i < endCount - 1)
+                {
+                    LinkStr.AppendLine(imgUrl);
+                }
+                else
+                {
+                    LinkStr.Append(imgUrl);
+                }
             }
             return LinkStr.ToString();
         }

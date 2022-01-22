@@ -7,13 +7,14 @@
     DownErrorImg:           '[image:C:\BotImg\face\downError.png]'      #图片下载失败时的替代图片
     PixivProxy:             'https://i.pixiv.re'                        #图片反向代理地址
     DownWithProxy:          false                                       #通过代理下载图片
-
+    SetuCustomDisableMsg:   '自定义功能已关闭！'                          #禁用自定义时返回的消息
 
 Permissions:
     AcceptGroups:           [284196625]                                 #白名单，只处理这些群的消息，黑名单和白名单同时为空时则处理所有群消息
     RefuseGroups:           []                                          #黑名单，不处理这些群的消息，黑名单和白名单同时设值时则只有黑名单生效
     SuperManagers:          [1524514426]                                #超级管理员列表,可以使用管理指令
     SetuGroups:             [284196625]                                 #拥有涩图权限的群
+    SetuCustomGroups:       [284196625]                                 #允许查找自定义涩图的群
     SaucenaoGroups:         [284196625]                                 #拥有以图搜图权限的群
     SubscribeGroups:        [284196625]                                 #拥有订阅权限的群
 
@@ -58,8 +59,6 @@ Setu:                                                                   #色图�
         Command:            '瑟图'                                      #命令，用法：#瑟图合法萝莉
         DisableMsg:         '不可以色色！'                               #功能未启用时返回的消息
         ErrorMsg:           '申请色色失败！请重新尝试'                    #发生错误时返回的消息
-        CustomEnable:       true                                        #是否允许查找自定义涩图，如:#涩图可可萝
-        CustomDisableMsg:   '自定义功能已关闭！'                         #禁用自定义时返回的消息
         ProcessingMag:      '正在使用色图探测器探测你要的色图...'         #开始查找前返回的消息
         Template:           ''
     Pixiv:                                                              #Pixiv图床https://www.pixiv.net
@@ -68,9 +67,7 @@ Setu:                                                                   #色图�
         DisableMsg:         '不可以色色！'                               #功能未启用时返回的消息
         NotFoundMsg:        '色图探测器毫无反应，找不到你要的色图'         #找不到相应色图时返回的消息
         ErrorMsg:           '申请色色失败！请重新尝试'                    #发生错误时返回的消息
-        CustomEnable:       true                                        #是否允许查找自定义涩图，如:#涩图可可萝，值为false将根据 RandomMode 中的设定查找图片
-        CustomDisableMsg:   '自定义功能已关闭！'                          #禁用自定义时返回的消息
-        RandomMode:         1                                           #1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品
+        RandomMode:         1                                           #自定义关闭时的获取图片的模式，1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品
         RandomTags:         ['德丽莎','テレサ・アポカリプス']             #没有指定标签时随机获取的标签
         ProcessingMsg:      '正在使用色图探测器探测你要的色图...'          #开始查找前返回的消息
         Template:           |                                           #消息模版
@@ -78,7 +75,8 @@ Setu:                                                                   #色图�
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
                             收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，
                             耗时：{CostSecond}s，标签图片：{RelevantCount}张，作品图片:{PageCount}张
-                            标签：{Tags}\r\n{Urls}
+                            标签：{Tags}
+                            {Urls}
         MinBookmark:        800                                         #最低收藏数，用于判断涩图是否合格(标签搜索时试用)
         MinBookRate:        0.05                                        #最低收藏率，收藏数/浏览数(标签搜索时试用)
         CookieExpire:       1296000                                     #cookie失效时间(秒)，超过该天数后需要使用命令更新cookie，建议cookie每15天更新一次
@@ -108,7 +106,8 @@ Subscribe:                                                              #订阅�
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
                             收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，
                             耗时：{CostSecond}s，标签图片：{RelevantCount}张，作品图片:{PageCount}张
-                            标签：{Tags}\r\n{Urls}
+                            标签：{Tags}
+                            {Urls}
         ScanInterval:       3600                                        #扫描间隔(秒)
         ShelfLife:          43200                                       #保质期(秒),超过保质期将不会推送,0表示永不过期
     PixivTag:                                                           #p站标签

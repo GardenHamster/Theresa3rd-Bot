@@ -84,7 +84,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<bool> CheckSTUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
-            if (BotConfig.SetuConfig.MaxDaily == 0) return false;
+            if (BotConfig.SetuConfig.MaxDaily <= 0) return true;
             int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
             if (useCount < BotConfig.SetuConfig.MaxDaily) return false;
             await session.SendMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));

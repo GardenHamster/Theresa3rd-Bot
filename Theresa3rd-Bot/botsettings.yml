@@ -50,7 +50,7 @@ Setu:                                                                   #色图�
     MemberCD:               30                                          #独立CD(秒)，单个群员使用命令后需要等待的CD
     NoneCDGroups:           []                                          #0CD群
     NoneCDMembers:          []                                          #0CD群员
-    MaxDaily:               0                                           #每人每日最大使用次数,0表示无限制
+    MaxDaily:               20                                          #每人每日最大使用次数,0表示无可用次数
     ImgSavePath:            'C:\BotImg\download'                        #图片存放目录
     RevokeInterval:         60                                          #N秒后撤回,0表示不撤回
     SendPrivate:            false                                       #私聊发送,需要添加机器人为好友

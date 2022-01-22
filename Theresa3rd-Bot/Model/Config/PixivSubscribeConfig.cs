@@ -2,8 +2,6 @@
 {
     public class PixivSubscribeConfig: BaseSubscribeConfig
     {
-        public string DownErrorImg { get; set; }
-
         public int ShelfLife { get; set; }
     }
 }

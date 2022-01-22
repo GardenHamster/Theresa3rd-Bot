@@ -15,10 +15,6 @@ namespace Theresa3rd_Bot.Model.Config
 
         public string ErrorMsg { get; set; }
 
-        public string DownErrorImg { get; set; }
-
-        public bool DownWithPixivCat { get; set; }
-
         public bool CustomEnable { get; set; }
 
         public string CustomDisableMsg { get; set; }

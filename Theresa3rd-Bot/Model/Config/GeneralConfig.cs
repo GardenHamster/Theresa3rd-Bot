@@ -12,5 +12,11 @@ namespace Theresa3rd_Bot.Model.Config
         public List<long> ErrorGroups { get; set; }
 
         public string ErrorMsg { get; set; }
+
+        public string DownErrorImg { get; set; }
+
+        public string PixivProxy { get; set; }
+
+        public bool DownWithProxy { get; set; }
     }
 }

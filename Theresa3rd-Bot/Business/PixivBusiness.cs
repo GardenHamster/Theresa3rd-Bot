@@ -766,7 +766,8 @@ namespace Theresa3rd_Bot.Business
             string json = HttpHelper.HttpGet(postUrl, headerDic, 10 * 1000);
             if (string.IsNullOrEmpty(json) == false && json.Contains("\"illusts\":[]"))
             {
-                throw new Exception($"pixiv用户{userId}作品列表illusts为空,cookie可能已经过期");
+                //throw new Exception($"pixiv用户{userId}作品列表illusts为空,cookie可能已经过期");
+                return null;
             }
             return JsonConvert.DeserializeObject<PixivUserWorkInfoDto>(json);
         }

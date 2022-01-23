@@ -183,7 +183,7 @@ namespace Theresa3rd_Bot.Business
                 SubscribePO dbSubscribe = subscribeDao.getSubscribe(keyWord, SubscribeType.P站画师);
                 if (dbSubscribe == null)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 取消订阅失败，这个订阅不存在"));
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订失败，这个订阅不存在"));
                     return;
                 }
                 bool isMemberSubscribed = subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, dbSubscribe.Id) > 0;
@@ -195,10 +195,10 @@ namespace Theresa3rd_Bot.Business
                 int successCount = subscribeGroupDao.delSubscribe(args.Sender.Group.Id, dbSubscribe.Id);
                 if (successCount == 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 取消订阅失败"));
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订失败"));
                     return;
                 }
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 取消成功，以后不会再推送这个画师的作品了哦~"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订成功，以后不会再推送这个画师的作品了哦~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)

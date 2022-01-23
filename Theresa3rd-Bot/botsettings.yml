@@ -7,12 +7,14 @@
     DownErrorImg:           '[image:C:\BotImg\face\downError.png]'              #图片下载失败时的替代图片
     PixivProxy:             'https://i.pixiv.re'                                #图片反向代理地址
     DownWithProxy:          false                                               #通过代理下载图片
-    SetuCustomDisableMsg:   '自定义功能已关闭！'                                #禁用自定义时返回的消息
+    DisableMsg:             '该功能未开启'                                      #功能未启用时返回的消息
+    NoPermissionsMsg:       '该功能未授权'                                      #功能未授权时返回的消息
+    ManagersRequiredMsg:    '该功能需要管理员执行'                              #需要管理员权限时返回的消息
+    SetuCustomDisableMsg:   '自定义功能已关闭'                                  #禁用自定义时返回的消息
 
 Permissions:
-    AcceptGroups:           [284196625]                                         #白名单，只处理这些群的消息，黑名单和白名单同时为空时则处理所有群消息
-    RefuseGroups:           []                                                  #黑名单，不处理这些群的消息，黑名单和白名单同时设值时则只有黑名单生效
     SuperManagers:          [1524514426]                                        #超级管理员列表,可以使用管理指令
+    AcceptGroups:           [284196625]                                         #白名单，只处理这些群的消息
     SetuGroups:             [284196625]                                         #拥有涩图权限的群
     SetuCustomGroups:       [284196625]                                         #允许查找自定义涩图的群
     SaucenaoGroups:         [284196625]                                         #拥有以图搜图权限的群

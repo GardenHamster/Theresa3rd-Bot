@@ -9,8 +9,6 @@ namespace Theresa3rd_Bot.Model.Config
     {
         public List<long> AcceptGroups { get; set; }
 
-        public List<long> RefuseGroups { get; set; }
-
         public List<long> SuperManagers { get; set; }
 
         public List<long> SetuGroups { get; set; }

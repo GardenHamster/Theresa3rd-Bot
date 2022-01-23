@@ -19,6 +19,12 @@ namespace Theresa3rd_Bot.Model.Config
 
         public bool DownWithProxy { get; set; }
 
+        public string DisableMsg { get; set; }
+
+        public string NoPermissionsMsg { get; set; }
+
+        public string ManagersRequiredMsg { get; set; }
+
         public string SetuCustomDisableMsg { get; set; }
     }
 }

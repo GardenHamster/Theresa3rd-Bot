@@ -52,8 +52,9 @@ namespace Theresa3rd_Bot.Event
 
                 if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.AddCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.AddCommand))
                 {
+                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result) return;
+                    if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser).Result == false) return;
                     if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
-                    if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId) == false) return;
                     await new SubscribeBusiness().subscribePixivUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     return;
@@ -61,7 +62,8 @@ namespace Theresa3rd_Bot.Event
 
                 if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.RmCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.RmCommand))
                 {
-                    if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId) == false) return;
+                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result) return;
+                    if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser).Result == false) return;
                     await new SubscribeBusiness().cancleSubscribePixivUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     return;
@@ -69,7 +71,6 @@ namespace Theresa3rd_Bot.Event
 
                 if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.Pixiv?.Command) && instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
                 {
-                    if (BotConfig.PermissionsConfig.SetuGroups.Contains(groupId) == false) return;
                     if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
                     if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
                     if (BusinessHelper.CheckMemberSTCoolingAsync(session, args).Result) return;

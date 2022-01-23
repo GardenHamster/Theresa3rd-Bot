@@ -39,11 +39,7 @@ namespace Theresa3rd_Bot.Util
             if (permissionsConfig == null) return false;
             List<long> acceptGroups = permissionsConfig.AcceptGroups;
             if (acceptGroups == null) return false;
-            List<long> refuseGroups = permissionsConfig.RefuseGroups;
-            if (refuseGroups == null) return false;
-            if (refuseGroups.Contains(groupId)) return false;
-            if (acceptGroups.Count > 0 && acceptGroups.Contains(groupId) == false) return false;
-            return true;
+            return acceptGroups.Contains(groupId);
         }
 
         /// <summary>
@@ -54,18 +50,66 @@ namespace Theresa3rd_Bot.Util
         public static async Task<bool> CheckPixivCookieExpireAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (DateTime.Now <= BotConfig.WebsiteConfig.Pixiv.CookieExpireDate) return false;
-            await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧~");
+            await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
+            return true;
+        }
+
+        /// <summary>
+        /// 检查订阅功能是否开启
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public static async Task<bool> CheckSubscribeEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, BaseSubscribeConfig subscribeConfig)
+        {
+            if (subscribeConfig != null && subscribeConfig.Enable) return true;
+            await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.DisableMsg, "该功能未开启");
+            return false;
+        }
+
+        /// <summary>
+        /// 检查涩图功能是否可用
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static async Task<bool> CheckSTEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            if (BotConfig.PermissionsConfig.SetuGroups.Contains(args.Sender.Group.Id) == false)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                return false;
+            }
+            if (BotConfig.SetuConfig?.Pixiv == null || BotConfig.SetuConfig.Pixiv.Enable == false)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.DisableMsg, "该功能已关闭");
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 检查涩图功能是否可用
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static async Task<bool> CheckSuperManagersAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            if (BotConfig.PermissionsConfig.SuperManagers.Contains(args.Sender.Id) == false)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.ManagersRequiredMsg, "该功能需要管理员执行");
+                return false;
+            }
             return true;
         }
 
 
-        public static async Task<bool> CheckSTEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.SetuConfig != null && BotConfig.SetuConfig.Pixiv.Enable) return true;
-            await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.DisableMsg, " 这个功能暂时未开启哦~");
-            return false;
-        }
-
+        /// <summary>
+        /// 检查涩图功能是否在冷却中
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static async Task<bool> CheckMemberSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             int cdSecond = CoolingCache.GetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);
@@ -74,6 +118,12 @@ namespace Theresa3rd_Bot.Util
             return true;
         }
 
+        /// <summary>
+        /// 检查涩图功能是否开启
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static async Task<bool> ChecekGroupSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             int cdSecond = CoolingCache.GetGroupSTCooling(args.Sender.Group.Id, args.Sender.Id);
@@ -82,6 +132,12 @@ namespace Theresa3rd_Bot.Util
             return true;
         }
 
+        /// <summary>
+        /// 检查涩图功能可用次数
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static async Task<bool> CheckSTUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.SetuConfig.MaxDaily <= 0) return true;
@@ -91,6 +147,12 @@ namespace Theresa3rd_Bot.Util
             return true;
         }
 
+        /// <summary>
+        /// 检查是否有涩图请求在处理中
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static async Task<bool> CheckHandingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (CoolingCache.IsHanding(args.Sender.Group.Id, args.Sender.Id) == false) return false;
@@ -98,6 +160,13 @@ namespace Theresa3rd_Bot.Util
             return true;
         }
 
+        /// <summary>
+        /// 检查消息是否包含违禁词
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static bool CheckSTBanWord(this IMiraiHttpSession session, IGroupMessageEventArgs args,string message)
         {
             //string message = e.Message.Text.Trim().ToLower();
@@ -107,13 +176,25 @@ namespace Theresa3rd_Bot.Util
             return false;
         }
 
+        /// <summary>
+        /// 检查是否拥有自定义涩图权限
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static async Task<bool> CheckSTCustomEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(args.Sender.Group.Id)) return true;
-            await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.SetuCustomDisableMsg, " 自定义功能已关闭~");
+            await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.SetuCustomDisableMsg, " 自定义功能已关闭");
             return false;
         }
 
+        /// <summary>
+        /// 获取今日涩图可用次数
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static int GetSTLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
@@ -178,8 +259,6 @@ namespace Theresa3rd_Bot.Util
             if (template.Length > 0) SplitList.Add(template);
             return SplitList;
         }
-
-
 
 
     }

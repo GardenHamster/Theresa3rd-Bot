@@ -40,6 +40,7 @@ namespace Theresa3rd_Bot.Util
                                                                    options.Host = BotConfig.MiraiConfig.Host;
                                                                    options.Port = BotConfig.MiraiConfig.Port;
                                                                    options.AuthKey = BotConfig.MiraiConfig.AuthKey;
+                                                                   options.SuppressAwaitMessageInvoker = true;
                                                                })
                                                                .AddLogging()
                                                                .BuildServiceProvider();

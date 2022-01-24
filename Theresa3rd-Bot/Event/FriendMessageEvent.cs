@@ -19,13 +19,7 @@ namespace Theresa3rd_Bot.Event
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IFriendMessageEventArgs, FriendMessageEventArgs>))]
     public class FriendMessageEvent : IMiraiHttpMessageHandler<IFriendMessageEventArgs>
     {
-        public Task HandleMessageAsync(IMiraiHttpSession session, IFriendMessageEventArgs args)
-        {
-            Task task = Task.Factory.StartNew(() => DoHandle(session, args));
-            return Task.CompletedTask;
-        }
-
-        public async Task DoHandle(IMiraiHttpSession session, IFriendMessageEventArgs args)
+        public async Task HandleMessageAsync(IMiraiHttpSession session, IFriendMessageEventArgs args)
         {
             long memberId = args.Sender.Id;
             string prefix = BotConfig.GeneralConfig.Prefix;

@@ -1,5 +1,4 @@
-﻿using Mirai.CSharp.Builders;
-using Mirai.CSharp.HttpApi.Handlers;
+﻿using Mirai.CSharp.HttpApi.Handlers;
 using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
@@ -7,9 +6,7 @@ using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
@@ -22,7 +19,13 @@ namespace Theresa3rd_Bot.Event
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IGroupMessageEventArgs, GroupMessageEventArgs>))]
     public class GroupMessageEvent : IMiraiHttpMessageHandler<IGroupMessageEventArgs>
     {
-        public async Task HandleMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public Task HandleMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            Task task = Task.Factory.StartNew(() => DoHandle(session, args));
+            return Task.CompletedTask;
+        }
+
+        public async Task DoHandle(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             try
             {
@@ -100,8 +103,6 @@ namespace Theresa3rd_Bot.Event
                 args.BlockRemainingHandlers = true;
             }
         }
-
-
 
     }
 }

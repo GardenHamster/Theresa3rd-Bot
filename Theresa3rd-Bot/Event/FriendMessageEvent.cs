@@ -19,16 +19,13 @@ namespace Theresa3rd_Bot.Event
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IFriendMessageEventArgs, FriendMessageEventArgs>))]
     public class FriendMessageEvent : IMiraiHttpMessageHandler<IFriendMessageEventArgs>
     {
-        private WebsiteBusiness websiteBusiness;
-        private RequestRecordBusiness requestRecordBusiness;
-
-        public FriendMessageEvent()
+        public Task HandleMessageAsync(IMiraiHttpSession session, IFriendMessageEventArgs args)
         {
-            this.websiteBusiness = new WebsiteBusiness();
-            this.requestRecordBusiness = new RequestRecordBusiness();
+            Task task = Task.Factory.StartNew(() => DoHandle(session, args));
+            return Task.CompletedTask;
         }
 
-        public async Task HandleMessageAsync(IMiraiHttpSession session, IFriendMessageEventArgs args)
+        public async Task DoHandle(IMiraiHttpSession session, IFriendMessageEventArgs args)
         {
             long memberId = args.Sender.Id;
             string prefix = BotConfig.GeneralConfig.Prefix;
@@ -43,7 +40,7 @@ namespace Theresa3rd_Bot.Event
             {
                 if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId) == false) return;
                 await UpdateCookieAsync(session, args, WebsiteType.Pixiv, Command.PixivCookie, message, BotConfig.SetuConfig.Pixiv.CookieExpire);
-                requestRecordBusiness.addRecord(args, CommandType.SetCookie, message);
+                new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                 return;
             }
 
@@ -51,7 +48,7 @@ namespace Theresa3rd_Bot.Event
             {
                 if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId) == false) return;
                 await UpdateCookieAsync(session, args, WebsiteType.Bili, Command.BiliCookie, message, 60);
-                requestRecordBusiness.addRecord(args, CommandType.SetCookie, message);
+                new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                 return;
             }
 
@@ -65,7 +62,7 @@ namespace Theresa3rd_Bot.Event
                 await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用${command} + cookie形式发送"));
                 return;
             }
-            WebsitePO website = websiteBusiness.updateWebsite(Enum.GetName(typeof(WebsiteType), websiteType), cookie, cookieExpire);
+            WebsitePO website = new WebsiteBusiness().updateWebsite(Enum.GetName(typeof(WebsiteType), websiteType), cookie, cookieExpire);
             ConfigHelper.loadWebsite();
             string expireDate = website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss");
             await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie更新完毕,过期时间为{expireDate}"));

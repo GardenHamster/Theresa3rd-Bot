@@ -76,9 +76,6 @@ namespace Theresa3rd_Bot.Timer
             PixivBusiness pixivBusiness = new PixivBusiness();
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
-                int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
-                if (pixivSubscribe.PixivWorkInfoDto.body.isR18()) continue;
-                if (shelfLife > 0 && pixivSubscribe.PixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
                 FileInfo fileInfo = pixivBusiness.downImg(pixivSubscribe.PixivWorkInfoDto);
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {

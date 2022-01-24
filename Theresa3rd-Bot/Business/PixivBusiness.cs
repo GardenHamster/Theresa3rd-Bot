@@ -140,7 +140,7 @@ namespace Theresa3rd_Bot.Business
                 }
 
                 int todayLeftCount = BusinessHelper.GetSTLeftToday(session, args);
-                FileInfo fileInfo = downImg(pixivWorkInfoDto, BotConfig.GeneralConfig.DownWithProxy);
+                FileInfo fileInfo = downImg(pixivWorkInfoDto);
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
 
                 int groupMsgId = 0;
@@ -503,7 +503,7 @@ namespace Theresa3rd_Bot.Business
         }
 
         /// <summary>
-        /// 获取画师的最新作品
+        /// 获取订阅画师的最新作品
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="subscribeId"></param>
@@ -512,7 +512,6 @@ namespace Theresa3rd_Bot.Business
         public List<PixivSubscribe> getPixivUserSubscribeWork(string userId, int subscribeId, int getCount = 2)
         {
             int index = 0;
-            DateTime startDateTime = DateTime.Now;
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             PixivUserWorkInfoDto pixivWorkInfo = getPixivUserWorkInfoDto(userId);
             if (pixivWorkInfo == null) return pixivSubscribeList;
@@ -526,6 +525,9 @@ namespace Theresa3rd_Bot.Business
                 if (dbSubscribe != null) continue;
                 PixivWorkInfoDto pixivWorkInfoDto = getPixivWorkInfoDto(workInfo.Value.id);
                 if (pixivWorkInfoDto == null) continue;
+                if (pixivWorkInfoDto.body.isR18()) continue;
+                int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
+                if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
                 SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
                 subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
                 subscribeRecord.Content = subscribeRecord.Title;
@@ -543,41 +545,40 @@ namespace Theresa3rd_Bot.Business
         }
 
         /// <summary>
-        /// 获取标签的最新作品
+        /// 获取订阅标签的最新作品
         /// </summary>
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public List<PixivSubscribe> getPixivTagNewestWork(string tagName, int subscribeId)
-        {
-            PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, true);
-            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            if (pageOne == null) return pixivSubscribeList;
-            foreach (PixivIllust item in pageOne.body.getIllust().data)
-            {
-                if (item.createDate < DateTime.Now.AddDays(-1)) break;
-                PixivWorkInfoDto pixivWorkInfoDto = getPixivWorkInfoDto(item.id);
-                if (pixivWorkInfoDto == null) continue;
-                PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
-                if (pixivWorkInfo.isR18()) continue;
-                if (checkNewWorkIsOk(pixivWorkInfoDto) == false) continue;
-                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, pixivWorkInfo.illustId);
-                if (dbSubscribe != null) continue;
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
-                subscribeRecord.Content = subscribeRecord.Title;
-                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfo.illustId);
-                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfo.illustId);
-                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
-                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
-                subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                pixivSubscribe.SubscribeRecord = subscribeRecord;
-                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
-                pixivSubscribeList.Add(pixivSubscribe);
-            }
-            return pixivSubscribeList;
-        }
+        //public List<PixivSubscribe> getPixivTagSubscribeWork(string tagName, int subscribeId)
+        //{
+        //    PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, true);
+        //    List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
+        //    if (pageOne == null) return pixivSubscribeList;
+        //    foreach (PixivIllust item in pageOne.body.getIllust().data)
+        //    {
+        //        if (item.createDate < DateTime.Now.AddDays(-1)) break;
+        //        PixivWorkInfoDto pixivWorkInfoDto = getPixivWorkInfoDto(item.id);
+        //        if (pixivWorkInfoDto == null) continue;
+        //        if (pixivWorkInfoDto.body.isR18()) continue;
+        //        if (checkNewWorkIsOk(pixivWorkInfoDto) == false) continue;
+        //        SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, pixivWorkInfoDto.body.illustId);
+        //        if (dbSubscribe != null) continue;
+        //        SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+        //        subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
+        //        subscribeRecord.Content = subscribeRecord.Title;
+        //        subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
+        //        subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
+        //        subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
+        //        subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+        //        subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+        //        PixivSubscribe pixivSubscribe = new PixivSubscribe();
+        //        pixivSubscribe.SubscribeRecord = subscribeRecord;
+        //        pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+        //        pixivSubscribeList.Add(pixivSubscribe);
+        //    }
+        //    return pixivSubscribeList;
+        //}
 
 
         /// <summary>
@@ -590,10 +591,11 @@ namespace Theresa3rd_Bot.Business
         {
             if (pixivWorkInfo == null) return false;
             if (pixivWorkInfo.body == null) return false;
-            bool isNotBantag = pixivWorkInfo.body.hasBanTag() == false;
+            bool isNotR18 = pixivWorkInfo.body.isR18() == false;
+            bool isNotBantTag = pixivWorkInfo.body.hasBanTag() == false;
             bool isPopularity = pixivWorkInfo.body.bookmarkCount >= BotConfig.SetuConfig.Pixiv.MinBookmark;
             bool isBookProportional = Convert.ToDouble(pixivWorkInfo.body.bookmarkCount) / pixivWorkInfo.body.viewCount >= BotConfig.SetuConfig.Pixiv.MinBookRate;
-            return isPopularity && isBookProportional && isNotBantag;
+            return isNotR18 && isPopularity && isBookProportional && isNotBantTag;
         }
 
         /// <summary>
@@ -614,7 +616,7 @@ namespace Theresa3rd_Bot.Business
             return isPopularity && isNotR18 && isBookProportional && isLikeProportional;
         }
 
-        public FileInfo downImg(PixivWorkInfoDto pixivWorkInfo, bool useProxy = false)
+        public FileInfo downImg(PixivWorkInfoDto pixivWorkInfo)
         {
             try
             {

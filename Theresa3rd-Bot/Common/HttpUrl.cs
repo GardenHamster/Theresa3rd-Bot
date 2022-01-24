@@ -22,11 +22,11 @@ namespace Theresa3rd_Bot.Common
         /// </summary>
         /// <param name="searchWord"></param>
         /// <returns></returns>
-        public static string getPixivSearchUrl(string searchWord, int pageNo, bool isMatchAll, bool isR18 = false)
+        public static string getPixivSearchUrl(string searchWord, int pageNo, bool isMatchAll)
         {
             string keyword = System.Web.HttpUtility.UrlEncode(searchWord).Replace("+", " ");
-            string mode = isR18 ? "r18" : "safe";
-            string s_mode = isMatchAll ? "s_tag_full" : "s_tag";//s_tag_full/s_tag/s_tc
+            string mode = "safe";//r18,safe;
+            string s_mode = isMatchAll ? "s_tag_full" : "s_tag";//s_tag_full,s_tag,s_tc
             return $"{PixivHomeUrl}/ajax/search/illustrations/{keyword}?order=date_d&mode={mode}&p={pageNo}&s_mode={s_mode}&type=illust_and_ugoira&lang=zh";
         }
 

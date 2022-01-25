@@ -116,8 +116,18 @@ Subscribe:                                                                      
         Enable:             true                                                #是否启用
         AddCommand:         '订阅标签'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订标签'                                          #退订命令,需要管理员执行
-        Template:           ''
+        Template:           |                                                   #消息模版
+                            pixiv标签[{TagName}]出现了新作品：
+                            标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
+                            收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，
+                            耗时：{CostSecond}s，标签图片：{RelevantCount}张，作品图片:{PageCount}张
+                            标签：{Tags}
+                            {Urls}
         ScanInterval:       1800                                                #扫描间隔(秒)
+        ShelfLife:          86400                                               #保质期(秒),超过保质期将不会推送,0表示永不过期
+        MinBookmark:        150                                                 #最低收藏数，用于判断涩图是否合格
+        MinBookPerHour:     50                                                  #每小时至少新增收藏数量，用于判断涩图是否合格
+
     BiliUp:                                                                     #b站up主
         Enable:             true                                                #是否启用
         AddCommand:         '订阅up'                                            #订阅命令,需要管理员执行

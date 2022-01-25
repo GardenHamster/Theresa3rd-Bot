@@ -153,7 +153,7 @@ namespace Theresa3rd_Bot.Business
                 }
                 else
                 {
-                    chatList.Add(new PlainMessage(getWorkInfo(pixivWorkInfo, fileInfo, startDateTime, template, todayLeftCount)));
+                    chatList.Add(new PlainMessage(getWorkInfoWithLeft(pixivWorkInfo, fileInfo, startDateTime, todayLeftCount, template)));
                 }
 
                 try
@@ -550,35 +550,36 @@ namespace Theresa3rd_Bot.Business
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        //public List<PixivSubscribe> getPixivTagSubscribeWork(string tagName, int subscribeId)
-        //{
-        //    PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, true);
-        //    List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-        //    if (pageOne == null) return pixivSubscribeList;
-        //    foreach (PixivIllust item in pageOne.body.getIllust().data)
-        //    {
-        //        if (item.createDate < DateTime.Now.AddDays(-1)) break;
-        //        PixivWorkInfoDto pixivWorkInfoDto = getPixivWorkInfoDto(item.id);
-        //        if (pixivWorkInfoDto == null) continue;
-        //        if (pixivWorkInfoDto.body.isR18()) continue;
-        //        if (checkNewWorkIsOk(pixivWorkInfoDto) == false) continue;
-        //        SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, pixivWorkInfoDto.body.illustId);
-        //        if (dbSubscribe != null) continue;
-        //        SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-        //        subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
-        //        subscribeRecord.Content = subscribeRecord.Title;
-        //        subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
-        //        subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
-        //        subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
-        //        subscribeRecord.DynamicType = SubscribeDynamicType.插画;
-        //        subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-        //        PixivSubscribe pixivSubscribe = new PixivSubscribe();
-        //        pixivSubscribe.SubscribeRecord = subscribeRecord;
-        //        pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
-        //        pixivSubscribeList.Add(pixivSubscribe);
-        //    }
-        //    return pixivSubscribeList;
-        //}
+        public List<PixivSubscribe> getPixivTagSubscribeWork(string tagName, int subscribeId)
+        {
+            PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, true);
+            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
+            if (pageOne == null) return pixivSubscribeList;
+            foreach (PixivIllust item in pageOne.body.getIllust().data)
+            {
+                PixivWorkInfoDto pixivWorkInfoDto = getPixivWorkInfoDto(item.id);
+                if (pixivWorkInfoDto == null) continue;
+                if (pixivWorkInfoDto.body.isR18()) continue;
+                int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
+                if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+                if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
+                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, pixivWorkInfoDto.body.illustId);
+                if (dbSubscribe != null) continue;
+                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
+                subscribeRecord.Content = subscribeRecord.Title;
+                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
+                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
+                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
+                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                PixivSubscribe pixivSubscribe = new PixivSubscribe();
+                pixivSubscribe.SubscribeRecord = subscribeRecord;
+                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                pixivSubscribeList.Add(pixivSubscribe);
+            }
+            return pixivSubscribeList;
+        }
 
 
         /// <summary>
@@ -604,16 +605,16 @@ namespace Theresa3rd_Bot.Business
         /// <param name="pixivWorkInfo"></param>
         /// <param name="isR18"></param>
         /// <returns></returns>
-        protected bool checkNewWorkIsOk(PixivWorkInfoDto pixivWorkInfo)
+        protected bool checkTagWorkIsOk(PixivWorkInfoDto pixivWorkInfo)
         {
             if (pixivWorkInfo == null) return false;
             if (pixivWorkInfo.body == null) return false;
             bool isNotR18 = pixivWorkInfo.body.isR18() == false;
-            bool isPopularity = pixivWorkInfo.body.likeCount >= 100 && pixivWorkInfo.body.bookmarkCount >= 150;
+            bool isPopularity = pixivWorkInfo.body.bookmarkCount >= BotConfig.SubscribeConfig.PixivTag.MinBookmark;
             TimeSpan timeSpan = DateTime.Now.Subtract(pixivWorkInfo.body.createDate);
-            bool isLikeProportional = pixivWorkInfo.body.likeCount > (timeSpan.Hours + 1) * 40;
-            bool isBookProportional = pixivWorkInfo.body.bookmarkCount > (timeSpan.Hours + 1) * 50;
-            return isPopularity && isNotR18 && isBookProportional && isLikeProportional;
+            int totalHours = timeSpan.Hours + 1 > 0 ? timeSpan.Hours + 1 : 0;
+            bool isBookProportional = pixivWorkInfo.body.bookmarkCount > totalHours * BotConfig.SubscribeConfig.PixivTag.MinBookPerHour;
+            return isPopularity && isNotR18 && isBookProportional && totalHours > 0;
         }
 
         public FileInfo downImg(PixivWorkInfoDto pixivWorkInfo)
@@ -667,13 +668,27 @@ namespace Theresa3rd_Bot.Business
             return new FileInfo(fullGifSavePath);
         }
 
-        public string getWorkInfo(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime, string template = "", int todayLeft = 0)
+
+        public string getWorkInfoWithLeft(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime, int todayLeft, string template = "")
+        {
+            template = getWorkInfo(pixivWorkInfo, fileInfo, startTime, template);
+            template = template.Replace("{TodayLeft}", todayLeft.ToString());
+            return template;
+        }
+
+        public string getWorkInfoWithTag(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime, string tagName, string template = "")
+        {
+            template = getWorkInfo(pixivWorkInfo, fileInfo, startTime, template);
+            template = template.Replace("{TagName}", tagName);
+            return template;
+        }
+
+        public string getWorkInfo(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime, string template = "")
         {
             if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime);
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
             double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
-            template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{IllustTitle}", pixivWorkInfo.illustTitle);
             template = template.Replace("{UserName}", pixivWorkInfo.userName);
@@ -689,7 +704,6 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{Urls}", getWorkUrlStr(pixivWorkInfo));
             return template;
         }
-
 
         public string getDefaultWorkInfo(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime)
         {

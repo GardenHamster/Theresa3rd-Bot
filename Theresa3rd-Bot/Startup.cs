@@ -36,9 +36,9 @@ namespace Theresa3rd_Bot
             LogHelper.Info($"日志配置完毕...");
 
             LoadConfig();
-            LogHelper.Info($"读取配置文件...");
+            LogHelper.Info($"配置文件读取完毕...");
 
-            LogHelper.Info($"初始化数据库...");
+            LogHelper.Info($"开始初始化数据库...");
             services.AddSqlSugar(new IocConfig()//注入Sqlsuger
             {
                 DbType = IocDbType.MySql,

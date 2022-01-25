@@ -39,6 +39,10 @@ namespace Theresa3rd_Bot.Timer
             {
                 PixivUserTimer.init();
             }
+            if (subscribeConfig.PixivTag != null && subscribeConfig.PixivTag.Enable)
+            {
+                PixivTagTimer.init();
+            }
         }
 
 

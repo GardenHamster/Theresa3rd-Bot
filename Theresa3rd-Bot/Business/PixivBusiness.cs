@@ -557,11 +557,11 @@ namespace Theresa3rd_Bot.Business
             if (pageOne == null) return pixivSubscribeList;
             foreach (PixivIllust item in pageOne.body.getIllust().data)
             {
+                int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
+                if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
                 PixivWorkInfoDto pixivWorkInfoDto = getPixivWorkInfoDto(item.id);
                 if (pixivWorkInfoDto == null) continue;
                 if (pixivWorkInfoDto.body.isR18()) continue;
-                int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
-                if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
                 if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
                 SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, pixivWorkInfoDto.body.illustId);
                 if (dbSubscribe != null) continue;
@@ -612,7 +612,7 @@ namespace Theresa3rd_Bot.Business
             bool isNotR18 = pixivWorkInfo.body.isR18() == false;
             bool isPopularity = pixivWorkInfo.body.bookmarkCount >= BotConfig.SubscribeConfig.PixivTag.MinBookmark;
             TimeSpan timeSpan = DateTime.Now.Subtract(pixivWorkInfo.body.createDate);
-            int totalHours = timeSpan.Hours + 1 > 0 ? timeSpan.Hours + 1 : 0;
+            int totalHours = (int)(timeSpan.TotalHours + 1 > 0 ? timeSpan.TotalHours + 1 : 0);
             bool isBookProportional = pixivWorkInfo.body.bookmarkCount > totalHours * BotConfig.SubscribeConfig.PixivTag.MinBookPerHour;
             return isPopularity && isNotR18 && isBookProportional && totalHours > 0;
         }

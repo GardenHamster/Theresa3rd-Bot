@@ -7,7 +7,7 @@ namespace Theresa3rd_Bot.Model.PO
     [SugarTable("subscribe")]
     public class SubscribePO : BasePO
     {
-        [SugarColumn(IsNullable = false, Length = 50, ColumnDescription = "订阅编号")]
+        [SugarColumn(IsNullable = false, Length = 100, ColumnDescription = "订阅编号")]
         public string SubscribeCode { get; set; }
 
         [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "订阅名称")]

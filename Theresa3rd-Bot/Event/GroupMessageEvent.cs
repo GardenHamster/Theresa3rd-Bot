@@ -86,7 +86,7 @@ namespace Theresa3rd_Bot.Event
                 if (instructions.StartsWith("test"))
                 {
                     string aaa = AppContext.BaseDirectory;
-                    await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, new PlainMessage("hello word"));
+                    await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("hello word"));
                     return;
                 }
             }

@@ -113,6 +113,7 @@ namespace Theresa3rd_Bot.Business
 
                 if (StringHelper.isPureNumber(tagName))
                 {
+                    if (BusinessHelper.CheckSTCustomEnableAsync(session, args).Result == false) return;
                     pixivWorkInfoDto = getPixivWorkInfoDto(tagName);//根据作品id获取作品
                 }
                 else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.随机标签)
@@ -552,7 +553,7 @@ namespace Theresa3rd_Bot.Business
         /// <returns></returns>
         public List<PixivSubscribe> getPixivTagSubscribeWork(string tagName, int subscribeId)
         {
-            PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, true);
+            PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, false);
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             if (pageOne == null) return pixivSubscribeList;
             foreach (PixivIllust item in pageOne.body.getIllust().data)

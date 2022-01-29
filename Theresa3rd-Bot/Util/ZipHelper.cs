@@ -24,7 +24,7 @@ namespace Theresa3rd_Bot.Util
                 {
                     string filename = Path.GetFileName(fileEntry.Name);
                     if (string.IsNullOrEmpty(filename)) continue;
-                    string fullFilePath = Path.Combine("unZipDirPath", filename);
+                    string fullFilePath = Path.Combine(unZipDirPath, filename);
                     streamWriter = File.Create(fullFilePath);
                     byte[] buffer = new byte[2048];
                     int size = zipInputStream.Read(buffer, 0, 2048);

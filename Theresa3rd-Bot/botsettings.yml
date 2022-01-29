@@ -54,7 +54,7 @@ Setu:                                                                           
     NoneCDMembers:          []                                                  #0CD群员
     MaxDaily:               20                                                  #每人每日最大使用次数,0表示无可用次数
     ImgSavePath:            'C:\BotImg\download'                                #图片存放目录
-    RevokeInterval:         60                                                  #N秒后撤回,0表示不撤回
+    RevokeInterval:         0                                                  #N秒后撤回,0表示不撤回
     SendPrivate:            false                                               #私聊发送,需要添加机器人为好友
     Lolicon:                                                                    #Lolicon图床https://api.lolicon.app/#/setu
         Enable:             true                                                #是否启用
@@ -125,8 +125,8 @@ Subscribe:                                                                      
                             {Urls}
         ScanInterval:       1800                                                #扫描间隔(秒)
         ShelfLife:          86400                                               #保质期(秒),超过保质期将不会推送,0表示永不过期
-        MinBookmark:        150                                                 #最低收藏数，用于判断涩图是否合格
-        MinBookPerHour:     50                                                  #每小时至少新增收藏数量，用于判断涩图是否合格
+        MinBookmark:        300                                                 #最低收藏数，用于判断涩图是否合格
+        MinBookPerHour:     100                                                 #每小时至少新增收藏数量，用于判断涩图是否合格
 
     BiliUp:                                                                     #b站up主
         Enable:             true                                                #是否启用

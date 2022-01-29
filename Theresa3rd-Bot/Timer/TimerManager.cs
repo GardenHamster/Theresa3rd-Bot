@@ -2,6 +2,7 @@
 using Quartz.Impl;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Util;
@@ -14,6 +15,7 @@ namespace Theresa3rd_Bot.Timer
         {
             initCustomJob();//初始化配置列表中的定时器
             initSubscribeTimers();//初始化订阅任务
+            initClearJobAsync();//初始化清理任务
         }
 
         private static void initCustomJob()
@@ -28,6 +30,24 @@ namespace Theresa3rd_Bot.Timer
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"定时功能异常");
+            }
+        }
+
+        private static async void initClearJobAsync()
+        {
+            try
+            {
+                string clearCron = "0 0 4 * * ?";
+                ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(clearCron).Build();
+                IJobDetail jobDetail = JobBuilder.Create<ClearJob>().WithIdentity("ClearJob", "ClearJob").Build();//创建作业
+                IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+                await scheduler.ScheduleJob(jobDetail, trigger);
+                await scheduler.Start();
+                LogHelper.Info($"清理定时器启动完毕...");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"清理定时器启动失败");
             }
         }
 

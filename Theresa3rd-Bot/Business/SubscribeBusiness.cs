@@ -153,13 +153,13 @@ namespace Theresa3rd_Bot.Business
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "订阅功能异常");
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" emmmmmmm，操作失败了，再试一次吧"));
+                throw;
             }
         }
 
 
         /// <summary>
-        /// 取消订阅
+        /// 取消订阅pixiv画师
         /// </summary>
         /// <param name="e"></param>
         /// <param name="message"></param>
@@ -172,7 +172,7 @@ namespace Theresa3rd_Bot.Business
                 string keyWord = message.splitKeyWord(BotConfig.SubscribeConfig.PixivUser.RmCommand);
                 if (string.IsNullOrEmpty(keyWord))
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要订阅的关键词，请确保指令格式正确"));
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要退订的关键词，请确保指令格式正确"));
                     return;
                 }
                 if (StringHelper.isPureNumber(keyWord) == false)
@@ -186,8 +186,8 @@ namespace Theresa3rd_Bot.Business
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订失败，这个订阅不存在"));
                     return;
                 }
-                bool isMemberSubscribed = subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, dbSubscribe.Id) > 0;
-                if (isMemberSubscribed == false)
+                bool isGroupSubscribed = subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, dbSubscribe.Id) > 0;
+                if (isGroupSubscribed == false)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个画师哦~"));
                     return;
@@ -204,10 +204,115 @@ namespace Theresa3rd_Bot.Business
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "取消订阅异常");
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" emmmmmmm，操作失败了，再试一次吧"));
+                throw;
             }
         }
 
+        /// <summary>
+        /// 订阅pixiv标签
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task subscribePixivTagAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        {
+            try
+            {
+                string pixivTag = message.splitKeyWord(BotConfig.SubscribeConfig.PixivTag.AddCommand);
+                if (string.IsNullOrWhiteSpace(pixivTag))
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要订阅的标签，请确保指令格式正确"));
+                    return;
+                }
+                PixivBusiness pixivBusiness = new PixivBusiness();
+                PixivSearchDto pageOne = pixivBusiness.getPixivSearchDto(pixivTag, 1, false);
+                if (pageOne == null || pageOne.body.getIllust().data.Count == 0)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该标签中没有任何作品，订阅失败"));
+                    return;
+                }
+
+                SubscribePO dbSubscribe = subscribeDao.getSubscribe(pixivTag, SubscribeType.P站标签);
+                if (dbSubscribe == null)
+                {
+                    //添加订阅
+                    dbSubscribe = new SubscribePO();
+                    dbSubscribe.SubscribeCode = pixivTag;
+                    dbSubscribe.SubscribeName = pixivTag;
+                    dbSubscribe.SubscribeDescription = pixivTag;
+                    dbSubscribe.SubscribeType = SubscribeType.P站标签;
+                    dbSubscribe.Isliving = false;
+                    dbSubscribe.CreateDate = DateTime.Now;
+                    dbSubscribe = subscribeDao.Insert(dbSubscribe);
+                }
+
+                if (subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, dbSubscribe.Id) > 0)
+                {
+                    //关联订阅
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 这个标签已经被订阅了~"));
+                    return;
+                }
+
+                SubscribeGroupPO subscribeGroup = new SubscribeGroupPO();
+                subscribeGroup.GroupId = args.Sender.Group.Id;
+                subscribeGroup.SubscribeId = dbSubscribe.Id;
+                subscribeGroup = subscribeGroupDao.Insert(subscribeGroup);
+                await session.SendMessageWithAtAsync(args, new PlainMessage($" 标签[{pixivTag}]订阅成功,该标签总作品数为:{pageOne.body.illust.total}"));
+                ConfigHelper.loadSubscribeTask();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "订阅功能异常");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 取消订阅pixiv标签
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task cancleSubscribePixivTagAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        {
+            try
+            {
+                string keyWord = message.splitKeyWord(BotConfig.SubscribeConfig.PixivTag.RmCommand);
+                if (string.IsNullOrEmpty(keyWord))
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要退订的关键词，请确保指令格式正确"));
+                    return;
+                }
+
+                SubscribePO dbSubscribe = subscribeDao.getSubscribe(keyWord, SubscribeType.P站标签);
+                if (dbSubscribe == null)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订失败，这个订阅不存在"));
+                    return;
+                }
+                bool isGroupSubscribed = subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, dbSubscribe.Id) > 0;
+                if (isGroupSubscribed == false)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个标签哦~"));
+                    return;
+                }
+                int successCount = subscribeGroupDao.delSubscribe(args.Sender.Group.Id, dbSubscribe.Id);
+                if (successCount == 0)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订失败"));
+                    return;
+                }
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订成功，以后不会再推送这个标签的作品了哦~"));
+                ConfigHelper.loadSubscribeTask();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "取消订阅异常");
+                throw;
+            }
+        }
 
 
     }

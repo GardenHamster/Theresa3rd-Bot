@@ -69,6 +69,30 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivTag?.AddCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivTag.AddCommand))
+                {
+                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
+                    if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag).Result == false) return;
+                    if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
+                    await new SubscribeBusiness().subscribePixivTagAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
+                    return;
+                }
+
+                if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivTag?.RmCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivTag.RmCommand))
+                {
+                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
+                    if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag).Result == false) return;
+                    await new SubscribeBusiness().cancleSubscribePixivTagAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
+                    return;
+                }
+
+
+
+
+
+
                 if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.Pixiv?.Command) && instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
                 {
                     if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;

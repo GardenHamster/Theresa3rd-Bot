@@ -40,14 +40,14 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
-        /*
+        
         public static void loadBanWord()
         {
             try
             {
-                Setting.Word.BanSTKeyWord = new BanWordBusiness().getListByType(BanWordType.ST.TypeId);
-                Setting.Word.BanMemberId = new BanWordBusiness().getListByType(BanWordType.Member.TypeId);
-                CQHelper.CQLog.InfoSuccess("加载违禁词完成");
+                BanWordBusiness banWordBusiness = new BanWordBusiness();
+                BotConfig.BanSetuMap = banWordBusiness.getBanSetuMap();
+                LogHelper.Info("加载违禁词完成");
             }
             catch (Exception ex)
             {
@@ -55,6 +55,7 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
+        /*
         public static void loadMemberClock()
         {
             try

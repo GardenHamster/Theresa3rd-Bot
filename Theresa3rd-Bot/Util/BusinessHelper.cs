@@ -5,6 +5,7 @@ using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
@@ -12,6 +13,7 @@ using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Cache;
 using Theresa3rd_Bot.Model.Config;
+using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Util
@@ -88,7 +90,33 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
-        /// 检查涩图功能是否可用
+        /// 检查涩图标签是否被禁止
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static async Task<bool> CheckSTTagEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        {
+            message = message.ToLower().Trim();
+            long groupId = args.Sender.Group.Id;
+            if (BotConfig.SetuConfig.DisableTags.Where(o => message.IndexOf(o.ToLower()) > -1).Any())
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
+                return false;
+            }
+
+            List<BanWordPO> banSetuList = BotConfig.BanSetuMap.ContainsKey(groupId) ? BotConfig.BanSetuMap[groupId] : new List<BanWordPO>();
+            if (banSetuList.Where(o => message.IndexOf(o.KeyWord.ToLower()) > -1).Any())
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 检查是否超级管理员
         /// </summary>
         /// <param name="session"></param>
         /// <param name="args"></param>
@@ -112,6 +140,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static async Task<bool> CheckMemberSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
+            if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
             int cdSecond = CoolingCache.GetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
             await session.SendMessageWithAtAsync(args, new PlainMessage($" 功能冷却中，{cdSecond}秒后再来哦~"));
@@ -126,6 +155,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static async Task<bool> ChecekGroupSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
+            if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
             int cdSecond = CoolingCache.GetGroupSTCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
             await session.SendMessageWithAtAsync(args, new PlainMessage($" 群功能冷却中，{cdSecond}秒后再来哦~"));
@@ -140,6 +170,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static async Task<bool> CheckSTUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
+            if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id)) return false;
             if (BotConfig.SetuConfig.MaxDaily <= 0) return true;
             int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
             if (useCount < BotConfig.SetuConfig.MaxDaily) return false;
@@ -158,22 +189,6 @@ namespace Theresa3rd_Bot.Util
             if (CoolingCache.IsHanding(args.Sender.Group.Id, args.Sender.Id) == false) return false;
             await session.SendMessageWithAtAsync(args, new PlainMessage(" 你的一个请求正在处理中，稍后再来吧"));
             return true;
-        }
-
-        /// <summary>
-        /// 检查消息是否包含违禁词
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public static bool CheckSTBanWord(this IMiraiHttpSession session, IGroupMessageEventArgs args,string message)
-        {
-            //string message = e.Message.Text.Trim().ToLower();
-            //if (message.Contains("r18") || message.Contains("r17")) return true;
-            //string banWord = StringHelper.isContainsWord(e.Message.Text, Setting.Word.BanSTKeyWord);
-            //return string.IsNullOrEmpty(banWord) == false;
-            return false;
         }
 
         /// <summary>
@@ -198,6 +213,7 @@ namespace Theresa3rd_Bot.Util
         public static int GetSTLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
+            if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id)) return BotConfig.SetuConfig.MaxDaily;
             RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
             int todayUseCount = requestRecordBusiness.getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
             int leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;

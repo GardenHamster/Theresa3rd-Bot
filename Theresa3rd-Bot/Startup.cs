@@ -50,7 +50,7 @@ namespace Theresa3rd_Bot
 
             ConfigHelper.loadWebsite();
             ConfigHelper.loadSubscribeTask();
-
+            ConfigHelper.loadBanWord();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

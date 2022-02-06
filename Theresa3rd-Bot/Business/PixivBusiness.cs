@@ -94,12 +94,6 @@ namespace Theresa3rd_Bot.Business
             {
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(args.Sender.Group.Id, args.Sender.Id);//请求处理中
-                string[] splitArr = message.Split(new string[] { BotConfig.SetuConfig.Pixiv.Command }, StringSplitOptions.RemoveEmptyEntries);
-                if (splitArr.Length > 1 && BusinessHelper.CheckSTBanWord(session, args, message))
-                {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 禁止查找这个类型的涩图哦，换个标签试试吧~"));
-                    return;
-                }
 
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.Pixiv.ProcessingMsg) == false)
                 {
@@ -108,8 +102,10 @@ namespace Theresa3rd_Bot.Business
                 }
 
                 PixivWorkInfoDto pixivWorkInfoDto = null;
-                string tagName = splitArr.Length > 1 ? splitArr[1].Trim() : "";
+
+                string tagName = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
                 tagName = tagName.Replace("（", ")").Replace("）", ")");
+
 
                 if (StringHelper.isPureNumber(tagName))
                 {
@@ -149,7 +145,24 @@ namespace Theresa3rd_Bot.Business
                 List<IChatMessage> chatList = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(template))
                 {
-                    chatList.Add(new PlainMessage($"{BotConfig.SetuConfig.MemberCD}秒后再来哦，今天剩余使用次数{todayLeftCount}次，本消息将在{BotConfig.SetuConfig.RevokeInterval}秒后撤回，尽快保存哦"));
+                    StringBuilder warnBuilder = new StringBuilder();
+                    if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id) == false)
+                    {
+                        if (warnBuilder.Length > 0) warnBuilder.Append("，");
+                        warnBuilder.Append($"{BotConfig.SetuConfig.MemberCD}秒后再来哦");
+                    }
+                    if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id) == false)
+                    {
+                        if (warnBuilder.Length > 0) warnBuilder.Append("，");
+                        warnBuilder.Append($"今天剩余使用次数{todayLeftCount}次");
+                    }
+                    if (BotConfig.SetuConfig.RevokeInterval > 0)
+                    {
+                        if (warnBuilder.Length > 0) warnBuilder.Append("，");
+                        warnBuilder.Append($"本消息将在{BotConfig.SetuConfig.RevokeInterval}秒后撤回，尽快保存哦");
+                    }
+
+                    chatList.Add(new PlainMessage(warnBuilder.ToString()));
                     chatList.Add(new PlainMessage(getDefaultWorkInfo(pixivWorkInfo, fileInfo, startDateTime)));
                 }
                 else

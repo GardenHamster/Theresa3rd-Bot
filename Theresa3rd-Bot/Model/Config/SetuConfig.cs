@@ -8,6 +8,14 @@ namespace Theresa3rd_Bot.Model.Config
 
         public int MemberCD { get; set; }
 
+        public List<string> DisableTags { get; set; }
+
+        public string DisableTagsMsg { get; set; }
+
+        public string DisableTagCommand { get; set; }
+
+        public string EnableTagCommand { get; set; }
+
         public int MaxDaily { get; set; }
 
         public int RevokeInterval { get; set; }
@@ -15,10 +23,6 @@ namespace Theresa3rd_Bot.Model.Config
         public bool SendPrivate { get; set; }
         
         public string ImgSavePath { get; set; }
-
-        public List<long> NoneCDGroups { get; set; }
-
-        public List<long> NoneCDMembers { get; set; }
 
         public LoliconConfig Lolicon { get; set; }
 

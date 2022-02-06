@@ -115,8 +115,7 @@ namespace Theresa3rd_Bot.Cache
         /// <returns></returns>
         private static bool IsNoCool(long groupId, long memberId)
         {
-            if (BotConfig.SetuConfig.NoneCDGroups.Contains(groupId)) return true;
-            if (BotConfig.SetuConfig.NoneCDMembers.Contains(memberId)) return true;
+            if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(groupId)) return true;
             return false;
         }
 

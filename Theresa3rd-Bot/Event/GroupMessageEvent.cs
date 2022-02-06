@@ -50,6 +50,7 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                //订阅pixiv画师
                 if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.AddCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.AddCommand))
                 {
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
@@ -60,6 +61,7 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                //退订pixiv画师
                 if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.RmCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.RmCommand))
                 {
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
@@ -69,6 +71,7 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                //订阅pixiv标签
                 if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivTag?.AddCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivTag.AddCommand))
                 {
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
@@ -79,6 +82,7 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                //退订pixiv标签
                 if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivTag?.RmCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivTag.RmCommand))
                 {
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
@@ -88,14 +92,31 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                //禁止色图标签
+                if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.DisableTagCommand) && instructions.StartsWith(BotConfig.SetuConfig.DisableTagCommand))
+                {
+                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
+                    if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
+                    await new BanWordBusiness().disableSetuAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.BanWord, message);
+                    return;
+                }
 
+                //解禁色图标签
+                if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.EnableTagCommand) && instructions.StartsWith(BotConfig.SetuConfig.EnableTagCommand))
+                {
+                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
+                    if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
+                    await new BanWordBusiness().enableSetuAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.BanWord, message);
+                    return;
+                }
 
-
-
-
+                //涩图
                 if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.Pixiv?.Command) && instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
                 {
                     if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
+                    if (BusinessHelper.CheckSTTagEnableAsync(session, args, message).Result == false) return;
                     if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
                     if (BusinessHelper.CheckMemberSTCoolingAsync(session, args).Result) return;
                     if (BusinessHelper.ChecekGroupSTCoolingAsync(session, args).Result) return;
@@ -109,7 +130,6 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartsWith("test"))
                 {
-                    string aaa = AppContext.BaseDirectory;
                     await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("hello word"));
                     return;
                 }

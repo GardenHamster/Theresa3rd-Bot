@@ -15,6 +15,10 @@ namespace Theresa3rd_Bot.Model.Config
 
         public List<long> SetuCustomGroups { get; set; }
 
+        public List<long> SetuNoneCDGroups { get; set; }
+
+        public List<long> SetuLimitlessGroups { get; set; }
+
         public List<long> SaucenaoGroups { get; set; }
 
         public List<long> SubscribeGroups { get; set; }

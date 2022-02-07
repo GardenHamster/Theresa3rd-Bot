@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
@@ -20,16 +21,19 @@ namespace Theresa3rd_Bot.Business
             subscribeRecordDao = new SubscribeRecordDao();
         }
 
-        public async Task<List<MysSubscribe>> getMysUserNewestAsync(int subscribeId, int subTypeId, string userId, int getCount = 2)
+        public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(MysSectionType sectionType, int subscribeId,  string userCode, int getCount = 2)
         {
             int index = 0;
             List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
-            MysResult<MysUserPostDataDto> pixivWorkInfo = getMysUserPostDto(userId, subTypeId);
+            MysResult<MysUserPostDataDto> pixivWorkInfo = getMysUserPostDto(userCode, sectionType);
             List<MysUserPostDto> postList = pixivWorkInfo.data.list;
             if (postList.Count == 0) return mysSubscribeList;
             foreach (var item in postList)
             {
-                await Task.Delay(2000);
+                int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
+                DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
+                if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+                
                 if (++index > getCount) break;
                 SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
                 subscribeRecord.Title = item.post.subject.cutString(200);
@@ -45,15 +49,16 @@ namespace Theresa3rd_Bot.Business
                 MysSubscribe mysSubscribe = new MysSubscribe();
                 mysSubscribe.SubscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
                 mysSubscribeList.Add(mysSubscribe);
+                await Task.Delay(1000);
             }
             return mysSubscribeList;
         }
 
 
-        public MysResult<MysUserPostDataDto> getMysUserPostDto(string userId, int subTypeId)
+        public MysResult<MysUserPostDataDto> getMysUserPostDto(string userId, MysSectionType subType)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            string getUrl = HttpUrl.getMysPostListUrl(userId, subTypeId);
+            string getUrl = HttpUrl.getMysPostListUrl(userId, (int)subType);
             string json = HttpHelper.HttpGet(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysUserPostDataDto>>(json);
         }

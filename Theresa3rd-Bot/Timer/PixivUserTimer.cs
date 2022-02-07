@@ -77,28 +77,28 @@ namespace Theresa3rd_Bot.Timer
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
                 FileInfo fileInfo = pixivBusiness.downImg(pixivSubscribe.PixivWorkInfoDto);
+                string template = BotConfig.SubscribeConfig.PixivUser.Template;
+                List<IChatMessage> chailList = new List<IChatMessage>();
+                if (string.IsNullOrWhiteSpace(template))
+                {
+                    chailList.Add(new PlainMessage($"pixiv画师[{subscribeTask.SubscribeInfo.SubscribeName}]发布了新作品："));
+                    chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
+                }
+                else
+                {
+                    chailList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime, template)));
+                }
+
+                if (fileInfo == null)
+                {
+                    chailList.AddRange(MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg).Result);
+                }
+                else
+                {
+                    chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                }
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
-                    string template = BotConfig.SubscribeConfig.PixivUser.Template;
-                    List<IChatMessage> chailList = new List<IChatMessage>();
-                    if (string.IsNullOrWhiteSpace(template))
-                    {
-                        chailList.Add(new PlainMessage($"pixiv画师[{subscribeTask.SubscribeInfo.SubscribeName}]发布了新作品："));
-                        chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
-                    }
-                    else
-                    {
-                        chailList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime, template)));
-                    }
-
-                    if (fileInfo == null)
-                    {
-                        chailList.AddRange(MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg).Result);
-                    }
-                    else
-                    {
-                        chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                    }
                     await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
                 }
             }

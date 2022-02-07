@@ -17,7 +17,7 @@ namespace Theresa3rd_Bot.Model.PO
         public SubscribeType SubscribeType { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDescription = "订阅子类型")]
-        public SubscribeSubType SubscribeSubType { get; set; }
+        public MysSectionType SubscribeSubType { get; set; }
 
         [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "订阅描述")]
         public string SubscribeDescription { get; set; }

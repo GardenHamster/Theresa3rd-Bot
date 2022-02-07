@@ -127,6 +127,18 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// Unix时间戳转DateTime
+        /// </summary>
+        /// <param name="unixTimeStamp"></param>
+        /// <returns></returns>
+        public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            return dateTime;
+        }
+
+        /// <summary>
         /// 获取当天是本星期的第几天
         /// </summary>
         /// <returns></returns>

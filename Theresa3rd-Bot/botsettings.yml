@@ -132,22 +132,24 @@ Subscribe:                                                                      
         ShelfLife:          86400                                               #保质期(秒),超过保质期将不会推送,0表示永不过期
         MinBookmark:        300                                                 #最低收藏数，用于判断涩图是否合格
         MinBookPerHour:     100                                                 #每小时至少新增收藏数量，用于判断涩图是否合格
-
     BiliUp:                                                                     #b站up主
         Enable:             true                                                #是否启用
         AddCommand:         '订阅up'                                            #订阅命令,需要管理员执行
         RmCommand:          '退订up'                                            #退订命令,需要管理员执行
         Template:           ''
         ScanInterval:       60                                                  #扫描间隔(秒)
+        ShelfLife:          43200                                               #保质期(秒),超过保质期将不会推送,0表示永不过期
     BiliLive:                                                                   #b站直播
         Enable:             true                                                #是否启用
         AddCommand:         '订阅直播'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订直播'                                          #退订命令,需要管理员执行
         Template:           ''
         ScanInterval:       60                                                  #扫描间隔(秒)
+        ShelfLife:          43200                                               #保质期(秒),超过保质期将不会推送,0表示永不过期
     Mihoyo:                                                                     #米游戏社版主
         Enable:             true                                                #是否启用
         AddCommand:         '订阅版主'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订版主'                                          #退订命令,需要管理员执行
         Template:           ''
         ScanInterval:       60                                                  #扫描间隔(秒)
+        ShelfLife:          43200                                               #保质期(秒),超过保质期将不会推送,0表示永不过期

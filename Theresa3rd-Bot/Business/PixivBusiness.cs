@@ -564,7 +564,7 @@ namespace Theresa3rd_Bot.Business
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public List<PixivSubscribe> getPixivTagSubscribeWork(string tagName, int subscribeId)
+        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(string tagName, int subscribeId)
         {
             PixivSearchDto pageOne = getPixivSearchDto(tagName, 1, false);
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
@@ -573,6 +573,7 @@ namespace Theresa3rd_Bot.Business
             {
                 int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
                 if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+                
                 PixivWorkInfoDto pixivWorkInfoDto = getPixivWorkInfoDto(item.id);
                 if (pixivWorkInfoDto == null) continue;
                 if (pixivWorkInfoDto.body.isR18()) continue;
@@ -591,6 +592,7 @@ namespace Theresa3rd_Bot.Business
                 pixivSubscribe.SubscribeRecord = subscribeRecord;
                 pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
                 pixivSubscribeList.Add(pixivSubscribe);
+                await Task.Delay(1000);
             }
             return pixivSubscribeList;
         }

@@ -1,0 +1,63 @@
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Dao;
+using Theresa3rd_Bot.Model.Mys;
+using Theresa3rd_Bot.Model.PO;
+using Theresa3rd_Bot.Model.Subscribe;
+using Theresa3rd_Bot.Type;
+using Theresa3rd_Bot.Util;
+
+namespace Theresa3rd_Bot.Business
+{
+    public class MYSBusiness
+    {
+        private SubscribeRecordDao subscribeRecordDao;
+
+        public MYSBusiness()
+        {
+            subscribeRecordDao = new SubscribeRecordDao();
+        }
+
+        public async Task<List<MysSubscribe>> getMysUserNewestAsync(int subscribeId, int subTypeId, string userId, int getCount = 2)
+        {
+            int index = 0;
+            List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
+            MysResult<MysUserPostDataDto> pixivWorkInfo = getMysUserPostDto(userId, subTypeId);
+            List<MysUserPostDto> postList = pixivWorkInfo.data.list;
+            if (postList.Count == 0) return mysSubscribeList;
+            foreach (var item in postList)
+            {
+                await Task.Delay(2000);
+                if (++index > getCount) break;
+                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+                subscribeRecord.Title = item.post.subject.cutString(200);
+                subscribeRecord.Content = item.post.content.cutString(500);
+                subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
+                subscribeRecord.LinkUrl = HttpUrl.getMysArticleUrl(item.post.post_id);
+                subscribeRecord.DynamicCode = item.post.post_id;
+                subscribeRecord.DynamicType = SubscribeDynamicType.帖子;
+
+                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, item.post.post_id);
+                if (dbSubscribe != null) continue;
+
+                MysSubscribe mysSubscribe = new MysSubscribe();
+                mysSubscribe.SubscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                mysSubscribeList.Add(mysSubscribe);
+            }
+            return mysSubscribeList;
+        }
+
+
+        public MysResult<MysUserPostDataDto> getMysUserPostDto(string userId, int subTypeId)
+        {
+            Dictionary<string, string> headerDic = new Dictionary<string, string>();
+            string getUrl = HttpUrl.getMysPostListUrl(userId, subTypeId);
+            string json = HttpHelper.HttpGet(getUrl, headerDic);
+            return JsonConvert.DeserializeObject<MysResult<MysUserPostDataDto>>(json);
+        }
+
+
+    }
+}

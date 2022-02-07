@@ -12,8 +12,5 @@ namespace Theresa3rd_Bot.Model.Subscribe
     {
         public SubscribeRecordPO SubscribeRecord { get; set; }
 
-        public FileInfo CoverFileInfo { get; set; }
-
-        public FileInfo PreviewFileInfo { get; set; }
     }
 }

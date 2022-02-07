@@ -6,11 +6,11 @@
 
         public PixivTagSubscribeConfig PixivTag { get; set; }
 
-        public BaseSubscribeConfig BiliUp { get; set; }
+        public BiliUpSubscribeConfig BiliUp { get; set; }
 
         public BaseSubscribeConfig BiliLive { get; set; }
 
-        public BaseSubscribeConfig Mihoyo { get; set; }
+        public MysUserSubscribeConfig Mihoyo { get; set; }
     }
 
 }

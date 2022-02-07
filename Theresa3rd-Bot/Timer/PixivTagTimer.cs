@@ -56,7 +56,7 @@ namespace Theresa3rd_Bot.Timer
                 try
                 {
                     DateTime startTime = DateTime.Now;
-                    List<PixivSubscribe> pixivSubscribeList = pixivBusiness.getPixivTagSubscribeAsync(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
+                    List<PixivSubscribe> pixivSubscribeList = pixivBusiness.getPixivTagSubscribeAsync(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId).Result;
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(subscribeTask, pixivSubscribeList, startTime);
                 }

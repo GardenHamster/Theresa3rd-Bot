@@ -25,16 +25,16 @@ namespace Theresa3rd_Bot.Business
         {
             int index = 0;
             List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
-            MysResult<MysUserPostDataDto> pixivWorkInfo = getMysUserPostDto(userCode, sectionType);
-            List<MysUserPostDto> postList = pixivWorkInfo.data.list;
+            MysResult<MysUserPostDataDto> mysPostInfo = getMysUserPostDto(userCode, sectionType);
+            List<MysUserPostDto> postList = mysPostInfo.data.list;
             if (postList.Count == 0) return mysSubscribeList;
             foreach (var item in postList)
             {
-                int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
+                if (++index > getCount) break;
+                int shelfLife = BotConfig.SubscribeConfig.Mihoyo.ShelfLife;
                 DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
                 if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
                 
-                if (++index > getCount) break;
                 SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
                 subscribeRecord.Title = item.post.subject.cutString(200);
                 subscribeRecord.Content = item.post.content.cutString(500);

@@ -58,10 +58,17 @@ namespace Theresa3rd_Bot.Timer
             if (subscribeConfig.PixivUser != null && subscribeConfig.PixivUser.Enable)
             {
                 PixivUserTimer.init();
+                LogHelper.Info($"pixiv用户订阅任务启动完毕...");
             }
             if (subscribeConfig.PixivTag != null && subscribeConfig.PixivTag.Enable)
             {
                 PixivTagTimer.init();
+                LogHelper.Info($"pixiv标签订阅任务启动完毕...");
+            }
+            if (subscribeConfig.Mihoyo != null && subscribeConfig.Mihoyo.Enable)
+            {
+                MysUserTimer.init();
+                LogHelper.Info($"米游社订阅任务启动完毕...");
             }
         }
 

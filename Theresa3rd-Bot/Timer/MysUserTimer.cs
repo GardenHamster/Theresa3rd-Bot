@@ -76,7 +76,7 @@ namespace Theresa3rd_Bot.Timer
             {
                 FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : HttpHelper.downImg(mysSubscribe.SubscribeRecord.CoverUrl);
                 List<IChatMessage> chailList = new List<IChatMessage>();
-                chailList.Add(new PlainMessage($"米游社[{subInfo.SubscribeName}]发布了新帖子："));
+                chailList.Add(new PlainMessage($"米游社[{subInfo.SubscribeName}]发布了新帖子：\r\n"));
                 chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Content}\r\n"));
                 if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                 chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.LinkUrl}"));

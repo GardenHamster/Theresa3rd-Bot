@@ -357,8 +357,8 @@ namespace Theresa3rd_Bot.Business
                 tempIllustList.RemoveAt(randomIndex);
             }
 
-            //提取前30个作品
-            pixivIllustList = pixivIllustList.Take(30).ToList();
+            //提取前N个作品
+            pixivIllustList = pixivIllustList.Take(BotConfig.SetuConfig.Pixiv.MaxScreen).ToList();
 
             //创建线程池
             List<PixivIllust>[] taskList = new List<PixivIllust>[threadCount];

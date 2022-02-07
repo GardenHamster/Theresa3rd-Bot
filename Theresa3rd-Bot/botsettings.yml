@@ -83,6 +83,7 @@ Setu:                                                                           
                             耗时：{CostSecond}s，标签图片：{RelevantCount}张，作品图片:{PageCount}张
                             标签：{Tags}
                             {Urls}
+        MaxScreen:          60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
         MinBookmark:        800                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时试用)
         MinBookRate:        0.05                                                #最低收藏率，收藏数/浏览数(标签搜索时试用)
         CookieExpire:       1296000                                             #cookie失效时间(秒)，超过该天数后需要使用命令更新cookie，建议cookie每15天更新一次

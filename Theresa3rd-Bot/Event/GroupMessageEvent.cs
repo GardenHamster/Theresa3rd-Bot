@@ -112,6 +112,21 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                //瑟图
+                if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.Lolicon?.Command) && instructions.StartsWith(BotConfig.SetuConfig.Lolicon.Command))
+                {
+                    if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
+                    if (BusinessHelper.CheckSTTagEnableAsync(session, args, message).Result == false) return;
+                    if (BusinessHelper.CheckMemberSTCoolingAsync(session, args).Result) return;
+                    if (BusinessHelper.ChecekGroupSTCoolingAsync(session, args).Result) return;
+                    if (BusinessHelper.CheckSTUseUpAsync(session, args).Result) return;
+                    if (BusinessHelper.CheckHandingAsync(session, args).Result) return;
+                    CoolingCache.SetGroupSTCooling(groupId, memberId);
+                    await new LoliconBusiness().sendGeneralLoliconImageAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
+                    return;
+                }
+
                 //涩图
                 if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.Pixiv?.Command) && instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
                 {

@@ -31,7 +31,7 @@ namespace Theresa3rd_Bot.Business
                     await Task.Delay(1000);
                 }
 
-                LoliconResultV2 loliconResult=null;
+                LoliconResultV2 loliconResult = null;
                 string tagNames = message.splitKeyWord(BotConfig.SetuConfig.Lolicon.Command) ?? "";
                 if (string.IsNullOrEmpty(tagNames))
                 {
@@ -44,7 +44,7 @@ namespace Theresa3rd_Bot.Business
                     loliconResult = getLoliconResult(tagArr);
                 }
 
-                if (loliconResult == null|| loliconResult.data.Count==0)
+                if (loliconResult == null || loliconResult.data.Count == 0)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Lolicon.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
                     return;
@@ -233,7 +233,7 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
-        
+
 
 
 

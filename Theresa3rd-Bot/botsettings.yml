@@ -67,7 +67,11 @@ Setu:                                                                           
         NotFoundMsg:        '色图探测器毫无反应，找不到你要的色图'              #找不到相应色图时返回的消息
         ErrorMsg:           '申请色色失败！请重新尝试'                          #发生错误时返回的消息
         ProcessingMsg:      '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息
-        Template:           ''
+        Template:           |                                                   #消息模版，值为空时将使用默认模版
+                            {MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，尽快保存哦
+                            标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，耗时：{CostSecond}s
+                            标签：{Tags}
+                            {Urls}
     Pixiv:                                                                      #Pixiv图床https://www.pixiv.net
         Enable:             true                                                #是否启用
         Command:            '涩图'                                              #命令，用法：#涩图 或 #涩图可可萝
@@ -77,7 +81,7 @@ Setu:                                                                           
         RandomMode:         1                                                   #自定义关闭时的获取图片的模式，1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品
         RandomTags:         ['德丽莎','テレサ・アポカリプス']                    #没有指定标签时随机获取的标签
         ProcessingMsg:      '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息
-        Template:           |                                                   #消息模版
+        Template:           |                                                   #消息模版，值为空时将使用默认模版
                             {MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，尽快保存哦
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
                             收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，
@@ -109,7 +113,7 @@ Subscribe:                                                                      
         Enable:             true                                                #是否启用
         AddCommand:         '订阅画师'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订画师'                                          #退订命令,需要管理员执行
-        Template:           |                                                   #消息模版
+        Template:           |                                                   #消息模版，值为空时将使用默认模版
                             pixiv画师[{UserName}]发布了新作品：
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
                             收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，
@@ -122,7 +126,7 @@ Subscribe:                                                                      
         Enable:             true                                                #是否启用
         AddCommand:         '订阅标签'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订标签'                                          #退订命令,需要管理员执行
-        Template:           |                                                   #消息模版
+        Template:           |                                                   #消息模版，值为空时将使用默认模版
                             pixiv标签[{TagName}]出现了新作品：
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
                             收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，
@@ -150,6 +154,10 @@ Subscribe:                                                                      
         Enable:             true                                                #是否启用
         AddCommand:         '订阅版主'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订版主'                                          #退订命令,需要管理员执行
-        Template:           ''
+        Template:           |                                                   #消息模版，值为空时将使用默认模版
+                            米游社[{UserName}]发布了新帖子：
+                            {Content}
+                            {Urls}
+                            
         ScanInterval:       60                                                  #扫描间隔(秒)
         ShelfLife:          43200                                               #保质期(秒),超过保质期将不会推送,0表示永不过期

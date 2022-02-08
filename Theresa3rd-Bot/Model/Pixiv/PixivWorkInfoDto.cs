@@ -43,7 +43,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
         public bool isR18()
         {
-            return tags.tags.Where(o => o.tag.ToUpper() == "R-18" || o.tag.ToUpper() == "R18" || o.tag.ToUpper() == "R17.9").FirstOrDefault() != null;
+            return tags.tags.Where(o => o.tag.ToUpper() == "R-18" || o.tag.ToUpper() == "R18").Any();
         }
 
         public bool isGif()

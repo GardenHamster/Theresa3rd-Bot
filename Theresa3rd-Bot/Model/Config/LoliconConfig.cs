@@ -8,9 +8,11 @@
 
         public string DisableMsg { get; set; }
 
+        public string NotFoundMsg { get; set; }
+
         public string ErrorMsg { get; set; }
 
-        public string ProcessingMag { get; set; }
+        public string ProcessingMsg { get; set; }
 
         public string Template { get; set; }
 

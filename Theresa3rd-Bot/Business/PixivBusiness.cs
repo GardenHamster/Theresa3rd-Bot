@@ -638,7 +638,7 @@ namespace Theresa3rd_Bot.Business
             try
             {
                 if (pixivWorkInfo.body.isGif()) return downAndComposeGif(pixivWorkInfo);
-                string fullFileName = pixivWorkInfo.body.illustId + ".jpg";
+                string fullFileName = $"{pixivWorkInfo.body.illustId}.jpg";
                 string imgReferer = HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId);
                 string imgUrl = pixivWorkInfo.body.urls.original;
                 if (BotConfig.GeneralConfig.DownWithProxy) imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);

@@ -113,6 +113,18 @@ namespace Theresa3rd_Bot.Common
             return $"{PixivHomeUrl}/artworks/{workId}";
         }
 
+        /*---------------------------------------------------------------Lolicon-----------------------------------------------------------------------*/
+
+        /// <summary>
+        /// 画师作品地址
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        public static string getLoliconApiV2Url()
+        {
+            return "https://api.lolicon.app/setu/v2";
+        }
+
         /*---------------------------------------------------------------米游社-----------------------------------------------------------------------*/
 
         /// <summary>

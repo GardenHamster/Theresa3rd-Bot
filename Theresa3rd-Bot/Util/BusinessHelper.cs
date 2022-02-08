@@ -131,6 +131,22 @@ namespace Theresa3rd_Bot.Util
             return true;
         }
 
+        /// <summary>
+        /// 检查是否超级管理员
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static async Task<bool> CheckSuperManagersAsync(this IMiraiHttpSession session, IFriendMessageEventArgs args)
+        {
+            if (BotConfig.PermissionsConfig.SuperManagers.Contains(args.Sender.Id) == false)
+            {
+                await session.SendTemplateAsync(args, BotConfig.GeneralConfig.ManagersRequiredMsg, "该功能需要管理员执行");
+                return false;
+            }
+            return true;
+        }
+
 
         /// <summary>
         /// 检查涩图功能是否在冷却中

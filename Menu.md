@@ -36,7 +36,8 @@
 ### 指令
 - 使用 #禁止标签+关键词 禁止一个标签
 - 使用 #解禁标签+关键词 解除一个标签
-![image](https://user-images.githubusercontent.com/89188316/153176111-d11dd375-ef3f-4444-a46f-abab994fb94d.png)
+![image](https://user-images.githubusercontent.com/89188316/153180083-4bf06489-a5df-48ee-84f6-56805a60e007.png)
+
 
 ## 订阅pixiv画师
 ### 说明
@@ -49,7 +50,7 @@
 ### 指令
 - 使用 #订阅画师+画师id 订阅一个画师
 - 使用 #退订画师+画师id 退订一个画师
-![image](https://user-images.githubusercontent.com/89188316/150689981-504be048-8a9b-481b-827d-a8cb83676a37.png)
+![image](https://user-images.githubusercontent.com/89188316/153182768-f7ffd4a2-eb46-424c-8126-347b737fde11.png)
 ![image](https://user-images.githubusercontent.com/89188316/153170330-ecb886e6-2e59-4423-bfb1-d122001ea1fc.png)
 
 ## 订阅pixiv标签
@@ -61,5 +62,6 @@
 - 使用 #订阅标签+关键词 订阅一个标签
 - 使用 #退订标签+关键词 退订一个标签
 ![image](https://user-images.githubusercontent.com/89188316/153172783-c09563f7-2bf7-4d54-b112-1f539b69e7fe.png)
-![image](https://user-images.githubusercontent.com/89188316/153172880-67c8c022-7474-48c6-ab64-2994243b79de.png)
+![image](https://user-images.githubusercontent.com/89188316/153180473-a9065289-1ada-4a04-83a2-8920313dba2c.png)
+
 

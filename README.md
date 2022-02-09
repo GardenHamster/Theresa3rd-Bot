@@ -3,9 +3,11 @@
 ## 简介
  - 某舰团长利用摸鱼时间写出来的bot，准备移植到mirai。基于 .net core 6.0 和 mirai-api-http
  - 相关功能还在摸鱼开发中，windows下部署请参考 [Document.md](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md)，使用方法请参考 [Menu.md](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md)
+ - 开始白嫖前，请先给一个Star
 
 ## 声明
  - 本项目为个人自娱自乐开发出来的项目，并没有任何收益，并不负责由于项目所产生的任何问题，不得将项目用于任何商业用途
+ - 有想法或问题请发issues，安卓官服的舰长可以加个舰团1069989
 
 ## 功能
 - [x] 入群欢迎
@@ -28,9 +30,6 @@
 - [ ] 关键词 - 关键词自动回复/禁言/撤回功能
 - [ ] 词云 - 每日/周/月词云功能
 - [ ] 漂流瓶 - 漂流瓶功能(跨群聊天,以后再说)
-
-## 其他
-- 有想法或问题请发issues，安卓官服的舰长可以加个舰团1069989
 
 ## 致谢
 - 感谢[mamoe/mirai](https://github.com/mamoe/mirai)提供的支持

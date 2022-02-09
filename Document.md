@@ -11,7 +11,7 @@
 ## 部署
 - 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本
 - 根据自己的需要修改根目录下的配置文件[botsettings.yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Theresa3rd-Bot/botsettings.yml)
-- 修改根目录下的配置文件appsettings.Production.json
+- 修改根目录下的配置文件appsettings.Production.json，注：各版本之间的botsettings.yml可能会有较大差异，升级版本后请注意修改该文件
 ```json5
 {
   "Mirai": {

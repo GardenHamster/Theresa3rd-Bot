@@ -28,11 +28,20 @@
 ![image](https://user-images.githubusercontent.com/89188316/153168163-bb47b63d-bbbb-4ab9-8007-2e33f9a5c13d.png)
 ![image](https://user-images.githubusercontent.com/89188316/153169798-ce49c3be-154c-48fd-9a99-e991430c682a.png)
 
+## 禁止涩图
+### 说明
+- 将一个标签加入到禁止搜索列表中，防止群友整活，匹配方式为完全一致
+![image](https://user-images.githubusercontent.com/89188316/153175892-80e31abe-cbf7-4485-bfb1-bc7370f8c06d.png)
+
+### 指令
+- 使用 #禁止标签+关键词 禁止一个标签
+- 使用 #解禁标签+关键词 解除一个标签
+![image](https://user-images.githubusercontent.com/89188316/153176111-d11dd375-ef3f-4444-a46f-abab994fb94d.png)
 
 ## 订阅pixiv画师
 ### 说明
-- 订阅功能可以定时扫描画师的最新作品，并将作品自动推送到qq群，r18类的作品将会被忽略
-![image](https://user-images.githubusercontent.com/89188316/153169722-389c2058-a54f-46e6-9004-c9073498f0b9.png)
+- 使用轮询的方式定时扫描画师的最新作品，并将作品自动推送到qq群，r18类的作品将会被忽略
+![image](https://user-images.githubusercontent.com/89188316/153171928-b9e90263-5351-41a4-824f-6a999feca886.png)
 
 ### 获取画师id
 - 在pixiv网页版中点开画师头像后，网页地址中 https://www.pixiv.net/users/15034125 的 15034125 为画师id
@@ -44,3 +53,13 @@
 ![image](https://user-images.githubusercontent.com/89188316/153170330-ecb886e6-2e59-4423-bfb1-d122001ea1fc.png)
 
 ## 订阅pixiv标签
+### 说明
+- 使用轮询的方式定时扫描标签的最新作品，并将作品自动推送到qq群，r18类的作品将会被忽略，匹配方式为部分一致
+![image](https://user-images.githubusercontent.com/89188316/153169722-389c2058-a54f-46e6-9004-c9073498f0b9.png)
+
+### 指令
+- 使用 #订阅标签+关键词 订阅一个标签
+- 使用 #退订标签+关键词 退订一个标签
+![image](https://user-images.githubusercontent.com/89188316/153172783-c09563f7-2bf7-4d54-b112-1f539b69e7fe.png)
+![image](https://user-images.githubusercontent.com/89188316/153172880-67c8c022-7474-48c6-ab64-2994243b79de.png)
+

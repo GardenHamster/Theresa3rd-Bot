@@ -99,7 +99,7 @@ namespace Theresa3rd_Bot.Util
         {
             message = message.ToLower().Trim();
             long groupId = args.Sender.Group.Id;
-            if (BotConfig.SetuConfig.DisableTags.Where(o => message.IndexOf(o.ToLower()) > -1).Any())
+            if (BotConfig.SetuConfig.DisableTags.Where(o => message == o.ToLower()).Any())
             {
                 await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
                 return false;
@@ -111,7 +111,6 @@ namespace Theresa3rd_Bot.Util
                 await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
                 return false;
             }
-
             return true;
         }
 

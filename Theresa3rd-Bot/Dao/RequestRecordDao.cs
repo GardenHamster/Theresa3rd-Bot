@@ -10,8 +10,8 @@ namespace Theresa3rd_Bot.Dao
     {
         public int getUsedCountToday(long groupId, long memberId, params CommandType[] commandTypeArr)
         {
-            DateTime todayStart = DateTimeHelper.getTodayStart();
-            DateTime todayEnd = DateTimeHelper.getTodayEnd();
+            DateTime todayStart = DateTimeHelper.GetTodayStart();
+            DateTime todayEnd = DateTimeHelper.GetTodayEnd();
             return Db.Queryable<RequestRecordPO>().Where(o => o.GroupId == groupId && o.MemberId == memberId && commandTypeArr.Contains(o.CommandType) && o.CreateDate >= todayStart && o.CreateDate <= todayEnd).Count();
         }
 

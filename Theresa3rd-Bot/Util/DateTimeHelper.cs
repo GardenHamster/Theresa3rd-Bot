@@ -9,10 +9,15 @@ namespace Theresa3rd_Bot.Util
     public static class DateTimeHelper
     {
         /// <summary>
+        /// 时间戳计时开始时间
+        /// </summary>
+        private static DateTime TimeStampStartTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        /// <summary>
         /// 获取今天开始时间
         /// </summary>
         /// <returns></returns>
-        public static DateTime getTodayStart()
+        public static DateTime GetTodayStart()
         {
             DateTime now = DateTime.Now;
             return new DateTime(now.Year, now.Month, now.Day);
@@ -22,13 +27,18 @@ namespace Theresa3rd_Bot.Util
         /// 获取今天结束时间
         /// </summary>
         /// <returns></returns>
-        public static DateTime getTodayEnd()
+        public static DateTime GetTodayEnd()
         {
             DateTime now = DateTime.Now;
             return new DateTime(now.Year, now.Month, now.Day, 23, 59, 59);
         }
 
-        public static string getTimeStrBySeconds(int totalSecond)
+        /// <summary>
+        /// 根据一个总秒速,返回时:分:秒格式字符串
+        /// </summary>
+        /// <param name="totalSecond"></param>
+        /// <returns></returns>
+        public static string GetTimeStrBySeconds(int totalSecond)
         {
             string hour = (totalSecond / 3600).ToString().PadLeft(2, '0');
             string minute = ((totalSecond % 3600) / 60).ToString().PadLeft(2, '0');
@@ -50,6 +60,12 @@ namespace Theresa3rd_Bot.Util
             return (int)timeDiff.TotalSeconds;
         }
 
+        /// <summary>
+        /// 获取两个日期的秒数差值
+        /// </summary>
+        /// <param name="timeStart"></param>
+        /// <param name="timeEnd"></param>
+        /// <returns></returns>
         public static TimeSpan GetTimeSpanDiff(DateTime timeStart, DateTime timeEnd)
         {
             TimeSpan timeSpanStart = new TimeSpan(timeStart.Ticks);
@@ -76,24 +92,19 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="minutes"></param>
         /// <returns></returns>
-        public static DateTime getDateTimeAfterMinutes(int minutes)
+        public static DateTime GetDateTimeAfterMinutes(int minutes)
         {
             return DateTime.Now.AddMinutes(minutes);
         }
-
-        /// <summary>
-        /// 时间戳计时开始时间
-        /// </summary>
-        private static DateTime timeStampStartTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// DateTime转换为10位时间戳（单位：秒）
         /// </summary>
         /// <param name="dateTime"> DateTime</param>
         /// <returns>10位时间戳（单位：秒）</returns>
-        public static long dateTimeToTimeStamp(DateTime dateTime)
+        public static long ToTimeStamp(this DateTime dateTime)
         {
-            return (long)(dateTime.ToUniversalTime() - timeStampStartTime).TotalSeconds;
+            return (long)(dateTime.ToUniversalTime() - TimeStampStartTime).TotalSeconds;
         }
 
         /// <summary>
@@ -101,9 +112,9 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="dateTime"> DateTime</param>
         /// <returns>13位时间戳（单位：毫秒）</returns>
-        public static long dateTimeToLongTimeStamp(DateTime dateTime)
+        public static long ToLongTimeStamp(this DateTime dateTime)
         {
-            return (long)(dateTime.ToUniversalTime() - timeStampStartTime).TotalMilliseconds;
+            return (long)(dateTime.ToUniversalTime() - TimeStampStartTime).TotalMilliseconds;
         }
 
         /// <summary>
@@ -111,9 +122,9 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="timeStamp">10位时间戳（单位：秒）</param>
         /// <returns>DateTime</returns>
-        public static DateTime timeStampToDateTime(long timeStamp)
+        public static DateTime TimeStampToDateTime(long timeStamp)
         {
-            return timeStampStartTime.AddSeconds(timeStamp).ToLocalTime();
+            return TimeStampStartTime.AddSeconds(timeStamp).ToLocalTime();
         }
 
         /// <summary>
@@ -121,9 +132,9 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="longTimeStamp">13位时间戳（单位：毫秒）</param>
         /// <returns>DateTime</returns>
-        public static DateTime longTimeStampToDateTime(long longTimeStamp)
+        public static DateTime LongTimeStampToDateTime(long longTimeStamp)
         {
-            return timeStampStartTime.AddMilliseconds(longTimeStamp).ToLocalTime();
+            return TimeStampStartTime.AddMilliseconds(longTimeStamp).ToLocalTime();
         }
 
         /// <summary>
@@ -142,7 +153,7 @@ namespace Theresa3rd_Bot.Util
         /// 获取当天是本星期的第几天
         /// </summary>
         /// <returns></returns>
-        public static int getDayOfWeek()
+        public static int GetDayOfWeek()
         {
             DayOfWeek dayOfWeek = DateTime.Today.DayOfWeek;
             if (dayOfWeek == DayOfWeek.Monday) return 1;
@@ -154,6 +165,17 @@ namespace Theresa3rd_Bot.Util
             if (dayOfWeek == DayOfWeek.Sunday) return 7;
             return 0;
         }
+
+        /// <summary>
+        /// 将一个DateTime格式化为时间字符串
+        /// </summary>
+        /// <param name="datetime"></param>
+        /// <returns></returns>
+        public static string ToSimpleString(this DateTime datetime)
+        {
+            return datetime.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
 
     }
 }

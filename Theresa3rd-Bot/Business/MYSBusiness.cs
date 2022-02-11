@@ -1,6 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+using Mirai.CSharp.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
@@ -25,8 +29,8 @@ namespace Theresa3rd_Bot.Business
         {
             int index = 0;
             List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
-            MysResult<MysUserPostDataDto> mysPostInfo = getMysUserPostDto(userCode, sectionType);
-            List<MysUserPostDto> postList = mysPostInfo.data.list;
+            MysResult<MysPostDataDto> mysPostInfo = getMysUserPostDto(userCode, sectionType);
+            List<MysPostListDto> postList = mysPostInfo.data.list;
             if (postList.Count == 0) return mysSubscribeList;
             foreach (var item in postList)
             {
@@ -48,6 +52,8 @@ namespace Theresa3rd_Bot.Business
 
                 MysSubscribe mysSubscribe = new MysSubscribe();
                 mysSubscribe.SubscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                mysSubscribe.MysUserPostDto = item;
+                mysSubscribe.CreateTime = createTime;
                 mysSubscribeList.Add(mysSubscribe);
                 await Task.Delay(1000);
             }
@@ -55,12 +61,39 @@ namespace Theresa3rd_Bot.Business
         }
 
 
-        public MysResult<MysUserPostDataDto> getMysUserPostDto(string userId, MysSectionType subType)
+        public MysResult<MysPostDataDto> getMysUserPostDto(string userId, MysSectionType subType)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             string getUrl = HttpUrl.getMysPostListUrl(userId, (int)subType);
             string json = HttpHelper.HttpGet(getUrl, headerDic);
-            return JsonConvert.DeserializeObject<MysResult<MysUserPostDataDto>>(json);
+            return JsonConvert.DeserializeObject<MysResult<MysPostDataDto>>(json);
+        }
+
+        public async Task<List<IChatMessage>> getSubscribeInfoAsync(MysSubscribe mysSubscribe, string template = "")
+        {
+            if (string.IsNullOrWhiteSpace(template)) return getDefaultSubscribeInfoAsync(mysSubscribe).Result;
+            template = template.Replace("{UserName}", mysSubscribe.MysUserPostDto.user.nickname);
+            template = template.Replace("{CreateTime}", mysSubscribe.CreateTime.ToSimpleString());
+            template = template.Replace("{Title}", mysSubscribe.SubscribeRecord.Title);
+            template = template.Replace("{Content}", mysSubscribe.SubscribeRecord.Content);
+            template = template.Replace("{Urls}", mysSubscribe.SubscribeRecord.LinkUrl);
+            List<IChatMessage> chailList = new List<IChatMessage>();
+            chailList.Add(new PlainMessage(template));
+            FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : HttpHelper.downImg(mysSubscribe.SubscribeRecord.CoverUrl);
+            if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+            return chailList;
+        }
+
+        public async Task<List<IChatMessage>> getDefaultSubscribeInfoAsync(MysSubscribe mysSubscribe)
+        {
+            List<IChatMessage> chailList = new List<IChatMessage>();
+            chailList.Add(new PlainMessage($"米游社[{mysSubscribe.MysUserPostDto.user.nickname}]发布了新帖子，发布时间{mysSubscribe.CreateTime.ToSimpleString()}：\r\n"));
+            chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Title}\r\n"));
+            chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Content}\r\n"));
+            FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : HttpHelper.downImg(mysSubscribe.SubscribeRecord.CoverUrl);
+            if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+            chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.LinkUrl}"));
+            return chailList;
         }
 
 

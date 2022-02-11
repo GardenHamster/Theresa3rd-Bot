@@ -56,7 +56,7 @@ namespace Theresa3rd_Bot.Timer
                     SubscribeInfo subInfo = subscribeTask.SubscribeInfo;
                     List<MysSubscribe> mysSubscribeList = mysBusiness.getMysUserSubscribeAsync(subInfo.SubscribeSubType, subInfo.SubscribeId, subInfo.SubscribeCode).Result;
                     if (mysSubscribeList == null || mysSubscribeList.Count == 0) continue;
-                    await sendGroupSubscribeAsync(subscribeTask, mysSubscribeList);
+                    await sendGroupSubscribeAsync(mysBusiness, subscribeTask, mysSubscribeList);
                 }
                 catch (Exception ex)
                 {
@@ -69,17 +69,12 @@ namespace Theresa3rd_Bot.Timer
             }
         }
 
-        private static async Task sendGroupSubscribeAsync(SubscribeTask subscribeTask, List<MysSubscribe> mysSubscribeList)
+        private static async Task sendGroupSubscribeAsync(MYSBusiness mysBusiness, SubscribeTask subscribeTask, List<MysSubscribe> mysSubscribeList)
         {
             SubscribeInfo subInfo = subscribeTask.SubscribeInfo;
             foreach (MysSubscribe mysSubscribe in mysSubscribeList)
             {
-                FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : HttpHelper.downImg(mysSubscribe.SubscribeRecord.CoverUrl);
-                List<IChatMessage> chailList = new List<IChatMessage>();
-                chailList.Add(new PlainMessage($"米游社[{subInfo.SubscribeName}]发布了新帖子：\r\n"));
-                chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Content}\r\n"));
-                if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.LinkUrl}"));
+                List<IChatMessage> chailList = mysBusiness.getSubscribeInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Mihoyo.Template).Result;
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
                     await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());

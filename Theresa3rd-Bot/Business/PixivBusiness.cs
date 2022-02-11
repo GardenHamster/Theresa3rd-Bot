@@ -710,6 +710,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{UserName}", pixivWorkInfo.userName);
             template = template.Replace("{UserId}", pixivWorkInfo.userId.ToString());
             template = template.Replace("{SizeMB}", sizeMB.ToString());
+            template = template.Replace("{CreateTime}", pixivWorkInfo.createDate.ToSimpleString());
             template = template.Replace("{BookmarkCount}", pixivWorkInfo.bookmarkCount.ToString());
             template = template.Replace("{LikeCount}", pixivWorkInfo.likeCount.ToString());
             template = template.Replace("{ViewCount}", pixivWorkInfo.viewCount.ToString());
@@ -726,7 +727,7 @@ namespace Theresa3rd_Bot.Business
             StringBuilder workInfoStr = new StringBuilder();
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
             double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
-            workInfoStr.AppendLine($"标题：{pixivWorkInfo.illustTitle}，画师：{pixivWorkInfo.userName}，画师id：{pixivWorkInfo.userId}，大小：{sizeMB}MB，");
+            workInfoStr.AppendLine($"标题：{pixivWorkInfo.illustTitle}，画师：{pixivWorkInfo.userName}，画师id：{pixivWorkInfo.userId}，大小：{sizeMB}MB，发布时间：{pixivWorkInfo.createDate.ToSimpleString()}，");
             workInfoStr.AppendLine($"收藏：{pixivWorkInfo.bookmarkCount}，赞：{pixivWorkInfo.likeCount}，浏览：{pixivWorkInfo.viewCount}，");
             workInfoStr.AppendLine($"耗时：{costSecond}s，标签图片：{pixivWorkInfo.RelevantCount}张，作品图片:{pixivWorkInfo.pageCount}张");
             workInfoStr.AppendLine($"标签：{getTagsStr(pixivWorkInfo.tags)}");

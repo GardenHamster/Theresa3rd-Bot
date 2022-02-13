@@ -7,11 +7,21 @@
 - 请参照[iTXTech/mirai-console-loader](https://github.com/iTXTech/mirai-console-loader)安装mcl
 - 为mcl安装并配置[mirai-api-http](https://github.com/project-mirai/mirai-api-http)插件
 - 启动mcl，并登录机器人账号
+```bash
+2022-02-13 18:09:37 I/WindowHelperJvm: Mirai is using desktop. Captcha will be thrown by window popup. You can add `mirai.no-desktop` to JVM properties (-Dmirai.no-desktop) to disable it.
+2022-02-13 18:09:37 I/main: Auto-login 123456789
+2022-02-13 18:09:38 I/Bot.123456789: Loaded account secrets from local cache.
+2022-02-13 18:09:38 I/Bot.123456789: Saved account secrets to local cache for fast login.
+2022-02-13 18:09:38 I/Bot.123456789: Login successful.
+2022-02-13 18:09:39 V/Bot.123456789: Event: BotOnlineEvent(bot=Bot(123456789))
+2022-02-13 18:09:39 I/Bot.123456789: Bot login successful.
+2022-02-13 18:09:39 I/main: mirai-console started successfully.
+```
 
 ## 部署
-- 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本
+- 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本，注：各版本之间的botsettings.yml可能会有较大差异，升级版本后请注意修改该文件
 - 根据自己的需要修改根目录下的配置文件[botsettings.yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Theresa3rd-Bot/botsettings.yml)
-- 修改根目录下的配置文件appsettings.Production.json，注：各版本之间的botsettings.yml可能会有较大差异，升级版本后请注意修改该文件
+- 修改根目录下的配置文件appsettings.Production.json
 ```json5
 {
   "Mirai": {

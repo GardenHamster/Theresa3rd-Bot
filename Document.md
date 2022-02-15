@@ -19,7 +19,7 @@
 ```
 
 ## 部署
-- 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本，注：各版本之间的botsettings.yml可能会有较大差异，升级版本后请注意修改该文件
+- 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本，注：各版本之间的botsettings.yml可能会有较大差异，升级版本后请注意对比并修改该文件
 - 根据自己的需要修改根目录下的配置文件[botsettings.yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Theresa3rd-Bot/botsettings.yml)
 - 修改根目录下的配置文件appsettings.Production.json
 ```json5
@@ -38,7 +38,7 @@
 ```
 
 ### windows下部署
-- 下载并安装 [ASP.NET Core Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+- 下载并安装 [ASP.NET Core Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)，推荐下载页面中的[Hosting Bundle](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-6.0.2-windows-hosting-bundle-installer)
 - 启动powershell并将路径切换到Theresa3rd-Bot.dll所在目录下，
 
 - 运行Theresa3rd-Bot.dll，根据自己的需要修改端口和http或https

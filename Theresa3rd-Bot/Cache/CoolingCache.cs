@@ -24,8 +24,11 @@ namespace Theresa3rd_Bot.Cache
         /// <param name="memberId"></param>
         public static void SetMemberSTCooling(long groupId, long memberId)
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            coolingInfo.LastGetSTTime = DateTime.Now;
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                coolingInfo.LastGetSTTime = DateTime.Now;
+            }
         }
 
         /// <summary>
@@ -34,8 +37,11 @@ namespace Theresa3rd_Bot.Cache
         /// <param name="memberId"></param>
         public static void SetMemberSaucenaoCooling(long groupId, long memberId)
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            coolingInfo.LastSaucenaoTime = DateTime.Now;
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                coolingInfo.LastSaucenaoTime = DateTime.Now;
+            }
         }
 
         /// <summary>
@@ -47,7 +53,7 @@ namespace Theresa3rd_Bot.Cache
         {
             if (IsNoCool(groupId, memberId)) return 0;
             MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return GetCooling(coolingInfo.LastGetSTTime, BotConfig.SetuConfig.MemberCD);
+            return GetCoolingSeconds(coolingInfo.LastGetSTTime, BotConfig.SetuConfig.MemberCD);
         }
 
         /// <summary>
@@ -59,7 +65,7 @@ namespace Theresa3rd_Bot.Cache
         {
             if (IsNoCool(groupId, memberId)) return 0;
             MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return GetCooling(coolingInfo.LastSaucenaoTime, BotConfig.SaucenaoConfig.MemberCD);
+            return GetCoolingSeconds(coolingInfo.LastSaucenaoTime, BotConfig.SaucenaoConfig.MemberCD);
         }
 
         /// <summary>
@@ -73,8 +79,9 @@ namespace Theresa3rd_Bot.Cache
         {
             if (IsNoCool(groupId, memberId)) return 0;
             GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId, memberId);
-            return GetCooling(coolingInfo.LastGetSTTime, BotConfig.SetuConfig.GroupCD);
+            return GetCoolingSeconds(coolingInfo.LastGetSTTime, BotConfig.SetuConfig.GroupCD);
         }
+
 
         /// <summary>
         /// 检查查找原图功能是否在冷却中
@@ -85,7 +92,7 @@ namespace Theresa3rd_Bot.Cache
         {
             if (IsNoCool(groupId, memberId)) return 0;
             GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId, memberId);
-            return GetCooling(coolingInfo.LastSaucenaoTime, BotConfig.SaucenaoConfig.GroupCD);
+            return GetCoolingSeconds(coolingInfo.LastSaucenaoTime, BotConfig.SaucenaoConfig.GroupCD);
         }
 
         /// <summary>
@@ -94,8 +101,11 @@ namespace Theresa3rd_Bot.Cache
         /// <param name="memberId"></param>
         public static void SetGroupSTCooling(long groupId, long memberId)
         {
-            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId, memberId);
-            coolingInfo.LastGetSTTime = DateTime.Now;
+            lock (MemberCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId, memberId);
+                coolingInfo.LastGetSTTime = DateTime.Now;
+            }
         }
 
         /// <summary>
@@ -104,8 +114,11 @@ namespace Theresa3rd_Bot.Cache
         /// <param name="memberId"></param>
         public static void SetGroupOriginalCooling(long groupId, long memberId)
         {
-            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId, memberId);
-            coolingInfo.LastSaucenaoTime = DateTime.Now;
+            lock (MemberCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId, memberId);
+                coolingInfo.LastSaucenaoTime = DateTime.Now;
+            }
         }
 
         /// <summary>
@@ -125,12 +138,53 @@ namespace Theresa3rd_Bot.Cache
         /// <param name="datetime"></param>
         /// <param name="minInterval"></param>
         /// <returns></returns>
-        private static int GetCooling(DateTime? datetime, int secondInterval)
+        private static int GetCoolingSeconds(DateTime? datetime, int secondInterval)
         {
             if (datetime == null || secondInterval == 0) return 0;
             TimeSpan timeSpan = new TimeSpan(DateTime.Now.Ticks) - new TimeSpan(datetime.Value.Ticks);
             return timeSpan.TotalSeconds >= secondInterval ? 0 : secondInterval - (int)timeSpan.TotalSeconds;
         }
+
+        /// <summary>
+        /// 标记请求处理中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        public static void SetHanding(long groupId, long memberId)
+        {
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                coolingInfo.Handing = true;
+            }
+        }
+
+        /// <summary>
+        /// 标记请求处理完成
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        public static void SetHandFinish(long groupId, long memberId)
+        {
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                coolingInfo.Handing = false;
+            }
+        }
+
+        /// <summary>
+        /// 是否有请求在处理中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public static bool IsHanding(long groupId, long memberId)
+        {
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            return coolingInfo.Handing;
+        }
+
 
         /// <summary>
         /// 根据qqid返回冷却信息,如果不存在则创建一个新对象并返回
@@ -164,40 +218,6 @@ namespace Theresa3rd_Bot.Cache
                 if (GroupCoolingDic.ContainsKey(groupId) == false) GroupCoolingDic[groupId] = new GroupCoolingInfo(groupId);
                 return GroupCoolingDic[groupId];
             }
-        }
-
-        /// <summary>
-        /// 标记请求处理中
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        public static void SetHanding(long groupId, long memberId)
-        {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            coolingInfo.Handing = true;
-        }
-
-        /// <summary>
-        /// 标记请求处理完成
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        public static void SetHandFinish(long groupId, long memberId)
-        {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            coolingInfo.Handing = false;
-        }
-
-        /// <summary>
-        /// 是否有请求在处理中
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        public static bool IsHanding(long groupId, long memberId)
-        {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return coolingInfo.Handing;
         }
 
     }

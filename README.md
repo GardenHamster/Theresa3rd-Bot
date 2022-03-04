@@ -1,9 +1,9 @@
 # Theresa3rd-Bot
 
 ## 简介
- - 某舰团长利用摸鱼时间写出来的bot，准备移植到mirai。基于 .net core 6.0 和 mirai-api-http
+ - 某舰团长利用摸鱼时间写出来的自用的bot，准备移植到mirai。基于 .net core 6.0 和 mirai-api-http
  - 相关功能还在摸鱼开发中，windows下部署请参考 [Document.md](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md)，使用方法请参考 [Menu.md](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md)
- - 开始白嫖前，请先给一个Star
+ - 开始白嫖前，请在右上角点一下:star:Star
 
 ## 声明
  - 本项目为个人自娱自乐开发出来的项目，并没有任何收益，并不负责由于项目所产生的任何问题，不得将项目用于任何商业用途
@@ -23,7 +23,7 @@
 - [ ] BiliBili - 直播推送功能(up开始直播时在群里发送开播提醒)
 - [ ] 米游社 - 订阅功能(自动推送关注用户的最新贴子)
 - [ ] 米游社 - 崩坏3/原神/米游币自动点到功能(计划中)
-- [ ] 原神模拟抽卡(基于[GardenHamster/GenshinPray](https://github.com/GardenHamster/GenshinPray))
+- [x] ~~原神模拟抽卡，在[GenshinGacha](https://github.com/GardenHamster/GenshinGacha)中实现了~~
 - [ ] 崩坏3 - 模拟抽卡,收种包菜获取水晶,自动获取卡池信息等功能
 - [ ] 崩坏3 - 查图鉴以及猜装备功能
 - [ ] 小游戏 - 群狼人杀(计划中)

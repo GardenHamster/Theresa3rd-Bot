@@ -21,17 +21,17 @@
 ## 部署
 - 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本，注：各版本之间的botsettings.yml可能会有较大差异，升级版本后请注意对比并修改该文件
 - 根据自己的需要修改根目录下的配置文件[botsettings.yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Theresa3rd-Bot/botsettings.yml)
-- 修改根目录下的配置文件appsettings.Production.json
+- 修改根目录下的配置文件appsettings.Production.json，~~注意是Production不是Development~~
 ```json5
 {
-  "Mirai": {
+  "Mirai": {                        //mirai-api-http配置在mcl目录config/net.mamoe.mirai-api-http/setting.yml里面
     "host": "127.0.0.1",            //mcl主机ip
-    "port": "8100",                 //mcl中配置的port
-    "authKey": "theresa3rd",        //mcl中配置的verifyKey
+    "port": "8100",                 //mirai-api-http配置的port
+    "authKey": "theresa3rd",        //mirai-api-http中配置的verifyKey
     "botQQ": "123456789"            //mcl中登录的QQ号
   },
   "Database": {
-    "ConnectionString": "Data Source=127.0.0.1;port=3306;Initial Catalog=theresa_bot;uid=root;pwd=123456;"    //mysql数据库链接
+    "ConnectionString": "Data Source=127.0.0.1;port=3306;Initial Catalog=theresa_bot;uid=root;pwd=123456;"    //mysql数据库链接，确保能连上数据库以后，然后改成自己的
   }
 }
 
@@ -39,7 +39,7 @@
 
 ### windows下部署
 - 下载并安装 [ASP.NET Core Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)，推荐下载页面中的[Hosting Bundle](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-6.0.2-windows-hosting-bundle-installer)
-- 启动powershell并将路径切换到Theresa3rd-Bot.dll所在目录下，
+- 启动powershell并将路径切换到Theresa3rd-Bot.dll所在目录下，~~或者在目标文件夹中，按住Shift然后右键，在此处打开Powershell窗口~~
 
 - 运行Theresa3rd-Bot.dll，根据自己的需要修改端口和http或https
 ```bash

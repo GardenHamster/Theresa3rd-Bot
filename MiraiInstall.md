@@ -1,7 +1,7 @@
 # MCL安装
 
 ### 下载
-- 下载最新版本的[mcl-installer](https://github.com/iTXTech/mcl-installer/releases)，或者直接点击下载 [iTXTech MCL Installer 1.0.4](https://github.com/iTXTech/mcl-installer/releases/download/v1.0.4/mcl-installer-1.0.4-windows-amd64.exe)
+- 下载最新版本的[mcl-installer](https://github.com/iTXTech/mcl-installer/releases)
 
 
 ### 安装mcl
@@ -63,9 +63,14 @@ adapterSettings:
 ![image](https://user-images.githubusercontent.com/89188316/161096535-77340b3a-862b-426b-9c26-53c26f92832d.png)
 
 ### 验证并登录mcl
-- 重新打开mcl.cmd，出现如下弹窗
-![image](https://user-images.githubusercontent.com/89188316/161098581-b1fcf1d4-38f0-429d-a1c7-877703ea8cea.png)
-- 
+- 下载[MiraiAndroid](https://install.appcenter.ms/users/mzdluo123/apps/miraiandroid/distribution_groups/release)并安装到手机中
+
+- 重新打开mcl.cmd，出现如下弹窗，点击Open with TxCaptchaHelper
+![image](https://user-images.githubusercontent.com/89188316/161101769-35f7e9d1-202e-4c06-b05d-a7f6caaa8e9f.png)
+
+
+
+
 
 
 

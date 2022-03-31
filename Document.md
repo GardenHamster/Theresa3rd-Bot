@@ -5,9 +5,7 @@
 - 程序运行后会自动建库建表，请确保账号拥有创建和修改表权限
 
 ## mirai-console-loader
-- 请参照[iTXTech/mirai-console-loader](https://github.com/iTXTech/mirai-console-loader)安装mcl
-- 为mcl安装并配置[mirai-api-http](https://github.com/project-mirai/mirai-api-http)插件
-- 启动mcl，并登录机器人账号
+- 参照[mirai-console-loader](https://github.com/iTXTech/mirai-console-loader)安装mcl，然后为mcl安装并配置[mirai-api-http](https://github.com/project-mirai/mirai-api-http)插件，最后config/Console/AutoLogin.yml中配置bot账号密码并启动mcl([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MiraiInstall.md))
 ```bash
 2022-02-13 18:09:37 I/WindowHelperJvm: Mirai is using desktop. Captcha will be thrown by window popup. You can add `mirai.no-desktop` to JVM properties (-Dmirai.no-desktop) to disable it.
 2022-02-13 18:09:37 I/main: Auto-login 123456789

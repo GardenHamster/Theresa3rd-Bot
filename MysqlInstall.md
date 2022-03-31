@@ -1,7 +1,9 @@
 # Mysql安装
 
-### 下载
+## 下载
 - 前往 [mysql官网](https://dev.mysql.com/downloads/installer) 下载最新版本，或者直接点击下载 [MySQL Installer 8.0.28](https://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-8.0.28.0.msi)
+
+## 安装
 
 ### 打开刚下载的安装包
 ![image](https://user-images.githubusercontent.com/89188316/161034492-b420439a-f5fb-4bfd-bc3a-d43e63ac9bb5.png)
@@ -38,9 +40,15 @@
 
 ### 如果打开失败，检查一下mysql服务有没有打开
 - 搜索 服务 或者 services.msc
-- ![image](https://user-images.githubusercontent.com/89188316/161040329-7fde87a3-4268-47dd-92e4-88059add0170.png)
+![image](https://user-images.githubusercontent.com/89188316/161040329-7fde87a3-4268-47dd-92e4-88059add0170.png)
 
 - 找到Mysql，如果没有正在运行的话，点击右键启动
-- ![image](https://user-images.githubusercontent.com/89188316/161040800-bc413e1d-02e2-4b69-9e78-b823d349b75e.png)
+![image](https://user-images.githubusercontent.com/89188316/161040800-bc413e1d-02e2-4b69-9e78-b823d349b75e.png)
+
+## 将数据库密码写入到bot配置文件中
+### 推荐安装一个NodePad++编辑器
+### 用NodePad++打开appsettings.Production.json
+### 将配置文件中pwd的值(这里是123456)，改为刚才设置的数据库密码，然后保存
+![image](https://user-images.githubusercontent.com/89188316/161043245-510c6c00-a2f1-4ed1-864c-f420c4795635.png)
 
 

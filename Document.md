@@ -1,7 +1,8 @@
 # 部署文档
 
 ## 数据库
-- 数据库为mysql，使用code first自动建库建表
+- 数据库为mysql，需要自行安装([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MysqlInstall.md))
+- 程序运行后会自动建库建表，请确保账号拥有创建和修改表权限
 
 ## mirai-console-loader
 - 请参照[iTXTech/mirai-console-loader](https://github.com/iTXTech/mirai-console-loader)安装mcl

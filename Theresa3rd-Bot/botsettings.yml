@@ -1,6 +1,6 @@
 ﻿General:                                                                        #基础设置
     Prefix:                 '#'                                                 #指令前缀，如果接收到的消息带有该前缀将视为一个指令处理
-    ErrorGroups:            [284196625]                                         #错误日志群，发生错误时会将日志发送到这个群
+    ErrorGroups:            [284196392]                                         #错误日志群，发生错误时会将日志发送到这个群
     ErrorMsg:               |                                                   #处理异常时返回的消息
                             出了点小问题，稍后再试吧
                             [image:C:\BotImg\face\emmm.jpg]
@@ -14,13 +14,13 @@
 
 Permissions:
     SuperManagers:          [1608405161]                                        #超级管理员列表,可以使用管理指令
-    AcceptGroups:           [284196625]                                         #白名单，只处理这些群的消息
-    SetuGroups:             [284196625]                                         #拥有涩图权限的群
-    SetuCustomGroups:       [284196625]                                         #允许查找自定义涩图的群
-    SetuNoneCDGroups:       [284196625]                                         #涩图没有CD的群
-    SetuLimitlessGroups:    [284196625]                                         #涩图次数无限制的群
-    SaucenaoGroups:         [284196625]                                         #拥有以图搜图权限的群
-    SubscribeGroups:        [284196625]                                         #拥有订阅权限的群
+    AcceptGroups:           [284196392]                                         #白名单，只处理这些群的消息
+    SetuGroups:             [284196392]                                         #拥有涩图权限的群
+    SetuCustomGroups:       [284196392]                                         #允许查找自定义涩图的群
+    SetuNoneCDGroups:       [284196392]                                         #涩图没有CD的群
+    SetuLimitlessGroups:    [284196392]                                         #涩图次数无限制的群
+    SaucenaoGroups:         [284196392]                                         #拥有以图搜图权限的群
+    SubscribeGroups:        [284196392]                                         #拥有订阅权限的群
 
 Repeater:                                                                       #复读机
     Enable:                 true                                                #是否启用
@@ -31,7 +31,7 @@ Welcome:                                                                        
     Enable:                 true                                                #是否启用
     Template:               '欢迎入群！'                                        #默认欢迎模版
     Special:                                                                    #为单独的群设定单独的模版
-        - GroupId:          284196625                                           #群id(群号)
+        - GroupId:          284196392                                           #群id(群号)
           Template:         |                                                   #群欢迎模版
                             欢迎新厨子
                             [image:C:\BotImg\face\welcome.png]
@@ -42,7 +42,7 @@ Reminder:                                                                       
     Timers:                                                                     #定时列表
         - Cron:             '0 0 18 ? * WED,SUN'                                #cron表达式
           Name:             '深渊结算提醒'                                      #定时器名称
-          Groups:           [284196625]                                         #群号
+          Groups:           [284196392]                                         #群号
           AtAll:            false                                               #是否艾特群体
           AtMembers:        []                                                  #艾特群员QQ号列表
           Template:         |                                                   #消息模版

@@ -85,7 +85,7 @@ adapterSettings:
 ### 最后
 - 关闭刚才需要复制url的弹窗，可以看到bot登录成功了
 - ![image](https://user-images.githubusercontent.com/89188316/161180912-388225c4-a67c-4722-95bc-0fc8902e6d50.png)
-
+- 如果不是安卓手机或者登录失败，请参考[无法登录的临时处理方案](https://mirai.mamoe.net/topic/223/%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95%E7%9A%84%E4%B8%B4%E6%97%B6%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88)
 
 
 

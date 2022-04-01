@@ -63,10 +63,28 @@ adapterSettings:
 ![image](https://user-images.githubusercontent.com/89188316/161096535-77340b3a-862b-426b-9c26-53c26f92832d.png)
 
 ### 验证并登录mcl
-- 下载[MiraiAndroid](https://install.appcenter.ms/users/mzdluo123/apps/miraiandroid/distribution_groups/release)并安装到手机中
+- 下载[滑动验证助手](https://github.com/mzdluo123/TxCaptchaHelper/releases)并安装到手机中
 
 - 重新打开mcl.cmd，出现如下弹窗，点击Open with TxCaptchaHelper
-![image](https://user-images.githubusercontent.com/89188316/161101769-35f7e9d1-202e-4c06-b05d-a7f6caaa8e9f.png)
+![image](https://user-images.githubusercontent.com/89188316/161181330-1e1bf5a6-833d-465a-ab80-419c2cdaaa52.png)
+
+- 将弹出来的验证码填入刚下载的滑动验证助手中，然后下一步，完成滑块验证
+- ![image](https://user-images.githubusercontent.com/89188316/161178513-bf58f2a1-3c03-4f5b-aa0e-6c4c79119b96.png)
+- ![image](https://user-images.githubusercontent.com/89188316/161178979-0655d719-36f1-46a7-93d2-ba9fbff51306.png)
+
+### 设备授权
+- 将URL复制出来私聊发送给bot，然后用手机登录bot后点开这个URL
+- ![image](https://user-images.githubusercontent.com/89188316/161181132-b4c76afa-637a-4f27-9b2c-2a4c90226209.png)
+- 点QQ扫码验证
+- ![image](https://user-images.githubusercontent.com/89188316/161180368-66d0717b-f76e-4e88-bdaa-7f818e07fc33.png)
+- 将二维码截图保存后，用登录的bot扫描
+- ![image](https://user-images.githubusercontent.com/89188316/161180431-eff57a70-17e4-4c11-9195-805b57d8dd93.png)
+- 然后允许登录
+- ![image](https://user-images.githubusercontent.com/89188316/161180461-2a273c16-425b-46e6-8f97-52260ff30543.png)
+
+### 最后
+- 关闭刚才需要复制url的弹窗，可以看到bot登录成功了
+- ![image](https://user-images.githubusercontent.com/89188316/161180912-388225c4-a67c-4722-95bc-0fc8902e6d50.png)
 
 
 

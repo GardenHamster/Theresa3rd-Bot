@@ -87,8 +87,11 @@ adapterSettings:
 - ![image](https://user-images.githubusercontent.com/89188316/161180912-388225c4-a67c-4722-95bc-0fc8902e6d50.png)
 - 如果不是安卓手机或者登录失败，请参考[无法登录的临时处理方案](https://mirai.mamoe.net/topic/223/%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95%E7%9A%84%E4%B8%B4%E6%97%B6%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88)
 
-
-
+### 修改配置文件中bot账号
+- 推荐安装一个NodePad++编辑器
+- 用NodePad++打开appsettings.Production.json
+- 将配置文件中botQQ的值(这里是123456789)，改为mcl中登录的QQ号码，然后保存
+![image](https://user-images.githubusercontent.com/89188316/162378868-5357391d-4f35-49a8-b479-1bd524c7eeb5.png)
 
 
 

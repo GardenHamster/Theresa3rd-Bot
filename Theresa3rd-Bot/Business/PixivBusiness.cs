@@ -655,7 +655,7 @@ namespace Theresa3rd_Bot.Business
         protected FileInfo downAndComposeGif(PixivWorkInfoDto pixivWorkInfo)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            headerDic.Add("Referer", HttpUrl.getPixivUgoiraMetaReferer(pixivWorkInfo.body.illustId));
+            headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
             PixivUgoiraMetaDto pixivUgoiraMetaDto = getPixivUgoiraMetaDto(pixivWorkInfo.body.illustId);
             string fullZipSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{StringHelper.get16UUID()}.zip");
             HttpHelper.HttpDownload(pixivUgoiraMetaDto.body.src, fullZipSavePath, headerDic);
@@ -676,11 +676,15 @@ namespace Theresa3rd_Bot.Business
                     Thread.Sleep(100);
                 }
             }
+
             //string tomcatGifSavePath = FilePath.getGifImgPath();
             //if (Directory.Exists(tomcatGifSavePath) == false) Directory.CreateDirectory(tomcatGifSavePath);
             //string fullTomcatGifSavePath = Path.Combine(tomcatGifSavePath, $"{pixivWorkInfo.body.illustId}.gif");
             //if (File.Exists(fullTomcatGifSavePath)) File.Delete(fullTomcatGifSavePath);
             //File.Copy(fullGifSavePath, fullTomcatGifSavePath);
+
+            File.Delete(fullZipSavePath);
+            Directory.Delete(unZipDirPath, true);
             return new FileInfo(fullGifSavePath);
         }
 
@@ -784,7 +788,7 @@ namespace Theresa3rd_Bot.Business
 
         public PixivWorkInfoDto getPixivWorkInfoDto(string wordId)
         {
-            string referer = HttpUrl.getPixivWorkInfoReferer(wordId);
+            string referer = HttpUrl.getPixivArtworksReferer(wordId);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivWorkInfoUrl(wordId);
             string json = HttpHelper.HttpGet(postUrl, headerDic, 10 * 1000);
@@ -816,7 +820,7 @@ namespace Theresa3rd_Bot.Business
 
         public PixivUgoiraMetaDto getPixivUgoiraMetaDto(string wordId)
         {
-            string referer = HttpUrl.getPixivUgoiraMetaReferer(wordId);
+            string referer = HttpUrl.getPixivArtworksReferer(wordId);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUgoiraMetaUrl(wordId);
             string json = HttpHelper.HttpGet(postUrl, headerDic, 10 * 1000);

@@ -74,16 +74,6 @@ namespace Theresa3rd_Bot.Common
         }
 
         /// <summary>
-        /// 根据作品id获取收藏阅读量等相关信息的Referer
-        /// </summary>
-        /// <param name="workId"></param>
-        /// <returns></returns>
-        public static string getPixivWorkInfoReferer(string workId)
-        {
-            return $"{PixivHomeUrl}/artworks/{workId}";
-        }
-
-        /// <summary>
         /// 画师作品地址的Referer
         /// </summary>
         /// <param name="userid"></param>
@@ -91,16 +81,6 @@ namespace Theresa3rd_Bot.Common
         public static string getPixivUserWorkInfoReferer(string userid)
         {
             return $"{PixivHomeUrl}/user/{userid}";
-        }
-
-        /// <summary>
-        /// 画师作品地址的Referer
-        /// </summary>
-        /// <param name="userid"></param>
-        /// <returns></returns>
-        public static string getPixivUgoiraMetaReferer(string workId)
-        {
-            return $"{PixivHomeUrl}/artworks/{workId}";
         }
 
         /// <summary>

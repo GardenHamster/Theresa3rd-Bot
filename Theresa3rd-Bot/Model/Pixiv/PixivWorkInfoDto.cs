@@ -48,7 +48,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
         public bool isGif()
         {
-            return tags.tags.Where(o => o.tag == "うごイラ" || o.tag == "动图").FirstOrDefault() != null;
+            return tags.tags.Where(o => o.tag == "うごイラ" || o.tag == "动图").Any();
         }
 
         public bool hasBanTag()

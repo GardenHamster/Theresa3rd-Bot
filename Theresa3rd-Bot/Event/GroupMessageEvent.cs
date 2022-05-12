@@ -51,7 +51,7 @@ namespace Theresa3rd_Bot.Event
                 }
 
                 //订阅pixiv画师
-                if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.AddCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.AddCommand))
+                if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivUser?.AddCommand))
                 {
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
                     if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser).Result == false) return;
@@ -62,7 +62,7 @@ namespace Theresa3rd_Bot.Event
                 }
 
                 //退订pixiv画师
-                if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivUser?.RmCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivUser.RmCommand))
+                if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivUser?.RmCommand))
                 {
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
                     if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser).Result == false) return;
@@ -72,7 +72,7 @@ namespace Theresa3rd_Bot.Event
                 }
 
                 //订阅pixiv标签
-                if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivTag?.AddCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivTag.AddCommand))
+                if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivTag?.AddCommand))
                 {
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
                     if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag).Result == false) return;
@@ -83,7 +83,7 @@ namespace Theresa3rd_Bot.Event
                 }
 
                 //退订pixiv标签
-                if (!string.IsNullOrWhiteSpace(BotConfig.SubscribeConfig?.PixivTag?.RmCommand) && instructions.StartsWith(BotConfig.SubscribeConfig.PixivTag.RmCommand))
+                if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivTag?.RmCommand))
                 {
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
                     if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag).Result == false) return;
@@ -93,7 +93,7 @@ namespace Theresa3rd_Bot.Event
                 }
 
                 //禁止色图标签
-                if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.DisableTagCommand) && instructions.StartsWith(BotConfig.SetuConfig.DisableTagCommand))
+                if (instructions.StartWithCommand(BotConfig.SetuConfig?.DisableTagCommand))
                 {
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
                     if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
@@ -103,7 +103,7 @@ namespace Theresa3rd_Bot.Event
                 }
 
                 //解禁色图标签
-                if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.EnableTagCommand) && instructions.StartsWith(BotConfig.SetuConfig.EnableTagCommand))
+                if (instructions.StartWithCommand(BotConfig.SetuConfig?.EnableTagCommand))
                 {
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
                     if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
@@ -113,7 +113,7 @@ namespace Theresa3rd_Bot.Event
                 }
 
                 //瑟图
-                if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.Lolicon?.Command) && instructions.StartsWith(BotConfig.SetuConfig.Lolicon.Command))
+                if (instructions.StartWithCommand(BotConfig.SetuConfig?.Lolicon?.Command))
                 {
                     if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
                     if (BusinessHelper.CheckSTTagEnableAsync(session, args, message).Result == false) return;
@@ -128,7 +128,7 @@ namespace Theresa3rd_Bot.Event
                 }
 
                 //涩图
-                if (!string.IsNullOrWhiteSpace(BotConfig.SetuConfig?.Pixiv?.Command) && instructions.StartsWith(BotConfig.SetuConfig.Pixiv.Command))
+                if (instructions.StartWithCommand(BotConfig.SetuConfig?.Pixiv?.Command))
                 {
                     if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
                     if (BusinessHelper.CheckSTTagEnableAsync(session, args, message).Result == false) return;
@@ -143,7 +143,7 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
-                if (instructions.StartsWith("test"))
+                if (instructions.StartWithCommand("test"))
                 {
                     await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("hello word"));
                     return;

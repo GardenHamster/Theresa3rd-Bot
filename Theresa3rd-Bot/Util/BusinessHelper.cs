@@ -31,6 +31,17 @@ namespace Theresa3rd_Bot.Util
         private static string ImageCodeHeader = @"[image:";
 
         /// <summary>
+        /// 判断时候以某一个指令开头
+        /// </summary>
+        /// <param name="instructions"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public static bool StartWithCommand(this string instructions, string command)
+        {
+            return string.IsNullOrWhiteSpace(command) == false && instructions.StartsWith(command);
+        }
+
+        /// <summary>
         /// 判断是否可以处理一个群的消息
         /// </summary>
         /// <param name="groupId"></param>

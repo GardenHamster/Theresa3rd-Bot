@@ -115,7 +115,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getMysPostListUrl(string userId, int gids)
         {
-            return string.Format("https://api-takumi.mihoyo.com/post/wapi/userPost?gids={0}&size=5&uid={1}", gids, userId);
+            return $"https://api-takumi.mihoyo.com/post/wapi/userPost?gids={gids}&size=5&uid={userId}";
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getMysArticleUrl(string articleId)
         {
-            return string.Format("https://bbs.mihoyo.com/bh3/article/{0}", articleId);
+            return $"https://bbs.mihoyo.com/bh3/article/{articleId}";
         }
 
 
@@ -138,7 +138,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getBLBLUserPostList(string userId)
         {
-            return string.Format("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid=0&host_uid={0}&offset_dynamic_id=0&need_top=1", userId);
+            return $"https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid=0&host_uid={userId}&offset_dynamic_id=0&need_top=1";
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getBLBLUserPostReferer(string userId)
         {
-            return string.Format("https://space.bilibili.com/{0}/dynamic", userId);
+            return $"https://space.bilibili.com/{userId}/dynamic";
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getBLBLUserInfo(string userId)
         {
-            return string.Format("https://api.bilibili.com/x/space/acc/info?mid={0}&jsonp=jsonp", userId);
+            return $"https://api.bilibili.com/x/space/acc/info?mid={userId}&jsonp=jsonp";
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getBLBLUserReferer(string userId)
         {
-            return string.Format("https://space.bilibili.com/{0}", userId);
+            return $"https://space.bilibili.com/{userId}";
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getBLBLVideoUrl(string videoCode)
         {
-            return string.Format("https://www.bilibili.com/video/{0}", videoCode);
+            return $"https://www.bilibili.com/video/{videoCode}";
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getBLBLArticleUrl(string articleId)
         {
-            return string.Format("https://t.bilibili.com/{0}", articleId);
+            return $"https://t.bilibili.com/{articleId}";
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getBLBLDynamicUrl(string dynamicId)
         {
-            return string.Format("https://t.bilibili.com/{0}", dynamicId);
+            return $"https://t.bilibili.com/{dynamicId}";
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getBLBLSpaceUrl(string userId)
         {
-            return string.Format("https://space.bilibili.com/{0}/dynamic", userId);
+            return $"https://space.bilibili.com/{userId}/dynamic";
         }
 
 

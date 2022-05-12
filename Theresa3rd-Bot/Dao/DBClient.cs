@@ -25,7 +25,8 @@ namespace Theresa3rd_Bot.Dao
             catch (Exception ex)
             {
                 LogHelper.Info("自动建表失败...");
-                LogHelper.Error(ex);
+                LogHelper.FATAL(ex, "自动建表失败", false);
+                throw;
             }
         }
 

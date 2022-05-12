@@ -58,7 +58,8 @@ namespace Theresa3rd_Bot.Util
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex,"连接到mcl失败");
+                LogHelper.FATAL(ex, "连接到mcl失败", false);
+                throw;
             }
         }
 

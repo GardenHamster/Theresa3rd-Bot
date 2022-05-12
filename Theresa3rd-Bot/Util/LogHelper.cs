@@ -70,7 +70,21 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 记录FATAL级别的日志
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="message"></param>
+        public static void FATAL(Exception ex, string message, bool sendError)
+        {
+            ConsoleLog.Error($"{message}：\r\n[Message]{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}\r\n");
+            RollingLog.Error($"{message}：\r\n[Message]{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}\r\n");
+            if (sendError) SendErrorAnyway(ex, message);
+        }
+
+
+        /// <summary>
         /// 将错误日志发送到日志群中
+        /// 每个小时最多发送10种类型且每种类型最多不超过3次的日志
         /// </summary>
         /// <param name="exception"></param>
         /// <param name="message"></param>
@@ -97,8 +111,31 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 将错误日志发送到日志群中，忽略发送限制
+        /// </summary>
+        /// <param name="exception"></param>
+        /// <param name="message"></param>
+        public static void SendErrorAnyway(Exception exception, string message)
+        {
+            try
+            {
+                if (BotConfig.GeneralConfig?.ErrorGroups == null) return;
+                string sendMessage = $"{message}\r\n{exception.Message}\r\n{exception.StackTrace}";
+                foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups)
+                {
+                    MiraiHelper.Session.SendGroupMessageAsync(groupId, new Mirai.CSharp.HttpApi.Models.ChatMessages.PlainMessage(sendMessage));
+                }
+            }
+            catch (Exception ex)
+            {
+                Error(ex);
+            }
+        }
+
+        
+
+        /// <summary>
         /// 判断这个小时能是否还可以发送日志
-        /// 每个小时最多发送10种类型且每种类型最多不超过3次的日志
         /// </summary>
         /// <param name="exception"></param>
         /// <returns></returns>

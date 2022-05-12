@@ -209,8 +209,9 @@ namespace Theresa3rd_Bot.Business
                         await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, memberList.ToArray());
                         await Task.Delay(1000);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        LogHelper.Error(ex, "临时消息发送失败");
                     }
                 }
 

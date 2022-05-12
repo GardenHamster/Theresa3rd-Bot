@@ -206,7 +206,7 @@ namespace Theresa3rd_Bot.Business
                         {
                             memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Friend, fileInfo.FullName));
                         }
-                        await session.SendFriendMessageAsync(args.Sender.Id, memberList.ToArray());
+                        await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, memberList.ToArray());
                         await Task.Delay(1000);
                     }
                     catch (Exception)

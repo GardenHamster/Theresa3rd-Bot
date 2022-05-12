@@ -27,8 +27,13 @@ namespace Theresa3rd_Bot.Event
                 string prefix = BotConfig.GeneralConfig.Prefix;
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
+                if (chainList == null || chainList.Count == 0) return;
+                if (plainList == null || plainList.Count == 0) return;
+
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
                 string instructions = plainList.FirstOrDefault();
+                if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(instructions)) return;
+
                 bool isInstruct = instructions != null && prefix != null && prefix.Trim().Length > 0 && instructions.StartsWith(prefix);
                 if (isInstruct) instructions = instructions.Remove(0, prefix.Length);
 
@@ -37,6 +42,7 @@ namespace Theresa3rd_Bot.Event
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
                     await UpdateCookieAsync(session, args, WebsiteType.Pixiv, Command.PixivCookie, message, BotConfig.SetuConfig.Pixiv.CookieExpire);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
+                    args.BlockRemainingHandlers = true;
                     return;
                 }
 
@@ -45,6 +51,7 @@ namespace Theresa3rd_Bot.Event
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
                     await UpdateCookieAsync(session, args, WebsiteType.Bili, Command.BiliCookie, message, 60);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
+                    args.BlockRemainingHandlers = true;
                     return;
                 }
             }
@@ -53,12 +60,6 @@ namespace Theresa3rd_Bot.Event
                 await session.SendTemplateAsync(args, BotConfig.GeneralConfig.ErrorMsg, " 出了点小问题，再试一次吧~");
                 LogHelper.Error(ex, "FriendMessageEvent异常");
             }
-            finally
-            {
-                args.BlockRemainingHandlers = true;
-            }
-            
-
         }
 
         private async Task UpdateCookieAsync(IMiraiHttpSession session, IFriendMessageEventArgs args, WebsiteType websiteType, string command, string message, int cookieExpire)

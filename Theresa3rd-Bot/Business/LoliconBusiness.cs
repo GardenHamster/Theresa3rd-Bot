@@ -114,11 +114,11 @@ namespace Theresa3rd_Bot.Business
                         List<IChatMessage> memberList = new List<IChatMessage>(chatList);
                         if (fileInfo == null)
                         {
-                            memberList.AddRange(session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Friend).Result);
+                            memberList.AddRange(session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Temp).Result);
                         }
                         if (loliconData.isR18() == false && fileInfo != null)
                         {
-                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Friend, fileInfo.FullName));
+                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
                         }
                         await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, memberList.ToArray());
                         await Task.Delay(1000);

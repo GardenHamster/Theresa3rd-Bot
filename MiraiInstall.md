@@ -1,8 +1,7 @@
 # MCL安装
 
 ### 下载
-- 下载最新版本的[mcl-installer](https://github.com/iTXTech/mcl-installer/releases)
-
+- 点击这里下载 [MCL Installer 1.0.4](https://github.com/iTXTech/mcl-installer/releases/tag/v1.0.4)
 
 ### 安装mcl
 - 打开下载好的安装文件，然后一直回车就行，如果是32位系统就在Binary Architecture处输入x32

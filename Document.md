@@ -69,6 +69,12 @@ info: Microsoft.Hosting.Lifetime[0]
 info: Microsoft.Hosting.Lifetime[0]
       Content root path: C:\Theresa3rd-Bot
 ```
+- 可以在桌面创建一个powershell.ps1脚本方便一键启动，注意将路径和端口改成自己的
+```bash
+$host.ui.RawUI.WindowTitle="Theresa3rd-Bot"
+cd C:\Theresa3rd-Bot
+dotnet Theresa3rd-Bot.dll --launch-profile Production --urls http://0.0.0.0:8088
+```
 
 ## 一些已知的错误
 ### 数据库自动建表失败[issues#2](https://github.com/GardenHamster/Theresa3rd-Bot/issues/2)

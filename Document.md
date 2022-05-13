@@ -36,7 +36,7 @@
     "botQQ": "123456789"            //mcl中登录的QQ号
   },
   "Database": {
-    "ConnectionString": "Data Source=127.0.0.1;port=3306;Initial Catalog=theresa_bot;uid=root;pwd=123456;"    //mysql数据库链接，确保能连上数据库以后，然后改成自己的
+    "ConnectionString": "Data Source=127.0.0.1;port=3306;Initial Catalog=theresa_bot;uid=root;pwd=123456;CharSet=utf8mb4;"    //mysql数据库链接，确保能连上数据库以后，然后改成自己的
   }
 }
 

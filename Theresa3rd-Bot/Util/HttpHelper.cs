@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Http;
 
@@ -372,14 +374,14 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="imgUrl"></param>
         /// <returns></returns>
-        public static FileInfo downImg(string imgUrl)
+        public static async Task<FileInfo> downImgAsync(string imgUrl)
         {
             if (string.IsNullOrEmpty(imgUrl)) return null;
             string suffix = StringHelper.getSuffixByUrl(imgUrl);
             if (string.IsNullOrEmpty(suffix)) suffix = "jpg";
             string fullFileName = StringHelper.get16UUID() + "." + suffix;
             string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-            return HttpHelper.downImg(imgUrl, fullImageSavePath, null, null);
+            return await HttpHelper.downImgAsync(imgUrl, fullImageSavePath, null, null);
         }
 
         /// <summary>
@@ -388,9 +390,9 @@ namespace Theresa3rd_Bot.Util
         /// <param name="imgUrl"></param>
         /// <param name="fullImageSavePath"></param>
         /// <returns></returns>
-        public static FileInfo downImg(string imgUrl, string fullImageSavePath)
+        public static async Task<FileInfo> downImgAsync(string imgUrl, string fullImageSavePath)
         {
-            return HttpHelper.downImg(imgUrl, fullImageSavePath, null, null);
+            return await HttpHelper.downImgAsync(imgUrl, fullImageSavePath, null, null);
         }
 
         /// <summary>
@@ -401,30 +403,26 @@ namespace Theresa3rd_Bot.Util
         /// <param name="referer"></param>
         /// <param name="cookie"></param>
         /// <returns></returns>
-        public static FileInfo downImg(string imgUrl, string fullImageSavePath, string referer = null, string cookie = null)
+        public static async Task<FileInfo> downImgAsync(string imgUrl, string fullImageSavePath, string referer = null, string cookie = null)
         {
-            WebClient webClient = null;
             try
             {
-                webClient = new MyWebClient();//下载该图片
-                webClient.Headers["user-agent"] = getRandomUserAgent();
-                if (string.IsNullOrEmpty(referer) == false) webClient.Headers["Referer"] = referer;
-                if (string.IsNullOrEmpty(cookie) == false) webClient.Headers["Cookie"] = cookie;
-                webClient.DownloadFile(new Uri(imgUrl), fullImageSavePath);
-                while (webClient.IsBusy) { Thread.Sleep(1000); }
-                webClient.Dispose();
+                using HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                using HttpClient client = new HttpClient(clientHandler);
+                client.DefaultRequestHeaders.Add("Referer", referer);
+                client.DefaultRequestHeaders.Add("Cookie", cookie);
+                client.Timeout= TimeSpan.FromSeconds(30);
+                byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
+                using FileStream fs = new FileStream(fullImageSavePath, FileMode.CreateNew);
+                fs.Write(urlContents, 0, urlContents.Length);
                 return new FileInfo(fullImageSavePath);
             }
             catch (Exception)
             {
                 throw;
             }
-            finally
-            {
-                if (webClient != null) webClient.Dispose();
-            }
         }
-
 
     }
 }

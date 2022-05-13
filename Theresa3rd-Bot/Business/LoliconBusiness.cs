@@ -218,13 +218,13 @@ namespace Theresa3rd_Bot.Business
                 if (BotConfig.GeneralConfig.DownWithProxy)
                 {
                     imgUrl = getProxyUrl(imgUrl);
-                    return HttpHelper.downImg(imgUrl, fullImageSavePath);
+                    return HttpHelper.downImgAsync(imgUrl, fullImageSavePath).Result;
                 }
                 else
                 {
                     imgUrl = getOriginalUrl(imgUrl);
                     string imgReferer = HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString());
-                    return HttpHelper.downImg(imgUrl, fullImageSavePath, imgReferer, BotConfig.WebsiteConfig.Pixiv.Cookie);
+                    return HttpHelper.downImgAsync(imgUrl, fullImageSavePath, imgReferer, BotConfig.WebsiteConfig.Pixiv.Cookie).Result;
                 }
             }
             catch (Exception ex)

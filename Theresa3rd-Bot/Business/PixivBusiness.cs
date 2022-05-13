@@ -644,7 +644,7 @@ namespace Theresa3rd_Bot.Business
                 string imgUrl = pixivWorkInfo.body.urls.original;
                 if (BotConfig.GeneralConfig.DownWithProxy) imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                return HttpHelper.downImg(imgUrl, fullImageSavePath, imgReferer, BotConfig.WebsiteConfig.Pixiv.Cookie);
+                return HttpHelper.downImgAsync(imgUrl, fullImageSavePath, imgReferer, BotConfig.WebsiteConfig.Pixiv.Cookie).Result;
             }
             catch (Exception ex)
             {

@@ -7,6 +7,8 @@ using Microsoft.OpenApi.Models;
 using SqlSugar.IOC;
 using System;
 using System.IO;
+using System.Net;
+using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
@@ -62,6 +64,11 @@ namespace Theresa3rd_Bot
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) =>
+            {
+                return true;
+            };
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -3,7 +3,7 @@
 ## 环境
 - 为了确保程序能正常运行，推荐使用以下环境
 - Mysql版本：[8.0.28](https://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-8.0.28.0.msi)
-- mcl版本：[1.2.2](https://github.com/iTXTech/mirai-console-loader/releases/tag/v1.2.2) 或者 mcl-installer版本：[1.0.3](https://github.com/iTXTech/mcl-installer/releases/tag/v1.0.3)
+- mcl版本：[1.2.2](https://github.com/iTXTech/mirai-console-loader/releases/tag/v1.2.2) 或者 mcl-installer版本：[1.0.4](https://github.com/iTXTech/mcl-installer/releases/tag/v1.0.4)
 - JDK版本：11
 
 ## 数据库
@@ -43,7 +43,7 @@
 ```
 
 ### windows下部署
-- 下载并安装 [ASP.NET Core Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)，推荐下载页面中的[Hosting Bundle](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-6.0.2-windows-hosting-bundle-installer)
+- 下载并安装 [ASP.NET Core Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)，推荐下载页面中的 [Hosting Bundle](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-6.0.2-windows-hosting-bundle-installer)
 - 启动powershell并将路径切换到Theresa3rd-Bot.dll所在目录下，~~或者在目标文件夹中，按住Shift然后右键，在此处打开Powershell窗口~~
 
 - 运行Theresa3rd-Bot.dll，根据自己的需要修改端口和http或https
@@ -69,3 +69,34 @@ info: Microsoft.Hosting.Lifetime[0]
 info: Microsoft.Hosting.Lifetime[0]
       Content root path: C:\Theresa3rd-Bot
 ```
+
+## 一些已知的错误
+### 数据库自动建表失败
+```bash
+SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，实在找不到原因请先Google错误信息：The given key '0' was not present in the dictionary..
+English Message : Connection open error . The given key '0' was not present in the dictionary.
+   at SqlSugar.AdoProvider.GetDataReader(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T,T2,T3,T4,T5,T6,T7](String sql, Object parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, Object parameters)
+   at SqlSugar.DbMaintenanceProvider.GetDataBaseList(SqlSugarClient db)
+   at SqlSugar.MySqlDbMaintenance.CreateDatabase(String databaseName, String databaseDirectory)
+   at SqlSugar.DbMaintenanceProvider.CreateDatabase(String databaseDirectory)
+   at Theresa3rd_Bot.Dao.DBClient.CreateDB() in D:\project\Theresa3rd-Bot\Theresa3rd-Bot\Dao\DBClient.cs:line 17
+```
+```bash
+System.Collections.Generic.KeyNotFoundException: The given key '25185' was not present in the dictionary.
+   at SqlSugar.AdoProvider.GetDataReader(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T,T2,T3,T4,T5,T6,T7](String sql, Object parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, Object parameters)
+   at SqlSugar.DbMaintenanceProvider.GetDataBaseList(SqlSugarClient db)
+   at SqlSugar.MySqlDbMaintenance.CreateDatabase(String databaseName, String databaseDirectory)
+   at SqlSugar.DbMaintenanceProvider.CreateDatabase(String databaseDirectory)
+   at Theresa3rd_Bot.Dao.DBClient.CreateDB() in D:\project\Theresa3rd-Bot\Theresa3rd-Bot\Dao\DBClient.cs:line 17
+```
+- 检查appsettings.Production.json中数据库链接字符串中是否包含CharSet，完整的链接字符串如下
+```bash
+Data Source=127.0.0.1;port=3306;Initial Catalog=theresa_bot;uid=root;pwd=123456;CharSet=utf8mb4;
+```
+- 如果还是不行，推荐更换Mysql数据库版本为8.0.28

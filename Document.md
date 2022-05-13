@@ -1,5 +1,11 @@
 # 部署文档
 
+## 环境
+- 为了确保程序能正常运行，推荐使用以下环境
+- Mysql版本：[8.0.28](https://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-8.0.28.0.msi)
+- mcl版本：[1.2.2](https://github.com/iTXTech/mirai-console-loader/releases/tag/v1.2.2) 或者 mcl-installer版本：[1.0.3](https://github.com/iTXTech/mcl-installer/releases/tag/v1.0.3)
+- JDK版本：11
+
 ## 数据库
 - 数据库为mysql，需要自行安装([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MysqlInstall.md))
 - 程序运行后会自动建库建表，请确保账号拥有创建和修改表权限
@@ -19,7 +25,7 @@
 
 ## 部署
 - 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本，注：各版本之间的botsettings.yml可能会有较大差异，升级版本后请注意对比并修改该文件
-- 根据自己的需要修改根目录下的配置文件[botsettings.yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Theresa3rd-Bot/botsettings.yml)
+- 根据自己的需要修改根目录下的配置文件[botsettings.yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Theresa3rd-Bot/botsettings.yml)，修改完成后需要重新启动
 - 修改根目录下的配置文件appsettings.Production.json，~~注意是Production不是Development~~
 ```json5
 {

@@ -65,7 +65,7 @@ namespace Theresa3rd_Bot.Business
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             string getUrl = HttpUrl.getMysPostListUrl(userId, (int)subType);
-            string json = HttpHelper.HttpGet(getUrl, headerDic);
+            string json = HttpHelper.HttpGetAsync(getUrl, headerDic).Result;
             return JsonConvert.DeserializeObject<MysResult<MysPostDataDto>>(json);
         }
 

@@ -64,10 +64,9 @@ namespace Theresa3rd_Bot
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) =>
-            {
-                return true;
-            };
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
             if (env.IsDevelopment())
             {

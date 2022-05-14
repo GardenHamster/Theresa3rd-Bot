@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,43 +45,27 @@ namespace Theresa3rd_Bot.Util
         /// <param name="headerDic"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static string HttpGet(string url, Dictionary<string, string> headerDic = null, int timeout = 15000)
+        public static async Task<string> HttpGetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 30000)
         {
-            int retryCount = 2;
-            while (retryCount > 0)
+            string userAgent = getRandomUserAgent();
+            try
             {
-                HttpWebRequest request = null;
-                HttpWebResponse response = null;
-                Stream myResponseStream = null;
-                StreamReader streamReader = null;
-                try
-                {
-                    request = (HttpWebRequest)WebRequest.Create(url);
-                    request.Method = "GET";
-                    request.ContentType = "application/json;charset=UTF-8";
-                    request.UserAgent = getRandomUserAgent();
-                    request.Accept = "*/*";
-                    request.Timeout = timeout;
-                    addHeaders(request, headerDic);//添加请求头
-                    response = (HttpWebResponse)request.GetResponse();
-                    myResponseStream = response.GetResponseStream();
-                    streamReader = new StreamReader(myResponseStream);
-                    return streamReader.ReadToEnd();
-                }
-                catch (Exception)
-                {
-                    retryCount--;
-                    if (retryCount <= 0) throw;
-                }
-                finally
-                {
-                    if (streamReader != null) streamReader.Close();
-                    if (myResponseStream != null) myResponseStream.Close();
-                    if (response != null) response.Close();
-                    if (request != null) request.Abort();
-                }
+                using HttpClientHandler clientHandler = getHttpClientHandler();
+                using HttpClient client = new HttpClient(clientHandler);
+                client.BaseAddress = new Uri(url);
+                client.addHeaders(headerDic);
+                client.DefaultRequestHeaders.Add("User-Agent", userAgent);
+                client.Timeout = TimeSpan.FromMilliseconds(timeout);
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
             }
-            throw new Exception("发送HttpGet请求失败");
+            catch (Exception ex)
+            {
+                string errorMsg = $"HttpHelper.HttpGetAsync异常：\r\nurl：{url}\r\nuserAgent：{userAgent}";
+                LogHelper.Error(ex, errorMsg);
+                throw;
+            }
         }
 
         /// <summary>
@@ -370,6 +355,21 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 添加请求头
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="headerDic"></param>
+        /// <returns></returns>
+        private static void addHeaders(this HttpClient client, Dictionary<string, string> headerDic)
+        {
+            if (headerDic == null) return;
+            foreach (var item in headerDic)
+            {
+                client.DefaultRequestHeaders.Add(item.Key, item.Value);
+            }
+        }
+
+        /// <summary>
         /// 下载图片
         /// </summary>
         /// <param name="imgUrl"></param>
@@ -407,12 +407,12 @@ namespace Theresa3rd_Bot.Util
         {
             try
             {
-                using HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
+                using HttpClientHandler clientHandler = getHttpClientHandler();
                 using HttpClient client = new HttpClient(clientHandler);
                 client.DefaultRequestHeaders.Add("Referer", referer);
                 client.DefaultRequestHeaders.Add("Cookie", cookie);
-                client.Timeout= TimeSpan.FromSeconds(30);
+                client.Timeout = TimeSpan.FromSeconds(30);
                 byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
                 using FileStream fs = new FileStream(fullImageSavePath, FileMode.CreateNew);
                 fs.Write(urlContents, 0, urlContents.Length);
@@ -422,6 +422,15 @@ namespace Theresa3rd_Bot.Util
             {
                 throw;
             }
+        }
+
+        private static HttpClientHandler getHttpClientHandler()
+        {
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            clientHandler.SslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
+            clientHandler.AllowAutoRedirect = false;
+            return clientHandler;
         }
 
     }

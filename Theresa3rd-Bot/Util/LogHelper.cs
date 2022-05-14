@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Error;
 
@@ -52,8 +53,8 @@ namespace Theresa3rd_Bot.Util
         /// <param name="ex"></param>
         public static void Error(Exception ex)
         {
-            ConsoleLog.Error($"未知异常：{ex.Message}");
-            RollingLog.Error($"[Message]{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}\r\n");
+            ConsoleLog.Error($"message：{ex.Message}");
+            RollingLog.Error(GetErrorMsg(ex));
             SendError(ex);
         }
 
@@ -65,7 +66,7 @@ namespace Theresa3rd_Bot.Util
         public static void Error(Exception ex, string message)
         {
             ConsoleLog.Error($"{message}：{ex.Message}");
-            RollingLog.Error($"{message}：\r\n[Message]{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}\r\n");
+            RollingLog.Error(GetErrorMsg(ex, message));
             SendError(ex, message);
         }
 
@@ -76,11 +77,21 @@ namespace Theresa3rd_Bot.Util
         /// <param name="message"></param>
         public static void FATAL(Exception ex, string message, bool sendError)
         {
-            ConsoleLog.Error($"{message}：\r\n[Message]{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}\r\n");
-            RollingLog.Error($"{message}：\r\n[Message]{ex.Message}\r\n[StackTrace]\r\n{ex.StackTrace}\r\n");
+            ConsoleLog.Error(GetErrorMsg(ex, message));
+            RollingLog.Error(GetErrorMsg(ex, message));
             if (sendError) SendErrorAnyway(ex, message);
         }
 
+        private static string GetErrorMsg(Exception ex, string message = "")
+        {
+            StringBuilder errorMsg = new StringBuilder();
+            if (!string.IsNullOrEmpty(message)) errorMsg.AppendLine($"[message]{message}");
+            errorMsg.AppendLine($"[Message]{ex.Message}");
+            errorMsg.AppendLine($"[InnerMessage]{ex.InnerException?.Message}");
+            errorMsg.AppendLine($"[StackTrace]{ex.StackTrace}");
+            errorMsg.AppendLine($"[InnerStackTrace]{ex.InnerException?.StackTrace}");
+            return errorMsg.ToString();
+        }
 
         /// <summary>
         /// 将错误日志发送到日志群中
@@ -132,7 +143,7 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
-        
+
 
         /// <summary>
         /// 判断这个小时能是否还可以发送日志

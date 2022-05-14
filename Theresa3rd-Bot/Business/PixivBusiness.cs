@@ -655,6 +655,9 @@ namespace Theresa3rd_Bot.Business
 
         protected FileInfo downAndComposeGif(PixivWorkInfoDto pixivWorkInfo)
         {
+            string fullGifSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{pixivWorkInfo.body.illustId}.gif");
+            if(File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
+
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
             PixivUgoiraMetaDto pixivUgoiraMetaDto = getPixivUgoiraMetaDto(pixivWorkInfo.body.illustId);
@@ -665,17 +668,14 @@ namespace Theresa3rd_Bot.Business
             DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
             FileInfo[] files = directoryInfo.GetFiles();
             List<PixivUgoiraMetaFrames> frames = pixivUgoiraMetaDto.body.frames;
-            string fullGifSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{pixivWorkInfo.body.illustId}.gif");
-            using (var gif = AnimatedGif.AnimatedGif.Create(fullGifSavePath, 0))
+            using AnimatedGifCreator gif = AnimatedGif.AnimatedGif.Create(fullGifSavePath, 0);
+            foreach (FileInfo file in files)
             {
-                foreach (var file in files)
-                {
-                    PixivUgoiraMetaFrames frame = frames.Where(o => o.file.Trim() == file.Name).FirstOrDefault();
-                    int delay = frame == null ? 60 : frame.delay;
-                    var img = Image.FromFile(file.FullName);
-                    gif.AddFrame(img, delay, GifQuality.Bit8);
-                    Thread.Sleep(100);
-                }
+                PixivUgoiraMetaFrames frame = frames.Where(o => o.file.Trim() == file.Name).FirstOrDefault();
+                int delay = frame == null ? 60 : frame.delay;
+                using Image img = Image.FromFile(file.FullName);
+                gif.AddFrame(img, delay, GifQuality.Bit8);
+                Thread.Sleep(100);
             }
 
             //string tomcatGifSavePath = FilePath.getGifImgPath();
@@ -783,7 +783,7 @@ namespace Theresa3rd_Bot.Business
             string referer = HttpUrl.getPixivSearchReferer(keyword);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll);
-            string json = HttpHelper.HttpGet(postUrl, headerDic, 10 * 1000);
+            string json = HttpHelper.HttpGetAsync(postUrl, headerDic).Result;
             return JsonConvert.DeserializeObject<PixivSearchDto>(json);
         }
 
@@ -792,7 +792,7 @@ namespace Theresa3rd_Bot.Business
             string referer = HttpUrl.getPixivArtworksReferer(wordId);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivWorkInfoUrl(wordId);
-            string json = HttpHelper.HttpGet(postUrl, headerDic, 10 * 1000);
+            string json = HttpHelper.HttpGetAsync(postUrl, headerDic).Result;
             return JsonConvert.DeserializeObject<PixivWorkInfoDto>(json);
         }
 
@@ -801,7 +801,7 @@ namespace Theresa3rd_Bot.Business
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
-            string json = HttpHelper.HttpGet(postUrl, headerDic, 10 * 1000);
+            string json = HttpHelper.HttpGetAsync(postUrl, headerDic).Result;
             if (string.IsNullOrEmpty(json) == false && json.Contains("\"illusts\":[]"))
             {
                 //throw new Exception($"pixiv用户{userId}作品列表illusts为空,cookie可能已经过期");
@@ -815,7 +815,7 @@ namespace Theresa3rd_Bot.Business
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
-            string json = HttpHelper.HttpGet(postUrl, headerDic, 10 * 1000);
+            string json = HttpHelper.HttpGetAsync(postUrl, headerDic).Result;
             return JsonConvert.DeserializeObject<PixivUserInfoDto>(json);
         }
 
@@ -824,7 +824,7 @@ namespace Theresa3rd_Bot.Business
             string referer = HttpUrl.getPixivArtworksReferer(wordId);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUgoiraMetaUrl(wordId);
-            string json = HttpHelper.HttpGet(postUrl, headerDic, 10 * 1000);
+            string json = HttpHelper.HttpGetAsync(postUrl, headerDic).Result;
             return JsonConvert.DeserializeObject<PixivUgoiraMetaDto>(json);
         }
 

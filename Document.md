@@ -76,6 +76,18 @@ cd C:\Theresa3rd-Bot
 dotnet Theresa3rd-Bot.dll --launch-profile Production --urls http://0.0.0.0:8088
 ```
 
+## 更新版本的步骤
+- 关掉正在运行的powershell脚本
+- 替换掉除了以下几个以外的文件
+```bash
+botsettings.yml
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+```
+- 检查一下botsettings.yml是否有更新，如果有则对比修改该文件
+- 重新启动脚本
+
 ## 一些已知的错误
 ### 数据库自动建表失败[issues#2](https://github.com/GardenHamster/Theresa3rd-Bot/issues/2)
 ```bash

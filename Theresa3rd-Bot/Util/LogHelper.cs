@@ -53,8 +53,8 @@ namespace Theresa3rd_Bot.Util
         /// <param name="ex"></param>
         public static void Error(Exception ex)
         {
-            ConsoleLog.Error($"message：{ex.Message}");
-            RollingLog.Error(GetErrorMsg(ex));
+            ConsoleLog.Error(ex.Message);
+            RollingLog.Error(GetDetailError(ex));
             SendError(ex);
         }
 
@@ -66,7 +66,7 @@ namespace Theresa3rd_Bot.Util
         public static void Error(Exception ex, string message)
         {
             ConsoleLog.Error($"{message}：{ex.Message}");
-            RollingLog.Error(GetErrorMsg(ex, message));
+            RollingLog.Error(GetDetailError(ex, message));
             SendError(ex, message);
         }
 
@@ -77,17 +77,35 @@ namespace Theresa3rd_Bot.Util
         /// <param name="message"></param>
         public static void FATAL(Exception ex, string message, bool sendError)
         {
-            ConsoleLog.Error(GetErrorMsg(ex, message));
-            RollingLog.Error(GetErrorMsg(ex, message));
+            ConsoleLog.Error(ex.Message);
+            RollingLog.Error(GetDetailError(ex, message));
             if (sendError) SendErrorAnyway(ex, message);
         }
 
-        private static string GetErrorMsg(Exception ex, string message = "")
+        /// <summary>
+        /// 获取子类型的错误日志消息
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        private static Exception GetInnerException(Exception ex)
+        {
+            if (ex.InnerException != null) return ex.InnerException;
+            return ex;
+        }
+
+        /// <summary>
+        /// 获取详细的错误日志消息
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private static string GetDetailError(Exception ex, string message = "")
         {
             StringBuilder errorMsg = new StringBuilder();
             if (!string.IsNullOrEmpty(message)) errorMsg.AppendLine($"[message]{message}");
             errorMsg.AppendLine($"[Message]{ex.Message}");
             errorMsg.AppendLine($"[InnerMessage]{ex.InnerException?.Message}");
+            errorMsg.AppendLine($"[InnerInnerMessage]{ex.InnerException?.InnerException?.Message}");
             errorMsg.AppendLine($"[StackTrace]{ex.StackTrace}");
             errorMsg.AppendLine($"[InnerStackTrace]{ex.InnerException?.StackTrace}");
             return errorMsg.ToString();
@@ -107,7 +125,7 @@ namespace Theresa3rd_Bot.Util
                 if (IsSendError(exception) == false) return;
 
                 if (string.IsNullOrWhiteSpace(message)) message = "未知错误";
-                string sendMessage = $"{message}\r\n{exception.Message}\r\n{exception.StackTrace}";
+                string sendMessage = $"{message}：{exception.Message}\r\n详细请查看Log日志";
                 foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups)
                 {
                     MiraiHelper.Session.SendGroupMessageAsync(groupId, new Mirai.CSharp.HttpApi.Models.ChatMessages.PlainMessage(sendMessage));
@@ -142,8 +160,6 @@ namespace Theresa3rd_Bot.Util
                 Error(ex);
             }
         }
-
-
 
         /// <summary>
         /// 判断这个小时能是否还可以发送日志

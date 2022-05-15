@@ -45,27 +45,17 @@ namespace Theresa3rd_Bot.Util
         /// <param name="headerDic"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static async Task<string> HttpGetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 30000)
+        public static async Task<string> HttpGetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            string userAgent = getRandomUserAgent();
-            try
-            {
-                using HttpClientHandler clientHandler = getHttpClientHandler();
-                using HttpClient client = new HttpClient(clientHandler);
-                client.BaseAddress = new Uri(url);
-                client.addHeaders(headerDic);
-                client.DefaultRequestHeaders.Add("User-Agent", userAgent);
-                client.Timeout = TimeSpan.FromMilliseconds(timeout);
-                HttpResponseMessage response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStringAsync();
-            }
-            catch (Exception ex)
-            {
-                string errorMsg = $"HttpHelper.HttpGetAsync异常：\r\nurl：{url}\r\nuserAgent：{userAgent}";
-                LogHelper.Error(ex, errorMsg);
-                throw;
-            }
+            using HttpClientHandler clientHandler = getHttpClientHandler();
+            using HttpClient client = new HttpClient(clientHandler);
+            client.BaseAddress = new Uri(url);
+            client.addHeaders(headerDic);
+            client.DefaultRequestHeaders.Add("User-Agent", getRandomUserAgent());
+            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            HttpResponseMessage response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
         }
 
         /// <summary>

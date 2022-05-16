@@ -71,7 +71,6 @@ namespace Theresa3rd_Bot.Timer
 
         private static async Task sendGroupSubscribeAsync(MYSBusiness mysBusiness, SubscribeTask subscribeTask, List<MysSubscribe> mysSubscribeList)
         {
-            SubscribeInfo subInfo = subscribeTask.SubscribeInfo;
             foreach (MysSubscribe mysSubscribe in mysSubscribeList)
             {
                 List<IChatMessage> chailList = mysBusiness.getSubscribeInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Mihoyo.Template).Result;

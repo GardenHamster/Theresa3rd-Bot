@@ -37,12 +37,14 @@ namespace Theresa3rd_Bot.Util
         /// <param name="str"></param>
         /// <param name="keepLength"></param>
         /// <returns></returns>
-        public static string cutString(this string str, int keepLength = 100)
+        public static string cutString(this string str, int keepLength = 100, string endString = "...")
         {
             if (str == null) return null;
             str = str.Trim();
             if (str.Length <= keepLength) return str;
-            return str.Substring(0, keepLength);
+            if (string.IsNullOrEmpty(endString)) return str.Substring(0, keepLength);
+            string returnStr = str.Substring(0, keepLength - endString.Length);
+            return returnStr + endString;
         }
 
         /// <summary>

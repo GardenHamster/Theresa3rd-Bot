@@ -400,8 +400,8 @@ namespace Theresa3rd_Bot.Util
                 if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
                 using HttpClientHandler clientHandler = getHttpClientHandler();
                 using HttpClient client = new HttpClient(clientHandler);
-                client.DefaultRequestHeaders.Add("Referer", referer);
-                client.DefaultRequestHeaders.Add("Cookie", cookie);
+                if (!string.IsNullOrEmpty(referer)) client.DefaultRequestHeaders.Add("Referer", referer);
+                if (!string.IsNullOrEmpty(cookie)) client.DefaultRequestHeaders.Add("Cookie", cookie);
                 client.Timeout = TimeSpan.FromSeconds(30);
                 byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
                 using FileStream fs = new FileStream(fullImageSavePath, FileMode.CreateNew);

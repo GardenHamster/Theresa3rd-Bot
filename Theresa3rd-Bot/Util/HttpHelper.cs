@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -14,6 +15,8 @@ namespace Theresa3rd_Bot.Util
 {
     public static class HttpHelper
     {
+        private static readonly IHttpClientFactory HttpClientFactory = new ServiceCollection().AddHttpClient().BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
+
         public static string[] UserAgent = new string[] {
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36",
@@ -47,8 +50,8 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static async Task<string> HttpGetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            using HttpClientHandler clientHandler = getHttpClientHandler();
-            using HttpClient client = new HttpClient(clientHandler);
+            HttpClientHandler clientHandler = getHttpClientHandler();
+            HttpClient client = HttpClientFactory.CreateClient();
             client.BaseAddress = new Uri(url);
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", getRandomUserAgent());
@@ -398,8 +401,8 @@ namespace Theresa3rd_Bot.Util
             try
             {
                 if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
-                using HttpClientHandler clientHandler = getHttpClientHandler();
-                using HttpClient client = new HttpClient(clientHandler);
+                HttpClientHandler clientHandler = getHttpClientHandler();
+                HttpClient client = HttpClientFactory.CreateClient();
                 if (!string.IsNullOrEmpty(referer)) client.DefaultRequestHeaders.Add("Referer", referer);
                 if (!string.IsNullOrEmpty(cookie)) client.DefaultRequestHeaders.Add("Cookie", cookie);
                 client.Timeout = TimeSpan.FromSeconds(30);
@@ -417,6 +420,7 @@ namespace Theresa3rd_Bot.Util
         private static HttpClientHandler getHttpClientHandler()
         {
             HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
             clientHandler.SslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13 | SslProtocols.None;
             clientHandler.AllowAutoRedirect = false;

@@ -3,7 +3,7 @@
 ## 环境
 - 为了确保程序能正常运行，推荐使用以下环境
 - Mysql版本：[8.0.28](https://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-8.0.28.0.msi)
-- mcl版本：[1.2.2](https://github.com/iTXTech/mirai-console-loader/releases/tag/v1.2.2) 或者 mcl-installer版本：[1.0.4](https://github.com/iTXTech/mcl-installer/releases/tag/v1.0.4)
+- mcl版本：[1.2.2](https://github.com/iTXTech/mirai-console-loader/releases/tag/v1.2.2) 或者 mcl-installer版本：[1.0.3](https://github.com/iTXTech/mcl-installer/releases/tag/v1.0.3)
 - JDK版本：11
 
 ## 数据库

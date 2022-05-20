@@ -43,9 +43,13 @@ namespace Theresa3rd_Bot.Event
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
                 string instructions = plainList.FirstOrDefault();
                 if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(instructions)) return;
+                instructions = instructions.Trim();
+                message = message.Trim();
+
+                if (StepCache.HandleStep(session, args, message)) return;//分步处理
 
                 bool isInstruct = instructions != null && prefix != null && prefix.Trim().Length > 0 && instructions.StartsWith(prefix);
-                if (isInstruct) instructions = instructions.Remove(0, prefix.Length);
+                if (isInstruct) instructions = instructions.Remove(0, prefix.Length).Trim();
 
                 if (isAt == false && isInstruct == false)//没有@也不是一条指令
                 {
@@ -95,6 +99,17 @@ namespace Theresa3rd_Bot.Event
                     if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
                     if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag).Result == false) return;
                     await new SubscribeBusiness().cancleSubscribePixivTagAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
+                    args.BlockRemainingHandlers = true;
+                    return;
+                }
+
+                //订阅米游社版主
+                if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.Mihoyo?.AddCommand))
+                {
+                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
+                    if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.Mihoyo).Result == false) return;
+                    await new MYSBusiness().subscribeMYSUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
                     return;

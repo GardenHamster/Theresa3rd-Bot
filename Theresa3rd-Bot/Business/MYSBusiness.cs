@@ -1,4 +1,6 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+using Mirai.CSharp.HttpApi.Models.EventArgs;
+using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
 using Newtonsoft.Json;
 using System;
@@ -6,8 +8,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
+using Theresa3rd_Bot.Model.Cache;
 using Theresa3rd_Bot.Model.Mys;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Model.Subscribe;
@@ -23,6 +27,20 @@ namespace Theresa3rd_Bot.Business
         public MYSBusiness()
         {
             subscribeRecordDao = new SubscribeRecordDao();
+        }
+
+        public async Task subscribeMYSUserAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        {
+            StepInfo stepInfo = StepCache.CreateStep(args.Sender.Group.Id, args.Sender.Id);
+            if (stepInfo == null)
+            {
+                await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("你的一个订阅任务正在执行中，请等待执行完毕后重试"));
+                return;
+            }
+            StepDetail sectionStep = new StepDetail(60, "请选择你要订阅的版块:");
+
+
+
         }
 
         public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(MysSectionType sectionType, int subscribeId,  string userCode, int getCount = 2)

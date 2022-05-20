@@ -33,9 +33,11 @@ namespace Theresa3rd_Bot.Event
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
                 string instructions = plainList.FirstOrDefault();
                 if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(instructions)) return;
+                instructions = instructions.Trim();
+                message = message.Trim();
 
                 bool isInstruct = instructions != null && prefix != null && prefix.Trim().Length > 0 && instructions.StartsWith(prefix);
-                if (isInstruct) instructions = instructions.Remove(0, prefix.Length);
+                if (isInstruct) instructions = instructions.Remove(0, prefix.Length).Trim();
 
                 if (instructions.StartsWith(Command.PixivCookie))
                 {

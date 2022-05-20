@@ -54,6 +54,9 @@ namespace Theresa3rd_Bot.Event
                     args.BlockRemainingHandlers = true;
                     return;
                 }
+
+                await Task.Delay(1000);
+                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage("ヾ(≧∇≦*)ゝ"));
             }
             catch (System.Exception ex)
             {

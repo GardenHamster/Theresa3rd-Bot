@@ -190,7 +190,7 @@ namespace Theresa3rd_Bot.Business
             LoliconParamV2 param = new LoliconParamV2(false, 1, "i.pixiv.re", tags == null || tags.Length == 0 ? null : tags);
             string httpUrl = HttpUrl.getLoliconApiV2Url();
             string postJson = JsonConvert.SerializeObject(param);
-            string json = HttpHelper.HttpPostJson(httpUrl, postJson);
+            string json = HttpHelper.HttpPostAsync(httpUrl, postJson).Result;
             return JsonConvert.DeserializeObject<LoliconResultV2>(json);
         }
 
@@ -218,13 +218,15 @@ namespace Theresa3rd_Bot.Business
                 if (BotConfig.GeneralConfig.DownWithProxy)
                 {
                     imgUrl = getProxyUrl(imgUrl);
-                    return HttpHelper.downImgAsync(imgUrl, fullImageSavePath).Result;
+                    return HttpHelper.DownFileAsync(imgUrl, fullImageSavePath).Result;
                 }
                 else
                 {
                     imgUrl = getOriginalUrl(imgUrl);
-                    string imgReferer = HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString());
-                    return HttpHelper.downImgAsync(imgUrl, fullImageSavePath, imgReferer, BotConfig.WebsiteConfig.Pixiv.Cookie).Result;
+                    Dictionary<string, string> headerDic = new Dictionary<string, string>();
+                    headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString()));
+                    headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+                    return HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic).Result;
                 }
             }
             catch (Exception ex)

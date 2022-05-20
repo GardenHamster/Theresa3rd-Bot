@@ -638,13 +638,15 @@ namespace Theresa3rd_Bot.Business
         {
             try
             {
-                if (pixivWorkInfo.body.isGif()) return downAndComposeGif(pixivWorkInfo);
+                if (pixivWorkInfo.body.isGif()) return downAndComposeGifAsync(pixivWorkInfo).Result;
                 string fullFileName = $"{pixivWorkInfo.body.illustId}.jpg";
-                string imgReferer = HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId);
                 string imgUrl = pixivWorkInfo.body.urls.original;
                 if (BotConfig.GeneralConfig.DownWithProxy) imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                return HttpHelper.downImgAsync(imgUrl, fullImageSavePath, imgReferer, BotConfig.WebsiteConfig.Pixiv.Cookie).Result;
+                Dictionary<string, string> headerDic = new Dictionary<string, string>();
+                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
+                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+                return HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic).Result;
             }
             catch (Exception ex)
             {
@@ -653,16 +655,18 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
-        protected FileInfo downAndComposeGif(PixivWorkInfoDto pixivWorkInfo)
+        protected async Task<FileInfo> downAndComposeGifAsync(PixivWorkInfoDto pixivWorkInfo)
         {
             string fullGifSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{pixivWorkInfo.body.illustId}.gif");
             if(File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
+            headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+
             PixivUgoiraMetaDto pixivUgoiraMetaDto = getPixivUgoiraMetaDto(pixivWorkInfo.body.illustId);
             string fullZipSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{StringHelper.get16UUID()}.zip");
-            HttpHelper.HttpDownload(pixivUgoiraMetaDto.body.src, fullZipSavePath, headerDic);
+            await HttpHelper.DownFileAsync(pixivUgoiraMetaDto.body.src, fullZipSavePath, headerDic);
             string unZipDirPath = Path.Combine(FilePath.getDownImgSavePath(), pixivWorkInfo.body.illustId);
             ZipHelper.ZipToFile(fullZipSavePath, unZipDirPath);
             DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);

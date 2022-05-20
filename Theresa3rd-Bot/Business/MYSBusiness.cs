@@ -79,7 +79,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{Urls}", mysSubscribe.SubscribeRecord.LinkUrl);
             List<IChatMessage> chailList = new List<IChatMessage>();
             chailList.Add(new PlainMessage(template));
-            FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : HttpHelper.downImgAsync(mysSubscribe.SubscribeRecord.CoverUrl).Result;
+            FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : HttpHelper.DownImgAsync(mysSubscribe.SubscribeRecord.CoverUrl).Result;
             if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
             return chailList;
         }
@@ -90,7 +90,7 @@ namespace Theresa3rd_Bot.Business
             chailList.Add(new PlainMessage($"米游社[{mysSubscribe.MysUserPostDto.user.nickname}]发布了新帖子，发布时间{mysSubscribe.CreateTime.ToSimpleString()}：\r\n"));
             chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Title}\r\n"));
             chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Content}\r\n"));
-            FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : HttpHelper.downImgAsync(mysSubscribe.SubscribeRecord.CoverUrl).Result;
+            FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : HttpHelper.DownImgAsync(mysSubscribe.SubscribeRecord.CoverUrl).Result;
             if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
             chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.LinkUrl}"));
             return chailList;

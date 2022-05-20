@@ -19,9 +19,9 @@ namespace Theresa3rd_Bot.Event
     {
         public async Task HandleMessageAsync(IMiraiHttpSession session, ITempMessageEventArgs args)
         {
-            await Task.Delay(100);
+            await Task.Delay(1000);
+            await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, new PlainMessage("ヾ(≧∇≦*)ゝ"));
         }
-
 
     }
 }

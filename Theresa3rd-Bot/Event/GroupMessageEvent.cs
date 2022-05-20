@@ -5,6 +5,7 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
+using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -156,7 +157,9 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartWithCommand("test"))
                 {
-                    await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("hello word"));
+                    //await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("hello word"));
+                    IChatMessage imgMessage = (IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, "D:\\other\\85972415_p0.jpg");
+                    await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, imgMessage);
                     return;
                 }
             }

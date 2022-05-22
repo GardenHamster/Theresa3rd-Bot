@@ -1,4 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+using Mirai.CSharp.HttpApi.Models.EventArgs;
+using Mirai.CSharp.HttpApi.Session;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Cache
 {
@@ -24,6 +31,32 @@ namespace Theresa3rd_Bot.Model.Cache
         {
             StepDetails.Add(stepDetail);
         }
+
+        public Task<bool> StartStep(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            return Task.Run(async () =>
+            {
+                if (StepDetails == null || StepDetails.Count == 0) return false;
+                for (int i = 0; i < StepDetails.Count; i++)
+                {
+                    StepDetail stepDetail = StepDetails[i];
+                    if (stepDetail.IsFinish) continue;
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(stepDetail.Question));
+                    while (true)
+                    {
+                        int secondDiff = DateTimeHelper.GetSecondDiff(stepDetail.StartTime.Value, DateTime.Now);
+                        if (secondDiff < 0 || secondDiff >= stepDetail.WaitSecond)
+                        {
+                            await session.SendMessageWithAtAsync(args, new PlainMessage("操作超时了,请重新发送指令开始操作"));
+                            return false;
+                        }
+                        await Task.Delay(500);
+                    }
+                }
+                return true;
+            });
+        }
+
 
 
     }

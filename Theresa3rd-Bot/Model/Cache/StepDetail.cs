@@ -1,5 +1,7 @@
 ﻿using Mirai.CSharp.HttpApi.Models.EventArgs;
+using Mirai.CSharp.HttpApi.Session;
 using System;
+using System.Threading.Tasks;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Cache
@@ -16,14 +18,15 @@ namespace Theresa3rd_Bot.Model.Cache
 
         public string Answer { get; set; }
 
-        private delegate bool CheckAnswer(string message);
-
         public IGroupMessageEventArgs Args { get; set; }
 
-        public StepDetail(int waitSecond, string question, CheckAnswer checkAnswer)
+        public Func<IMiraiHttpSession, IGroupMessageEventArgs, string, Task<bool>> CheckInput { get; set; }
+
+        public StepDetail(int waitSecond, string question, Func<IMiraiHttpSession, IGroupMessageEventArgs, string, Task<bool>> checkInput = null)
         {
             this.WaitSecond = waitSecond;
             this.Question = question;
+            this.CheckInput = checkInput;
         }
 
         public bool IsTimeout()

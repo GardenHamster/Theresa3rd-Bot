@@ -44,7 +44,7 @@ namespace Theresa3rd_Bot.Cache
         /// 
         /// </summary>
         /// <param name="args"></param>
-        public static bool HandleStep(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        public static bool HandleStep(IMiraiHttpSession session, IGroupMessageEventArgs args, string value)
         {
             lock (StepInfoDic)
             {
@@ -60,10 +60,8 @@ namespace Theresa3rd_Bot.Cache
                 if (stepDetails == null || stepDetails.Count == 0) return false;
                 StepDetail stepDetail = stepDetails.Where(x => x.IsFinish == false).FirstOrDefault();
                 if (stepDetail == null) return false;
-
-
-
-                stepDetail.FinishStep(args, message);
+                if (stepDetail.CheckInput != null && stepDetail.CheckInput(session, args, value).Result == false) return false;
+                stepDetail.FinishStep(args, value);
                 return true;
             }
         }

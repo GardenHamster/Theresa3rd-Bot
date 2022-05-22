@@ -37,10 +37,34 @@ namespace Theresa3rd_Bot.Business
                 await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("你的一个订阅任务正在执行中，请等待执行完毕后重试"));
                 return;
             }
-            StepDetail sectionStep = new StepDetail(60, "请选择你要订阅的版块:");
+
+            StepDetail sectionStep = new StepDetail(60, $"选择你要订阅的版块：\r\n{EnumHelper.MysSectionOption}", CheckSectionAsync);
+            StepDetail uidStep = new StepDetail(60, "输入要订阅用户的id:");
+            stepInfo.AddStep(sectionStep);
+            stepInfo.AddStep(uidStep);
+            bool isSuccess= stepInfo.StartStep(session, args).Result;
+            if (isSuccess == false) return;
+
+            MysSectionType mysSectionType = (MysSectionType)Convert.ToInt32(sectionStep.Answer);
+            string userId = uidStep.Answer;
 
 
+        }
 
+        private async Task<bool> CheckSectionAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string value)
+        {
+            int sectionType = 0;
+            if (int.TryParse(value, out sectionType) == false)
+            {
+                await session.SendMessageWithAtAsync(args, new PlainMessage("输入的内容必须是数字"));
+                return false;
+            }
+            if (Enum.IsDefined(typeof(MysSectionType), value) == false)
+            {
+                await session.SendMessageWithAtAsync(args, new PlainMessage("输入的内容不在范围内"));
+                return false;
+            }
+            return true;
         }
 
         public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(MysSectionType sectionType, int subscribeId,  string userCode, int getCount = 2)

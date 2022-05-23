@@ -36,27 +36,36 @@ namespace Theresa3rd_Bot.Model.Cache
         {
             return Task.Run(async () =>
             {
-                if (StepDetails == null || StepDetails.Count == 0) return false;
-                for (int i = 0; i < StepDetails.Count; i++)
+                try
                 {
-                    StepDetail stepDetail = StepDetails[i];
-                    if (stepDetail.IsFinish) continue;
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(stepDetail.Question));
-                    while (true)
+                    IsActive = true;
+                    if (StepDetails == null || StepDetails.Count == 0) return false;
+                    for (int i = 0; i < StepDetails.Count; i++)
                     {
-                        int secondDiff = DateTimeHelper.GetSecondDiff(stepDetail.StartTime.Value, DateTime.Now);
-                        if (secondDiff < 0 || secondDiff >= stepDetail.WaitSecond)
+                        StepDetail stepDetail = StepDetails[i];
+                        if (stepDetail.IsFinish) continue;
+                        if (stepDetail.StartTime == null) stepDetail.StartStep();
+                        await session.SendMessageWithAtAsync(args, new PlainMessage(stepDetail.Question));
+                        while (true)
                         {
-                            await session.SendMessageWithAtAsync(args, new PlainMessage("操作超时了,请重新发送指令开始操作"));
-                            return false;
+                            if (stepDetail.IsFinish) break;
+                            int secondDiff = DateTimeHelper.GetSecondDiff(stepDetail.StartTime.Value, DateTime.Now);
+                            if (secondDiff < 0 || secondDiff >= stepDetail.WaitSecond)
+                            {
+                                await session.SendMessageWithAtAsync(args, new PlainMessage(" 操作超时了，请重新发送指令开始操作"));
+                                return false;
+                            }
+                            await Task.Delay(500);
                         }
-                        await Task.Delay(500);
                     }
+                    return true;
                 }
-                return true;
+                finally
+                {
+                    IsActive = false;
+                }
             });
         }
-
 
 
     }

@@ -46,24 +46,22 @@ namespace Theresa3rd_Bot.Event
                 instructions = instructions.Trim();
                 message = message.Trim();
 
-                if (StepCache.HandleStep(session, args, message)) return;//分步处理
-
                 bool isInstruct = instructions != null && prefix != null && prefix.Trim().Length > 0 && instructions.StartsWith(prefix);
                 if (isInstruct) instructions = instructions.Remove(0, prefix.Length).Trim();
 
                 if (isAt == false && isInstruct == false)//没有@也不是一条指令
                 {
-                    //复读机
-                    if (RepeatCache.CheckCanRepeat(groupId, botId, memberId, message)) await SendRepeat(session, args);
+                    if (StepCache.HandleStep(session, args, message)) return; //分步处理
+                    if (RepeatCache.CheckCanRepeat(groupId, botId, memberId, message)) await SendRepeat(session, args);//复读机
                     return;
                 }
 
                 //订阅pixiv画师
                 if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivUser?.AddCommand))
                 {
-                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
-                    if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser).Result == false) return;
-                    if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser) == false) return;
+                    if (await BusinessHelper.CheckPixivCookieExpireAsync(session, args)) return;
                     await new SubscribeBusiness().subscribePixivUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
@@ -73,8 +71,8 @@ namespace Theresa3rd_Bot.Event
                 //退订pixiv画师
                 if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivUser?.RmCommand))
                 {
-                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
-                    if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser).Result == false) return;
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser) == false) return;
                     await new SubscribeBusiness().cancleSubscribePixivUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
@@ -84,9 +82,9 @@ namespace Theresa3rd_Bot.Event
                 //订阅pixiv标签
                 if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivTag?.AddCommand))
                 {
-                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
-                    if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag).Result == false) return;
-                    if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag) == false) return;
+                    if (await BusinessHelper.CheckPixivCookieExpireAsync(session, args)) return;
                     await new SubscribeBusiness().subscribePixivTagAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
@@ -96,20 +94,31 @@ namespace Theresa3rd_Bot.Event
                 //退订pixiv标签
                 if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivTag?.RmCommand))
                 {
-                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
-                    if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag).Result == false) return;
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag) == false) return;
                     await new SubscribeBusiness().cancleSubscribePixivTagAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
                     return;
                 }
 
-                //订阅米游社版主
+                //订阅米游社用户
                 if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.Mihoyo?.AddCommand))
                 {
-                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
-                    if (BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.Mihoyo).Result == false) return;
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.Mihoyo) == false) return;
                     await new MYSBusiness().subscribeMYSUserAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
+                    args.BlockRemainingHandlers = true;
+                    return;
+                }
+
+                //退订米游社用户
+                if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.Mihoyo?.RmCommand))
+                {
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.Mihoyo) == false) return;
+                    await new MYSBusiness().cancleSubscribeMysUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -118,8 +127,8 @@ namespace Theresa3rd_Bot.Event
                 //禁止色图标签
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.DisableTagCommand))
                 {
-                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
-                    if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
                     await new BanWordBusiness().disableSetuAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.BanWord, message);
                     args.BlockRemainingHandlers = true;
@@ -129,8 +138,8 @@ namespace Theresa3rd_Bot.Event
                 //解禁色图标签
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.EnableTagCommand))
                 {
-                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
-                    if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
                     await new BanWordBusiness().enableSetuAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.BanWord, message);
                     args.BlockRemainingHandlers = true;
@@ -140,12 +149,12 @@ namespace Theresa3rd_Bot.Event
                 //瑟图
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.Lolicon?.Command))
                 {
-                    if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
-                    if (BusinessHelper.CheckSTTagEnableAsync(session, args, message).Result == false) return;
-                    if (BusinessHelper.CheckMemberSTCoolingAsync(session, args).Result) return;
-                    if (BusinessHelper.ChecekGroupSTCoolingAsync(session, args).Result) return;
-                    if (BusinessHelper.CheckSTUseUpAsync(session, args).Result) return;
-                    if (BusinessHelper.CheckHandingAsync(session, args).Result) return;
+                    if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSTTagEnableAsync(session, args, message) == false) return;
+                    if (await BusinessHelper.CheckMemberSTCoolingAsync(session, args)) return;
+                    if (await BusinessHelper.ChecekGroupSTCoolingAsync(session, args)) return;
+                    if (await BusinessHelper.CheckSTUseUpAsync(session, args)) return;
+                    if (await BusinessHelper.CheckHandingAsync(session, args)) return;
                     CoolingCache.SetGroupSTCooling(groupId, memberId);
                     await new LoliconBusiness().sendGeneralLoliconImageAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
@@ -156,13 +165,13 @@ namespace Theresa3rd_Bot.Event
                 //涩图
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.Pixiv?.Command))
                 {
-                    if (BusinessHelper.CheckSTEnableAsync(session, args).Result == false) return;
-                    if (BusinessHelper.CheckSTTagEnableAsync(session, args, message).Result == false) return;
-                    if (BusinessHelper.CheckPixivCookieExpireAsync(session, args).Result) return;
-                    if (BusinessHelper.CheckMemberSTCoolingAsync(session, args).Result) return;
-                    if (BusinessHelper.ChecekGroupSTCoolingAsync(session, args).Result) return;
-                    if (BusinessHelper.CheckSTUseUpAsync(session, args).Result) return;
-                    if (BusinessHelper.CheckHandingAsync(session, args).Result) return;
+                    if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSTTagEnableAsync(session, args, message) == false) return;
+                    if (await BusinessHelper.CheckPixivCookieExpireAsync(session, args)) return;
+                    if (await BusinessHelper.CheckMemberSTCoolingAsync(session, args)) return;
+                    if (await BusinessHelper.ChecekGroupSTCoolingAsync(session, args)) return;
+                    if (await BusinessHelper.CheckSTUseUpAsync(session, args)) return;
+                    if (await BusinessHelper.CheckHandingAsync(session, args)) return;
                     CoolingCache.SetGroupSTCooling(groupId, memberId);
                     await new PixivBusiness().sendGeneralPixivImageAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);

@@ -44,8 +44,8 @@ namespace Theresa3rd_Bot.Model.Cache
         public void FinishStep(IGroupMessageEventArgs args, string answer)
         {
             this.Args = args;
-            this.IsFinish = true;
             this.Answer = answer;
+            this.IsFinish = true;
         }
 
 

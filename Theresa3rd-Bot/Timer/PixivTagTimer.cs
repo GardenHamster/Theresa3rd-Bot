@@ -76,7 +76,7 @@ namespace Theresa3rd_Bot.Timer
             PixivBusiness pixivBusiness = new PixivBusiness();
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
-                FileInfo fileInfo = pixivBusiness.downImg(pixivSubscribe.PixivWorkInfoDto);
+                FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto);
                 string tagName = subscribeTask.SubscribeInfo.SubscribeName;
                 string template = BotConfig.SubscribeConfig.PixivTag.Template;
                 List<IChatMessage> chailList = new List<IChatMessage>();

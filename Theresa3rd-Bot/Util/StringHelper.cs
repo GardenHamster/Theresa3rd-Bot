@@ -61,6 +61,19 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 提取参数
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="commandStr"></param>
+        /// <returns></returns>
+        public static string[] splitParam(this string message, string commandStr)
+        {
+            string paramStr = message.splitKeyWord(commandStr);
+            if (paramStr == null) return null;
+            return paramStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        /// <summary>
         /// 拆分cookie,返回键值对
         /// </summary>
         /// <param name="cookie"></param>

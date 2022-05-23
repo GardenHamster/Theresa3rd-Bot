@@ -41,7 +41,7 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartsWith(Command.PixivCookie))
                 {
-                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     await UpdateCookieAsync(session, args, WebsiteType.Pixiv, Command.PixivCookie, message, BotConfig.SetuConfig.Pixiv.CookieExpire);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                     args.BlockRemainingHandlers = true;
@@ -50,7 +50,7 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartsWith(Command.BiliCookie))
                 {
-                    if (BusinessHelper.CheckSuperManagersAsync(session, args).Result == false) return;
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     await UpdateCookieAsync(session, args, WebsiteType.Bili, Command.BiliCookie, message, 60);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                     args.BlockRemainingHandlers = true;

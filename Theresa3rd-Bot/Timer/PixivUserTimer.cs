@@ -56,7 +56,7 @@ namespace Theresa3rd_Bot.Timer
                 try
                 {
                     DateTime startTime = DateTime.Now;
-                    List<PixivSubscribe> pixivSubscribeList = pixivBusiness.getPixivUserSubscribeWork(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
+                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserSubscribeWorkAsync(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(subscribeTask, pixivSubscribeList, startTime);
                 }
@@ -76,7 +76,7 @@ namespace Theresa3rd_Bot.Timer
             PixivBusiness pixivBusiness = new PixivBusiness();
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
-                FileInfo fileInfo = pixivBusiness.downImg(pixivSubscribe.PixivWorkInfoDto);
+                FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto);
                 string template = BotConfig.SubscribeConfig.PixivUser.Template;
                 List<IChatMessage> chailList = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(template))

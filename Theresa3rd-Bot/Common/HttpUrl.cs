@@ -1,4 +1,5 @@
 ﻿using System;
+using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Common
 {
@@ -126,6 +127,16 @@ namespace Theresa3rd_Bot.Common
         public static string getMysArticleUrl(string articleId)
         {
             return $"https://bbs.mihoyo.com/bh3/article/{articleId}";
+        }
+
+        /// <summary>
+        /// 米游社用户详细信息
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static string getMystUserFullInfo(int gids, string uid)
+        {
+            return $"https://bbs-api.mihoyo.com/user/wapi/getUserFullInfo?gids={gids}&uid={uid}";
         }
 
 

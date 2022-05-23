@@ -35,13 +35,13 @@ namespace Theresa3rd_Bot.Business
                 string tagNames = message.splitKeyWord(BotConfig.SetuConfig.Lolicon.Command) ?? "";
                 if (string.IsNullOrEmpty(tagNames))
                 {
-                    loliconResult = getLoliconResult(null);
+                    loliconResult = await getLoliconResultAsync(null);
                 }
                 else
                 {
                     string[] tagArr = tagNames.Split(new char[] { ' ', ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (BusinessHelper.CheckSTCustomEnableAsync(session, args).Result == false) return;
-                    loliconResult = getLoliconResult(tagArr);
+                    if (await BusinessHelper.CheckSTCustomEnableAsync(session, args) == false) return;
+                    loliconResult = await getLoliconResultAsync(tagArr);
                 }
 
                 if (loliconResult == null || loliconResult.data.Count == 0)
@@ -52,7 +52,7 @@ namespace Theresa3rd_Bot.Business
 
                 LoliconDataV2 loliconData = loliconResult.data.First();
                 int todayLeftCount = BusinessHelper.GetSTLeftToday(session, args);
-                FileInfo fileInfo = downImg(loliconData);
+                FileInfo fileInfo = await downImgAsync(loliconData);
 
                 int groupMsgId = 0;
                 string template = BotConfig.SetuConfig.Lolicon.Template;
@@ -90,7 +90,7 @@ namespace Theresa3rd_Bot.Business
                     List<IChatMessage> groupList = new List<IChatMessage>(chatList);
                     if (fileInfo == null)
                     {
-                        groupList.AddRange(session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg).Result);
+                        groupList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
                     }
                     else if (loliconData.isR18() == false)
                     {
@@ -114,7 +114,7 @@ namespace Theresa3rd_Bot.Business
                         List<IChatMessage> memberList = new List<IChatMessage>(chatList);
                         if (fileInfo == null)
                         {
-                            memberList.AddRange(session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Temp).Result);
+                            memberList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Temp));
                         }
                         if (loliconData.isR18() == false && fileInfo != null)
                         {
@@ -185,12 +185,12 @@ namespace Theresa3rd_Bot.Business
             return workInfoStr.ToString();
         }
 
-        private LoliconResultV2 getLoliconResult(string[] tags)
+        private async Task<LoliconResultV2> getLoliconResultAsync(string[] tags)
         {
             LoliconParamV2 param = new LoliconParamV2(false, 1, "i.pixiv.re", tags == null || tags.Length == 0 ? null : tags);
             string httpUrl = HttpUrl.getLoliconApiV2Url();
             string postJson = JsonConvert.SerializeObject(param);
-            string json = HttpHelper.HttpPostAsync(httpUrl, postJson).Result;
+            string json = await HttpHelper.HttpPostAsync(httpUrl, postJson);
             return JsonConvert.DeserializeObject<LoliconResultV2>(json);
         }
 
@@ -208,7 +208,7 @@ namespace Theresa3rd_Bot.Business
             return imgUrl;
         }
 
-        public FileInfo downImg(LoliconDataV2 loliconData)
+        public async Task<FileInfo> downImgAsync(LoliconDataV2 loliconData)
         {
             try
             {
@@ -218,7 +218,7 @@ namespace Theresa3rd_Bot.Business
                 if (BotConfig.GeneralConfig.DownWithProxy)
                 {
                     imgUrl = getProxyUrl(imgUrl);
-                    return HttpHelper.DownFileAsync(imgUrl, fullImageSavePath).Result;
+                    return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath);
                 }
                 else
                 {
@@ -226,7 +226,7 @@ namespace Theresa3rd_Bot.Business
                     Dictionary<string, string> headerDic = new Dictionary<string, string>();
                     headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString()));
                     headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                    return HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic).Result;
+                    return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic);
                 }
             }
             catch (Exception ex)

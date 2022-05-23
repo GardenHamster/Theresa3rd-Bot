@@ -95,7 +95,7 @@ namespace Theresa3rd_Bot.Business
                         if (dbSubscribe == null)
                         {
                             //添加订阅
-                            PixivUserInfoDto pixivUserInfoDto = pixivBusiness.getPixivUserInfoDto(pixivUserId);
+                            PixivUserInfoDto pixivUserInfoDto = await pixivBusiness.getPixivUserInfoDtoAsync(pixivUserId);
                             dbSubscribe = new SubscribePO();
                             dbSubscribe.SubscribeCode = pixivUserId;
                             dbSubscribe.SubscribeName = StringHelper.filterEmoji(pixivUserInfoDto.body.extraData.meta.title.Replace("- pixiv", "").Trim());
@@ -226,7 +226,7 @@ namespace Theresa3rd_Bot.Business
                     return;
                 }
                 PixivBusiness pixivBusiness = new PixivBusiness();
-                PixivSearchDto pageOne = pixivBusiness.getPixivSearchDto(pixivTag, 1, false);
+                PixivSearchDto pageOne = await pixivBusiness.getPixivSearchDtoAsync(pixivTag, 1, false);
                 if (pageOne == null || pageOne.body.getIllust().data.Count == 0)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 该标签中没有任何作品，订阅失败"));
@@ -313,6 +313,12 @@ namespace Theresa3rd_Bot.Business
                 throw;
             }
         }
+
+
+
+
+
+
 
 
     }

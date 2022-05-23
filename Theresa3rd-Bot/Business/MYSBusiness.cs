@@ -22,13 +22,13 @@ namespace Theresa3rd_Bot.Business
 {
     public class MYSBusiness
     {
-        private SubscribeDao subscribeDao;
+        private SubscribeDao<MysSectionType> subscribeDao;
         private SubscribeGroupDao subscribeGroupDao;
         private SubscribeRecordDao subscribeRecordDao;
 
         public MYSBusiness()
         {
-            subscribeDao = new SubscribeDao();
+            subscribeDao = new SubscribeDao<MysSectionType>();
             subscribeGroupDao = new SubscribeGroupDao();
             subscribeRecordDao = new SubscribeRecordDao();
         }
@@ -74,15 +74,16 @@ namespace Theresa3rd_Bot.Business
                 return;
             }
 
-            SubscribePO dbSubscribe = subscribeDao.getSubscribe(userId, SubscribeType.米游社用户);
+            SubscribePO<MysSectionType> dbSubscribe = subscribeDao.getSubscribe<MysSectionType>(userId, SubscribeType.米游社用户);
             if (dbSubscribe == null)
             {
                 //添加订阅
-                dbSubscribe = new SubscribePO();
+                dbSubscribe = new SubscribePO<MysSectionType>();
                 dbSubscribe.SubscribeCode = userId;
                 dbSubscribe.SubscribeName = StringHelper.filterEmoji(userInfoDto.data.user_info.nickname);
                 dbSubscribe.SubscribeDescription = userInfoDto.data.user_info.introduce;
                 dbSubscribe.SubscribeType = SubscribeType.米游社用户;
+                dbSubscribe.SubscribeSubType = mysSection.Value;
                 dbSubscribe.Isliving = false;
                 dbSubscribe.CreateDate = DateTime.Now;
                 dbSubscribe = subscribeDao.Insert(dbSubscribe);
@@ -130,7 +131,7 @@ namespace Theresa3rd_Bot.Business
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 用户id必须为纯数字"));
                     return;
                 }
-                SubscribePO dbSubscribe = subscribeDao.getSubscribe(keyWord, SubscribeType.米游社用户);
+                SubscribePO<MysSectionType> dbSubscribe = subscribeDao.getSubscribe<MysSectionType>(keyWord, SubscribeType.米游社用户);
                 if (dbSubscribe == null)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个用户哦~"));

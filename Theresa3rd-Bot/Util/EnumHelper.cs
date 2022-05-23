@@ -10,13 +10,13 @@ namespace Theresa3rd_Bot.Util
         public static string MysSectionOption()
         {
             StringBuilder optionBuilder=new StringBuilder();
-            optionBuilder.AppendLine($"{(int)MysSectionType.BH3}：崩坏3");
-            optionBuilder.AppendLine($"{(int)MysSectionType.YS}：原神");
-            optionBuilder.AppendLine($"{(int)MysSectionType.BH2}：崩坏2");
-            optionBuilder.AppendLine($"{(int)MysSectionType.WD}：未定时间簿");
-            optionBuilder.AppendLine($"{(int)MysSectionType.DBY}：大别野");
-            optionBuilder.AppendLine($"{(int)MysSectionType.SR}：星穹铁道");
-            optionBuilder.AppendLine($"{(int)MysSectionType.ZZZ}：绝区零");
+            optionBuilder.AppendLine($"{(int)MysSectionType.崩坏3}：{Enum.GetName(typeof(MysSectionType), MysSectionType.崩坏3)}");
+            optionBuilder.AppendLine($"{(int)MysSectionType.原神}：{Enum.GetName(typeof(MysSectionType), MysSectionType.原神)}");
+            optionBuilder.AppendLine($"{(int)MysSectionType.崩坏2}：{Enum.GetName(typeof(MysSectionType), MysSectionType.崩坏2)}");
+            optionBuilder.AppendLine($"{(int)MysSectionType.未定时间簿}：{Enum.GetName(typeof(MysSectionType), MysSectionType.未定时间簿)}");
+            optionBuilder.AppendLine($"{(int)MysSectionType.大别野}：{Enum.GetName(typeof(MysSectionType), MysSectionType.大别野)}");
+            optionBuilder.AppendLine($"{(int)MysSectionType.星穹铁道}：{Enum.GetName(typeof(MysSectionType), MysSectionType.星穹铁道)}");
+            optionBuilder.AppendLine($"{(int)MysSectionType.绝区零}：{Enum.GetName(typeof(MysSectionType), MysSectionType.绝区零)}");
             return optionBuilder.ToString();
         } 
 

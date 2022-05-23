@@ -50,8 +50,8 @@ namespace Theresa3rd_Bot.Business
             {
                 StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
                 if (stepInfo == null) return;
-                StepDetail sectionStep = new StepDetail(600, $" 请在60秒内发送数字选择你要订阅的版块：\r\n{EnumHelper.MysSectionOption()}", CheckSectionAsync);
-                StepDetail uidStep = new StepDetail(600, " 请在60秒内发送要订阅用户的id", CheckUserIdAsync);
+                StepDetail sectionStep = new StepDetail(60, $" 请在60秒内发送数字选择你要订阅的版块：\r\n{EnumHelper.MysSectionOption()}", CheckSectionAsync);
+                StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要订阅用户的id", CheckUserIdAsync);
                 stepInfo.AddStep(sectionStep);
                 stepInfo.AddStep(uidStep);
                 bool isSuccess = await stepInfo.StartStep(session, args);

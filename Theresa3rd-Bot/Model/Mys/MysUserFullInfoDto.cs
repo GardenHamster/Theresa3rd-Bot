@@ -14,6 +14,8 @@ namespace Theresa3rd_Bot.Model.Mys
         public string introduce { get; set; }
 
         public string uid { get; set; }
+
+        public string avatar_url { get; set; }
     }
 
 }

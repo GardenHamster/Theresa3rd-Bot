@@ -50,7 +50,7 @@ namespace Theresa3rd_Bot.Business
             {
                 StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
                 if (stepInfo == null) return;
-                StepDetail sectionStep = new StepDetail(60, $" 请在60秒内发送数字选择你要订阅的版块：\r\n{EnumHelper.MysSectionOption()}", CheckSectionAsync);
+                StepDetail sectionStep = new StepDetail(60, $" 请在60秒内发送数字选择你要订阅的频道：\r\n{EnumHelper.MysSectionOption()}", CheckSectionAsync);
                 StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要订阅用户的id", CheckUserIdAsync);
                 stepInfo.AddStep(sectionStep);
                 stepInfo.AddStep(uidStep);
@@ -74,7 +74,7 @@ namespace Theresa3rd_Bot.Business
                 return;
             }
 
-            SubscribePO dbSubscribe = subscribeDao.getSubscribe(userId, SubscribeType.米游社用户);
+            SubscribePO dbSubscribe = subscribeDao.getSubscribe(userId, SubscribeType.米游社用户, (int)mysSection.Value);
             if (dbSubscribe == null)
             {
                 //添加订阅
@@ -101,11 +101,14 @@ namespace Theresa3rd_Bot.Business
             subscribeGroup.SubscribeId = dbSubscribe.Id;
             subscribeGroup = subscribeGroupDao.Insert(subscribeGroup);
 
-            StringBuilder msgBuilder = new StringBuilder();
-            msgBuilder.AppendLine($"米游社用户[{dbSubscribe.SubscribeName}]订阅成功!");
-            msgBuilder.AppendLine($"uid：{dbSubscribe.SubscribeCode}");
-            msgBuilder.AppendLine($"签名：{dbSubscribe.SubscribeDescription}");
-            await session.SendMessageWithAtAsync(args, new PlainMessage(msgBuilder.ToString()));
+            List<IChatMessage> chailList = new List<IChatMessage>();
+            chailList.Add(new PlainMessage($"米游社用户[{dbSubscribe.SubscribeName}]订阅成功!\r\n"));
+            chailList.Add(new PlainMessage($"uid：{dbSubscribe.SubscribeCode}\r\n"));
+            chailList.Add(new PlainMessage($"频道：{Enum.GetName(typeof(MysSectionType), mysSection)}\r\n"));
+            chailList.Add(new PlainMessage($"签名：{dbSubscribe.SubscribeDescription}\r\n"));
+            FileInfo fileInfo = string.IsNullOrEmpty(userInfoDto.data.user_info.avatar_url) ? null : await HttpHelper.DownImgAsync(userInfoDto.data.user_info.avatar_url);
+            if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+            await session.SendMessageWithAtAsync(args, chailList);
             ConfigHelper.loadSubscribeTask();
         }
 
@@ -154,7 +157,7 @@ namespace Theresa3rd_Bot.Business
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "取消订阅异常");
+                LogHelper.Error(ex, "退订异常");
                 throw;
             }
         }
@@ -165,12 +168,12 @@ namespace Theresa3rd_Bot.Business
             int sectionType = 0;
             if (int.TryParse(value, out sectionType) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 版块必须为数字"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 频道必须为数字"));
                 return false;
             }
             if (Enum.IsDefined(typeof(MysSectionType), sectionType) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 版块不在范围内"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 频道不在范围内"));
                 return false;
             }
             return true;

@@ -53,8 +53,7 @@ namespace Theresa3rd_Bot.Timer
             {
                 try
                 {
-                    SubscribeInfo subInfo = subscribeTask.SubscribeInfo;
-                    List<MysSubscribe> mysSubscribeList = mysBusiness.getMysUserSubscribeAsync(subInfo.SubscribeSubType, subInfo.SubscribeId, subInfo.SubscribeCode).Result;
+                    List<MysSubscribe> mysSubscribeList = await mysBusiness.getMysUserSubscribeAsync(subscribeTask.SubscribeInfo);
                     if (mysSubscribeList == null || mysSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(mysBusiness, subscribeTask, mysSubscribeList);
                 }
@@ -73,7 +72,7 @@ namespace Theresa3rd_Bot.Timer
         {
             foreach (MysSubscribe mysSubscribe in mysSubscribeList)
             {
-                List<IChatMessage> chailList = mysBusiness.getSubscribeInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Mihoyo.Template).Result;
+                List<IChatMessage> chailList = await mysBusiness.getSubscribeInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Mihoyo.Template);
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
                     await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());

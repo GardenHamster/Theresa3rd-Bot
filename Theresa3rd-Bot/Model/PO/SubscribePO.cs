@@ -4,8 +4,8 @@ using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Model.PO
 {
-    [SugarTable("subscribe")]
-    public class SubscribePO<T> : BasePO
+    [SugarTable(tableName: "subscribe")]
+    public class SubscribePO : BasePO
     {
         [SugarColumn(IsNullable = false, Length = 100, ColumnDescription = "订阅编号")]
         public string SubscribeCode { get; set; }
@@ -17,7 +17,7 @@ namespace Theresa3rd_Bot.Model.PO
         public SubscribeType SubscribeType { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDescription = "订阅子类型")]
-        public T SubscribeSubType { get; set; }
+        public int SubscribeSubType { get; set; }
 
         [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "订阅描述")]
         public string SubscribeDescription { get; set; }

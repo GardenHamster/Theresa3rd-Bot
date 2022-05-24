@@ -56,7 +56,7 @@ namespace Theresa3rd_Bot.Timer
                 try
                 {
                     DateTime startTime = DateTime.Now;
-                    List<PixivSubscribe> pixivSubscribeList = pixivBusiness.getPixivTagSubscribeAsync(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId).Result;
+                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivTagSubscribeAsync(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(subscribeTask, pixivSubscribeList, startTime);
                 }
@@ -92,7 +92,7 @@ namespace Theresa3rd_Bot.Timer
 
                 if (fileInfo == null)
                 {
-                    chailList.AddRange(MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg).Result);
+                    chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
                 }
                 else
                 {

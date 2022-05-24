@@ -134,9 +134,9 @@ namespace Theresa3rd_Bot.Common
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static string getMystUserFullInfo(int gids, string uid)
+        public static string getMystUserFullInfo(string userId, int gids)
         {
-            return $"https://bbs-api.mihoyo.com/user/wapi/getUserFullInfo?gids={gids}&uid={uid}";
+            return $"https://bbs-api.mihoyo.com/user/wapi/getUserFullInfo?gids={gids}&uid={userId}";
         }
 
 

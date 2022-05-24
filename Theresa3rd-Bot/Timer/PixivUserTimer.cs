@@ -91,7 +91,7 @@ namespace Theresa3rd_Bot.Timer
 
                 if (fileInfo == null)
                 {
-                    chailList.AddRange(MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg).Result);
+                    chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
                 }
                 else
                 {

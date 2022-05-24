@@ -22,13 +22,13 @@ namespace Theresa3rd_Bot.Business
 {
     public class MYSBusiness
     {
-        private SubscribeDao<MysSectionType> subscribeDao;
+        private SubscribeDao subscribeDao;
         private SubscribeGroupDao subscribeGroupDao;
         private SubscribeRecordDao subscribeRecordDao;
 
         public MYSBusiness()
         {
-            subscribeDao = new SubscribeDao<MysSectionType>();
+            subscribeDao = new SubscribeDao();
             subscribeGroupDao = new SubscribeGroupDao();
             subscribeRecordDao = new SubscribeRecordDao();
         }
@@ -67,23 +67,23 @@ namespace Theresa3rd_Bot.Business
                 userId = paramArr[1];
             }
 
-            MysResult<MysUserFullInfoDto> userInfoDto = await geMysUserFullInfoDtoAsync(userId, mysSection.Value);
+            MysResult<MysUserFullInfoDto> userInfoDto = await geMysUserFullInfoDtoAsync(userId, (int)mysSection.Value);
             if (userInfoDto == null || userInfoDto.retcode != 0)
             {
                 await session.SendMessageWithAtAsync(args, new PlainMessage(" 订阅失败，目标用户不存在"));
                 return;
             }
 
-            SubscribePO<MysSectionType> dbSubscribe = subscribeDao.getSubscribe<MysSectionType>(userId, SubscribeType.米游社用户);
+            SubscribePO dbSubscribe = subscribeDao.getSubscribe(userId, SubscribeType.米游社用户);
             if (dbSubscribe == null)
             {
                 //添加订阅
-                dbSubscribe = new SubscribePO<MysSectionType>();
+                dbSubscribe = new SubscribePO();
                 dbSubscribe.SubscribeCode = userId;
                 dbSubscribe.SubscribeName = StringHelper.filterEmoji(userInfoDto.data.user_info.nickname);
                 dbSubscribe.SubscribeDescription = userInfoDto.data.user_info.introduce;
                 dbSubscribe.SubscribeType = SubscribeType.米游社用户;
-                dbSubscribe.SubscribeSubType = mysSection.Value;
+                dbSubscribe.SubscribeSubType = (int)mysSection.Value;
                 dbSubscribe.Isliving = false;
                 dbSubscribe.CreateDate = DateTime.Now;
                 dbSubscribe = subscribeDao.Insert(dbSubscribe);
@@ -131,7 +131,7 @@ namespace Theresa3rd_Bot.Business
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 用户id必须为纯数字"));
                     return;
                 }
-                SubscribePO<MysSectionType> dbSubscribe = subscribeDao.getSubscribe<MysSectionType>(keyWord, SubscribeType.米游社用户);
+                SubscribePO dbSubscribe = subscribeDao.getSubscribe(keyWord, SubscribeType.米游社用户);
                 if (dbSubscribe == null)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个用户哦~"));
@@ -193,11 +193,11 @@ namespace Theresa3rd_Bot.Business
         }
 
 
-        public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(MysSectionType sectionType, int subscribeId, string userCode, int getCount = 2)
+        public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(SubscribeInfo subscribeInfo, int getCount = 2)
         {
             int index = 0;
             List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
-            MysResult<MysPostDataDto> mysPostInfo = await getMysUserPostDtoAsync(userCode, sectionType);
+            MysResult<MysPostDataDto> mysPostInfo = await getMysUserPostDtoAsync(subscribeInfo.SubscribeCode, subscribeInfo.SubscribeSubType);
             List<MysPostListDto> postList = mysPostInfo.data.list;
             if (postList.Count == 0) return mysSubscribeList;
             foreach (var item in postList)
@@ -207,7 +207,7 @@ namespace Theresa3rd_Bot.Business
                 DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
                 if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
 
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeInfo.SubscribeId);
                 subscribeRecord.Title = item.post.subject.cutString(200);
                 subscribeRecord.Content = item.post.content.cutString(500);
                 subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
@@ -215,7 +215,7 @@ namespace Theresa3rd_Bot.Business
                 subscribeRecord.DynamicCode = item.post.post_id;
                 subscribeRecord.DynamicType = SubscribeDynamicType.帖子;
 
-                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, item.post.post_id);
+                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeInfo.SubscribeId, item.post.post_id);
                 if (dbSubscribe != null) continue;
 
                 MysSubscribe mysSubscribe = new MysSubscribe();
@@ -262,18 +262,18 @@ namespace Theresa3rd_Bot.Business
             return chailList;
         }
 
-        private async Task<MysResult<MysPostDataDto>> getMysUserPostDtoAsync(string userId, MysSectionType sectionType)
+        private async Task<MysResult<MysPostDataDto>> getMysUserPostDtoAsync(string userId, int gids)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            string getUrl = HttpUrl.getMysPostListUrl(userId, (int)sectionType);
+            string getUrl = HttpUrl.getMysPostListUrl(userId, gids);
             string json = await HttpHelper.HttpGetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysPostDataDto>>(json);
         }
 
-        private async Task<MysResult<MysUserFullInfoDto>> geMysUserFullInfoDtoAsync(string userId, MysSectionType sectionType)
+        private async Task<MysResult<MysUserFullInfoDto>> geMysUserFullInfoDtoAsync(string userId, int gids)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            string getUrl = HttpUrl.getMystUserFullInfo((int)sectionType, userId);
+            string getUrl = HttpUrl.getMystUserFullInfo(userId, gids);
             string json = await HttpHelper.HttpGetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysUserFullInfoDto>>(json);
         }

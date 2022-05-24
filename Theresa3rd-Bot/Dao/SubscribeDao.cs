@@ -6,7 +6,7 @@ using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Dao
 {
-    public class SubscribeDao<T> : DbContext<SubscribePO<T>>
+    public class SubscribeDao : DbContext<SubscribePO>
     {
         public List<SubscribeInfo> getSubscribeInfo()
         {
@@ -18,14 +18,15 @@ namespace Theresa3rd_Bot.Dao
             return Db.Ado.SqlQuery<SubscribeInfo>(sqlBuilder.ToString());
         }
 
-        public SubscribePO<T> getSubscribe<T>(string subscribeCode, SubscribeType subscribeType)
+        public SubscribePO getSubscribe(string subscribeCode, SubscribeType subscribeType)
         {
-            return Db.Queryable<SubscribePO<T>>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).First();
+            string sql = Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).ToSqlString();
+            return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).First();
         }
 
-        public SubscribePO<T> getSubscribe<T>(string subscribeCode, SubscribeType subscribeType, T subscribeSubType)
+        public SubscribePO getSubscribe(string subscribeCode, SubscribeType subscribeType, int subscribeSubType)
         {
-            return Db.Queryable<SubscribePO<T>>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType && o.SubscribeSubType.Equals(subscribeSubType)).First();
+            return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType && o.SubscribeSubType == subscribeSubType).First();
         }
 
 

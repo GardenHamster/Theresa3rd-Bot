@@ -1,5 +1,12 @@
 # 使用方法
 
+## 目录:
++ **[pixiv涩图](Menu.md#pixiv涩图)**
++ **[Lolicon瑟图](Menu.md#Lolicon瑟图)**
++ **[订阅pixiv画师](Menu.md#订阅pixiv画师)**
++ **[订阅pixiv标签](Menu.md#订阅pixiv标签)**
++ **[订阅米游社作者](Menu.md#订阅米游社作者)**
+
 ## pixiv涩图
 ### 环境
 - 首先需要一个能翻墙的运行环境，本人使用的是[自由鲸](https://www.freewhale.us/auth/register?code=sQAT)(原心阶)，邀请码为sQAT
@@ -79,29 +86,6 @@
 - 使用 #退订版主 作者id 频道id  一次性退订一个作者，参数之间使用空格隔开，频道id不填时默认为全部
 ![image](https://user-images.githubusercontent.com/89188316/170291547-bc186724-ecf3-497f-a79f-e1721868a5fd.png)
 ![image](https://user-images.githubusercontent.com/89188316/170291697-106f598a-c077-4d28-8020-6eea2560c963.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -45,7 +45,7 @@
 ![image](https://user-images.githubusercontent.com/89188316/153171928-b9e90263-5351-41a4-824f-6a999feca886.png)
 
 ### 获取画师id
-- 在pixiv网页版中点开画师头像后，网页地址中 https://www.pixiv.net/users/15034125 的 15034125 为画师id
+- 在pixiv网页版中点开画师头像后，网页地址中 [https://www.pixiv.net/users/15034125](https://www.pixiv.net/users/15034125) 的 15034125 为画师id
 
 ### 指令
 - 使用 #订阅画师+画师id 订阅一个画师
@@ -63,5 +63,48 @@
 - 使用 #退订标签+关键词 退订一个标签
 ![image](https://user-images.githubusercontent.com/89188316/153172783-c09563f7-2bf7-4d54-b112-1f539b69e7fe.png)
 ![image](https://user-images.githubusercontent.com/89188316/153180473-a9065289-1ada-4a04-83a2-8920313dba2c.png)
+
+## 订阅米游社作者
+### 说明
+- 使用轮询的方式定时扫描米游社作者的最新帖子，并将帖子自动推送到qq群
+![image](https://user-images.githubusercontent.com/89188316/170288223-1e611741-fdc4-43f4-8be1-f00155a2037f.png)
+
+### 获取作者id
+- 在米游社网页版中点开作者头像后，网页地址中 [https://bbs.mihoyo.com/bh3/accountCenter/postList?id=73565533](https://bbs.mihoyo.com/bh3/accountCenter/postList?id=73565533) 的 73565533 为作者id
+
+### 指令
+- 使用 #订阅版主 根据提示订阅一个作者
+- 使用 #退订版主 根据提示退订一个作者
+- 使用 #订阅版主 作者id 频道id  一次性订阅一个作者，参数之间使用空格隔开，频道id不填时默认为全部
+- 使用 #退订版主 作者id 频道id  一次性退订一个作者，参数之间使用空格隔开，频道id不填时默认为全部
+![image](https://user-images.githubusercontent.com/89188316/170291547-bc186724-ecf3-497f-a79f-e1721868a5fd.png)
+![image](https://user-images.githubusercontent.com/89188316/170291697-106f598a-c077-4d28-8020-6eea2560c963.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

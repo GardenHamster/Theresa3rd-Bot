@@ -102,7 +102,7 @@ namespace Theresa3rd_Bot.Business
 
                 if (subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, dbSubscribe.Id) > 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 已订阅了米游社用户[{userId}]的[{Enum.GetName(typeof(MysSectionType), MysSectionType.全部)}]频道~"));
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 已订阅了米游社用户[{userId}]的[{Enum.GetName(typeof(MysSectionType), mysSection.Value)}]频道~"));
                     return;
                 }
 

@@ -75,7 +75,18 @@ namespace Theresa3rd_Bot.Timer
                 List<IChatMessage> chailList = await mysBusiness.getSubscribeInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Mihoyo.Template);
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
-                    await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
+                    try
+                    {
+                        await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.Error(ex, "米游社订阅消息发送失败");
+                    }
+                    finally
+                    {
+                        await Task.Delay(1000);
+                    }
                 }
             }
         }

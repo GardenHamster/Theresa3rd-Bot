@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Cache;
@@ -42,74 +43,91 @@ namespace Theresa3rd_Bot.Business
         /// <returns></returns>
         public async Task subscribeMYSUserAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
         {
-            MysSectionType? mysSection = null;
-            string userId = null;
-
-            string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.Mihoyo.AddCommand);
-            if (paramArr == null || paramArr.Length < 2)
+            try
             {
-                StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
-                if (stepInfo == null) return;
-                StepDetail sectionStep = new StepDetail(60, $" 请在60秒内发送数字选择你要订阅的频道：\r\n{EnumHelper.MysSectionOption()}", CheckSectionAsync);
-                StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要订阅用户的id", CheckUserIdAsync);
-                stepInfo.AddStep(sectionStep);
-                stepInfo.AddStep(uidStep);
-                bool isSuccess = await stepInfo.StartStep(session, args);
-                if (isSuccess == false) return;
-                mysSection = (MysSectionType)Convert.ToInt32(sectionStep.Answer);
-                userId = uidStep.Answer;
+                MysSectionType? mysSection = null;
+                string userId = null;
+
+                string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.Mihoyo.AddCommand);
+                if (paramArr == null || paramArr.Length == 0)
+                {
+                    StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
+                    if (stepInfo == null) return;
+                    StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要订阅用户的id", CheckUserIdAsync);
+                    StepDetail sectionStep = new StepDetail(60, $" 请在60秒内发送数字选择你要订阅的频道：\r\n{EnumHelper.MysSectionOption()}", CheckSectionAsync);
+                    stepInfo.AddStep(uidStep);
+                    stepInfo.AddStep(sectionStep);
+                    bool isSuccess = await stepInfo.StartStep(session, args);
+                    if (isSuccess == false) return;
+                    userId = uidStep.Answer;
+                    mysSection = (MysSectionType)Convert.ToInt32(sectionStep.Answer);
+                }
+                else
+                {
+                    userId = paramArr.Length > 0 ? paramArr[0] : null;
+                    string mysSectionStr = paramArr.Length > 1 ? paramArr[1] : "0";
+                    if (await CheckUserIdAsync(session, args, userId) == false) return;
+                    if (await CheckSectionAsync(session, args, mysSectionStr) == false) return;
+                    mysSection = (MysSectionType)Convert.ToInt32(mysSectionStr);
+                }
+
+                MysResult<MysUserFullInfoDto> userInfoDto = await geMysUserFullInfoDtoAsync(userId, (int)mysSection.Value);
+                if (userInfoDto == null || userInfoDto.retcode != 0)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 订阅失败，目标用户不存在"));
+                    return;
+                }
+
+                SubscribePO fullSubscribe = subscribeDao.getSubscribe(userId, SubscribeType.米游社用户, (int)MysSectionType.全部);
+                if (fullSubscribe != null && subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, fullSubscribe.Id) > 0)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 已订阅了米游社用户[{userId}]的[{Enum.GetName(typeof(MysSectionType), MysSectionType.全部)}]频道~"));
+                    return;
+                }
+
+                SubscribePO dbSubscribe = subscribeDao.getSubscribe(userId, SubscribeType.米游社用户, (int)mysSection.Value);
+                if (dbSubscribe == null)
+                {
+                    //添加订阅
+                    dbSubscribe = new SubscribePO();
+                    dbSubscribe.SubscribeCode = userId;
+                    dbSubscribe.SubscribeName = StringHelper.filterEmoji(userInfoDto.data.user_info.nickname)?.filterEmoji().cutString(50);
+                    dbSubscribe.SubscribeDescription = userInfoDto.data.user_info.introduce?.filterEmoji().cutString(200);
+                    dbSubscribe.SubscribeType = SubscribeType.米游社用户;
+                    dbSubscribe.SubscribeSubType = (int)mysSection.Value;
+                    dbSubscribe.Isliving = false;
+                    dbSubscribe.CreateDate = DateTime.Now;
+                    dbSubscribe = subscribeDao.Insert(dbSubscribe);
+                }
+
+                if (subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, dbSubscribe.Id) > 0)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 已订阅了米游社用户[{userId}]的[{Enum.GetName(typeof(MysSectionType), MysSectionType.全部)}]频道~"));
+                    return;
+                }
+
+                if (mysSection.Value == MysSectionType.全部) delAllSubscribe(args.Sender.Group.Id, userId);
+
+                SubscribeGroupPO subscribeGroup = new SubscribeGroupPO();
+                subscribeGroup.GroupId = args.Sender.Group.Id;
+                subscribeGroup.SubscribeId = dbSubscribe.Id;
+                subscribeGroup = subscribeGroupDao.Insert(subscribeGroup);
+
+                List<IChatMessage> chailList = new List<IChatMessage>();
+                chailList.Add(new PlainMessage($"米游社用户[{dbSubscribe.SubscribeName}]订阅成功!\r\n"));
+                chailList.Add(new PlainMessage($"uid：{dbSubscribe.SubscribeCode}\r\n"));
+                chailList.Add(new PlainMessage($"频道：{Enum.GetName(typeof(MysSectionType), mysSection)}\r\n"));
+                chailList.Add(new PlainMessage($"签名：{dbSubscribe.SubscribeDescription}\r\n"));
+                FileInfo fileInfo = string.IsNullOrEmpty(userInfoDto.data.user_info.avatar_url) ? null : await HttpHelper.DownImgAsync(userInfoDto.data.user_info.avatar_url);
+                if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                await session.SendMessageWithAtAsync(args, chailList);
+                ConfigHelper.loadSubscribeTask();
             }
-            else
+            catch(Exception ex)
             {
-                if (await CheckSectionAsync(session, args, paramArr[0]) == false) return;
-                if (await CheckUserIdAsync(session, args, paramArr[1]) == false) return;
-                mysSection = (MysSectionType)Convert.ToInt32(paramArr[0]);
-                userId = paramArr[1];
+                LogHelper.Error(ex, "订阅米游社用户异常");
+                throw;
             }
-
-            MysResult<MysUserFullInfoDto> userInfoDto = await geMysUserFullInfoDtoAsync(userId, (int)mysSection.Value);
-            if (userInfoDto == null || userInfoDto.retcode != 0)
-            {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 订阅失败，目标用户不存在"));
-                return;
-            }
-
-            SubscribePO dbSubscribe = subscribeDao.getSubscribe(userId, SubscribeType.米游社用户, (int)mysSection.Value);
-            if (dbSubscribe == null)
-            {
-                //添加订阅
-                dbSubscribe = new SubscribePO();
-                dbSubscribe.SubscribeCode = userId;
-                dbSubscribe.SubscribeName = StringHelper.filterEmoji(userInfoDto.data.user_info.nickname);
-                dbSubscribe.SubscribeDescription = userInfoDto.data.user_info.introduce;
-                dbSubscribe.SubscribeType = SubscribeType.米游社用户;
-                dbSubscribe.SubscribeSubType = (int)mysSection.Value;
-                dbSubscribe.Isliving = false;
-                dbSubscribe.CreateDate = DateTime.Now;
-                dbSubscribe = subscribeDao.Insert(dbSubscribe);
-            }
-
-            if (subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, dbSubscribe.Id) > 0)
-            {
-                //关联订阅
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 米游社用户[{userId}]已经被订阅了~"));
-                return;
-            }
-
-            SubscribeGroupPO subscribeGroup = new SubscribeGroupPO();
-            subscribeGroup.GroupId = args.Sender.Group.Id;
-            subscribeGroup.SubscribeId = dbSubscribe.Id;
-            subscribeGroup = subscribeGroupDao.Insert(subscribeGroup);
-
-            List<IChatMessage> chailList = new List<IChatMessage>();
-            chailList.Add(new PlainMessage($"米游社用户[{dbSubscribe.SubscribeName}]订阅成功!\r\n"));
-            chailList.Add(new PlainMessage($"uid：{dbSubscribe.SubscribeCode}\r\n"));
-            chailList.Add(new PlainMessage($"频道：{Enum.GetName(typeof(MysSectionType), mysSection)}\r\n"));
-            chailList.Add(new PlainMessage($"签名：{dbSubscribe.SubscribeDescription}\r\n"));
-            FileInfo fileInfo = string.IsNullOrEmpty(userInfoDto.data.user_info.avatar_url) ? null : await HttpHelper.DownImgAsync(userInfoDto.data.user_info.avatar_url);
-            if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-            await session.SendMessageWithAtAsync(args, chailList);
-            ConfigHelper.loadSubscribeTask();
         }
 
         /// <summary>
@@ -123,61 +141,112 @@ namespace Theresa3rd_Bot.Business
         {
             try
             {
-                string keyWord = message.splitKeyWord(BotConfig.SubscribeConfig.Mihoyo.RmCommand);
-                if (string.IsNullOrEmpty(keyWord))
+                MysSectionType? mysSection = null;
+                string userId = null;
+
+                string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.Mihoyo.RmCommand);
+                if (paramArr == null || paramArr.Length == 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到用户id，请确保指令格式正确"));
-                    return;
+                    StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
+                    if (stepInfo == null) return;
+                    StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要退订用户的id", CheckUserIdAsync);
+                    StepDetail sectionStep = new StepDetail(60, CancleSectionQuestion, CheckSectionAsync);
+                    stepInfo.AddStep(uidStep);
+                    stepInfo.AddStep(sectionStep);
+                    bool isSuccess = await stepInfo.StartStep(session, args);
+                    if (isSuccess == false) return;
+                    userId = uidStep.Answer;
+                    mysSection = (MysSectionType)Convert.ToInt32(sectionStep.Answer);
                 }
-                if (StringHelper.isPureNumber(keyWord) == false)
+                else
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 用户id必须为纯数字"));
-                    return;
+                    userId = paramArr.Length > 0 ? paramArr[0] : null;
+                    string mysSectionStr = paramArr.Length > 1 ? paramArr[1] : "0";
+                    if (await CheckUserIdAsync(session, args, userId) == false) return;
+                    if (await CheckSectionAsync(session, args, mysSectionStr) == false) return;
+                    mysSection = (MysSectionType)Convert.ToInt32(mysSectionStr);
                 }
-                SubscribePO dbSubscribe = subscribeDao.getSubscribe(keyWord, SubscribeType.米游社用户);
-                if (dbSubscribe == null)
+
+                List<SubscribePO> subscribeList = getSubscribeList(args.Sender.Group.Id, userId);
+                if (subscribeList == null || subscribeList.Count == 0)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个用户哦~"));
                     return;
                 }
-                bool isGroupSubscribed = subscribeGroupDao.getCountBySubscribe(args.Sender.Group.Id, dbSubscribe.Id) > 0;
-                if (isGroupSubscribed == false)
+
+                foreach (var item in subscribeList)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个用户哦~"));
-                    return;
+                    if (mysSection.Value == MysSectionType.全部 || (int)mysSection.Value == item.SubscribeSubType)
+                    {
+                        subscribeGroupDao.delSubscribe(args.Sender.Group.Id, item.Id);
+                    }
                 }
-                int successCount = subscribeGroupDao.delSubscribe(args.Sender.Group.Id, dbSubscribe.Id);
-                if (successCount == 0)
-                {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订失败"));
-                    return;
-                }
+
                 await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订成功~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "退订异常");
+                LogHelper.Error(ex, "退订米游社用户异常");
                 throw;
             }
         }
 
 
-        private async Task<bool> CheckSectionAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string value)
+        /// <summary>
+        /// 获取某个群已订阅的列表
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="subscribeCode"></param>
+        /// <returns></returns>
+        public List<SubscribePO> getSubscribeList(long groupId, string subscribeCode)
         {
-            int sectionType = 0;
-            if (int.TryParse(value, out sectionType) == false)
+            List<SubscribePO> subscribeList = new List<SubscribePO>();
+            List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
+            if (dbSubscribes == null || dbSubscribes.Count == 0) return subscribeList;
+            foreach (var item in dbSubscribes)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 频道必须为数字"));
-                return false;
+                if (subscribeGroupDao.getCountBySubscribe(groupId, item.Id) == 0) continue;
+                subscribeList.Add(item);
             }
-            if (Enum.IsDefined(typeof(MysSectionType), sectionType) == false)
-            {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 频道不在范围内"));
-                return false;
-            }
-            return true;
+            return subscribeList;
         }
+
+        /// <summary>
+        /// 删除一个订阅编码下的所有订阅
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="subscribeCode"></param>
+        public void delAllSubscribe(long groupId, string subscribeCode)
+        {
+            List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
+            foreach (var item in dbSubscribes) subscribeGroupDao.delSubscribe(groupId, item.Id);
+        }
+
+
+        private async Task<string> CancleSectionQuestion(IMiraiHttpSession session, IGroupMessageEventArgs args, StepInfo stepInfo, StepDetail currentStep)
+        {
+            string userIdstr = stepInfo.StepDetails[0].Answer;
+            List<SubscribePO> subscribeList = getSubscribeList(args.Sender.Group.Id, userIdstr);
+            if (subscribeList == null || subscribeList.Count == 0)
+            {
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个用户哦~"));
+                return null;
+            }
+
+            StringBuilder questionBuilder = new StringBuilder();
+            questionBuilder.AppendLine($"请在{currentStep.WaitSecond}秒内发送数字选择你要退订的频道：");
+            questionBuilder.AppendLine($"{(int)MysSectionType.全部}：{Enum.GetName(typeof(MysSectionType), MysSectionType.全部)}");
+            foreach (var item in subscribeList)
+            {
+                if (item.SubscribeSubType == (int)MysSectionType.全部) continue;
+                if (Enum.IsDefined(typeof(MysSectionType), item.SubscribeSubType) == false) continue;
+                MysSectionType mysSectionType = (MysSectionType)item.SubscribeSubType;
+                questionBuilder.AppendLine($"{item.SubscribeSubType}：{Enum.GetName(typeof(MysSectionType), mysSectionType)}");
+            }
+            return questionBuilder.ToString();
+        }
+
 
         private async Task<bool> CheckUserIdAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string value)
         {
@@ -196,40 +265,69 @@ namespace Theresa3rd_Bot.Business
         }
 
 
+        private async Task<bool> CheckSectionAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string value)
+        {
+            int sectionId = 0;
+            if (int.TryParse(value, out sectionId) == false)
+            {
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 频道必须为数字"));
+                return false;
+            }
+            if (Enum.IsDefined(typeof(MysSectionType), sectionId) == false)
+            {
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 频道不在范围内"));
+                return false;
+            }
+            return true;
+        }
+
+
         public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(SubscribeInfo subscribeInfo, int getCount = 2)
         {
-            int index = 0;
             List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
-            MysResult<MysPostDataDto> mysPostInfo = await getMysUserPostDtoAsync(subscribeInfo.SubscribeCode, subscribeInfo.SubscribeSubType);
-            List<MysPostListDto> postList = mysPostInfo.data.list;
-            if (postList.Count == 0) return mysSubscribeList;
-            foreach (var item in postList)
+            List<MysResult<MysPostDataDto>> postDataList = new List<MysResult<MysPostDataDto>>();
+            foreach (var item in Enum.GetValues(typeof(MysSectionType)))
             {
-                if (++index > getCount) break;
-                int shelfLife = BotConfig.SubscribeConfig.Mihoyo.ShelfLife;
-                DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
-                if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
-
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeInfo.SubscribeId);
-                subscribeRecord.Title = item.post.subject.cutString(200);
-                subscribeRecord.Content = item.post.content.cutString(500);
-                subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
-                subscribeRecord.LinkUrl = HttpUrl.getMysArticleUrl(item.post.post_id);
-                subscribeRecord.DynamicCode = item.post.post_id;
-                subscribeRecord.DynamicType = SubscribeDynamicType.帖子;
-
-                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeInfo.SubscribeId, item.post.post_id);
-                if (dbSubscribe != null) continue;
-
-                MysSubscribe mysSubscribe = new MysSubscribe();
-                mysSubscribe.SubscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                mysSubscribe.MysUserPostDto = item;
-                mysSubscribe.CreateTime = createTime;
-                mysSubscribeList.Add(mysSubscribe);
+                int typeId = (int)item;
+                if (typeId == (int)MysSectionType.全部) continue;
+                if (subscribeInfo.SubscribeSubType != (int)MysSectionType.全部 && subscribeInfo.SubscribeSubType != typeId) continue;
+                postDataList.Add(await getMysUserPostDtoAsync(subscribeInfo.SubscribeCode, typeId));
                 await Task.Delay(1000);
+            }
+
+            foreach (var mysPostInfo in postDataList)
+            {
+                int index = 0;
+                if (mysPostInfo.data.list == null || mysPostInfo.data.list.Count == 0) continue;
+                foreach (var item in mysPostInfo.data.list)
+                {
+                    if (++index > getCount) break;
+                    int shelfLife = BotConfig.SubscribeConfig.Mihoyo.ShelfLife;
+                    DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
+                    if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+
+                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeInfo.SubscribeId);
+                    subscribeRecord.Title = item.post.subject?.filterEmoji().cutString(200);
+                    subscribeRecord.Content = item.post.content?.filterEmoji().cutString(500);
+                    subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
+                    subscribeRecord.LinkUrl = HttpUrl.getMysArticleUrl(item.post.post_id);
+                    subscribeRecord.DynamicCode = item.post.post_id;
+                    subscribeRecord.DynamicType = SubscribeDynamicType.帖子;
+
+                    SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeInfo.SubscribeId, item.post.post_id);
+                    if (dbSubscribe != null) continue;
+
+                    MysSubscribe mysSubscribe = new MysSubscribe();
+                    mysSubscribe.SubscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                    mysSubscribe.MysUserPostDto = item;
+                    mysSubscribe.CreateTime = createTime;
+                    mysSubscribeList.Add(mysSubscribe);
+                    await Task.Delay(1000);
+                }
             }
             return mysSubscribeList;
         }
+
 
         public async Task<List<IChatMessage>> getSubscribeInfoAsync(MysSubscribe mysSubscribe, string template = "")
         {
@@ -245,6 +343,7 @@ namespace Theresa3rd_Bot.Business
             if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
             return chailList;
         }
+
 
         public async Task<List<IChatMessage>> getDefaultSubscribeInfoAsync(MysSubscribe mysSubscribe)
         {
@@ -265,6 +364,7 @@ namespace Theresa3rd_Bot.Business
             return chailList;
         }
 
+
         private async Task<MysResult<MysPostDataDto>> getMysUserPostDtoAsync(string userId, int gids)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
@@ -272,6 +372,7 @@ namespace Theresa3rd_Bot.Business
             string json = await HttpHelper.HttpGetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysPostDataDto>>(json);
         }
+
 
         private async Task<MysResult<MysUserFullInfoDto>> geMysUserFullInfoDtoAsync(string userId, int gids)
         {

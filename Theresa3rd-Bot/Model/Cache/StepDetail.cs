@@ -22,10 +22,22 @@ namespace Theresa3rd_Bot.Model.Cache
 
         public Func<IMiraiHttpSession, IGroupMessageEventArgs, string, Task<bool>> CheckInput { get; set; }
 
+        public Func<IMiraiHttpSession, IGroupMessageEventArgs, StepInfo, StepDetail, Task<string>> StepQuestion { get; set; }
+
         public StepDetail(int waitSecond, string question, Func<IMiraiHttpSession, IGroupMessageEventArgs, string, Task<bool>> checkInput = null)
         {
             this.WaitSecond = waitSecond;
             this.Question = question;
+            this.CheckInput = checkInput;
+        }
+
+        public StepDetail(
+            int waitSecond,
+            Func<IMiraiHttpSession, IGroupMessageEventArgs, StepInfo, StepDetail, Task<string>> stepQuestion,
+            Func<IMiraiHttpSession, IGroupMessageEventArgs, string, Task<bool>> checkInput = null)
+        {
+            this.WaitSecond = waitSecond;
+            this.StepQuestion = stepQuestion;
             this.CheckInput = checkInput;
         }
 
@@ -44,7 +56,7 @@ namespace Theresa3rd_Bot.Model.Cache
         public void FinishStep(IGroupMessageEventArgs args, string answer)
         {
             this.Args = args;
-            this.Answer = answer;
+            this.Answer = answer?.Trim();
             this.IsFinish = true;
         }
 

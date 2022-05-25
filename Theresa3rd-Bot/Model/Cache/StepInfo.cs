@@ -45,7 +45,14 @@ namespace Theresa3rd_Bot.Model.Cache
                         StepDetail stepDetail = StepDetails[i];
                         if (stepDetail.IsFinish) continue;
                         if (stepDetail.StartTime == null) stepDetail.StartStep();
+                        if (stepDetail.StepQuestion != null)
+                        {
+                            stepDetail.Question = await stepDetail.StepQuestion(session, args, this, stepDetail);
+                            if (string.IsNullOrEmpty(stepDetail.Question)) return false;
+                        }
+
                         await session.SendMessageWithAtAsync(args, new PlainMessage(stepDetail.Question));
+
                         while (true)
                         {
                             if (stepDetail.IsFinish) break;

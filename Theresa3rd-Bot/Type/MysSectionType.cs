@@ -2,7 +2,7 @@
 {
     public enum MysSectionType
     {
-        其他 = 0,
+        全部 = 0,
         崩坏3 = 1,
         原神 = 2,
         崩坏2 = 3,

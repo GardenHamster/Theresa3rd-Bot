@@ -10,6 +10,7 @@ namespace Theresa3rd_Bot.Util
         public static string MysSectionOption()
         {
             StringBuilder optionBuilder=new StringBuilder();
+            optionBuilder.AppendLine($"{(int)MysSectionType.全部}：{Enum.GetName(typeof(MysSectionType), MysSectionType.全部)}");
             optionBuilder.AppendLine($"{(int)MysSectionType.崩坏3}：{Enum.GetName(typeof(MysSectionType), MysSectionType.崩坏3)}");
             optionBuilder.AppendLine($"{(int)MysSectionType.原神}：{Enum.GetName(typeof(MysSectionType), MysSectionType.原神)}");
             optionBuilder.AppendLine($"{(int)MysSectionType.崩坏2}：{Enum.GetName(typeof(MysSectionType), MysSectionType.崩坏2)}");

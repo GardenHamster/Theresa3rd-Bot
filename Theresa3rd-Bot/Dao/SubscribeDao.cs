@@ -20,7 +20,6 @@ namespace Theresa3rd_Bot.Dao
 
         public SubscribePO getSubscribe(string subscribeCode, SubscribeType subscribeType)
         {
-            string sql = Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).ToSqlString();
             return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).First();
         }
 
@@ -29,6 +28,10 @@ namespace Theresa3rd_Bot.Dao
             return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType && o.SubscribeSubType == subscribeSubType).First();
         }
 
+        public List<SubscribePO> getSubscribes(string subscribeCode, SubscribeType subscribeType)
+        {
+            return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).OrderBy(o => o.SubscribeSubType).ToList();
+        }
 
     }
 }

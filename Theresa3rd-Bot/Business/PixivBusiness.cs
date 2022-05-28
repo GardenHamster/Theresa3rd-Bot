@@ -909,7 +909,7 @@ namespace Theresa3rd_Bot.Business
                 Dictionary<string, string> headerDic = new Dictionary<string, string>();
                 headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
                 headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic);
+                return await HttpHelper.DownPixivFileAsync(imgUrl, fullImageSavePath, headerDic);
             }
             catch (Exception ex)
             {
@@ -929,7 +929,7 @@ namespace Theresa3rd_Bot.Business
 
             PixivUgoiraMetaDto pixivUgoiraMetaDto = await getPixivUgoiraMetaDtoAsync(pixivWorkInfo.body.illustId);
             string fullZipSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{StringHelper.get16UUID()}.zip");
-            await HttpHelper.DownFileAsync(pixivUgoiraMetaDto.body.src, fullZipSavePath, headerDic);
+            await HttpHelper.DownPixivFileAsync(pixivUgoiraMetaDto.body.src, fullZipSavePath, headerDic);
             string unZipDirPath = Path.Combine(FilePath.getDownImgSavePath(), pixivWorkInfo.body.illustId);
             ZipHelper.ZipToFile(fullZipSavePath, unZipDirPath);
             DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
@@ -1050,7 +1050,7 @@ namespace Theresa3rd_Bot.Business
             string referer = HttpUrl.getPixivSearchReferer(keyword);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll);
-            string json = await HttpHelper.HttpGetAsync(postUrl, headerDic);
+            string json = await HttpHelper.PixivGetAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivSearchDto>(json);
         }
 
@@ -1059,7 +1059,7 @@ namespace Theresa3rd_Bot.Business
             string referer = HttpUrl.getPixivArtworksReferer(wordId);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivWorkInfoUrl(wordId);
-            string json = await HttpHelper.HttpGetAsync(postUrl, headerDic);
+            string json = await HttpHelper.PixivGetAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivWorkInfoDto>(json);
         }
 
@@ -1068,7 +1068,7 @@ namespace Theresa3rd_Bot.Business
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
-            string json = await HttpHelper.HttpGetAsync(postUrl, headerDic);
+            string json = await HttpHelper.PixivGetAsync(postUrl, headerDic);
             if (string.IsNullOrEmpty(json) == false && json.Contains("\"illusts\":[]"))
             {
                 //throw new Exception($"pixiv用户{userId}作品列表illusts为空,cookie可能已经过期");
@@ -1082,7 +1082,7 @@ namespace Theresa3rd_Bot.Business
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
-            string json = await HttpHelper.HttpGetAsync(postUrl, headerDic);
+            string json = await HttpHelper.PixivGetAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivUserInfoDto>(json);
         }
 
@@ -1091,7 +1091,7 @@ namespace Theresa3rd_Bot.Business
             string referer = HttpUrl.getPixivArtworksReferer(wordId);
             Dictionary<string, string> headerDic = getPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUgoiraMetaUrl(wordId);
-            string json = await HttpHelper.HttpGetAsync(postUrl, headerDic);
+            string json = await HttpHelper.PixivGetAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivUgoiraMetaDto>(json);
         }
 
@@ -1101,9 +1101,9 @@ namespace Theresa3rd_Bot.Business
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             headerDic.Add("cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
             headerDic.Add("referer", referer);
-            headerDic.Add("accept", "application/json");
-            headerDic.Add("sec-fetch-mode", "cors");
-            headerDic.Add("sec-fetch-site", "same-origin");
+            //headerDic.Add("accept", "application/json");
+            //headerDic.Add("sec-fetch-mode", "cors");
+            //headerDic.Add("sec-fetch-site", "same-origin");
             //headerDic.Add("x-user-id", Setting.Pixiv.XUserId);
             return headerDic;
         }

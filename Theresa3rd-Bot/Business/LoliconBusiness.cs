@@ -226,7 +226,7 @@ namespace Theresa3rd_Bot.Business
                     Dictionary<string, string> headerDic = new Dictionary<string, string>();
                     headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString()));
                     headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                    return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic);
+                    return await HttpHelper.DownPixivFileAsync(imgUrl, fullImageSavePath, headerDic);
                 }
             }
             catch (Exception ex)

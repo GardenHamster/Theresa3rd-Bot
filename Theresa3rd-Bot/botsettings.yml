@@ -7,6 +7,7 @@
     DownErrorImg:           '[image:C:\BotImg\face\downError.png]'              #图片下载失败时的替代图片
     PixivProxy:             'https://i.pixiv.re'                                #图片反向代理地址
     DownWithProxy:          false                                               #通过代理下载图片
+    PixivFreeProxy:         true                                                #开启pixiv免代理模式
     DisableMsg:             '该功能未开启'                                      #功能未启用时返回的消息
     NoPermissionsMsg:       '该功能未授权'                                      #功能未授权时返回的消息
     ManagersRequiredMsg:    '该功能需要管理员执行'                              #需要管理员权限时返回的消息

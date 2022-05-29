@@ -59,7 +59,7 @@ namespace Theresa3rd_Bot.Util
                         sslstream.AuthenticateAsClient(new SslClientAuthenticationOptions
                         {
                             TargetHost = Pixiv_DNS_AND_SNI,
-                            ApplicationProtocols = new List<SslApplicationProtocol>(new SslApplicationProtocol[] { SslApplicationProtocol.Http11 })
+                            ApplicationProtocols = new List<SslApplicationProtocol>(new SslApplicationProtocol[] { SslApplicationProtocol.Http3 })
                         });
                         return new ValueTask<Stream>(sslstream);
                     }
@@ -68,6 +68,15 @@ namespace Theresa3rd_Bot.Util
             PixivHttpClientFactory = pixivServiceCollection.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
         }
 
+        /// <summary>
+        /// 将一个Https地址转换为Http地址
+        /// </summary>
+        /// <param name="httpUrl"></param>
+        /// <returns></returns>
+        public static string ToHttpUrl(this string httpUrl)
+        {
+            return httpUrl.Replace("https://", "http://");
+        }
 
         /// <summary>
         /// HttpGet
@@ -102,6 +111,7 @@ namespace Theresa3rd_Bot.Util
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            if (BotConfig.GeneralConfig.PixivFreeProxy) url = url.ToHttpUrl();
             HttpResponseMessage response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
@@ -204,26 +214,6 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
-        /// 下载文件
-        /// </summary>
-        /// <param name="imgUrl"></param>
-        /// <param name="fullImageSavePath"></param>
-        /// <param name="headerDic"></param>
-        /// <returns></returns>
-        public static async Task<FileInfo> DownPixivFileAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 60000)
-        {
-            if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
-            HttpClient client = GetPixivHttpClient();
-            client.addHeaders(headerDic);
-            client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
-            byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
-            using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
-            fileStream.Write(urlContents, 0, urlContents.Length);
-            return new FileInfo(fullImageSavePath);
-        }
-
-        /// <summary>
         /// 添加请求头
         /// </summary>
         /// <param name="request"></param>
@@ -254,30 +244,13 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         private static HttpClient GetPixivHttpClient()
         {
-            SocketsHttpHandler handler = new SocketsHttpHandler()
-            {
-                ConnectCallback = (info, token) =>
-                {
-                    Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
-                    socket.Connect(Pixiv_DNS_AND_SNI, 443);
-                    var stream = new NetworkStream(socket, true);
-                    SslStream sslstream = new SslStream(stream, false);
-                    sslstream.AuthenticateAsClient(new SslClientAuthenticationOptions
-                    {
-                        TargetHost = Pixiv_DNS_AND_SNI,
-                        ApplicationProtocols = new List<SslApplicationProtocol>(new SslApplicationProtocol[] { SslApplicationProtocol.Http2 })
-                    });
-                    return new ValueTask<Stream>(sslstream);
-                }
-            };
-
             if (BotConfig.GeneralConfig.PixivFreeProxy)
             {
-                HttpClient httpClient = new HttpClient(handler);
-                httpClient.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                httpClient.DefaultRequestVersion = HttpVersion.Version20;
-                httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
-                httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
+                HttpClient httpClient = PixivHttpClientFactory.CreateClient(Pixiv_Client_Name);
+                //httpClient.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+                httpClient.DefaultRequestVersion = HttpVersion.Version30;
+                //httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
+                //httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
                 return httpClient;
             }
             else

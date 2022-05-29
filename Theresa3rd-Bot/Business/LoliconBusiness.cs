@@ -215,7 +215,7 @@ namespace Theresa3rd_Bot.Business
                 string fullFileName = $"{loliconData.pid}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
                 string imgUrl = loliconData.urls.original;
-                if (BotConfig.GeneralConfig.DownWithProxy)
+                if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
                 {
                     imgUrl = getProxyUrl(imgUrl);
                     return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath);
@@ -226,7 +226,7 @@ namespace Theresa3rd_Bot.Business
                     Dictionary<string, string> headerDic = new Dictionary<string, string>();
                     headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString()));
                     headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                    return await HttpHelper.DownPixivFileAsync(imgUrl, fullImageSavePath, headerDic);
+                    return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic);
                 }
             }
             catch (Exception ex)

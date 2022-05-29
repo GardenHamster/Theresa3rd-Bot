@@ -902,14 +902,21 @@ namespace Theresa3rd_Bot.Business
             try
             {
                 if (pixivWorkInfo.body.isGif()) return await downAndComposeGifAsync(pixivWorkInfo);
-                string fullFileName = $"{pixivWorkInfo.body.illustId}.jpg";
                 string imgUrl = pixivWorkInfo.body.urls.original;
-                if (BotConfig.GeneralConfig.DownWithProxy) imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
+                string fullFileName = $"{pixivWorkInfo.body.illustId}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
-                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                return await HttpHelper.DownPixivFileAsync(imgUrl, fullImageSavePath, headerDic);
+                if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
+                {
+                    imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
+                    return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath);
+                }
+                else
+                {
+                    Dictionary<string, string> headerDic = new Dictionary<string, string>();
+                    headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
+                    headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+                    return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic);
+                }
             }
             catch (Exception ex)
             {
@@ -918,18 +925,33 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
+        /// <summary>
+        /// 下载动图zip包并合成gif图片
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <returns></returns>
         protected async Task<FileInfo> downAndComposeGifAsync(PixivWorkInfoDto pixivWorkInfo)
         {
             string fullGifSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{pixivWorkInfo.body.illustId}.gif");
-            if(File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
-
-            Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
-            headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+            if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
             PixivUgoiraMetaDto pixivUgoiraMetaDto = await getPixivUgoiraMetaDtoAsync(pixivWorkInfo.body.illustId);
             string fullZipSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{StringHelper.get16UUID()}.zip");
-            await HttpHelper.DownPixivFileAsync(pixivUgoiraMetaDto.body.src, fullZipSavePath, headerDic);
+            string zipHttpUrl = pixivUgoiraMetaDto.body.src;
+
+            if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
+            {
+                zipHttpUrl = zipHttpUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
+                await HttpHelper.DownFileAsync(zipHttpUrl, fullZipSavePath);
+            }
+            else
+            {
+                Dictionary<string, string> headerDic = new Dictionary<string, string>();
+                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
+                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+                await HttpHelper.DownFileAsync(zipHttpUrl, fullZipSavePath, headerDic);
+            }
+
             string unZipDirPath = Path.Combine(FilePath.getDownImgSavePath(), pixivWorkInfo.body.illustId);
             ZipHelper.ZipToFile(fullZipSavePath, unZipDirPath);
             DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);

@@ -55,42 +55,19 @@ namespace Theresa3rd_Bot.Business
         private const int workScreenMoreThen = 300;
 
         /// <summary>
-        /// 收藏数超过2000的作品集
-        /// </summary>
-        private List<PixivWorkInfoDto> bookUp2000List;
-
-        /// <summary>
-        /// 收藏数超过1500的作品集
-        /// </summary>
-        private List<PixivWorkInfoDto> bookUp1500List;
-
-        /// <summary>
-        /// 收藏数超过1000的作品集
-        /// </summary>
-        private List<PixivWorkInfoDto> bookUp1000List;
-
-        /// <summary>
-        /// 所有作品集
-        /// </summary>
-        private List<PixivWorkInfoDto> bookUp800List;
-
-        /// <summary>
         /// 收藏数超过0的作品集
         /// </summary>
         private List<PixivWorkInfoDto> bookUpList;
 
         public PixivBusiness()
         {
-            bookUp2000List = new List<PixivWorkInfoDto>();
-            bookUp1500List = new List<PixivWorkInfoDto>();
-            bookUp1000List = new List<PixivWorkInfoDto>();
-            bookUp800List = new List<PixivWorkInfoDto>();
             bookUpList = new List<PixivWorkInfoDto>();
             subscribeDao = new SubscribeDao();
             subscribeGroupDao = new SubscribeGroupDao();
             subscribeRecordDao = new SubscribeRecordDao();
         }
 
+        /*----------------------------------------------------涩图指令----------------------------------------------------------------------------*/
 
         public async Task sendGeneralPixivImageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
         {
@@ -246,37 +223,6 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
-
-        public async Task<List<IChatMessage>> getPixivNewestWorkAsync(IMiraiHttpSession session, string userId, int subscribeId)
-        {
-            try
-            {
-                DateTime startTime = DateTime.Now;
-                List<IChatMessage> chatList = new List<IChatMessage>();
-                List<PixivSubscribe> pixivSubscribeList = await getPixivUserNewestWorkAsync(userId, subscribeId, PixivNewestRead);
-                if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) return new List<IChatMessage>();
-                PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
-                if (pixivSubscribe.PixivWorkInfoDto.body.isR18()) return new List<IChatMessage> { new PlainMessage(" 该作品为R-18作品，不显示相关内容") };
-                FileInfo fileInfo = await downImgAsync(pixivSubscribe.PixivWorkInfoDto);
-                chatList.Add(new PlainMessage($"pixiv画师[{pixivSubscribe.PixivWorkInfoDto.body.userName}]的最新作品："));
-                chatList.Add(new PlainMessage(getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
-                if (fileInfo == null)
-                {
-                    chatList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
-                }
-                else
-                {
-                    if (!pixivSubscribe.PixivWorkInfoDto.body.isR18()) chatList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                }
-                return chatList;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "获取画师最新作品时出现异常");
-                throw;
-            }
-        }
-
         /// <summary>
         /// 随机获取一个指定标签中的作品
         /// </summary>
@@ -379,24 +325,16 @@ namespace Theresa3rd_Bot.Business
                 taskList[i % threadCount].Add(pixivIllustList[i]);
             }
 
-            //是否优先筛选较高收藏
-            bool isScreen = total > workScreenMoreThen;
-
-
             //开启所有线程
             Task[] tasks = new Task[threadCount];
             for (int i = 0; i < taskList.Length; i++)
             {
-                tasks[i] = Task.Factory.StartNew(() => getPixivWorkInfoMethodAsync(taskList[i], isScreen));
+                tasks[i] = Task.Factory.StartNew(() => getPixivWorkInfoMethodAsync(taskList[i]));
                 await Task.Delay(RandomHelper.getRandomBetween(500, 1000));//将每条线程的间隔错开
             }
             Task.WaitAll(tasks);
 
-            //获取收藏度最高的作品
-            PixivWorkInfoDto randomWork = bookUp2000List.FirstOrDefault();
-            if (randomWork == null) randomWork = bookUp1500List.FirstOrDefault();
-            if (randomWork == null) randomWork = bookUp1000List.FirstOrDefault();
-            if (randomWork == null) randomWork = bookUp800List.FirstOrDefault();
+            PixivWorkInfoDto randomWork = bookUpList.OrderByDescending(o => o.body.bookmarkCount).FirstOrDefault();
             if (randomWork == null) return null;
             randomWork.body.RelevantCount = total;
             return randomWork;
@@ -407,33 +345,16 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivIllustList"></param>
         /// <param name="isScreen"></param>
-        protected async Task getPixivWorkInfoMethodAsync(List<PixivIllust> pixivIllustList, bool isScreen)
+        protected async Task getPixivWorkInfoMethodAsync(List<PixivIllust> pixivIllustList)
         {
             for (int i = 0; i < pixivIllustList.Count; i++)
             {
                 try
                 {
-                    if (isScreen == true && bookUp2000List.Count > 0) return;//如果启用筛选,获取到一个2000+就结束全部线程
-                    if (isScreen == false && bookUp800List.Count > 0) return;//如果不启用筛选,获取到一个800+就结束全部线程
+                    if (bookUpList.Count > 0) return;
                     PixivWorkInfoDto pixivWorkInfo = await getPixivWorkInfoDtoAsync(pixivIllustList[i].id);
                     if (checkRandomWorkIsOk(pixivWorkInfo) && pixivWorkInfo.error == false)
                     {
-                        if (pixivWorkInfo.body.likeCount >= 2000)
-                        {
-                            lock (bookUp2000List) bookUp2000List.Add(pixivWorkInfo);
-                        }
-                        else if (pixivWorkInfo.body.likeCount >= 1500)
-                        {
-                            lock (bookUp1500List) bookUp1500List.Add(pixivWorkInfo);
-                        }
-                        else if (pixivWorkInfo.body.likeCount >= 1000)
-                        {
-                            lock (bookUp1000List) bookUp1000List.Add(pixivWorkInfo);
-                        }
-                        else if (pixivWorkInfo.body.likeCount >= 800)
-                        {
-                            lock (bookUp800List) bookUp800List.Add(pixivWorkInfo);
-                        }
                         lock (bookUpList) bookUpList.Add(pixivWorkInfo);
                     }
                 }
@@ -446,6 +367,41 @@ namespace Theresa3rd_Bot.Business
                     Thread.Sleep(500);//防止请求过快被检测
                 }
             }
+        }
+
+        /// <summary>
+        /// 判断插画质量是否符合
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <param name="isR18"></param>
+        /// <returns></returns>
+        protected bool checkRandomWorkIsOk(PixivWorkInfoDto pixivWorkInfo)
+        {
+            if (pixivWorkInfo == null) return false;
+            if (pixivWorkInfo.body == null) return false;
+            bool isNotR18 = pixivWorkInfo.body.isR18() == false;
+            bool isNotBantTag = pixivWorkInfo.body.hasBanTag() == false;
+            bool isPopularity = pixivWorkInfo.body.bookmarkCount >= BotConfig.SetuConfig.Pixiv.MinBookmark;
+            bool isBookProportional = Convert.ToDouble(pixivWorkInfo.body.bookmarkCount) / pixivWorkInfo.body.viewCount >= BotConfig.SetuConfig.Pixiv.MinBookRate;
+            return isNotR18 && isPopularity && isBookProportional && isNotBantTag;
+        }
+
+        /// <summary>
+        /// 判断插画质量是否符合
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <param name="isR18"></param>
+        /// <returns></returns>
+        protected bool checkTagWorkIsOk(PixivWorkInfoDto pixivWorkInfo)
+        {
+            if (pixivWorkInfo == null) return false;
+            if (pixivWorkInfo.body == null) return false;
+            bool isNotR18 = pixivWorkInfo.body.isR18() == false;
+            bool isPopularity = pixivWorkInfo.body.bookmarkCount >= BotConfig.SubscribeConfig.PixivTag.MinBookmark;
+            TimeSpan timeSpan = DateTime.Now.Subtract(pixivWorkInfo.body.createDate);
+            int totalHours = (int)(timeSpan.TotalHours + 1 > 0 ? timeSpan.TotalHours + 1 : 0);
+            bool isBookProportional = pixivWorkInfo.body.bookmarkCount > totalHours * BotConfig.SubscribeConfig.PixivTag.MinBookPerHour;
+            return isPopularity && isNotR18 && isBookProportional && totalHours > 0;
         }
 
         /// <summary>
@@ -485,124 +441,8 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
-        /// <summary>
-        /// 获取画师的最新作品
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="subscribeId"></param>
-        /// <param name="getCount"></param>
-        /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivUserNewestWorkAsync(string userId, int subscribeId, int getCount = 2)
-        {
-            int index = 0;
-            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            PixivUserWorkInfoDto pixivWorkInfo = await getPixivUserWorkInfoDtoAsync(userId);
-            if (pixivWorkInfo == null) return pixivSubscribeList;
-            Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
-            if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
-            foreach (KeyValuePair<string, PixivUserWorkInfo> workInfo in illusts)
-            {
-                if (++index > getCount) break;
-                if (workInfo.Value == null) continue;
-                PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(workInfo.Value.id);
-                if (pixivWorkInfoDto == null) continue;
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
-                subscribeRecord.Content = subscribeRecord.Title;
-                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
-                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
-                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
-                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
-                PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                pixivSubscribe.SubscribeRecord = subscribeRecord;
-                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
-                pixivSubscribeList.Add(pixivSubscribe);
-            }
-            return pixivSubscribeList;
-        }
 
-        /// <summary>
-        /// 获取订阅画师的最新作品
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="subscribeId"></param>
-        /// <param name="getCount"></param>
-        /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivUserSubscribeWorkAsync(string userId, int subscribeId, int getCount = 2)
-        {
-            int index = 0;
-            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            PixivUserWorkInfoDto pixivWorkInfo = await getPixivUserWorkInfoDtoAsync(userId);
-            if (pixivWorkInfo == null) return pixivSubscribeList;
-            Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
-            if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
-            foreach (KeyValuePair<string, PixivUserWorkInfo> workInfo in illusts)
-            {
-                if (++index > getCount) break;
-                if (workInfo.Value == null) continue;
-                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, workInfo.Value.id);
-                if (dbSubscribe != null) continue;
-                PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(workInfo.Value.id);
-                if (pixivWorkInfoDto == null) continue;
-                if (pixivWorkInfoDto.body.isR18()) continue;
-                int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
-                if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
-                subscribeRecord.Content = subscribeRecord.Title;
-                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
-                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
-                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
-                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
-                subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                pixivSubscribe.SubscribeRecord = subscribeRecord;
-                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
-                pixivSubscribeList.Add(pixivSubscribe);
-            }
-            return pixivSubscribeList;
-        }
-
-        /// <summary>
-        /// 获取订阅标签的最新作品
-        /// </summary>
-        /// <param name="tagName"></param>
-        /// <param name="subscribeId"></param>
-        /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(string tagName, int subscribeId)
-        {
-            PixivSearchDto pageOne = await getPixivSearchDtoAsync(tagName, 1, false);
-            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            if (pageOne == null) return pixivSubscribeList;
-            foreach (PixivIllust item in pageOne.body.getIllust().data)
-            {
-                int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
-                if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
-                
-                PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(item.id);
-                if (pixivWorkInfoDto == null) continue;
-                if (pixivWorkInfoDto.body.isR18()) continue;
-                if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
-                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, pixivWorkInfoDto.body.illustId);
-                if (dbSubscribe != null) continue;
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
-                subscribeRecord.Content = subscribeRecord.Title;
-                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
-                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
-                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
-                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
-                subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                pixivSubscribe.SubscribeRecord = subscribeRecord;
-                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
-                pixivSubscribeList.Add(pixivSubscribe);
-                await Task.Delay(1000);
-            }
-            return pixivSubscribeList;
-        }
-
-
+        /*-------------------------------------------------------------订阅相关--------------------------------------------------------------------------*/
 
         /// <summary>
         /// 订阅pixiv画师
@@ -668,7 +508,7 @@ namespace Theresa3rd_Bot.Business
 
 
                         List<IChatMessage> chatList = new List<IChatMessage>();
-                        List<IChatMessage> workChatList = await getPixivNewestWorkAsync(session, dbSubscribe.SubscribeCode, dbSubscribe.Id);
+                        List<IChatMessage> workChatList = await getPixivUserNewestWorkAsync(session, dbSubscribe.SubscribeCode, dbSubscribe.Id);
                         if (workChatList == null || workChatList.Count == 0)
                         {
                             chatList.Add(new PlainMessage($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，该画师还没有任何作品~"));
@@ -862,40 +702,164 @@ namespace Theresa3rd_Bot.Business
 
 
 
+        /*-------------------------------------------------------------获取最新订阅--------------------------------------------------------------------------*/
+
         /// <summary>
-        /// 判断插画质量是否符合
+        /// 获取一条画师的最新作品的消息
         /// </summary>
-        /// <param name="pixivWorkInfo"></param>
-        /// <param name="isR18"></param>
+        /// <param name="session"></param>
+        /// <param name="userId"></param>
+        /// <param name="subscribeId"></param>
         /// <returns></returns>
-        protected bool checkRandomWorkIsOk(PixivWorkInfoDto pixivWorkInfo)
+        public async Task<List<IChatMessage>> getPixivUserNewestWorkAsync(IMiraiHttpSession session, string userId, int subscribeId)
         {
-            if (pixivWorkInfo == null) return false;
-            if (pixivWorkInfo.body == null) return false;
-            bool isNotR18 = pixivWorkInfo.body.isR18() == false;
-            bool isNotBantTag = pixivWorkInfo.body.hasBanTag() == false;
-            bool isPopularity = pixivWorkInfo.body.bookmarkCount >= BotConfig.SetuConfig.Pixiv.MinBookmark;
-            bool isBookProportional = Convert.ToDouble(pixivWorkInfo.body.bookmarkCount) / pixivWorkInfo.body.viewCount >= BotConfig.SetuConfig.Pixiv.MinBookRate;
-            return isNotR18 && isPopularity && isBookProportional && isNotBantTag;
+            try
+            {
+                DateTime startTime = DateTime.Now;
+                List<IChatMessage> chatList = new List<IChatMessage>();
+                List<PixivSubscribe> pixivSubscribeList = await getPixivUserNewestWorkAsync(userId, subscribeId, PixivNewestRead);
+                if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) return new List<IChatMessage>();
+                PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
+                if (pixivSubscribe.PixivWorkInfoDto.body.isR18()) return new List<IChatMessage> { new PlainMessage(" 该作品为R-18作品，不显示相关内容") };
+                FileInfo fileInfo = await downImgAsync(pixivSubscribe.PixivWorkInfoDto);
+                chatList.Add(new PlainMessage($"pixiv画师[{pixivSubscribe.PixivWorkInfoDto.body.userName}]的最新作品："));
+                chatList.Add(new PlainMessage(getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
+                if (fileInfo == null)
+                {
+                    chatList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
+                }
+                else
+                {
+                    if (!pixivSubscribe.PixivWorkInfoDto.body.isR18()) chatList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                }
+                return chatList;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "获取画师最新作品时出现异常");
+                throw;
+            }
         }
 
         /// <summary>
-        /// 判断插画质量是否符合
+        /// 获取画师的最新作品
         /// </summary>
-        /// <param name="pixivWorkInfo"></param>
-        /// <param name="isR18"></param>
+        /// <param name="userId"></param>
+        /// <param name="subscribeId"></param>
+        /// <param name="getCount"></param>
         /// <returns></returns>
-        protected bool checkTagWorkIsOk(PixivWorkInfoDto pixivWorkInfo)
+        public async Task<List<PixivSubscribe>> getPixivUserNewestWorkAsync(string userId, int subscribeId, int getCount = 2)
         {
-            if (pixivWorkInfo == null) return false;
-            if (pixivWorkInfo.body == null) return false;
-            bool isNotR18 = pixivWorkInfo.body.isR18() == false;
-            bool isPopularity = pixivWorkInfo.body.bookmarkCount >= BotConfig.SubscribeConfig.PixivTag.MinBookmark;
-            TimeSpan timeSpan = DateTime.Now.Subtract(pixivWorkInfo.body.createDate);
-            int totalHours = (int)(timeSpan.TotalHours + 1 > 0 ? timeSpan.TotalHours + 1 : 0);
-            bool isBookProportional = pixivWorkInfo.body.bookmarkCount > totalHours * BotConfig.SubscribeConfig.PixivTag.MinBookPerHour;
-            return isPopularity && isNotR18 && isBookProportional && totalHours > 0;
+            int index = 0;
+            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
+            PixivUserWorkInfoDto pixivWorkInfo = await getPixivUserWorkInfoDtoAsync(userId);
+            if (pixivWorkInfo == null) return pixivSubscribeList;
+            Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
+            if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
+            foreach (KeyValuePair<string, PixivUserWorkInfo> workInfo in illusts)
+            {
+                if (++index > getCount) break;
+                if (workInfo.Value == null) continue;
+                PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(workInfo.Value.id);
+                if (pixivWorkInfoDto == null) continue;
+                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
+                subscribeRecord.Content = subscribeRecord.Title;
+                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
+                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
+                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
+                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                PixivSubscribe pixivSubscribe = new PixivSubscribe();
+                pixivSubscribe.SubscribeRecord = subscribeRecord;
+                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                pixivSubscribeList.Add(pixivSubscribe);
+            }
+            return pixivSubscribeList;
         }
+
+        /// <summary>
+        /// 获取订阅画师的最新作品
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="subscribeId"></param>
+        /// <param name="getCount"></param>
+        /// <returns></returns>
+        public async Task<List<PixivSubscribe>> getPixivUserSubscribeWorkAsync(string userId, int subscribeId, int getCount = 2)
+        {
+            int index = 0;
+            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
+            PixivUserWorkInfoDto pixivWorkInfo = await getPixivUserWorkInfoDtoAsync(userId);
+            if (pixivWorkInfo == null) return pixivSubscribeList;
+            Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
+            if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
+            foreach (KeyValuePair<string, PixivUserWorkInfo> workInfo in illusts)
+            {
+                if (++index > getCount) break;
+                if (workInfo.Value == null) continue;
+                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, workInfo.Value.id);
+                if (dbSubscribe != null) continue;
+                PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(workInfo.Value.id);
+                if (pixivWorkInfoDto == null) continue;
+                if (pixivWorkInfoDto.body.isR18()) continue;
+                int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
+                if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
+                subscribeRecord.Content = subscribeRecord.Title;
+                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
+                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
+                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
+                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                PixivSubscribe pixivSubscribe = new PixivSubscribe();
+                pixivSubscribe.SubscribeRecord = subscribeRecord;
+                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                pixivSubscribeList.Add(pixivSubscribe);
+            }
+            return pixivSubscribeList;
+        }
+
+        /// <summary>
+        /// 获取订阅标签的最新作品
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <param name="subscribeId"></param>
+        /// <returns></returns>
+        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(string tagName, int subscribeId)
+        {
+            PixivSearchDto pageOne = await getPixivSearchDtoAsync(tagName, 1, false);
+            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
+            if (pageOne == null) return pixivSubscribeList;
+            foreach (PixivIllust item in pageOne.body.getIllust().data)
+            {
+                int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
+                if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+                
+                PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(item.id);
+                if (pixivWorkInfoDto == null) continue;
+                if (pixivWorkInfoDto.body.isR18()) continue;
+                if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
+                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, pixivWorkInfoDto.body.illustId);
+                if (dbSubscribe != null) continue;
+                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
+                subscribeRecord.Content = subscribeRecord.Title;
+                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
+                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
+                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
+                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                PixivSubscribe pixivSubscribe = new PixivSubscribe();
+                pixivSubscribe.SubscribeRecord = subscribeRecord;
+                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                pixivSubscribeList.Add(pixivSubscribe);
+                await Task.Delay(1000);
+            }
+            return pixivSubscribeList;
+        }
+
+
+        /*-------------------------------------------------------------图片下载--------------------------------------------------------------------------*/
 
         public async Task<FileInfo> downImgAsync(PixivWorkInfoDto pixivWorkInfo)
         {
@@ -924,6 +888,7 @@ namespace Theresa3rd_Bot.Business
                 return null;
             }
         }
+
 
         /// <summary>
         /// 下载动图zip包并合成gif图片
@@ -967,17 +932,12 @@ namespace Theresa3rd_Bot.Business
                 Thread.Sleep(100);
             }
 
-            //string tomcatGifSavePath = FilePath.getGifImgPath();
-            //if (Directory.Exists(tomcatGifSavePath) == false) Directory.CreateDirectory(tomcatGifSavePath);
-            //string fullTomcatGifSavePath = Path.Combine(tomcatGifSavePath, $"{pixivWorkInfo.body.illustId}.gif");
-            //if (File.Exists(fullTomcatGifSavePath)) File.Delete(fullTomcatGifSavePath);
-            //File.Copy(fullGifSavePath, fullTomcatGifSavePath);
-
             File.Delete(fullZipSavePath);
             Directory.Delete(unZipDirPath, true);
             return new FileInfo(fullGifSavePath);
         }
 
+        /*-------------------------------------------------------------作品信息--------------------------------------------------------------------------*/
 
         public string getWorkInfoWithLeft(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime, int todayLeft, string template = "")
         {
@@ -1031,10 +991,6 @@ namespace Theresa3rd_Bot.Business
 
         protected string getWorkUrlStr(PixivWorkInfo pixivWorkInfo)
         {
-            //if (pixivWorkInfo.isGif())
-            //{
-            //    return HttpUrl.getTomcatGifUrl(pixivWorkInfo.illustId);
-            //}
             int maxShowCount = 3;
             string proxy = BotConfig.GeneralConfig.PixivProxy;
             if (string.IsNullOrWhiteSpace(proxy)) proxy = "https://i.pixiv.re";
@@ -1066,6 +1022,8 @@ namespace Theresa3rd_Bot.Business
             }
             return tagstr;
         }
+
+        /*-------------------------------------------------------------接口相关--------------------------------------------------------------------------*/
 
         public async Task<PixivSearchDto> getPixivSearchDtoAsync(string keyword, int pageNo, bool isMatchAll)
         {

@@ -17,6 +17,8 @@ Permissions:
     SuperManagers:          [1608405161]                                        #超级管理员列表,可以使用管理指令
     AcceptGroups:           [284196392]                                         #白名单，只处理这些群的消息
     SetuGroups:             [284196392]                                         #拥有涩图权限的群
+    SetuShowR18Groups:      [284196392]                                         #允许搜索和发送r18的群，不包含r18图片
+    SetuShowR18ImgGroups:   [284196392]                                         #允许发送r18图片的群，否则只发送图片地址
     SetuCustomGroups:       [284196392]                                         #允许查找自定义涩图的群
     SetuNoneCDGroups:       [284196392]                                         #涩图没有CD的群
     SetuLimitlessGroups:    [284196392]                                         #涩图次数无限制的群
@@ -90,7 +92,7 @@ Setu:                                                                           
                             标签：{Tags}
                             {Urls}
         MaxScreen:          60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
-        MinBookmark:        800                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时试用)
+        MinBookmark:        800                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时适用)
         MinBookRate:        0.05                                                #最低收藏率，收藏数/浏览数(标签搜索时试用)
         CookieExpire:       1296000                                             #cookie失效时间(秒)，超过该天数后需要使用命令更新cookie，建议cookie每15天更新一次
         CookieExpireMsg:    'emmmm,cookie过期了,请艾特管理员更新cookie'         #cookie过期时返回的消息

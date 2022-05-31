@@ -80,6 +80,7 @@ namespace Theresa3rd_Bot.Timer
                 string tagName = subscribeTask.SubscribeInfo.SubscribeName;
                 string template = BotConfig.SubscribeConfig.PixivTag.Template;
                 List<IChatMessage> chailList = new List<IChatMessage>();
+
                 if (string.IsNullOrWhiteSpace(template))
                 {
                     chailList.Add(new PlainMessage($"pixiv标签[{tagName}]发布了新作品："));
@@ -90,18 +91,25 @@ namespace Theresa3rd_Bot.Timer
                     chailList.Add(new PlainMessage(pixivBusiness.getWorkInfoWithTag(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime, tagName, template)));
                 }
 
-                if (fileInfo == null)
-                {
-                    chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
-                }
-                else
-                {
-                    chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                }
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
                     try
                     {
+                        if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18() == false) continue;
+
+                        if (fileInfo == null)
+                        {
+                            chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
+                        }
+                        else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() == false)
+                        {
+                            chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                        }
+                        else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18Img())
+                        {
+                            chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                        }
+
                         await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
                     }
                     catch (Exception ex)

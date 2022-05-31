@@ -56,7 +56,7 @@ namespace Theresa3rd_Bot.Timer
                 try
                 {
                     DateTime startTime = DateTime.Now;
-                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserSubscribeWorkAsync(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
+                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserSubscribeAsync(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(subscribeTask, pixivSubscribeList, startTime);
                 }
@@ -79,6 +79,7 @@ namespace Theresa3rd_Bot.Timer
                 FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto);
                 string template = BotConfig.SubscribeConfig.PixivUser.Template;
                 List<IChatMessage> chailList = new List<IChatMessage>();
+
                 if (string.IsNullOrWhiteSpace(template))
                 {
                     chailList.Add(new PlainMessage($"pixiv画师[{subscribeTask.SubscribeInfo.SubscribeName}]发布了新作品："));
@@ -89,18 +90,25 @@ namespace Theresa3rd_Bot.Timer
                     chailList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime, template)));
                 }
 
-                if (fileInfo == null)
-                {
-                    chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
-                }
-                else
-                {
-                    chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                }
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
                     try
                     {
+                        if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18() == false) continue;
+
+                        if (fileInfo == null)
+                        {
+                            chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
+                        }
+                        else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() == false)
+                        {
+                            chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                        }
+                        else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18Img())
+                        {
+                            chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                        }
+
                         await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
                     }
                     catch (Exception ex)
@@ -112,6 +120,7 @@ namespace Theresa3rd_Bot.Timer
                         await Task.Delay(1000);
                     }
                 }
+
             }
         }
 

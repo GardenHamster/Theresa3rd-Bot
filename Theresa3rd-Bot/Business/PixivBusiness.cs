@@ -797,7 +797,7 @@ namespace Theresa3rd_Bot.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivUserSubscribeAsync(string userId, int subscribeId, bool includeR18, int getCount = 2)
+        public async Task<List<PixivSubscribe>> getPixivUserSubscribeAsync(string userId, int subscribeId, int getCount = 2)
         {
             int index = 0;
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
@@ -813,7 +813,6 @@ namespace Theresa3rd_Bot.Business
                 if (dbSubscribe != null) continue;
                 PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(workInfo.Value.id);
                 if (pixivWorkInfoDto == null) continue;
-                if (pixivWorkInfoDto.body.isR18() && includeR18 == false) continue;
                 int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
                 if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
                 SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
@@ -838,7 +837,7 @@ namespace Theresa3rd_Bot.Business
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(string tagName, int subscribeId, bool includeR18)
+        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(string tagName, int subscribeId)
         {
             PixivSearchDto pageOne = await getPixivSearchDtoAsync(tagName, 1, false);
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
@@ -850,7 +849,6 @@ namespace Theresa3rd_Bot.Business
 
                 PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(item.id);
                 if (pixivWorkInfoDto == null) continue;
-                if (pixivWorkInfoDto.body.isR18() && includeR18 == false) continue;
                 if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
                 SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeId, pixivWorkInfoDto.body.illustId);
                 if (dbSubscribe != null) continue;

@@ -11,7 +11,7 @@
 ### 环境
 
 - ~~首先需要一个能翻墙的运行环境，本人使用的是[自由鲸](https://www.freewhale.us/auth/register?code=sQAT)(原心阶)，邀请码为sQAT~~
-- 从0.4.0版本开始加入了免代理，可以在botsetting.yml中开启或关闭该功能
+- 从0.4.0版本开始加入了免代理，通过修改SNI的方式访问pixiv，然后通过pixiv.cat代理下载图片，有时候或许使用代理下载图片的速度会更高，可以在botsetting.yml中开启或关闭该功能
 
 ### 设置cookie
 - 初次使用时需要设置cookie，使用一个平时较少使用的账号登录[pixiv](https://www.pixiv.net)，然后获取cookie，cookie中必须包含PHPSESSID

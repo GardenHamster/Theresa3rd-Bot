@@ -9,7 +9,9 @@
 
 ## pixiv涩图
 ### 环境
-- 首先需要一个能翻墙的运行环境，本人使用的是[自由鲸](https://www.freewhale.us/auth/register?code=sQAT)(原心阶)，邀请码为sQAT
+
+- ~~首先需要一个能翻墙的运行环境，本人使用的是[自由鲸](https://www.freewhale.us/auth/register?code=sQAT)(原心阶)，邀请码为sQAT~~
+- 从0.4.0版本开始加入了免代理，可以在botsetting.yml中开启或关闭该功能
 
 ### 设置cookie
 - 初次使用时需要设置cookie，使用一个平时较少使用的账号登录[pixiv](https://www.pixiv.net)，然后获取cookie，cookie中必须包含PHPSESSID

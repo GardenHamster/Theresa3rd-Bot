@@ -22,8 +22,10 @@ namespace Theresa3rd_Bot.Business
         {
             try
             {
+                long memberId = args.Sender.Id;
+                long groupId = args.Sender.Group.Id;
                 DateTime startDateTime = DateTime.Now;
-                CoolingCache.SetHanding(args.Sender.Group.Id, args.Sender.Id);//请求处理中
+                CoolingCache.SetHanding(groupId, memberId);//请求处理中
 
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.Lolicon.ProcessingMsg) == false)
                 {
@@ -60,12 +62,12 @@ namespace Theresa3rd_Bot.Business
                 if (string.IsNullOrWhiteSpace(template))
                 {
                     StringBuilder warnBuilder = new StringBuilder();
-                    if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id) == false)
+                    if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(groupId) == false)
                     {
                         if (warnBuilder.Length > 0) warnBuilder.Append("，");
                         warnBuilder.Append($"{BotConfig.SetuConfig.MemberCD}秒后再来哦");
                     }
-                    if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id) == false)
+                    if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(groupId) == false)
                     {
                         if (warnBuilder.Length > 0) warnBuilder.Append("，");
                         warnBuilder.Append($"今天剩余使用次数{todayLeftCount}次");
@@ -96,6 +98,10 @@ namespace Theresa3rd_Bot.Business
                     {
                         groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                     }
+                    else if (loliconData.isR18() && groupId.IsShowR18Img())
+                    {
+                        groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                    }
                     groupMsgId = await session.SendMessageWithAtAsync(args, groupList);
                     await Task.Delay(1000);
                 }
@@ -116,11 +122,15 @@ namespace Theresa3rd_Bot.Business
                         {
                             memberList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Temp));
                         }
-                        if (loliconData.isR18() == false && fileInfo != null)
+                        else if (loliconData.isR18() == false)
                         {
                             memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
                         }
-                        await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, memberList.ToArray());
+                        else if (loliconData.isR18() && groupId.IsShowR18Img())
+                        {
+                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
+                        }
+                        await session.SendTempMessageAsync(memberId, groupId, memberList.ToArray());
                         await Task.Delay(1000);
                     }
                     catch (Exception ex)
@@ -130,7 +140,7 @@ namespace Theresa3rd_Bot.Business
                 }
 
                 //进入CD状态
-                CoolingCache.SetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);
+                CoolingCache.SetMemberSTCooling(groupId, memberId);
                 if (groupMsgId == 0 || BotConfig.SetuConfig.RevokeInterval == 0) return;
 
                 try
@@ -215,7 +225,7 @@ namespace Theresa3rd_Bot.Business
                 string fullFileName = $"{loliconData.pid}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
                 string imgUrl = loliconData.urls.original;
-                if (BotConfig.GeneralConfig.DownWithProxy)
+                if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
                 {
                     imgUrl = getProxyUrl(imgUrl);
                     return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath);

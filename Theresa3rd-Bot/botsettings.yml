@@ -116,6 +116,7 @@ Subscribe:                                                                      
         Enable:             true                                                #是否启用
         AddCommand:         '订阅画师'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订画师'                                          #退订命令,需要管理员执行
+        SyncCommand:        '同步画师'                                          #同步命令,从p站账号中获取关注画师列表并添加到订阅中,需要管理员执行
         Template:           |                                                   #消息模版，值为空时将使用默认模版
                             pixiv画师[{UserName}]发布了新作品：
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，发布时间：{CreateTime}

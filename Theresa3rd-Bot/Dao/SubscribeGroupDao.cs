@@ -17,7 +17,17 @@ namespace Theresa3rd_Bot.Dao
         }
 
         /// <summary>
-        ///删除订阅
+        /// 删除订阅
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="subscribeId"></param>
+        public int delSubscribe(int subscribeId)
+        {
+            return Db.Deleteable<SubscribeGroupPO>().Where(o => o.SubscribeId == subscribeId).ExecuteCommand();
+        }
+
+        /// <summary>
+        /// 删除订阅
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="subscribeId"></param>
@@ -25,6 +35,8 @@ namespace Theresa3rd_Bot.Dao
         {
             return Db.Deleteable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).ExecuteCommand();
         }
+
+
 
     }
 }

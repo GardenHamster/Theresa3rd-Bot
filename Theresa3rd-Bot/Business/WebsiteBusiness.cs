@@ -1,7 +1,6 @@
 ﻿using System;
 using Theresa3rd_Bot.Dao;
 using Theresa3rd_Bot.Model.PO;
-using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
 {
@@ -14,10 +13,11 @@ namespace Theresa3rd_Bot.Business
             websiteDao = new WebsiteDao();
         }
 
-        public WebsitePO updateWebsite(string code, string cookie, int expireSeconds)
+        public WebsitePO updateWebsite(string code, string cookie, long userid, int expireSeconds)
         {
             WebsitePO website = getOrInsertWebsite(code);
             website.Cookie = cookie;
+            website.UserId = userid;
             website.UpdateDate = DateTime.Now;
             website.CookieExpireDate = DateTime.Now.AddSeconds(expireSeconds);
             websiteDao.Update(website);
@@ -31,6 +31,7 @@ namespace Theresa3rd_Bot.Business
             website = new WebsitePO();
             website.Code = code;
             website.Cookie = "";
+            website.UserId = 0;
             website.UpdateDate = DateTime.Now;
             website.CookieExpireDate = DateTime.Now;
             return websiteDao.Insert(website);

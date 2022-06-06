@@ -9,6 +9,9 @@ namespace Theresa3rd_Bot.Model.PO
         [SugarColumn(IsNullable = false, Length = 50, ColumnDescription = "编码")]
         public string Code { get; set; }
 
+        [SugarColumn(IsNullable = false, ColumnDescription = "用户Id")]
+        public long UserId { get; set; }
+
         [SugarColumn(IsNullable = false, Length = 5000, ColumnDescription = "cookie")]
         public string Cookie { get; set; }
 

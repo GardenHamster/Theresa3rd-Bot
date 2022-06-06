@@ -60,10 +60,18 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public static async Task<bool> CheckPixivCookieExpireAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckPixivCookieAvailableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
-            if (DateTime.Now <= BotConfig.WebsiteConfig.Pixiv.CookieExpireDate) return false;
-            await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
+            if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
+                return false;
+            }
+            if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "缺少userId，请更新cookie");
+                return false;
+            }
             return true;
         }
 
@@ -74,9 +82,17 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static async Task<bool> CheckSubscribeEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, BaseSubscribeConfig subscribeConfig)
         {
-            if (subscribeConfig != null && subscribeConfig.Enable) return true;
-            await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.DisableMsg, "该功能未开启");
-            return false;
+            if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(args.Sender.Group.Id) == false)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                return false;
+            }
+            if (subscribeConfig == null || subscribeConfig.Enable == false)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                return false;
+            }
+            return true;
         }
 
         /// <summary>

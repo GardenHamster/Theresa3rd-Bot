@@ -1,14 +1,8 @@
-﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using Mirai.CSharp.HttpApi.Models.EventArgs;
-using Mirai.CSharp.HttpApi.Session;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Type;
-using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
 {
@@ -19,68 +13,6 @@ namespace Theresa3rd_Bot.Business
         public BanWordBusiness()
         {
             this.banWordDao = new BanWordDao();
-        }
-
-        public async Task disableSetuAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
-        {
-            try
-            {
-                long groupId = args.Sender.Group.Id;
-                string keyWord = message.splitKeyWord(BotConfig.SetuConfig.DisableTagCommand);
-
-                if (string.IsNullOrEmpty(keyWord))
-                {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要禁止的关键词，请确保指令格式正确"));
-                    return;
-                }
-
-                BanWordPO dbBanWord = banWordDao.getBanWord(BanType.Setu, groupId, keyWord);
-                if (dbBanWord != null)
-                {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该关键词已有记录了"));
-                    return;
-                }
-
-                insertBanWord(keyWord, BanType.Setu, groupId, false);
-                ConfigHelper.loadBanWord();
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 记录成功"));
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "disableSetuAsync异常");
-                throw;
-            }
-        }
-
-        public async Task enableSetuAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
-        {
-            try
-            {
-                long groupId = args.Sender.Group.Id;
-                string keyWord = message.splitKeyWord(BotConfig.SetuConfig.EnableTagCommand);
-
-                if (string.IsNullOrEmpty(keyWord))
-                {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要禁止的关键词，请确保指令格式正确"));
-                    return;
-                }
-
-                BanWordPO dbBanWord = banWordDao.getBanWord(BanType.Setu, groupId, keyWord);
-                if (dbBanWord == null)
-                {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该关键词未有记录"));
-                    return;
-                }
-
-                banWordDao.delBanWord(BanType.Setu, groupId, keyWord);
-                ConfigHelper.loadBanWord();
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 记录成功"));
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "enableSetuAsync异常");
-                throw;
-            }
         }
 
         public Dictionary<long, List<BanWordPO>> getBanSetuMap()
@@ -97,8 +29,7 @@ namespace Theresa3rd_Bot.Business
             return banSetuMap;
         }
 
-
-        private BanWordPO insertBanWord(string keyword, BanType type, long groupId, bool isRegular)
+        public BanWordPO insertBanWord(string keyword, BanType type, long groupId, bool isRegular)
         {
             BanWordPO banWord = new BanWordPO();
             banWord.KeyWord = keyword;
@@ -109,7 +40,15 @@ namespace Theresa3rd_Bot.Business
             return banWordDao.Insert(banWord);
         }
 
+        public BanWordPO getBanWord(BanType type, long groupId, string keyWord)
+        {
+            return banWordDao.getBanWord(type, groupId, keyWord);
+        }
 
+        public void delBanWord(BanType type, long groupId, string keyWord)
+        {
+            banWordDao.delBanWord(type, groupId, keyWord);
+        }
 
 
     }

@@ -28,6 +28,11 @@ namespace Theresa3rd_Bot.Dao
             return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType && o.SubscribeSubType == subscribeSubType).First();
         }
 
+        public List<SubscribePO> getSubscribes(SubscribeType subscribeType)
+        {
+            return Db.Queryable<SubscribePO>().Where(o => o.SubscribeType == subscribeType).OrderBy(o => o.SubscribeSubType).ToList();
+        }
+
         public List<SubscribePO> getSubscribes(string subscribeCode, SubscribeType subscribeType)
         {
             return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).OrderBy(o => o.SubscribeSubType).ToList();

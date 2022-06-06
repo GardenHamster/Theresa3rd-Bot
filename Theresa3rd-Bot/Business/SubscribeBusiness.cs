@@ -1,14 +1,9 @@
-﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using Mirai.CSharp.HttpApi.Models.EventArgs;
-using Mirai.CSharp.HttpApi.Session;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
+using Theresa3rd_Bot.Model.Mys;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Model.Subscribe;
@@ -20,10 +15,12 @@ namespace Theresa3rd_Bot.Business
     public class SubscribeBusiness
     {
         private SubscribeDao subscribeDao;
+        private SubscribeGroupDao subscribeGroupDao;
 
         public SubscribeBusiness()
         {
             subscribeDao = new SubscribeDao();
+            subscribeGroupDao=new SubscribeGroupDao();
         }
 
         /// <summary>
@@ -45,14 +42,119 @@ namespace Theresa3rd_Bot.Business
                     subscribeTask = new SubscribeTask(subscribeInfo);
                     subscribeTaskList.Add(subscribeTask);
                 }
+                if (subscribeInfo.GroupId == 0)
+                {
+                    subscribeTask.GroupIdList.Clear();
+                    subscribeTask.GroupIdList.AddRange(BotConfig.PermissionsConfig.SubscribeGroups);
+                    continue;
+                }
                 if (subscribeTask.GroupIdList.Contains(subscribeInfo.GroupId) == false)
                 {
                     subscribeTask.GroupIdList.Add(subscribeInfo.GroupId);
+                    continue;
                 }
             }
             return subscribeTaskMap;
         }
 
+        public SubscribePO insertSurscribe(MysUserFullInfo userInfo, MysSectionType mysSectionType, string userId)
+        {
+            SubscribePO dbSubscribe = new SubscribePO();
+            dbSubscribe.SubscribeCode = userId;
+            dbSubscribe.SubscribeName = StringHelper.filterEmoji(userInfo.nickname)?.filterEmoji().cutString(50);
+            dbSubscribe.SubscribeDescription = userInfo.introduce?.filterEmoji().cutString(200);
+            dbSubscribe.SubscribeType = SubscribeType.米游社用户;
+            dbSubscribe.SubscribeSubType = (int)mysSectionType;
+            dbSubscribe.Isliving = false;
+            dbSubscribe.CreateDate = DateTime.Now;
+            return subscribeDao.Insert(dbSubscribe);
+        }
+
+        public SubscribePO insertSurscribe(PixivUserInfoDto pixivUserInfoDto, string userId)
+        {
+            string userName = StringHelper.filterEmoji(pixivUserInfoDto.body.extraData.meta.title.Replace("- pixiv", "").Trim());
+            SubscribePO dbSubscribe = new SubscribePO();
+            dbSubscribe = new SubscribePO();
+            dbSubscribe.SubscribeCode = userId;
+            dbSubscribe.SubscribeName = userName;
+            dbSubscribe.SubscribeDescription = userName;
+            dbSubscribe.SubscribeType = SubscribeType.P站画师;
+            dbSubscribe.SubscribeSubType = 0;
+            dbSubscribe.Isliving = false;
+            dbSubscribe.CreateDate = DateTime.Now;
+            return subscribeDao.Insert(dbSubscribe);
+        }
+
+        public SubscribePO insertSurscribe(PixivFollowUser pixivFollowUser, DateTime createDate)
+        {
+            SubscribePO dbSubscribe = new SubscribePO();
+            dbSubscribe.SubscribeCode = pixivFollowUser.userId;
+            dbSubscribe.SubscribeDescription = pixivFollowUser.userComment.filterEmoji().cutString(200);
+            dbSubscribe.SubscribeName = pixivFollowUser.userName;
+            dbSubscribe.SubscribeType = SubscribeType.P站画师;
+            dbSubscribe.SubscribeSubType = 0;
+            dbSubscribe.Isliving = false;
+            dbSubscribe.CreateDate = createDate;
+            return subscribeDao.Insert(dbSubscribe);
+        }
+
+        public SubscribePO insertSurscribe(string pixivTag)
+        {
+            SubscribePO dbSubscribe = new SubscribePO();
+            dbSubscribe = new SubscribePO();
+            dbSubscribe.SubscribeCode = pixivTag;
+            dbSubscribe.SubscribeName = pixivTag;
+            dbSubscribe.SubscribeDescription = pixivTag;
+            dbSubscribe.SubscribeType = SubscribeType.P站标签;
+            dbSubscribe.SubscribeSubType = 0;
+            dbSubscribe.Isliving = false;
+            dbSubscribe.CreateDate = DateTime.Now;
+            return subscribeDao.Insert(dbSubscribe);
+        }
+
+        public SubscribeGroupPO insertSubscribeGroup(long groupId,int subscribeId)
+        {
+            SubscribeGroupPO subscribeGroup = new SubscribeGroupPO();
+            subscribeGroup.GroupId = groupId;
+            subscribeGroup.SubscribeId = subscribeId;
+            return subscribeGroupDao.Insert(subscribeGroup);
+        }
+
+
+        public SubscribePO getSubscribe(string subscribeCode, SubscribeType subscribeType)
+        {
+            return subscribeDao.getSubscribe(subscribeCode, subscribeType);
+        }
+
+        public SubscribePO getSubscribe(string subscribeCode, SubscribeType subscribeType, int subscribeSubType)
+        {
+            return subscribeDao.getSubscribe(subscribeCode, subscribeType, subscribeSubType);
+        }
+
+        public List<SubscribePO> getSubscribes(SubscribeType subscribeType)
+        {
+            return subscribeDao.getSubscribes(subscribeType);
+        }
+
+        public List<SubscribePO> getSubscribes(string subscribeCode, SubscribeType subscribeType)
+        {
+            return subscribeDao.getSubscribes(subscribeCode, subscribeType);
+        }
+
+        public int getCountBySubscribe(long groupId, int subscribeId)
+        {
+            return subscribeGroupDao.getCountBySubscribe(groupId, subscribeId);
+        }
+
+        public int delSubscribe(int subscribeId)
+        {
+            return subscribeGroupDao.delSubscribe(subscribeId);
+        }
+
+        public int delSubscribe(long groupId, int subscribeId)
+        {
+            return subscribeGroupDao.delSubscribe(groupId, subscribeId);
+        }
 
 
     }

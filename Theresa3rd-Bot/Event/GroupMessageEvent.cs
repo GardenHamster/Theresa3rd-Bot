@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Handler;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
@@ -61,8 +62,20 @@ namespace Theresa3rd_Bot.Event
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser) == false) return;
-                    if (await BusinessHelper.CheckPixivCookieExpireAsync(session, args)) return;
-                    await new PixivBusiness().subscribeUserAsync(session, args, message);
+                    if (await BusinessHelper.CheckPixivCookieAvailableAsync(session, args) == false) return;
+                    await new PixivHandler().subscribeUserAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
+                    args.BlockRemainingHandlers = true;
+                    return;
+                }
+
+                //同步pixiv画师
+                if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivUser?.SyncCommand))
+                {
+                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser) == false) return;
+                    if (await BusinessHelper.CheckPixivCookieAvailableAsync(session, args) == false) return;
+                    await new PixivHandler().syncUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -73,7 +86,7 @@ namespace Theresa3rd_Bot.Event
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser) == false) return;
-                    await new PixivBusiness().cancleSubscribeUserAsync(session, args, message);
+                    await new PixivHandler().cancleSubscribeUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -84,8 +97,8 @@ namespace Theresa3rd_Bot.Event
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag) == false) return;
-                    if (await BusinessHelper.CheckPixivCookieExpireAsync(session, args)) return;
-                    await new PixivBusiness().subscribeTagAsync(session, args, message);
+                    if (await BusinessHelper.CheckPixivCookieAvailableAsync(session, args) == false) return;
+                    await new PixivHandler().subscribeTagAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -96,7 +109,7 @@ namespace Theresa3rd_Bot.Event
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivTag) == false) return;
-                    await new PixivBusiness().cancleSubscribeTagAsync(session, args, message);
+                    await new PixivHandler().cancleSubscribeTagAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -107,7 +120,7 @@ namespace Theresa3rd_Bot.Event
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.Mihoyo) == false) return;
-                    await new MYSBusiness().subscribeMYSUserAsync(session, args, message);
+                    await new MYSHandler().subscribeMYSUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -118,7 +131,7 @@ namespace Theresa3rd_Bot.Event
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.Mihoyo) == false) return;
-                    await new MYSBusiness().cancleSubscribeMysUserAsync(session, args, message);
+                    await new MYSHandler().cancleSubscribeMysUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -129,7 +142,7 @@ namespace Theresa3rd_Bot.Event
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
-                    await new BanWordBusiness().disableSetuAsync(session, args, message);
+                    await new BanWordHandler().disableSetuAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.BanWord, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -140,7 +153,7 @@ namespace Theresa3rd_Bot.Event
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
-                    await new BanWordBusiness().enableSetuAsync(session, args, message);
+                    await new BanWordHandler().enableSetuAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.BanWord, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -156,7 +169,7 @@ namespace Theresa3rd_Bot.Event
                     if (await BusinessHelper.CheckSTUseUpAsync(session, args)) return;
                     if (await BusinessHelper.CheckHandingAsync(session, args)) return;
                     CoolingCache.SetGroupSTCooling(groupId, memberId);
-                    await new LoliconBusiness().sendGeneralLoliconImageAsync(session, args, message);
+                    await new LoliconHandler().sendGeneralLoliconImageAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -167,13 +180,13 @@ namespace Theresa3rd_Bot.Event
                 {
                     if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckSTTagEnableAsync(session, args, message) == false) return;
-                    if (await BusinessHelper.CheckPixivCookieExpireAsync(session, args)) return;
+                    if (await BusinessHelper.CheckPixivCookieAvailableAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckMemberSTCoolingAsync(session, args)) return;
                     if (await BusinessHelper.ChecekGroupSTCoolingAsync(session, args)) return;
                     if (await BusinessHelper.CheckSTUseUpAsync(session, args)) return;
                     if (await BusinessHelper.CheckHandingAsync(session, args)) return;
                     CoolingCache.SetGroupSTCooling(groupId, memberId);
-                    await new PixivBusiness().sendGeneralPixivImageAsync(session, args, message);
+                    await new PixivHandler().sendGeneralPixivImageAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
                     args.BlockRemainingHandlers = true;
                     return;

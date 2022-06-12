@@ -55,7 +55,7 @@ namespace Theresa3rd_Bot.Business
         public void delAllSubscribe(long groupId, string subscribeCode)
         {
             List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
-            foreach (var item in dbSubscribes) subscribeGroupDao.delSubscribe(groupId, item.Id);
+            foreach (var item in dbSubscribes) subscribeGroupDao.delSubscribeGroup(groupId, item.Id);
         }
 
 
@@ -112,7 +112,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{UserName}", mysSubscribe.MysUserPostDto.user.nickname);
             template = template.Replace("{CreateTime}", mysSubscribe.CreateTime.ToSimpleString());
             template = template.Replace("{Title}", mysSubscribe.SubscribeRecord.Title);
-            template = template.Replace("{Content}", mysSubscribe.SubscribeRecord.Content);
+            template = template.Replace("{Content}", mysSubscribe.SubscribeRecord.Content.cutString(200));
             template = template.Replace("{Urls}", mysSubscribe.SubscribeRecord.LinkUrl);
             List<IChatMessage> chailList = new List<IChatMessage>();
             chailList.Add(new PlainMessage(template));
@@ -133,7 +133,7 @@ namespace Theresa3rd_Bot.Business
         {
             List<IChatMessage> chailList = new List<IChatMessage>();
             chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Title}\r\n"));
-            chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Content}\r\n"));
+            chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Content.cutString(200)}\r\n"));
             FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : await HttpHelper.DownImgAsync(mysSubscribe.SubscribeRecord.CoverUrl);
             if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
             chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.LinkUrl}"));

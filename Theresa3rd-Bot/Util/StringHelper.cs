@@ -94,6 +94,22 @@ namespace Theresa3rd_Bot.Util
             return cookieDic;
         }
 
+        /// <summary>
+        /// 将键值对重新连接为cookie
+        /// </summary>
+        /// <param name="cookie"></param>
+        /// <returns></returns>
+        public static string joinCookie(this Dictionary<string, string> cookieDic)
+        {
+            StringBuilder cookieBuilder = new StringBuilder();
+            foreach (var item in cookieDic)
+            {
+                if (cookieBuilder.Length > 0) cookieBuilder.Append(" ");
+                cookieBuilder.Append($"{item.Key}={item.Value};");
+            }
+            return cookieBuilder.ToString();
+        }
+
         //// <summary>
         /// 拆分httpUrl,返回参数键值对
         /// </summary>

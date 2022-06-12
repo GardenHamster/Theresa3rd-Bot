@@ -158,7 +158,7 @@ namespace Theresa3rd_Bot.Handler
                 {
                     if (mysSection.Value == MysSectionType.全部 || (int)mysSection.Value == item.SubscribeSubType)
                     {
-                        subscribeBusiness.delSubscribe(args.Sender.Group.Id, item.Id);
+                        subscribeBusiness.delSubscribeGroup(args.Sender.Group.Id, item.Id);
                     }
                 }
 

@@ -1,8 +1,4 @@
 ﻿using AnimatedGif;
-using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using Mirai.CSharp.HttpApi.Models.EventArgs;
-using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,15 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
-using Theresa3rd_Bot.Model.Cache;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Model.Subscribe;
 using Theresa3rd_Bot.Type;
-using Theresa3rd_Bot.Type.StepOption;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
@@ -37,24 +30,9 @@ namespace Theresa3rd_Bot.Business
         private const int pixivPageSize = 60;
 
         /// <summary>
-        /// 每次读取多少条画师的作品
-        /// </summary>
-        private const int PixivNewestRead = 2;
-
-        /// <summary>
         /// 获取作品信息的线程数
         /// </summary>
         private const int threadCount = 3;
-
-        /// <summary>
-        /// 每条线程读取作品数
-        /// </summary>
-        private const int workEachThread = 30;
-
-        /// <summary>
-        /// 每条线程读取作品数
-        /// </summary>
-        private const int workScreenMoreThen = 300;
 
         /// <summary>
         /// 收藏数超过0的作品集
@@ -127,7 +105,9 @@ namespace Theresa3rd_Bot.Business
         /// <returns></returns>
         public async Task<PixivWorkInfoDto> getRandomWorkAsync(string tagName, bool includeR18)
         {
-            int pageCount = 3;
+            int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / pixivPageSize);
+            if (pageCount < 3) pageCount = 3;
+
             PixivSearchDto pageOne = await getPixivSearchDtoAsync(tagName, 1, false);
             int total = pageOne.body.getIllust().total;
             int maxPage = (int)Math.Ceiling(Convert.ToDecimal(total) / pixivPageSize);
@@ -167,7 +147,6 @@ namespace Theresa3rd_Bot.Business
             //将作品分配给线程
             for (int i = 0; i < pixivIllustList.Count; i++)
             {
-                if (i >= threadCount * workEachThread) break;
                 taskList[i % threadCount].Add(pixivIllustList[i]);
             }
 
@@ -283,13 +262,7 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
-        /*-------------------------------------------------------------同步画师列表--------------------------------------------------------------------------*/
-
-
-
-
-
-
+        
         /*-------------------------------------------------------------获取最新订阅--------------------------------------------------------------------------*/
 
         /// <summary>

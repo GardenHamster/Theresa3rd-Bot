@@ -75,7 +75,7 @@ namespace Theresa3rd_Bot.Event
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckSubscribeEnableAsync(session, args, BotConfig.SubscribeConfig?.PixivUser) == false) return;
                     if (await BusinessHelper.CheckPixivCookieAvailableAsync(session, args) == false) return;
-                    await new PixivHandler().syncUserAsync(session, args, message);
+                    await new PixivHandler().subscribeFollowUserAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Subscribe, message);
                     args.BlockRemainingHandlers = true;
                     return;

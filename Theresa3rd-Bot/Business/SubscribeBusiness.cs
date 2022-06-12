@@ -20,7 +20,7 @@ namespace Theresa3rd_Bot.Business
         public SubscribeBusiness()
         {
             subscribeDao = new SubscribeDao();
-            subscribeGroupDao=new SubscribeGroupDao();
+            subscribeGroupDao = new SubscribeGroupDao();
         }
 
         /// <summary>
@@ -44,8 +44,10 @@ namespace Theresa3rd_Bot.Business
                 }
                 if (subscribeInfo.GroupId == 0)
                 {
-                    subscribeTask.GroupIdList.Clear();
-                    subscribeTask.GroupIdList.AddRange(BotConfig.PermissionsConfig.SubscribeGroups);
+                    foreach (long groupId in BotConfig.PermissionsConfig.SubscribeGroups)
+                    {
+                        if (subscribeTask.GroupIdList.Contains(subscribeInfo.GroupId) == false) subscribeTask.GroupIdList.Add(subscribeInfo.GroupId);
+                    }
                     continue;
                 }
                 if (subscribeTask.GroupIdList.Contains(subscribeInfo.GroupId) == false)
@@ -72,7 +74,7 @@ namespace Theresa3rd_Bot.Business
 
         public SubscribePO insertSurscribe(PixivUserInfoDto pixivUserInfoDto, string userId)
         {
-            string userName = StringHelper.filterEmoji(pixivUserInfoDto.body.extraData.meta.title.Replace("- pixiv", "").Trim());
+            string userName = StringHelper.filterEmoji(pixivUserInfoDto.body.extraData.meta.title.Replace("- pixiv", "").Trim().cutString(200));
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
@@ -87,10 +89,11 @@ namespace Theresa3rd_Bot.Business
 
         public SubscribePO insertSurscribe(PixivFollowUser pixivFollowUser, DateTime createDate)
         {
+            string userName = pixivFollowUser.userName.filterEmoji().cutString(200);
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = pixivFollowUser.userId;
-            dbSubscribe.SubscribeDescription = pixivFollowUser.userComment.filterEmoji().cutString(200);
-            dbSubscribe.SubscribeName = pixivFollowUser.userName;
+            dbSubscribe.SubscribeName = userName;
+            dbSubscribe.SubscribeDescription = userName;
             dbSubscribe.SubscribeType = SubscribeType.P站画师;
             dbSubscribe.SubscribeSubType = 0;
             dbSubscribe.Isliving = false;
@@ -112,12 +115,17 @@ namespace Theresa3rd_Bot.Business
             return subscribeDao.Insert(dbSubscribe);
         }
 
-        public SubscribeGroupPO insertSubscribeGroup(long groupId,int subscribeId)
+        public SubscribeGroupPO insertSubscribeGroup(long groupId, int subscribeId)
         {
             SubscribeGroupPO subscribeGroup = new SubscribeGroupPO();
             subscribeGroup.GroupId = groupId;
             subscribeGroup.SubscribeId = subscribeId;
             return subscribeGroupDao.Insert(subscribeGroup);
+        }
+
+        public int updateSubscribeGroup(SubscribeGroupPO subscribeGroup)
+        {
+            return subscribeGroupDao.Update(subscribeGroup);
         }
 
 
@@ -130,6 +138,12 @@ namespace Theresa3rd_Bot.Business
         {
             return subscribeDao.getSubscribe(subscribeCode, subscribeType, subscribeSubType);
         }
+
+        public SubscribeGroupPO getSubscribeGroup(long groupId, long subscribeId)
+        {
+            return subscribeDao.getSubscribeGroup(groupId, subscribeId);
+        }
+
 
         public List<SubscribePO> getSubscribes(SubscribeType subscribeType)
         {
@@ -146,14 +160,14 @@ namespace Theresa3rd_Bot.Business
             return subscribeGroupDao.getCountBySubscribe(groupId, subscribeId);
         }
 
-        public int delSubscribe(int subscribeId)
+        public int delSubscribeGroup(int subscribeId)
         {
-            return subscribeGroupDao.delSubscribe(subscribeId);
+            return subscribeGroupDao.delSubscribeGroup(subscribeId);
         }
 
-        public int delSubscribe(long groupId, int subscribeId)
+        public int delSubscribeGroup(long groupId, int subscribeId)
         {
-            return subscribeGroupDao.delSubscribe(groupId, subscribeId);
+            return subscribeGroupDao.delSubscribeGroup(groupId, subscribeId);
         }
 
 

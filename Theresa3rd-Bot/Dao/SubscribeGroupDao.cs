@@ -21,7 +21,7 @@ namespace Theresa3rd_Bot.Dao
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="subscribeId"></param>
-        public int delSubscribe(int subscribeId)
+        public int delSubscribeGroup(int subscribeId)
         {
             return Db.Deleteable<SubscribeGroupPO>().Where(o => o.SubscribeId == subscribeId).ExecuteCommand();
         }
@@ -31,7 +31,7 @@ namespace Theresa3rd_Bot.Dao
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="subscribeId"></param>
-        public int delSubscribe(long groupId, int subscribeId)
+        public int delSubscribeGroup(long groupId, int subscribeId)
         {
             return Db.Deleteable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).ExecuteCommand();
         }

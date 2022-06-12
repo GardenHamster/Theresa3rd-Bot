@@ -46,15 +46,21 @@ namespace Theresa3rd_Bot.Handler
             }
 
             long userId = 0;
-            string userIdStr = sessionArr[0].Trim();
-            if (long.TryParse(userIdStr, out userId) == false)
+            if (long.TryParse(sessionArr[0].Trim(), out userId) == false)
             {
                 await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie中的PHPSESSID格式不正确，请重新获取cookie"));
                 return;
             }
 
+            if (cookieDic.ContainsKey("__cf_bm")) cookieDic.Remove("__cf_bm");
+            if (cookieDic.ContainsKey("cto_bundle")) cookieDic.Remove("cto_bundle");
+            if (cookieDic.ContainsKey("categorized_tags")) cookieDic.Remove("cookieDic");
+            if (cookieDic.ContainsKey("tag_view_ranking")) cookieDic.Remove("tag_view_ranking");
+            cookie = cookieDic.joinCookie();
+
             WebsitePO website = websiteBusiness.updateWebsite(Enum.GetName(typeof(WebsiteType), websiteType), cookie, userId, cookieExpire);
             ConfigHelper.loadWebsite();
+
             string expireDate = website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss");
             await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie更新完毕,过期时间为{expireDate}"));
         }

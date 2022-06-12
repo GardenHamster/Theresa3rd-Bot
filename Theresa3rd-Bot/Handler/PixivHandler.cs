@@ -290,7 +290,7 @@ namespace Theresa3rd_Bot.Handler
         /// <param name="args"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task syncUserAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        public async Task subscribeFollowUserAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
         {
             try
             {
@@ -309,7 +309,8 @@ namespace Theresa3rd_Bot.Handler
 
                 PixivSyncModeType syncMode = (PixivSyncModeType)Convert.ToInt32(modeStep.Answer);
                 PixivSyncGroupType syncGroup = (PixivSyncGroupType)Convert.ToInt32(groupStep.Answer);
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 正在开始同步..."));
+
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 正在获取pixiv账号中已关注的画师列表..."));
                 await Task.Delay(1000);
 
                 List<PixivFollowUser> followUserList = await pixivBusiness.getFollowUserList();
@@ -319,12 +320,10 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
-                if (syncMode == PixivSyncModeType.Overwrite)
-                {
-                    List<SubscribePO> subscribeList = subscribeBusiness.getSubscribes(SubscribeType.P站画师);
-                    foreach (var item in subscribeList) subscribeBusiness.delSubscribe(item.Id);
-                }
+                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已获取{followUserList.Count}个画师，正在录入数据..."));
+                await Task.Delay(1000);
 
+                //插入Subscribe数据
                 DateTime syncDate = DateTime.Now;
                 List<SubscribePO> dbSubscribeList = new List<SubscribePO>();
                 foreach (var item in followUserList)
@@ -334,92 +333,28 @@ namespace Theresa3rd_Bot.Handler
                     dbSubscribeList.Add(dbSubscribe);
                 }
 
-                foreach (var item in dbSubscribeList)
-                {
-                    subscribeGroupDao.
-                }
-
-
-
-
-
                 long subscribeGroupId = syncGroup == PixivSyncGroupType.All ? 0 : groupId;
-                foreach (var item in followUserList)
+                if (syncMode == PixivSyncModeType.Overwrite)
                 {
-
+                    List<SubscribePO> subscribeList = subscribeBusiness.getSubscribes(SubscribeType.P站画师);
+                    foreach (var item in subscribeList) subscribeBusiness.delSubscribeGroup(item.Id);//覆盖情况下,删除所有这个订阅的数据
+                    foreach (var item in dbSubscribeList) subscribeBusiness.insertSubscribeGroup(subscribeGroupId, item.Id);
                 }
-
-
-
-
-
-
-                if (pixivUserIdArr.Length > 1)
+                else
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 检测到多个id，开始批量订阅~"));
-                }
-
-                foreach (var item in pixivUserIdArr)
-                {
-                    string pixivUserId = item.Trim();
-                    if (StringHelper.isPureNumber(pixivUserId) == false)
+                    foreach (var item in dbSubscribeList)
                     {
-                        await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师ID[{pixivUserId}]格式不正确"));
-                        continue;
-                    }
-                    try
-                    {
-                        SubscribePO dbSubscribe = subscribeDao.getSubscribe(pixivUserId, SubscribeType.P站画师);
-                        if (dbSubscribe == null)
-                        {
-                            //添加订阅
-                            PixivUserInfoDto pixivUserInfoDto = await getPixivUserInfoDtoAsync(pixivUserId);
-                            dbSubscribe = new SubscribePO();
-                            dbSubscribe.SubscribeCode = pixivUserId;
-                            dbSubscribe.SubscribeName = StringHelper.filterEmoji(pixivUserInfoDto.body.extraData.meta.title.Replace("- pixiv", "").Trim());
-                            dbSubscribe.SubscribeDescription = dbSubscribe.SubscribeName;
-                            dbSubscribe.SubscribeType = SubscribeType.P站画师;
-                            dbSubscribe.Isliving = false;
-                            dbSubscribe.CreateDate = DateTime.Now;
-                            dbSubscribe = subscribeDao.Insert(dbSubscribe);
-                        }
-
-                        if (subscribeGroupDao.getCountBySubscribe(groupId, dbSubscribe.Id) > 0)
-                        {
-                            //关联订阅
-                            await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师id[{pixivUserId}]已经被订阅了~"));
-                            continue;
-                        }
-
-
-                        SubscribeGroupPO subscribeGroup = new SubscribeGroupPO();
-                        subscribeGroup.GroupId = groupId;
-                        subscribeGroup.SubscribeId = dbSubscribe.Id;
-                        subscribeGroup = subscribeGroupDao.Insert(subscribeGroup);
-                        await session.SendMessageWithAtAsync(args, new PlainMessage($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~"));
-
-                        await Task.Delay(1000);
-                        await sendPixivUserNewestWorkAsync(session, args, dbSubscribe, groupId.IsShowR18(), groupId.IsShowR18Img());
-                    }
-                    catch (Exception ex)
-                    {
-                        LogHelper.Error(ex, $"pixiv画师[{pixivUserId}]订阅异常");
-                        await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师id[{pixivUserId}]订阅失败~"));
-                    }
-                    finally
-                    {
-                        Thread.Sleep(2000);
+                        SubscribeGroupPO subscribeGroup = subscribeBusiness.getSubscribeGroup(subscribeGroupId, item.Id);
+                        if (subscribeGroup == null) subscribeBusiness.insertSubscribeGroup(subscribeGroupId, item.Id);
                     }
                 }
-                if (pixivUserIdArr.Length > 1)
-                {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 所有画师订阅完毕"));
-                }
+
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 关注画师订阅完毕"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "订阅功能异常");
+                LogHelper.Error(ex, "关注画师订阅功能异常");
                 throw;
             }
         }
@@ -491,7 +426,7 @@ namespace Theresa3rd_Bot.Handler
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个画师哦~"));
                     return;
                 }
-                int successCount = subscribeBusiness.delSubscribe(args.Sender.Group.Id, dbSubscribe.Id);
+                int successCount = subscribeBusiness.delSubscribeGroup(args.Sender.Group.Id, dbSubscribe.Id);
                 if (successCount == 0)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订失败"));
@@ -582,7 +517,7 @@ namespace Theresa3rd_Bot.Handler
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个标签哦~"));
                     return;
                 }
-                int successCount = subscribeBusiness.delSubscribe(args.Sender.Group.Id, dbSubscribe.Id);
+                int successCount = subscribeBusiness.delSubscribeGroup(args.Sender.Group.Id, dbSubscribe.Id);
                 if (successCount == 0)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订失败"));
@@ -611,7 +546,7 @@ namespace Theresa3rd_Bot.Handler
             {
                 DateTime startTime = DateTime.Now;
                 List<IChatMessage> chatList = new List<IChatMessage>();
-                List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, PixivNewestRead);
+                List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id);
                 if (pixivSubscribeList == null || pixivSubscribeList.Count == 0)
                 {
                     await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage($"画师[{dbSubscribe.SubscribeName}]还没有发布任何作品~"));

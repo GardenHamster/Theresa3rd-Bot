@@ -72,6 +72,16 @@ namespace Theresa3rd_Bot.Common
         }
 
         /// <summary>
+        /// 收藏列表url
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        public static string getPixivBookmarkUrl(long loginId, int offset, int limit)
+        {
+            return $"{PixivHomeUrl}/ajax/user/{loginId}/illusts/bookmarks?tag=&offset={offset}&limit={limit}&rest=show&lang=zh";
+        }
+
+        /// <summary>
         /// 返回pixiv搜索referer
         /// </summary>
         /// <param name="searchWord"></param>
@@ -112,6 +122,16 @@ namespace Theresa3rd_Bot.Common
         public static string getPixivFollowReferer(long loginId)
         {
             return $"{PixivHomeUrl}/users/{loginId}/following";
+        }
+
+        /// <summary>
+        /// 收藏列表Referer
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        public static string getPixivBookmarkReferer(long loginId)
+        {
+            return $"{PixivHomeUrl}/users/{loginId}/bookmarks/artworks";
         }
 
         /*---------------------------------------------------------------Lolicon-----------------------------------------------------------------------*/

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Pixiv
 {
@@ -43,12 +44,12 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
         public bool isR18()
         {
-            return tags.tags.Where(o => o.tag.ToUpper() == "R-18" || o.tag.ToUpper() == "R18").Any();
+            return tags?.tags == null ? false : tags.tags.Select(o => o.tag).ToList().IsR18();
         }
 
         public bool isGif()
         {
-            return tags.tags.Where(o => o.tag == "うごイラ" || o.tag == "动图").Any();
+            return tags?.tags == null ? false : tags.tags.Select(o => o.tag).ToList().IsGif();
         }
 
         public bool hasBanTag()

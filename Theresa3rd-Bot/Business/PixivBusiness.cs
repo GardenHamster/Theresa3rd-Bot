@@ -61,7 +61,7 @@ namespace Theresa3rd_Bot.Business
         }
 
         /// <summary>
-        /// 随机获取一个关注的画师的作品
+        /// 随机获取一个订阅的画师的作品
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
@@ -81,17 +81,101 @@ namespace Theresa3rd_Bot.Business
                 if (pixivWorkInfo == null) continue;
                 Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
                 if (illusts == null || illusts.Count == 0) continue;
-                List<string> illustKeyList = Enumerable.ToList(illusts.Keys);
+                List<PixivUserWorkInfo> workList = illusts.Select(o => o.Value).ToList();
                 for (int j = 0; j < loopWorkTimes; j++)
                 {
-                    int randomWorkIndex = RandomHelper.getRandomBetween(0, illustKeyList.Count - 1);
-                    string randomWorkKey = illustKeyList[randomWorkIndex];
-                    PixivUserWorkInfo pixivUserWorkInfo = illusts[randomWorkKey];
+                    PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.isR18() && groupId.IsShowR18() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(pixivUserWorkInfo.id);
+                    await Task.Delay(500);
                     if (pixivWorkInfoDto == null) continue;
-                    bool isPopularity = pixivWorkInfoDto.body.bookmarkCount >= 100;
-                    if (isPopularity == false) continue;
+                    if (pixivWorkInfoDto.body.bookmarkCount < 100) continue;
+                    return pixivWorkInfoDto;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 随机获取一个关注的画师的作品
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public async Task<PixivWorkInfoDto> getRandomWorkInFollowAsync(long groupId)
+        {
+            int eachPage = 24;
+            int loopUserTimes = 3;
+            int loopWorkTimes = 5;
+            long userId = BotConfig.WebsiteConfig.Pixiv.UserId;
+            PixivFollowDto firstFollowDto = await getPixivFollowDto(userId, 0, eachPage);
+            int total = firstFollowDto.body.total;
+            int page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
+            await Task.Delay(1000);
+
+            int randomPage = new Random().Next(page);
+            PixivFollowDto randomFollow = randomPage == 0 ? firstFollowDto : await getPixivFollowDto(userId, randomPage * eachPage, eachPage);
+            if (randomFollow.body.users == null || randomFollow.body.users.Count == 0) return null;
+            List<PixivFollowUser> followUserList = randomFollow.body.users;
+            List<PixivFollowUser> randomUserList = new List<PixivFollowUser>();
+            for (int i = 0; i < loopUserTimes; i++)
+            {
+                if (followUserList.Count == 0) break;
+                PixivFollowUser randomUser = followUserList[new Random().Next(followUserList.Count)];
+                randomUserList.Add(randomUser);
+                followUserList.Remove(randomUser);
+            }
+
+            foreach (PixivFollowUser user in randomUserList)
+            {
+                PixivUserWorkInfoDto pixivWorkInfo = await getPixivUserWorkInfoDtoAsync(user.userId);
+                if (pixivWorkInfo == null) continue;
+                Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
+                if (illusts == null || illusts.Count == 0) continue;
+                List<PixivUserWorkInfo> workList = illusts.Select(o => o.Value).ToList();
+                for (int i = 0; i < loopWorkTimes; i++)
+                {
+                    PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
+                    if (pixivUserWorkInfo.isR18() && groupId.IsShowR18() == false) continue;
+                    PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(pixivUserWorkInfo.id);
+                    await Task.Delay(500);
+                    if (pixivWorkInfoDto == null) continue;
+                    if (pixivWorkInfoDto.body.bookmarkCount < 100) continue;
+                    return pixivWorkInfoDto;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 随机获取一个收藏中的作品
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public async Task<PixivWorkInfoDto> getRandomWorkInBookmarkAsync(long groupId)
+        {
+            int eachPage = 48;
+            int loopPageTimes = 3;
+            int loopWorkTimes = 5;
+            long userId = BotConfig.WebsiteConfig.Pixiv.UserId;
+
+            PixivBookmarksDto firstBookmarksDto = await getPixivBookmarkDto(userId, 0, eachPage);
+            int total = firstBookmarksDto.body.total;
+            int page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
+            await Task.Delay(1000);
+
+            for (int i = 0; i < loopPageTimes; i++)
+            {
+                int randomPage = RandomHelper.getRandomBetween(0, page - 1);
+                PixivBookmarksDto randomBookmarks = randomPage == 0 ? firstBookmarksDto : await getPixivBookmarkDto(userId, randomPage * eachPage, eachPage);
+                if (randomBookmarks.body.works == null || randomBookmarks.body.works.Count == 0) continue;
+                List<PixivBookmarksWork> workList = randomBookmarks.body.works;
+                for (int j = 0; j < loopWorkTimes; j++)
+                {
+                    PixivBookmarksWork randomWork = workList[new Random().Next(0, workList.Count)];
+                    if (randomWork.isR18() && groupId.IsShowR18() == false) continue;
+                    PixivWorkInfoDto pixivWorkInfoDto = await getPixivWorkInfoDtoAsync(randomWork.id);
+                    await Task.Delay(500);
+                    if (pixivWorkInfoDto == null) continue;
                     return pixivWorkInfoDto;
                 }
             }
@@ -634,6 +718,16 @@ namespace Theresa3rd_Bot.Business
             string json = await HttpHelper.PixivGetAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivFollowDto>(json);
         }
+
+        public async Task<PixivBookmarksDto> getPixivBookmarkDto(long loginId, int offset, int limit)
+        {
+            string referer = HttpUrl.getPixivBookmarkReferer(loginId);
+            Dictionary<string, string> headerDic = getPixivHeader(referer);
+            string postUrl = HttpUrl.getPixivBookmarkUrl(loginId, offset, limit);
+            string json = await HttpHelper.PixivGetAsync(postUrl, headerDic);
+            return JsonConvert.DeserializeObject<PixivBookmarksDto>(json);
+        }
+
 
         public Dictionary<string, string> getPixivHeader(string referer)
         {

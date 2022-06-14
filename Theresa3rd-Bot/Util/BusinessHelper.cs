@@ -56,6 +56,28 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 判断标签中是否包含R18标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static bool IsR18(this List<string> tags)
+        {
+            if (tags == null || tags.Count == 0) return false;
+            return tags.Where(o => o.ToUpper().StartsWith("R-18") || o.ToUpper().StartsWith("R18")).Any();
+        }
+
+        /// <summary>
+        /// 判断标签中是否包含动图标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static bool IsGif(this List<string> tags)
+        {
+            if (tags == null || tags.Count == 0) return false;
+            return tags.Where(o => o == "うごイラ" || o == "动图").Any();
+        }
+
+        /// <summary>
         /// 检查pixiv cookie是否已经过期
         /// </summary>
         /// <param name="e"></param>

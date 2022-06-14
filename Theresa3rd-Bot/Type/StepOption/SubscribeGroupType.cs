@@ -1,6 +1,6 @@
 ﻿namespace Theresa3rd_Bot.Type.StepOption
 {
-    public enum PixivSyncGroupType
+    public enum SubscribeGroupType
     {
         All = 0,
         Current = 1

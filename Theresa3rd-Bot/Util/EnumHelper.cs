@@ -33,8 +33,8 @@ namespace Theresa3rd_Bot.Util
         public static string PixivSyncGroupOption()
         {
             StringBuilder optionBuilder = new StringBuilder();
-            optionBuilder.AppendLine($"{(int)PixivSyncGroupType.All}：所有拥有订阅权限的群");
-            optionBuilder.AppendLine($"{(int)PixivSyncGroupType.Current}：当前群");
+            optionBuilder.AppendLine($"{(int)SubscribeGroupType.All}：所有拥有订阅权限的群");
+            optionBuilder.AppendLine($"{(int)SubscribeGroupType.Current}：当前群");
             return optionBuilder.ToString();
         }
 

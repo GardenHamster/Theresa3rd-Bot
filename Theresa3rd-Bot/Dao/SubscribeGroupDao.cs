@@ -6,14 +6,25 @@ namespace Theresa3rd_Bot.Dao
     public class SubscribeGroupDao : DbContext<SubscribeGroupPO>
     {
         /// <summary>
-        /// 获取某个订阅的订阅群的数量
+        /// 某个群是否已订阅某个subscribeId
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public int getCountBySubscribe(long groupId, int subscribeId)
+        public bool isExistsSubscribeGroup(long groupId, int subscribeId)
         {
-            return Db.Queryable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).Count();
+            return Db.Queryable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).Any();
+        }
+
+        /// <summary>
+        /// 是否已订阅某个subscribeId
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="subscribeId"></param>
+        /// <returns></returns>
+        public bool isExistsSubscribeGroup(int subscribeId)
+        {
+            return Db.Queryable<SubscribeGroupPO>().Where(o => o.SubscribeId == subscribeId).Any();
         }
 
         /// <summary>

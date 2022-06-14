@@ -25,6 +25,15 @@ Permissions:
     SaucenaoGroups:         [284196392]                                         #拥有以图搜图权限的群
     SubscribeGroups:        [284196392]                                         #拥有订阅权限的群
 
+Menu:                                                                           #菜单指令
+    Enable:                 true                                                #是否启用
+    Command:                ['菜单','功能','指令','命令','help']                 #命令，用法：#瑟图合法萝莉
+    Template:               |                                                   #消息模版
+                            目前已实现的功能有
+                            {IllustTitle}
+
+    
+
 Repeater:                                                                       #复读机
     Enable:                 true                                                #是否启用
     RepeatTime:             3                                                   #重复收到N条消息后触发复读功能
@@ -57,11 +66,11 @@ Setu:                                                                           
     MemberCD:               30                                                  #独立CD(秒)，单个群员使用命令后需要等待的CD
     DisableTagCommand:      '禁止标签'                                           #禁止一个涩图关键词,禁止后不允许被搜索
     EnableTagCommand:       '解禁标签'                                           #解禁一个涩图关键词
-    DisableTags:            ['R18','R17.9','R18G']                              #禁止的涩图关键词.所有群通用
-    DisableTagsMsg:         '禁止查找这个类型的涩图'                                #标签被禁用时返回的消息
+    DisableTags:            ['R-18','R18','R18+','R18G','R17.9']                #禁止的涩图关键词.所有群通用
+    DisableTagsMsg:         '禁止查找这个类型的涩图'                             #标签被禁用时返回的消息
     MaxDaily:               20                                                  #每人每日最大使用次数,0表示无可用次数
     ImgSavePath:            'C:\BotImg\download'                                #图片存放目录
-    RevokeInterval:         0                                                  #N秒后撤回,0表示不撤回
+    RevokeInterval:         0                                                   #N秒后撤回,0表示不撤回
     SendPrivate:            true                                               #私聊发送，需要用户主动发送任意消息给机器人开启临时会话
     Lolicon:                                                                    #Lolicon图床https://api.lolicon.app/#/setu
         Enable:             true                                                #是否启用

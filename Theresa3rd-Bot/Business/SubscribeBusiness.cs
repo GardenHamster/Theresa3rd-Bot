@@ -155,9 +155,9 @@ namespace Theresa3rd_Bot.Business
             return subscribeDao.getSubscribes(subscribeCode, subscribeType);
         }
 
-        public int getCountBySubscribe(long groupId, int subscribeId)
+        public bool isExistsSubscribeGroup(long groupId, int subscribeId)
         {
-            return subscribeGroupDao.getCountBySubscribe(groupId, subscribeId);
+            return subscribeGroupDao.isExistsSubscribeGroup(groupId, subscribeId);
         }
 
         public int delSubscribeGroup(int subscribeId)

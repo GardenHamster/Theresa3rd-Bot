@@ -28,6 +28,25 @@ namespace Theresa3rd_Bot.Business
             subscribeRecordDao = new SubscribeRecordDao();
         }
 
+
+        /// <summary>
+        /// 获取某个群已订阅的列表
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="subscribeCode"></param>
+        /// <returns></returns>
+        public List<SubscribePO> getSubscribeList(string subscribeCode)
+        {
+            List<SubscribePO> subscribeList = new List<SubscribePO>();
+            List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
+            if (dbSubscribes == null || dbSubscribes.Count == 0) return subscribeList;
+            foreach (var item in dbSubscribes)
+            {
+                if (subscribeGroupDao.isExistsSubscribeGroup(item.Id)) subscribeList.Add(item);
+            }
+            return subscribeList;
+        }
+
         /// <summary>
         /// 获取某个群已订阅的列表
         /// </summary>
@@ -41,8 +60,7 @@ namespace Theresa3rd_Bot.Business
             if (dbSubscribes == null || dbSubscribes.Count == 0) return subscribeList;
             foreach (var item in dbSubscribes)
             {
-                if (subscribeGroupDao.getCountBySubscribe(groupId, item.Id) == 0) continue;
-                subscribeList.Add(item);
+                if (subscribeGroupDao.isExistsSubscribeGroup(groupId, item.Id)) subscribeList.Add(item);
             }
             return subscribeList;
         }
@@ -52,7 +70,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="subscribeCode"></param>
-        public void delAllSubscribe(long groupId, string subscribeCode)
+        public void delAllSubscribeGroup(long groupId, string subscribeCode)
         {
             List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
             foreach (var item in dbSubscribes) subscribeGroupDao.delSubscribeGroup(groupId, item.Id);

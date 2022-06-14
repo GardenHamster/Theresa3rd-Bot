@@ -166,7 +166,7 @@ namespace Theresa3rd_Bot.Handler
                     }
                 }
 
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已退订所有订阅了id为{userId}的群~"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了id为{userId}的用户~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)

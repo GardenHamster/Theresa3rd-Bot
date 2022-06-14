@@ -29,8 +29,8 @@ Menu:                                                                           
     Enable:                 true                                                #是否启用
     Command:                ['菜单','功能','指令','命令','help']                 #命令，用法：#瑟图合法萝莉
     Template:               |                                                   #消息模版
-                            目前已实现的功能有
-                            {IllustTitle}
+                            目前可用的指令如下：
+                            {description}
 
     
 

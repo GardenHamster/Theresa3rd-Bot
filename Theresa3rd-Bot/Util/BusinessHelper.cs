@@ -31,14 +31,26 @@ namespace Theresa3rd_Bot.Util
         private static string ImageCodeHeader = @"[image:";
 
         /// <summary>
-        /// 判断时候以某一个指令开头
+        /// 判断是否以某一个指令开头
         /// </summary>
         /// <param name="instructions"></param>
         /// <param name="command"></param>
         /// <returns></returns>
         public static bool StartWithCommand(this string instructions, string command)
         {
-            return string.IsNullOrWhiteSpace(command) == false && instructions.StartsWith(command);
+            return string.IsNullOrWhiteSpace(command) == false && instructions.StartsWith(command.Trim());
+        }
+
+        /// <summary>
+        /// 判断是否以某一个指令开头
+        /// </summary>
+        /// <param name="instructions"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public static bool StartWithCommand(this string instructions, string[] commands)
+        {
+            if (commands == null || commands.Length == 0) return false;
+            return commands.Where(o => string.IsNullOrWhiteSpace(o) == false && instructions.StartsWith(o.Trim())).Any();
         }
 
         /// <summary>

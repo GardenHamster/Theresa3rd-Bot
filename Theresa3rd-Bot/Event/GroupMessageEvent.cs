@@ -57,6 +57,14 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                //菜单
+                if (instructions.StartWithCommand(BotConfig.MenuConfig?.Commands))
+                {
+                    await new MenuHandler().sendMenuAsync(session, args);
+                    args.BlockRemainingHandlers = true;
+                    return;
+                }
+
                 //订阅pixiv画师
                 if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivUser?.AddCommand))
                 {

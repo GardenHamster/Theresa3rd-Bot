@@ -17,5 +17,11 @@ namespace Theresa3rd_Bot.Util
             return BotConfig.PermissionsConfig.SetuShowR18ImgGroups.Contains(groupId);
         }
 
+        public static bool IsSuperManager(this long memberId)
+        {
+            if (BotConfig.PermissionsConfig?.SuperManagers == null) return false;
+            return BotConfig.PermissionsConfig.SuperManagers.Contains(memberId);
+        }
+
     }
 }

@@ -29,34 +29,55 @@ namespace Theresa3rd_Bot.Business
         /// <returns></returns>
         public Dictionary<SubscribeType, List<SubscribeTask>> getSubscribeTask()
         {
+            //初始化字典
             Dictionary<SubscribeType, List<SubscribeTask>> subscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
-            List<SubscribeInfo> subscribeInfoList = subscribeDao.getSubscribeInfo();
-            foreach (SubscribeInfo subscribeInfo in subscribeInfoList)
+            foreach (var item in Enum.GetValues(typeof(SubscribeType)))
             {
-                SubscribeType subscribeType = subscribeInfo.SubscribeType;
-                if (!subscribeTaskMap.ContainsKey(subscribeType)) subscribeTaskMap[subscribeType] = new List<SubscribeTask>();
-                List<SubscribeTask> subscribeTaskList = subscribeTaskMap[subscribeType];
-                SubscribeTask subscribeTask = subscribeTaskList.Where(o => o.SubscribeInfo.SubscribeCode == subscribeInfo.SubscribeCode).FirstOrDefault();
-                if (subscribeTask == null)
-                {
-                    subscribeTask = new SubscribeTask(subscribeInfo);
-                    subscribeTaskList.Add(subscribeTask);
-                }
-                if (subscribeInfo.GroupId == 0)
-                {
-                    foreach (long groupId in BotConfig.PermissionsConfig.SubscribeGroups)
-                    {
-                        if (subscribeTask.GroupIdList.Contains(subscribeInfo.GroupId) == false) subscribeTask.GroupIdList.Add(subscribeInfo.GroupId);
-                    }
-                    continue;
-                }
-                if (subscribeTask.GroupIdList.Contains(subscribeInfo.GroupId) == false)
-                {
-                    subscribeTask.GroupIdList.Add(subscribeInfo.GroupId);
-                    continue;
-                }
+                SubscribeType subscribeType = (SubscribeType)Convert.ToInt32(item);
+                subscribeTaskMap[subscribeType] = new List<SubscribeTask>();
+            }
+
+            List<SubscribeInfo> subscribeInfoList = subscribeDao.getSubscribeInfo();
+            foreach (var item in subscribeTaskMap)
+            {
+                SubscribeType subscribeType = item.Key;//订阅大类
+                List<SubscribeTask> subscribeTaskList = item.Value;//订阅大类任务列表
+                List<SubscribeInfo> subscribeList = subscribeInfoList.Where(o => o.SubscribeType == subscribeType).ToList();//订阅大类列表
+
+                List<SubscribeInfo> subscribeAllList = subscribeList.Where(o => o.SubscribeSubType == 0).ToList();
+                foreach (SubscribeInfo subscribeInfo in subscribeAllList) addSubscribeTask(subscribeTaskList, subscribeInfo);
+
+                List<SubscribeInfo> subscribeCurrentList = subscribeList.Where(o => o.SubscribeSubType != 0).ToList();
+                foreach (SubscribeInfo subscribeInfo in subscribeCurrentList) addSubscribeTask(subscribeTaskList, subscribeInfo);
             }
             return subscribeTaskMap;
+        }
+
+        public void addSubscribeTask(List<SubscribeTask> subscribeTaskList, SubscribeInfo subscribeInfo)
+        {
+            SubscribeTask subscribeTask = subscribeTaskList.Where(o => o.SubscribeInfo.SubscribeCode == subscribeInfo.SubscribeCode && o.SubscribeInfo.SubscribeSubType == 0).FirstOrDefault();
+            if (subscribeTask == null)
+            {
+                subscribeTask = subscribeTaskList.Where(o => o.SubscribeInfo.SubscribeCode == subscribeInfo.SubscribeCode && o.SubscribeInfo.SubscribeSubType == subscribeInfo.SubscribeSubType).FirstOrDefault();
+            }
+            if (subscribeTask == null)
+            {
+                subscribeTask = new SubscribeTask(subscribeInfo);
+                subscribeTaskList.Add(subscribeTask);
+            }
+
+            //groupId=0表示推送给所有有订阅权限的群
+            if (subscribeInfo.GroupId == 0)
+            {
+                foreach (long groupId in BotConfig.PermissionsConfig.SubscribeGroups)
+                {
+                    if (subscribeTask.GroupIdList.Contains(groupId) == false) subscribeTask.GroupIdList.Add(groupId);
+                }
+            }
+            if (subscribeTask.GroupIdList.Contains(subscribeInfo.GroupId) == false)//将要推动的群号添加到集合中
+            {
+                subscribeTask.GroupIdList.Add(subscribeInfo.GroupId);
+            }
         }
 
         public SubscribePO insertSurscribe(MysUserFullInfo userInfo, MysSectionType mysSectionType, string userId)

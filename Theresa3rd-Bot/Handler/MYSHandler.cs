@@ -96,13 +96,14 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
-                if (mysSection.Value == MysSectionType.全部) mysBusiness.delAllSubscribeGroup(args.Sender.Group.Id, userId);
+                if (mysSection.Value == MysSectionType.全部) mysBusiness.delAllSubscribeGroup(subscribeGroupId, userId);
                 subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
 
                 List<IChatMessage> chailList = new List<IChatMessage>();
                 chailList.Add(new PlainMessage($"米游社用户[{dbSubscribe.SubscribeName}]订阅成功!\r\n"));
                 chailList.Add(new PlainMessage($"uid：{dbSubscribe.SubscribeCode}\r\n"));
                 chailList.Add(new PlainMessage($"频道：{Enum.GetName(typeof(MysSectionType), mysSection)}\r\n"));
+                chailList.Add(new PlainMessage($"目标群：{Enum.GetName(typeof(SubscribeGroupType), groupType)}\r\n"));
                 chailList.Add(new PlainMessage($"签名：{dbSubscribe.SubscribeDescription}\r\n"));
                 FileInfo fileInfo = string.IsNullOrEmpty(userInfoDto.data.user_info.avatar_url) ? null : await HttpHelper.DownImgAsync(userInfoDto.data.user_info.avatar_url);
                 if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
@@ -128,27 +129,20 @@ namespace Theresa3rd_Bot.Handler
             try
             {
                 string userId = null;
-                MysSectionType? mysSection = null;
                 string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.Mihoyo.RmCommand);
-                if (paramArr != null && paramArr.Length >= 2)
+                if (paramArr != null && paramArr.Length >= 1)
                 {
                     userId = paramArr.Length > 0 ? paramArr[0] : null;
-                    string mysSectionStr = paramArr.Length > 1 ? paramArr[1] : "0";
                     if (await CheckUserIdAsync(session, args, userId) == false) return;
-                    if (await CheckSectionAsync(session, args, mysSectionStr) == false) return;
-                    mysSection = (MysSectionType)Convert.ToInt32(mysSectionStr);
                 }
                 else
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
                     if (stepInfo == null) return;
                     StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要退订用户的id", CheckUserIdAsync);
-                    StepDetail sectionStep = new StepDetail(60, CancleSectionQuestion, CheckSectionAsync);
                     stepInfo.AddStep(uidStep);
-                    stepInfo.AddStep(sectionStep);
                     if (await stepInfo.StartStep(session, args) == false) return;
                     userId = uidStep.Answer;
-                    mysSection = (MysSectionType)Convert.ToInt32(sectionStep.Answer);
                 }
 
                 List<SubscribePO> subscribeList = mysBusiness.getSubscribeList(userId);
@@ -160,13 +154,10 @@ namespace Theresa3rd_Bot.Handler
 
                 foreach (var item in subscribeList)
                 {
-                    if (mysSection.Value == MysSectionType.全部 || (int)mysSection.Value == item.SubscribeSubType)
-                    {
-                        subscribeBusiness.delSubscribeGroup(item.Id);
-                    }
+                    subscribeBusiness.delSubscribeGroup(item.Id);
                 }
 
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了id为{userId}的用户~"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了id为{userId}的用户的所有频道~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)

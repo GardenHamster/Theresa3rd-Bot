@@ -73,6 +73,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     if (subscribeTask.GroupIdList.Contains(groupId) == false) subscribeTask.GroupIdList.Add(groupId);
                 }
+                return;
             }
             if (subscribeTask.GroupIdList.Contains(subscribeInfo.GroupId) == false)//将要推动的群号添加到集合中
             {

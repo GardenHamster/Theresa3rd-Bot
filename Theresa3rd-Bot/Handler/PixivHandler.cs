@@ -536,7 +536,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 subscribeBusiness.delSubscribeGroup(dbSubscribe.Id);
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订成功~"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了相关标签~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)

@@ -154,9 +154,9 @@ namespace Theresa3rd_Bot.Common
         /// <param name="userId"></param>
         /// <param name="gids"></param>
         /// <returns></returns>
-        public static string getMysPostListUrl(string userId, int gids)
+        public static string getMysPostListUrl(string userId, int size)
         {
-            return $"https://api-takumi.mihoyo.com/post/wapi/userPost?gids={gids}&size=5&uid={userId}";
+            return $"https://api-takumi.mihoyo.com/post/wapi/userPost?uid={userId}&size={size}";
         }
 
         /// <summary>
@@ -174,9 +174,9 @@ namespace Theresa3rd_Bot.Common
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static string getMystUserFullInfo(string userId, int gids)
+        public static string getMystUserFullInfo(string userId)
         {
-            return $"https://bbs-api.mihoyo.com/user/wapi/getUserFullInfo?gids={gids}&uid={userId}";
+            return $"https://bbs-api.mihoyo.com/user/wapi/getUserFullInfo?uid={userId}";
         }
 
 

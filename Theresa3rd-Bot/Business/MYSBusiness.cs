@@ -77,48 +77,36 @@ namespace Theresa3rd_Bot.Business
         }
 
 
-        public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(SubscribeTask subscribeTask, int getCount = 2)
+        public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(SubscribeTask subscribeTask, int getCount = 5)
         {
+            int index = 0;
             List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
-            List<MysResult<MysPostDataDto>> postDataList = new List<MysResult<MysPostDataDto>>();
-            foreach (var item in Enum.GetValues(typeof(MysSectionType)))
+            MysResult<MysPostDataDto> mysPostDataDto = await getMysUserPostDtoAsync(subscribeTask.SubscribeCode, 10);
+            if (mysPostDataDto?.data?.list == null || mysPostDataDto.data.list.Count == 0) return mysSubscribeList;
+            foreach (var item in mysPostDataDto.data.list)
             {
-                int typeId = (int)item;
-                if (typeId == (int)MysSectionType.全部) continue;
-                if (subscribeTask.SubscribeSubType != (int)MysSectionType.全部 && subscribeTask.SubscribeSubType != typeId) continue;
-                postDataList.Add(await getMysUserPostDtoAsync(subscribeTask.SubscribeCode, typeId));
+                if (++index > getCount) break;
+                int shelfLife = BotConfig.SubscribeConfig.Mihoyo.ShelfLife;
+                DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
+                if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+
+                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeTask.SubscribeId);
+                subscribeRecord.Title = item.post.subject?.filterEmoji().cutString(200);
+                subscribeRecord.Content = item.post.content?.filterEmoji().cutString(500);
+                subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
+                subscribeRecord.LinkUrl = HttpUrl.getMysArticleUrl(item.post.post_id);
+                subscribeRecord.DynamicCode = item.post.post_id;
+                subscribeRecord.DynamicType = SubscribeDynamicType.帖子;
+
+                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeTask.SubscribeId, item.post.post_id);
+                if (dbSubscribe != null) continue;
+
+                MysSubscribe mysSubscribe = new MysSubscribe();
+                mysSubscribe.SubscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                mysSubscribe.MysUserPostDto = item;
+                mysSubscribe.CreateTime = createTime;
+                mysSubscribeList.Add(mysSubscribe);
                 await Task.Delay(1000);
-            }
-
-            foreach (var mysPostInfo in postDataList)
-            {
-                int index = 0;
-                if (mysPostInfo.data.list == null || mysPostInfo.data.list.Count == 0) continue;
-                foreach (var item in mysPostInfo.data.list)
-                {
-                    if (++index > getCount) break;
-                    int shelfLife = BotConfig.SubscribeConfig.Mihoyo.ShelfLife;
-                    DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
-                    if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
-
-                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeTask.SubscribeId);
-                    subscribeRecord.Title = item.post.subject?.filterEmoji().cutString(200);
-                    subscribeRecord.Content = item.post.content?.filterEmoji().cutString(500);
-                    subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
-                    subscribeRecord.LinkUrl = HttpUrl.getMysArticleUrl(item.post.post_id);
-                    subscribeRecord.DynamicCode = item.post.post_id;
-                    subscribeRecord.DynamicType = SubscribeDynamicType.帖子;
-
-                    SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeTask.SubscribeId, item.post.post_id);
-                    if (dbSubscribe != null) continue;
-
-                    MysSubscribe mysSubscribe = new MysSubscribe();
-                    mysSubscribe.SubscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                    mysSubscribe.MysUserPostDto = item;
-                    mysSubscribe.CreateTime = createTime;
-                    mysSubscribeList.Add(mysSubscribe);
-                    await Task.Delay(1000);
-                }
             }
             return mysSubscribeList;
         }
@@ -161,19 +149,19 @@ namespace Theresa3rd_Bot.Business
 
         /*-------------------------------------------------------------接口相关--------------------------------------------------------------------------*/
 
-        public async Task<MysResult<MysPostDataDto>> getMysUserPostDtoAsync(string userId, int gids)
+        public async Task<MysResult<MysPostDataDto>> getMysUserPostDtoAsync(string userId, int size)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            string getUrl = HttpUrl.getMysPostListUrl(userId, gids);
+            string getUrl = HttpUrl.getMysPostListUrl(userId, size);
             string json = await HttpHelper.HttpGetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysPostDataDto>>(json);
         }
 
 
-        public async Task<MysResult<MysUserFullInfoDto>> geMysUserFullInfoDtoAsync(string userId, int gids)
+        public async Task<MysResult<MysUserFullInfoDto>> geMysUserFullInfoDtoAsync(string userId)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            string getUrl = HttpUrl.getMystUserFullInfo(userId, gids);
+            string getUrl = HttpUrl.getMystUserFullInfo(userId);
             string json = await HttpHelper.HttpGetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysUserFullInfoDto>>(json);
         }

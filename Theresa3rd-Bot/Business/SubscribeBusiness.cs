@@ -46,7 +46,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     foreach (long groupId in BotConfig.PermissionsConfig.SubscribeGroups)
                     {
-                        if (subscribeTask.GroupIdList.Contains(subscribeInfo.GroupId) == false) subscribeTask.GroupIdList.Add(subscribeInfo.GroupId);
+                        if (subscribeTask.GroupIdList.Contains(groupId) == false) subscribeTask.GroupIdList.Add(groupId);
                     }
                     continue;
                 }

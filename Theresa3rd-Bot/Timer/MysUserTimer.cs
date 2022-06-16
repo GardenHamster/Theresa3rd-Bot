@@ -53,6 +53,7 @@ namespace Theresa3rd_Bot.Timer
             {
                 try
                 {
+                    if (subscribeTask.SubscribeSubType != 0) continue;
                     List<MysSubscribe> mysSubscribeList = await mysBusiness.getMysUserSubscribeAsync(subscribeTask);
                     if (mysSubscribeList == null || mysSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(mysBusiness, subscribeTask, mysSubscribeList);

@@ -2,6 +2,7 @@
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
+using SqlSugar.IOC;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -342,7 +343,9 @@ namespace Theresa3rd_Bot.Handler
 
                 //插入Subscribe数据
                 DateTime syncDate = DateTime.Now;
+                DbScoped.SugarScope.BeginTran();//开始事务
                 List<SubscribePO> dbSubscribeList = new List<SubscribePO>();
+
                 foreach (var item in followUserList)
                 {
                     SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(item.userId, SubscribeType.P站画师);
@@ -365,6 +368,7 @@ namespace Theresa3rd_Bot.Handler
                         if (subscribeGroup == null) subscribeBusiness.insertSubscribeGroup(subscribeGroupId, item.Id);
                     }
                 }
+                DbScoped.SugarScope.CommitTran();//提交事务
 
                 await session.SendMessageWithAtAsync(args, new PlainMessage(" 关注画师订阅完毕"));
                 ConfigHelper.loadSubscribeTask();
@@ -372,6 +376,7 @@ namespace Theresa3rd_Bot.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "关注画师订阅功能异常");
+                DbScoped.SugarScope.RollbackTran();//事务回滚
                 throw;
             }
         }

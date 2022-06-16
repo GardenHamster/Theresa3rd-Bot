@@ -56,13 +56,13 @@ namespace Theresa3rd_Bot.Timer
                 try
                 {
                     DateTime startTime = DateTime.Now;
-                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivTagSubscribeAsync(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
+                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivTagSubscribeAsync(subscribeTask.SubscribeCode, subscribeTask.SubscribeId);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(pixivBusiness, subscribeTask, pixivSubscribeList, startTime);
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error(ex, $"获取pixiv标签[{subscribeTask.SubscribeInfo.SubscribeCode}]订阅失败");
+                    LogHelper.Error(ex, $"获取pixiv标签[{subscribeTask.SubscribeCode}]订阅失败");
                 }
                 finally
                 {
@@ -75,7 +75,7 @@ namespace Theresa3rd_Bot.Timer
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
-                string tagName = subscribeTask.SubscribeInfo.SubscribeName;
+                string tagName = subscribeTask.SubscribeName;
                 string template = BotConfig.SubscribeConfig.PixivTag.Template;
 
                 foreach (long groupId in subscribeTask.GroupIdList)

@@ -77,7 +77,7 @@ namespace Theresa3rd_Bot.Business
         }
 
 
-        public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(SubscribeInfo subscribeInfo, int getCount = 2)
+        public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(SubscribeTask subscribeTask, int getCount = 2)
         {
             List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
             List<MysResult<MysPostDataDto>> postDataList = new List<MysResult<MysPostDataDto>>();
@@ -85,8 +85,8 @@ namespace Theresa3rd_Bot.Business
             {
                 int typeId = (int)item;
                 if (typeId == (int)MysSectionType.全部) continue;
-                if (subscribeInfo.SubscribeSubType != (int)MysSectionType.全部 && subscribeInfo.SubscribeSubType != typeId) continue;
-                postDataList.Add(await getMysUserPostDtoAsync(subscribeInfo.SubscribeCode, typeId));
+                if (subscribeTask.SubscribeSubType != (int)MysSectionType.全部 && subscribeTask.SubscribeSubType != typeId) continue;
+                postDataList.Add(await getMysUserPostDtoAsync(subscribeTask.SubscribeCode, typeId));
                 await Task.Delay(1000);
             }
 
@@ -101,7 +101,7 @@ namespace Theresa3rd_Bot.Business
                     DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
                     if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
 
-                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeInfo.SubscribeId);
+                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeTask.SubscribeId);
                     subscribeRecord.Title = item.post.subject?.filterEmoji().cutString(200);
                     subscribeRecord.Content = item.post.content?.filterEmoji().cutString(500);
                     subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
@@ -109,7 +109,7 @@ namespace Theresa3rd_Bot.Business
                     subscribeRecord.DynamicCode = item.post.post_id;
                     subscribeRecord.DynamicType = SubscribeDynamicType.帖子;
 
-                    SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeInfo.SubscribeId, item.post.post_id);
+                    SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeTask.SubscribeId, item.post.post_id);
                     if (dbSubscribe != null) continue;
 
                     MysSubscribe mysSubscribe = new MysSubscribe();

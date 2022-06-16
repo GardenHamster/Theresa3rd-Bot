@@ -56,13 +56,13 @@ namespace Theresa3rd_Bot.Timer
                 try
                 {
                     DateTime startTime = DateTime.Now;
-                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserSubscribeAsync(subscribeTask.SubscribeInfo.SubscribeCode, subscribeTask.SubscribeInfo.SubscribeId);
+                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserSubscribeAsync(subscribeTask.SubscribeCode, subscribeTask.SubscribeId);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(pixivBusiness, subscribeTask, pixivSubscribeList, startTime);
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error(ex, $"获取pixiv用户[{subscribeTask.SubscribeInfo.SubscribeCode}]订阅失败");
+                    LogHelper.Error(ex, $"获取pixiv用户[{subscribeTask.SubscribeCode}]订阅失败");
                 }
                 finally
                 {
@@ -88,7 +88,7 @@ namespace Theresa3rd_Bot.Timer
                         List<IChatMessage> chailList = new List<IChatMessage>();
                         if (string.IsNullOrWhiteSpace(template))
                         {
-                            chailList.Add(new PlainMessage($"pixiv画师[{subscribeTask.SubscribeInfo.SubscribeName}]发布了新作品："));
+                            chailList.Add(new PlainMessage($"pixiv画师[{subscribeTask.SubscribeName}]发布了新作品："));
                             chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
                         }
                         else

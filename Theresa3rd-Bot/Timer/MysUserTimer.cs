@@ -53,13 +53,13 @@ namespace Theresa3rd_Bot.Timer
             {
                 try
                 {
-                    List<MysSubscribe> mysSubscribeList = await mysBusiness.getMysUserSubscribeAsync(subscribeTask.SubscribeInfo);
+                    List<MysSubscribe> mysSubscribeList = await mysBusiness.getMysUserSubscribeAsync(subscribeTask);
                     if (mysSubscribeList == null || mysSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(mysBusiness, subscribeTask, mysSubscribeList);
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error(ex, $"获取米游社[{subscribeTask.SubscribeInfo.SubscribeCode}]订阅失败");
+                    LogHelper.Error(ex, $"获取米游社[{subscribeTask.SubscribeCode}]订阅失败");
                 }
                 finally
                 {

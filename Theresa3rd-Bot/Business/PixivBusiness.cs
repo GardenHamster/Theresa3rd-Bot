@@ -77,7 +77,7 @@ namespace Theresa3rd_Bot.Business
             {
                 int randomUserIndex = RandomHelper.getRandomBetween(0, subscribeTaskList.Count - 1);
                 SubscribeTask subscribeTask = subscribeTaskList[randomUserIndex];
-                PixivUserWorkInfoDto pixivWorkInfo = await getPixivUserWorkInfoDtoAsync(subscribeTask.SubscribeInfo.SubscribeCode);
+                PixivUserWorkInfoDto pixivWorkInfo = await getPixivUserWorkInfoDtoAsync(subscribeTask.SubscribeCode);
                 if (pixivWorkInfo == null) continue;
                 Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
                 if (illusts == null || illusts.Count == 0) continue;

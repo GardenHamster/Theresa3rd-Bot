@@ -55,10 +55,10 @@ namespace Theresa3rd_Bot.Business
 
         public void addSubscribeTask(List<SubscribeTask> subscribeTaskList, SubscribeInfo subscribeInfo)
         {
-            SubscribeTask subscribeTask = subscribeTaskList.Where(o => o.SubscribeInfo.SubscribeCode == subscribeInfo.SubscribeCode && o.SubscribeInfo.SubscribeSubType == 0).FirstOrDefault();
+            SubscribeTask subscribeTask = subscribeTaskList.Where(o => o.SubscribeCode == subscribeInfo.SubscribeCode && o.SubscribeSubType == 0).FirstOrDefault();
             if (subscribeTask == null)
             {
-                subscribeTask = subscribeTaskList.Where(o => o.SubscribeInfo.SubscribeCode == subscribeInfo.SubscribeCode && o.SubscribeInfo.SubscribeSubType == subscribeInfo.SubscribeSubType).FirstOrDefault();
+                subscribeTask = subscribeTaskList.Where(o => o.SubscribeCode == subscribeInfo.SubscribeCode && o.SubscribeSubType == subscribeInfo.SubscribeSubType).FirstOrDefault();
             }
             if (subscribeTask == null)
             {

@@ -34,6 +34,11 @@ namespace Theresa3rd_Bot.Business
             foreach (SubscribeInfo subscribeInfo in subscribeInfoList)
             {
                 SubscribeType subscribeType = subscribeInfo.SubscribeType;
+
+                if (subscribeType == SubscribeType.米游社用户 && subscribeInfo.SubscribeSubType != 0) continue;
+                if (subscribeType == SubscribeType.P站画师 && subscribeInfo.SubscribeSubType != 0) continue;
+                if (subscribeType == SubscribeType.P站标签 && subscribeInfo.SubscribeSubType != 0) continue;
+
                 if (!subscribeTaskMap.ContainsKey(subscribeType)) subscribeTaskMap[subscribeType] = new List<SubscribeTask>();
                 List<SubscribeTask> subscribeTaskList = subscribeTaskMap[subscribeType];
                 SubscribeTask subscribeTask = subscribeTaskList.Where(o => o.SubscribeCode == subscribeInfo.SubscribeCode).FirstOrDefault();

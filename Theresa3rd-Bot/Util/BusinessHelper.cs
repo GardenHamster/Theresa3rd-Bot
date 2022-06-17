@@ -103,7 +103,7 @@ namespace Theresa3rd_Bot.Util
             }
             if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0)
             {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "缺少userId，请更新cookie");
+                await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("缺少userId，请更新cookie"));
                 return false;
             }
             return true;

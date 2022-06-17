@@ -1,3 +1,5 @@
+# bot中用到的yml的一些语法
+
 ## 开始
 - 为了方便小白使用这个bot项目，这里针对本项目简单说一下配置文件要怎么改
 - 详细的yml教程可以另行百度，或者看一下 [菜鸟教程](https://www.runoob.com/w3cnote/yaml-intro.html)
@@ -13,6 +15,9 @@
 
 ## 格式
 ![image](https://user-images.githubusercontent.com/89188316/174249576-e19c9e63-9023-465f-9882-15a252ed3b4e.png)
+
+## 布尔
+![image](https://user-images.githubusercontent.com/89188316/174264053-85c58a87-df08-4c84-982b-070a32fcd29e.png)
 
 ## 数组
 ![image](https://user-images.githubusercontent.com/89188316/174250562-06ee8ea0-0166-49eb-9305-70174d347fd0.png)

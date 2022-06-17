@@ -16,4 +16,10 @@
 
 ## 数组
 ![image](https://user-images.githubusercontent.com/89188316/174250562-06ee8ea0-0166-49eb-9305-70174d347fd0.png)
-![image](https://user-images.githubusercontent.com/89188316/174252057-b34560df-06a0-4a6c-83f2-07e219a8efc7.png)
+![image](https://user-images.githubusercontent.com/89188316/174253022-436d06ef-b56e-43f0-a224-cf5b80c50505.png)
+
+## 字符串
+![image](https://user-images.githubusercontent.com/89188316/174258141-7bfdc985-4c8c-42ad-96dc-adc27c93ccbe.png)
+
+## 对象列表
+![image](https://user-images.githubusercontent.com/89188316/174262589-ab2523b5-1875-46b9-b1af-9af32a110de2.png)

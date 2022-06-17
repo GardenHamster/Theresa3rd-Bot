@@ -11,7 +11,8 @@
 - 程序运行后会自动建库建表，请确保账号拥有创建和修改表权限
 
 ## mirai-console-loader
-- 参照[mirai-console-loader](https://github.com/iTXTech/mirai-console-loader)安装mcl，然后为mcl安装并配置[mirai-api-http](https://github.com/project-mirai/mirai-api-http)插件，最后config/Console/AutoLogin.yml中配置bot账号密码并启动mcl([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MiraiInstall.md))
+- 参照[mirai-console-loader](https://github.com/iTXTech/mirai-console-loader)安装mcl，然后为mcl安装并配置[mirai-api-http](https://github.com/project-mirai/mirai-api-http)插件，([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MiraiInstall.md))
+- 最后在config/Console/AutoLogin.yml中配置bot账号密码并启动mcl，正常启动结果如下
 ```bash
 2022-02-13 18:09:37 I/WindowHelperJvm: Mirai is using desktop. Captcha will be thrown by window popup. You can add `mirai.no-desktop` to JVM properties (-Dmirai.no-desktop) to disable it.
 2022-02-13 18:09:37 I/main: Auto-login 123456789
@@ -25,7 +26,7 @@
 
 ## 部署
 - 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本，注：各版本之间的botsettings.yml可能会有较大差异，升级版本后请注意对比并修改该文件
-- 根据自己的需要修改根目录下的配置文件[botsettings.yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Theresa3rd-Bot/botsettings.yml)，修改完成后需要重新启动
+- 根据自己的需要修改根目录下的配置文件[botsettings.yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Theresa3rd-Bot/botsettings.yml)，修改完成后需要重新启动，([这里给小白简单说一下yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/ymlconfig.md))
 - 修改根目录下的配置文件appsettings.Production.json，~~注意是Production不是Development~~
 ```json5
 {
@@ -46,7 +47,7 @@
 - 下载并安装 [ASP.NET Core Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)，推荐下载页面中的 [Hosting Bundle](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-6.0.2-windows-hosting-bundle-installer)
 - 启动powershell并将路径切换到Theresa3rd-Bot.dll所在目录下，~~或者在目标文件夹中，按住Shift然后右键，在此处打开Powershell窗口~~
 
-- 运行Theresa3rd-Bot.dll，根据自己的需要修改端口和http或https
+- 运行Theresa3rd-Bot.dll，如果有需要可以根据自己的需要修改端口和http或https，一般情况下直接运行就行
 ```bash
 dotnet Theresa3rd-Bot.dll --launch-profile Production --urls http://0.0.0.0:8088
 ```
@@ -85,7 +86,7 @@ appsettings.json
 appsettings.Development.json
 appsettings.Production.json
 ```
-- 检查一下botsettings.yml是否有更新，如果有则对比修改该文件
+- 检查一下botsettings.yml是否有更新，有则对比修改该文件，如果遇到修改比较多的情况可以对照旧文件重新修改一次
 - 重新启动脚本
 
 ## 一些已知的错误

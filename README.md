@@ -1,12 +1,14 @@
 # Theresa3rd-Bot
+[![release](https://img.shields.io/github/v/release/GardenHamster/Theresa3rd-Bot)](https://github.com/GardenHamster/Theresa3rd-Bot/releases) [![download](https://img.shields.io/github/downloads/GardenHamster/Theresa3rd-Bot/total)](https://github.com/GardenHamster/Theresa3rd-Bot/releases)
+
 
 ## 简介
- - 某舰团长利用摸鱼时间写出来的自用的bot，准备移植到mirai。基于 .net core 6.0 和 mirai-api-http
+ - 某舰团长利用摸鱼时间写出来自用的bot，准备移植到mirai。基于 .net core 6.0 和 mirai-api-http
  - 相关功能还在摸鱼开发中，windows下部署请参考 [Document.md](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md)，使用方法请参考 [Menu.md](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md)
  - 开始白嫖前，请在右上角点一下:star:Star
 
 ## 声明
- - 本项目为个人自娱自乐开发出来的项目，并没有任何收益，并不负责由于使用本项目所产生的任何问题，不得将项目用于任何商业用途
+ - 本项目为个人自娱自乐写出来的项目，并没有任何收益，并不负责由于使用本项目所产生的任何问题，不得将项目用于任何商业用途
  - 有想法或问题请发issues
 
 ## 功能
@@ -40,4 +42,5 @@
 
 ![image](https://user-images.githubusercontent.com/89188316/153144700-568fb0c8-92c7-4c6e-9868-d4361ab1eb16.png)
 
+![image](https://user-images.githubusercontent.com/89188316/174220421-1e8bf643-5e2c-4135-94fb-f7980e8be8a3.png)
 

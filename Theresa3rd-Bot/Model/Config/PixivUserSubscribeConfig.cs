@@ -2,6 +2,9 @@
 {
     public class PixivUserSubscribeConfig: BaseSubscribeConfig
     {
+        public string SyncCommand { get; set; }
+
         public int ShelfLife { get; set; }
+
     }
 }

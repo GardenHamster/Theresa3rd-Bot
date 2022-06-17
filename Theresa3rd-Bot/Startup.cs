@@ -108,6 +108,7 @@ namespace Theresa3rd_Bot
             BotConfigDto botConfig = deserializer.Deserialize<BotConfigDto>(reader);
             BotConfig.GeneralConfig = botConfig.General;
             BotConfig.PermissionsConfig = botConfig.Permissions;
+            BotConfig.MenuConfig = botConfig.Menu;
             BotConfig.RepeaterConfig = botConfig.Repeater;
             BotConfig.WelcomeConfig = botConfig.Welcome;
             BotConfig.ReminderConfig = botConfig.Reminder;

@@ -74,6 +74,15 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 通过逗号或者换行符拆分参数
+        /// </summary>
+        /// <returns></returns>
+        public static string[] splitParams(this string value)
+        {
+            return value.Split(new string[] { ",", "，", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        /// <summary>
         /// 拆分cookie,返回键值对
         /// </summary>
         /// <param name="cookie"></param>
@@ -92,6 +101,22 @@ namespace Theresa3rd_Bot.Util
                 cookieDic[key] = value;
             }
             return cookieDic;
+        }
+
+        /// <summary>
+        /// 将键值对重新连接为cookie
+        /// </summary>
+        /// <param name="cookie"></param>
+        /// <returns></returns>
+        public static string joinCookie(this Dictionary<string, string> cookieDic)
+        {
+            StringBuilder cookieBuilder = new StringBuilder();
+            foreach (var item in cookieDic)
+            {
+                if (cookieBuilder.Length > 0) cookieBuilder.Append(" ");
+                cookieBuilder.Append($"{item.Key}={item.Value};");
+            }
+            return cookieBuilder.ToString();
         }
 
         //// <summary>

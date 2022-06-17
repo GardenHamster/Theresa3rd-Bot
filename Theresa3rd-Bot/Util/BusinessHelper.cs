@@ -31,14 +31,26 @@ namespace Theresa3rd_Bot.Util
         private static string ImageCodeHeader = @"[image:";
 
         /// <summary>
-        /// 判断时候以某一个指令开头
+        /// 判断是否以某一个指令开头
         /// </summary>
         /// <param name="instructions"></param>
         /// <param name="command"></param>
         /// <returns></returns>
         public static bool StartWithCommand(this string instructions, string command)
         {
-            return string.IsNullOrWhiteSpace(command) == false && instructions.StartsWith(command);
+            return string.IsNullOrWhiteSpace(command) == false && instructions.StartsWith(command.Trim());
+        }
+
+        /// <summary>
+        /// 判断是否以某一个指令开头
+        /// </summary>
+        /// <param name="instructions"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public static bool StartWithCommand(this string instructions, string[] commands)
+        {
+            if (commands == null || commands.Length == 0) return false;
+            return commands.Where(o => string.IsNullOrWhiteSpace(o) == false && instructions.StartsWith(o.Trim())).Any();
         }
 
         /// <summary>
@@ -56,14 +68,44 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 判断标签中是否包含R18标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static bool IsR18(this List<string> tags)
+        {
+            if (tags == null || tags.Count == 0) return false;
+            return tags.Where(o => o.ToUpper().StartsWith("R-18") || o.ToUpper().StartsWith("R18")).Any();
+        }
+
+        /// <summary>
+        /// 判断标签中是否包含动图标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static bool IsGif(this List<string> tags)
+        {
+            if (tags == null || tags.Count == 0) return false;
+            return tags.Where(o => o == "うごイラ" || o == "动图").Any();
+        }
+
+        /// <summary>
         /// 检查pixiv cookie是否已经过期
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public static async Task<bool> CheckPixivCookieExpireAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckPixivCookieAvailableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
-            if (DateTime.Now <= BotConfig.WebsiteConfig.Pixiv.CookieExpireDate) return false;
-            await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
+            if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
+                return false;
+            }
+            if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0)
+            {
+                await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("缺少userId，请更新cookie"));
+                return false;
+            }
             return true;
         }
 
@@ -74,9 +116,17 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static async Task<bool> CheckSubscribeEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, BaseSubscribeConfig subscribeConfig)
         {
-            if (subscribeConfig != null && subscribeConfig.Enable) return true;
-            await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.DisableMsg, "该功能未开启");
-            return false;
+            if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(args.Sender.Group.Id) == false)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                return false;
+            }
+            if (subscribeConfig == null || subscribeConfig.Enable == false)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                return false;
+            }
+            return true;
         }
 
         /// <summary>

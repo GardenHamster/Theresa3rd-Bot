@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Pixiv
 {
@@ -34,7 +35,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
         public bool isR18()
         {
-            return tags.Where(o => o.ToUpper() == "R-18" || o.ToUpper() == "R18" || o.ToUpper() == "R18+" || o.ToUpper() == "18+" || o.ToUpper() == "R17.9").FirstOrDefault() != null;
+            return tags != null && tags.IsR18();
         }
 
     }

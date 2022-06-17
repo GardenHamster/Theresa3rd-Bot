@@ -15,7 +15,7 @@
 
 Permissions:
     SuperManagers:          [1608405161]                                        #超级管理员列表,可以使用管理指令
-    AcceptGroups:           [284196392]                                         #白名单，只处理这些群的消息
+    AcceptGroups:           [284196392,123456789]                               #白名单，只处理这些群的消息
     SetuGroups:             [284196392]                                         #拥有涩图权限的群
     SetuShowR18Groups:      [284196392]                                         #允许搜索和发送r18的群，不包含r18图片
     SetuShowR18ImgGroups:   [284196392]                                         #允许发送r18图片的群，否则只发送图片地址
@@ -24,6 +24,11 @@ Permissions:
     SetuLimitlessGroups:    [284196392]                                         #涩图次数无限制的群
     SaucenaoGroups:         [284196392]                                         #拥有以图搜图权限的群
     SubscribeGroups:        [284196392]                                         #拥有订阅权限的群
+
+Menu:                                                                           #菜单指令
+    Enable:                 true                                                #是否启用
+    Commands:                ['菜单','功能','指令','命令','help']               #命令
+    Template:               ''                                                  #菜单模版，可自行设定，值为空时将自动生成
 
 Repeater:                                                                       #复读机
     Enable:                 true                                                #是否启用
@@ -36,9 +41,9 @@ Welcome:                                                                        
     Special:                                                                    #为单独的群设定单独的模版
         - GroupId:          284196392                                           #群id(群号)
           Template:         |                                                   #群欢迎模版
-                            欢迎新厨子
+                            欢迎萌新
                             [image:C:\BotImg\face\welcome.png]
-                            略略略
+                            请认真阅读群内的相关公告
 
 Reminder:                                                                       #定时消息
     Enable:                 true                                                #是否启用
@@ -55,21 +60,21 @@ Reminder:                                                                       
 Setu:                                                                           #色图相关
     GroupCD:                5                                                   #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
     MemberCD:               30                                                  #独立CD(秒)，单个群员使用命令后需要等待的CD
-    DisableTagCommand:      '禁止标签'                                           #禁止一个涩图关键词,禁止后不允许被搜索
-    EnableTagCommand:       '解禁标签'                                           #解禁一个涩图关键词
-    DisableTags:            ['R18','R17.9','R18G']                              #禁止的涩图关键词.所有群通用
-    DisableTagsMsg:         '禁止查找这个类型的涩图'                                #标签被禁用时返回的消息
+    DisableTagCommand:      '禁止标签'                                          #禁止一个涩图关键词,禁止后不允许被搜索
+    EnableTagCommand:       '解禁标签'                                          #解禁一个涩图关键词
+    DisableTags:            ['R-18','R18','R18+','R18G','R17.9']                #禁止的涩图关键词.所有群通用
+    DisableTagsMsg:         '禁止查找这个类型的涩图'                            #标签被禁用时返回的消息
     MaxDaily:               20                                                  #每人每日最大使用次数,0表示无可用次数
     ImgSavePath:            'C:\BotImg\download'                                #图片存放目录
-    RevokeInterval:         0                                                  #N秒后撤回,0表示不撤回
-    SendPrivate:            true                                               #私聊发送，需要用户主动发送任意消息给机器人开启临时会话
+    RevokeInterval:         0                                                   #N秒后撤回,0表示不撤回
+    SendPrivate:            true                                                #私聊发送，需要用户主动发送任意消息给机器人开启临时会话
     Lolicon:                                                                    #Lolicon图床https://api.lolicon.app/#/setu
         Enable:             true                                                #是否启用
         Command:            '瑟图'                                              #命令，用法：#瑟图合法萝莉
-        DisableMsg:         '不可以色色！'                                      #功能未启用时返回的消息
+        DisableMsg:         '不可以色色！'                                      #功能未启用时返回的消息，值为空时不发送
         NotFoundMsg:        '色图探测器毫无反应，找不到你要的色图'              #找不到相应色图时返回的消息
         ErrorMsg:           '申请色色失败！请重新尝试'                          #发生错误时返回的消息
-        ProcessingMsg:      '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息
+        ProcessingMsg:      '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息，值为空时不发送
         Template:           |                                                   #消息模版，值为空时将使用默认模版
                             {MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，耗时：{CostSecond}s
@@ -78,12 +83,12 @@ Setu:                                                                           
     Pixiv:                                                                      #Pixiv图床https://www.pixiv.net
         Enable:             true                                                #是否启用
         Command:            '涩图'                                              #命令，用法：#涩图 或 #涩图可可萝
-        DisableMsg:         '不可以色色！'                                      #功能未启用时返回的消息
+        DisableMsg:         '不可以色色！'                                      #功能未启用时返回的消息，值为空时不发送
         NotFoundMsg:        '色图探测器毫无反应，找不到你要的色图'              #找不到相应色图时返回的消息
         ErrorMsg:           '申请色色失败！请重新尝试'                          #发生错误时返回的消息
-        RandomMode:         1                                                   #没有指定标签时获取图片的模式，1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品
-        RandomTags:         ['德丽莎','テレサ・アポカリプス']                    #没有指定标签时随机获取的标签
-        ProcessingMsg:      '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息
+        RandomMode:         1                                                   #没有指定标签时获取图片的模式，1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品，3：随机获取一个关注中画师的作品，4：随机获取一个收藏中的作品
+        RandomTags:         ['德丽莎','テレサ・アポカリプス']                    #RandomMode=1时查找的标签
+        ProcessingMsg:      '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息，值为空时不发送
         Template:           |                                                   #消息模版，值为空时将使用默认模版
                             {MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
@@ -94,7 +99,7 @@ Setu:                                                                           
         MaxScreen:          60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
         MinBookmark:        800                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时适用)
         MinBookRate:        0.05                                                #最低收藏率，收藏数/浏览数(标签搜索时试用)
-        CookieExpire:       1296000                                             #cookie失效时间(秒)，超过该天数后需要使用命令更新cookie，建议cookie每15天更新一次
+        CookieExpire:       1296000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每15天更新一次
         CookieExpireMsg:    'emmmm,cookie过期了,请艾特管理员更新cookie'         #cookie过期时返回的消息
                             
 Saucenao:                                                                       #Saucenao以图搜图，查找原图功能
@@ -112,10 +117,11 @@ Saucenao:                                                                       
     MaxReceive:             0                                                   #每次最多接收并查询多少张图片，用户发送的图片数量超出该值时只处理前N张图片
 
 Subscribe:                                                                      #订阅相关
-    PixivUser:                                                                  #p站用户
+    PixivUser:                                                                  #订阅P站用户
         Enable:             true                                                #是否启用
         AddCommand:         '订阅画师'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订画师'                                          #退订命令,需要管理员执行
+        SyncCommand:        '同步画师'                                          #同步命令,从p站账号中获取关注画师列表并添加到订阅中,需要管理员执行
         Template:           |                                                   #消息模版，值为空时将使用默认模版
                             pixiv画师[{UserName}]发布了新作品：
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，发布时间：{CreateTime}
@@ -125,7 +131,7 @@ Subscribe:                                                                      
                             {Urls}
         ScanInterval:       3600                                                #扫描间隔(秒)
         ShelfLife:          43200                                               #保质期(秒),超过保质期将不会推送,0表示永不过期
-    PixivTag:                                                                   #p站标签
+    PixivTag:                                                                   #订阅P站标签
         Enable:             true                                                #是否启用
         AddCommand:         '订阅标签'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订标签'                                          #退订命令,需要管理员执行
@@ -140,7 +146,7 @@ Subscribe:                                                                      
         ShelfLife:          86400                                               #保质期(秒),超过保质期将不会推送,0表示永不过期
         MinBookmark:        300                                                 #最低收藏数，用于判断涩图是否合格
         MinBookPerHour:     100                                                 #每小时至少新增收藏数量，用于判断涩图是否合格
-    BiliUp:                                                                     #b站up主
+    BiliUp:                                                                     #订阅B站up主
         Enable:             true                                                #是否启用
         AddCommand:         '订阅up'                                            #订阅命令,需要管理员执行
         RmCommand:          '退订up'                                            #退订命令,需要管理员执行
@@ -151,9 +157,9 @@ Subscribe:                                                                      
         Enable:             true                                                #是否启用
         AddCommand:         '订阅直播'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订直播'                                          #退订命令,需要管理员执行
-        Template:           ''
+        Template:           ''                                                  #消息模版，值为空时将使用默认模版
         ScanInterval:       60                                                  #扫描间隔(秒)
-    Mihoyo:                                                                     #米游戏社版主
+    Mihoyo:                                                                     #订阅米游社版主
         Enable:             true                                                #是否启用
         AddCommand:         '订阅版主'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订版主'                                          #退订命令,需要管理员执行

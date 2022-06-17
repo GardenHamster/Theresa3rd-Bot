@@ -4,13 +4,12 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
-using Theresa3rd_Bot.Model.PO;
+using Theresa3rd_Bot.Handler;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
@@ -42,7 +41,7 @@ namespace Theresa3rd_Bot.Event
                 if (instructions.StartsWith(Command.PixivCookie))
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
-                    await UpdateCookieAsync(session, args, WebsiteType.Pixiv, Command.PixivCookie, message, BotConfig.SetuConfig.Pixiv.CookieExpire);
+                    await new WebsiteHandler().UpdateCookieAsync(session, args, WebsiteType.Pixiv, Command.PixivCookie, message, BotConfig.SetuConfig.Pixiv.CookieExpire);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -51,7 +50,7 @@ namespace Theresa3rd_Bot.Event
                 if (instructions.StartsWith(Command.BiliCookie))
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
-                    await UpdateCookieAsync(session, args, WebsiteType.Bili, Command.BiliCookie, message, 60);
+                    await new WebsiteHandler().UpdateCookieAsync(session, args, WebsiteType.Bili, Command.BiliCookie, message, 60);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -67,19 +66,7 @@ namespace Theresa3rd_Bot.Event
             }
         }
 
-        private async Task UpdateCookieAsync(IMiraiHttpSession session, IFriendMessageEventArgs args, WebsiteType websiteType, string command, string message, int cookieExpire)
-        {
-            string cookie = message.splitKeyWord(command);
-            if (string.IsNullOrWhiteSpace(cookie))
-            {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用${command} + cookie形式发送"));
-                return;
-            }
-            WebsitePO website = new WebsiteBusiness().updateWebsite(Enum.GetName(typeof(WebsiteType), websiteType), cookie, cookieExpire);
-            ConfigHelper.loadWebsite();
-            string expireDate = website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss");
-            await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie更新完毕,过期时间为{expireDate}"));
-        }
+        
 
 
 

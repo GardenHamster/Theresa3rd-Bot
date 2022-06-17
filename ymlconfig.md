@@ -1,8 +1,19 @@
 # bot中用到的yml的一些语法
-
-## 开始
 - 为了方便小白使用这个bot项目，这里针对本项目简单说一下配置文件要怎么改
 - 详细的yml教程可以另行百度，或者看一下 [菜鸟教程](https://www.runoob.com/w3cnote/yaml-intro.html)
+- 加入你运行以后出现这样`YamlDotNet.Core.YamlException`的错误，说明你的botsetting.yml文件改错了，需要仔细检查一下
+```bash
+Unhandled exception. YamlDotNet.Core.YamlException: (Line: 18, Col: 30, Idx: 1361) - (Line: 18, Col: 49, Idx: 1380): Exception during deserialization
+ ---> System.FormatException: Input string was not in a correct format.
+   at System.Number.ThrowOverflowOrFormatException(ParsingStatus status, TypeCode type)
+   at YamlDotNet.Serialization.NodeDeserializers.ScalarNodeDeserializer.DeserializeIntegerHelper(TypeCode typeCode, String value)
+   at YamlDotNet.Serialization.NodeDeserializers.ScalarNodeDeserializer.YamlDotNet.Serialization.INodeDeserializer.Deserialize(IParser parser, Type expectedType, Func`3 nestedObjectDeserializer, Object& value)
+   at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.DeserializeValue(IParser parser, Type expectedType, SerializerState state, IValueDeserializer nestedObjectDeserializer)
+   --- End of inner exception stack trace ---
+   at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.DeserializeValue(IParser parser, Type expectedType, SerializerState state, IValueDeserializer nestedObjectDeserializer)
+   at YamlDotNet.Serialization.ValueDeserializers.AliasValueDeserializer.DeserializeValue(IParser parser, Type expectedType, SerializerState state, IValueDeserializer nestedObjectDeserializer)
+   at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.<>c__DisplayClass3_0.<DeserializeValue>b__0(IParser r, Type t)
+```
 
 ## 文本编辑器
 - 首先非常不建议用系统自带的记事本打开yml文件，笔记本没有高亮显示而且容易出现编码上的问题
@@ -17,12 +28,13 @@
 ## 格式
 ![image](https://user-images.githubusercontent.com/89188316/174249576-e19c9e63-9023-465f-9882-15a252ed3b4e.png)
 
-## 布尔
-![image](https://user-images.githubusercontent.com/89188316/174264053-85c58a87-df08-4c84-982b-070a32fcd29e.png)
-
 ## 数组
 ![image](https://user-images.githubusercontent.com/89188316/174250562-06ee8ea0-0166-49eb-9305-70174d347fd0.png)
 ![image](https://user-images.githubusercontent.com/89188316/174253022-436d06ef-b56e-43f0-a224-cf5b80c50505.png)
+
+## 布尔
+![image](https://user-images.githubusercontent.com/89188316/174264053-85c58a87-df08-4c84-982b-070a32fcd29e.png)
+
 
 ## 字符串
 ![image](https://user-images.githubusercontent.com/89188316/174258141-7bfdc985-4c8c-42ad-96dc-adc27c93ccbe.png)

@@ -25,8 +25,9 @@
 ```
 
 ## 部署
-- 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本，注：各版本之间的botsettings.yml可能会有较大差异，升级版本后请注意对比并修改该文件
-- 根据自己的需要修改根目录下的配置文件[botsettings.yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Theresa3rd-Bot/botsettings.yml)，修改完成后需要重新启动，([这里给小白简单说一下yml](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/ymlconfig.md))
+- 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本，注：各版本之间的`botsettings.yml`可能会有较大差异，升级版本后请注意对比并修改该文件
+- 根据自己的需要修改根目录下的配置文件`botsettings.yml`，修改完成后需要重新启动
+- [botsetting.yml的一些补充说明](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/botsetting.md)，实在没接触过yml语法的小白可以看一下[这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/ymlconfig.md)
 - 修改根目录下的配置文件appsettings.Production.json，~~注意是Production不是Development~~
 ```json5
 {

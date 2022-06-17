@@ -85,7 +85,7 @@
 ### 说明
 - 使用轮询的方式定时扫描米游社作者的最新帖子，并将帖子自动推送到qq群
 
-![image](https://user-images.githubusercontent.com/89188316/170288223-1e611741-fdc4-43f4-8be1-f00155a2037f.png)
+![image](https://user-images.githubusercontent.com/89188316/174287163-38172cf5-dcd6-454b-82f1-eb7fea980700.png)
 
 ### 获取作者id
 - 在米游社网页版中点开作者头像后，网页地址中 [https://bbs.mihoyo.com/bh3/accountCenter/postList?id=73565533](https://bbs.mihoyo.com/bh3/accountCenter/postList?id=73565533) 的 73565533 为作者id

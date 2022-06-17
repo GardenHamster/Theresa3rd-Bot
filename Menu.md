@@ -8,16 +8,20 @@
 + **[订阅米游社作者](Menu.md#订阅米游社作者)**
 
 ## pixiv涩图
-### 环境
+### 说明
+- 根据配置文件，从 `pixiv` 中搜索一张符合条件的指定色图，下载图片并发送到qq群中，响应速度取决于与pixiv连线的速度
 
+### 环境
 - ~~首先需要一个能翻墙的运行环境，本人使用的是[自由鲸](https://www.freewhale.us/auth/register?code=sQAT)(原心阶)，邀请码为sQAT~~
 - 从0.4.0版本开始加入了免代理，通过修改SNI的方式访问pixiv，然后通过pixiv.cat代理下载图片，有时候或许使用代理下载图片的速度会更高，可以在botsetting.yml中开启或关闭该功能
 
 ### 设置cookie
 - 初次使用时需要设置cookie，使用一个平时较少使用的账号登录[pixiv](https://www.pixiv.net)，然后获取cookie，cookie中必须包含PHPSESSID
 - pc端登录pixiv后按下F12，在p站中随意搜索一个标签，在网络中找到如下请求，这里以搜索Hololive为例
+- 然后使用 #pixivcookie [获取到的cookie] 格式私聊发送给机器人，与机器人必须为好友
+
 ![image](https://user-images.githubusercontent.com/89188316/153154862-8785396e-414a-4f2d-bba3-f7ca8c34f144.png)
-- 使用 #pixivcookie+获取到的cookie 格式私聊发送给机器人
+
 ![image](https://user-images.githubusercontent.com/89188316/153157373-047aa094-483f-4051-9833-ca6af15698ff.png)
 - cookie需要定期更新，在获取色图失败时可以先尝试更新cookie
 
@@ -31,6 +35,9 @@
 ![image](https://user-images.githubusercontent.com/89188316/153159925-d0dff1cd-0e26-4be1-9870-c16d57ea01b5.png)
 
 ## Lolicon瑟图
+### 说明
+- 根据配置文件，从 [lolicon api](https://api.lolicon.app) 中获取色图，并发送到qq群中
+
 ### 指令
 - 使用 #瑟图 可以根据随机获取一张Lolicon图床中的瑟图
 - 使用 #瑟图 [自定义标签] 可以随机搜索一张该标签的瑟图，多标签可以使用逗号或者空格分割，可以进行多标签搜索

@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
-using Theresa3rd_Bot.Model.Cache;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Type;
@@ -249,7 +248,7 @@ namespace Theresa3rd_Bot.Util
         public static async Task<bool> CheckSTUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id)) return false;
-            if (BotConfig.SetuConfig.MaxDaily <= 0) return true;
+            if (BotConfig.SetuConfig.MaxDaily == 0) return false;
             int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
             if (useCount < BotConfig.SetuConfig.MaxDaily) return false;
             await session.SendMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));

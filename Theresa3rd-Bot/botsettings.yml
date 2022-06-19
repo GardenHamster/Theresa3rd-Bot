@@ -17,8 +17,8 @@ Permissions:
     SuperManagers:          [1145141919,1608405161]                             #超级管理员列表,可以使用管理指令
     AcceptGroups:           [1234567890,284196392]                              #白名单，只处理这些群的消息
     SetuGroups:             [284196392]                                         #拥有涩图权限的群
-    SetuShowR18Groups:      [284196392]                                         #允许搜索和发送r18的群，不包含r18图片
-    SetuShowR18ImgGroups:   [284196392]                                         #允许发送r18图片的群，否则只发送图片地址
+    SetuShowR18Groups:      []                                                  #允许搜索和发送r18的群，不包含r18图片
+    SetuShowR18ImgGroups:   []                                                  #允许发送r18图片的群，否则只发送图片地址
     SetuCustomGroups:       [284196392]                                         #允许查找自定义涩图的群
     SetuNoneCDGroups:       [284196392]                                         #涩图没有CD的群
     SetuLimitlessGroups:    [284196392]                                         #涩图次数无限制的群
@@ -67,7 +67,7 @@ Setu:                                                                           
     EnableTagCommand:       '解禁标签'                                          #解禁一个涩图关键词
     DisableTags:            ['R-18','R18','R18+','R18G','R17.9']                #禁止的涩图关键词.所有群通用
     DisableTagsMsg:         '禁止查找这个类型的涩图'                            #标签被禁用时返回的消息
-    MaxDaily:               20                                                  #每人每日最大使用次数,0表示无可用次数
+    MaxDaily:               20                                                  #每人每日最大使用次数，0表示无限制
     ImgSavePath:            'C:\BotImg\download'                                #图片存放目录
     RevokeInterval:         0                                                   #N秒后撤回,0表示不撤回
     SendPrivate:            true                                                #私聊发送，需要用户主动发送任意消息给机器人开启临时会话
@@ -115,7 +115,7 @@ Saucenao:                                                                       
     Template:               ''
     GroupCD:                0                                                   #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
     MemberCD:               0                                                   #独立CD(秒)，单个群员使用命令后需要等待的CD
-    MaxDaily:               0                                                   #每人每日最大使用次数,0表示无限制
+    MaxDaily:               0                                                   #每人每日最大使用次数，0表示无限制
     WaitSeconds:            60                                                  #等待图片的时长(秒)
     MaxReceive:             0                                                   #每次最多接收并查询多少张图片，用户发送的图片数量超出该值时只处理前N张图片
 

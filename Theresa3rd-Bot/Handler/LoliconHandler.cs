@@ -74,7 +74,7 @@ namespace Theresa3rd_Bot.Handler
                         if (warnBuilder.Length > 0) warnBuilder.Append("，");
                         warnBuilder.Append($"{BotConfig.SetuConfig.MemberCD}秒后再来哦");
                     }
-                    if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(groupId) == false)
+                    if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(groupId) == false || BotConfig.SetuConfig.MaxDaily > 0)
                     {
                         if (warnBuilder.Length > 0) warnBuilder.Append("，");
                         warnBuilder.Append($"今天剩余使用次数{todayLeftCount}次");

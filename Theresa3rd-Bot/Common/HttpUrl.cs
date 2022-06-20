@@ -25,7 +25,7 @@ namespace Theresa3rd_Bot.Common
         /// <returns></returns>
         public static string getPixivSearchUrl(string searchWord, int pageNo, bool isMatchAll, bool includeR18)
         {
-            searchWord = searchWord.Replace(",", "OR").Replace("，", "OR");
+            searchWord = searchWord.Replace(",", " OR ").Replace("，", " OR ");
             string keyword = System.Web.HttpUtility.UrlEncode(searchWord).Replace("+", "%20");
             string mode = includeR18 ? "all" : "safe";//all,safe,r18;
             string s_mode = isMatchAll ? "s_tag_full" : "s_tag";//s_tag_full,s_tag,s_tc

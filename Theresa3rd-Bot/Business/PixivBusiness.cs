@@ -187,12 +187,13 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivicSearchDto"></param>
         /// <returns></returns>
-        public async Task<PixivWorkInfoDto> getRandomWorkAsync(string tagName, bool includeR18)
+        public async Task<PixivWorkInfoDto> getRandomWorkAsync(string tagNames, bool includeR18)
         {
             int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / pixivPageSize);
             if (pageCount < 3) pageCount = 3;
 
-            PixivSearchDto pageOne = await getPixivSearchDtoAsync(tagName, 1, false, includeR18);
+            string searchWord = formatSearchWord(tagNames);
+            PixivSearchDto pageOne = await getPixivSearchDtoAsync(searchWord, 1, false, includeR18);
             int total = pageOne.body.getIllust().total;
             int maxPage = (int)Math.Ceiling(Convert.ToDecimal(total) / pixivPageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
@@ -203,7 +204,7 @@ namespace Theresa3rd_Bot.Business
             List<PixivIllust> tempIllustList = new List<PixivIllust>();
             foreach (int page in pageArr)
             {
-                PixivSearchDto pixivSearchDto = await getPixivSearchDtoAsync(tagName, page, false, includeR18);
+                PixivSearchDto pixivSearchDto = await getPixivSearchDtoAsync(searchWord, page, false, includeR18);
                 tempIllustList.AddRange(pixivSearchDto.body.getIllust().data);
                 Thread.Sleep(1000);
             }
@@ -213,9 +214,9 @@ namespace Theresa3rd_Bot.Business
             Random random = RandomHelper.getRandom();
             while (tempIllustList.Count > 0)
             {
-                int randomIndex = random.Next(0, tempIllustList.Count);
-                pixivIllustList.Add(tempIllustList[randomIndex]);
-                tempIllustList.RemoveAt(randomIndex);
+                PixivIllust randomIllust = tempIllustList[random.Next(0, tempIllustList.Count)];
+                pixivIllustList.Add(randomIllust);
+                tempIllustList.Remove(randomIllust);
             }
 
             //提取前N个作品
@@ -238,7 +239,7 @@ namespace Theresa3rd_Bot.Business
             Task[] tasks = new Task[threadCount];
             for (int i = 0; i < taskList.Length; i++)
             {
-                tasks[i] = Task.Factory.StartNew(() => getPixivWorkInfoMethodAsync(taskList[i], includeR18));
+                tasks[i] = getPixivWorkInfoMethodAsync(taskList[i], includeR18);
                 await Task.Delay(RandomHelper.getRandomBetween(500, 1000));//将每条线程的间隔错开
             }
             Task.WaitAll(tasks);
@@ -432,9 +433,10 @@ namespace Theresa3rd_Bot.Business
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(string tagName, int subscribeId, bool includeR18)
+        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(string tagNames, int subscribeId, bool includeR18)
         {
-            PixivSearchDto pageOne = await getPixivSearchDtoAsync(tagName, 1, false, includeR18);
+            string searchWord = formatSearchWord(tagNames);
+            PixivSearchDto pageOne = await getPixivSearchDtoAsync(searchWord, 1, false, includeR18);
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             if (pageOne == null) return pixivSubscribeList;
             foreach (PixivIllust item in pageOne.body.getIllust().data)
@@ -606,8 +608,8 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{RelevantCount}", pixivWorkInfo.RelevantCount.ToString());
             template = template.Replace("{PageCount}", pixivWorkInfo.pageCount.ToString());
-            template = template.Replace("{Tags}", getTagsStr(pixivWorkInfo.tags));
-            template = template.Replace("{Urls}", getWorkUrlStr(pixivWorkInfo));
+            template = template.Replace("{Tags}", joinTagsStr(pixivWorkInfo.tags));
+            template = template.Replace("{Urls}", joinWorkUrls(pixivWorkInfo));
             return template;
         }
 
@@ -619,12 +621,12 @@ namespace Theresa3rd_Bot.Business
             workInfoStr.AppendLine($"标题：{pixivWorkInfo.illustTitle}，画师：{pixivWorkInfo.userName}，画师id：{pixivWorkInfo.userId}，大小：{sizeMB}MB，发布时间：{pixivWorkInfo.createDate.ToSimpleString()}，");
             workInfoStr.AppendLine($"收藏：{pixivWorkInfo.bookmarkCount}，赞：{pixivWorkInfo.likeCount}，浏览：{pixivWorkInfo.viewCount}，");
             workInfoStr.AppendLine($"耗时：{costSecond}s，标签图片：{pixivWorkInfo.RelevantCount}张，作品图片:{pixivWorkInfo.pageCount}张");
-            workInfoStr.AppendLine($"标签：{getTagsStr(pixivWorkInfo.tags)}");
-            workInfoStr.Append(getWorkUrlStr(pixivWorkInfo));
+            workInfoStr.AppendLine($"标签：{joinTagsStr(pixivWorkInfo.tags)}");
+            workInfoStr.Append(joinWorkUrls(pixivWorkInfo));
             return workInfoStr.ToString();
         }
 
-        protected string getWorkUrlStr(PixivWorkInfo pixivWorkInfo)
+        protected string joinWorkUrls(PixivWorkInfo pixivWorkInfo)
         {
             int maxShowCount = 3;
             string proxy = BotConfig.GeneralConfig.PixivProxy;
@@ -647,7 +649,7 @@ namespace Theresa3rd_Bot.Business
             return LinkStr.ToString();
         }
 
-        protected static string getTagsStr(PixivTagDto tags)
+        protected string joinTagsStr(PixivTagDto tags)
         {
             string tagstr = "";
             foreach (PixivTagModel pixivTagModel in tags.tags)
@@ -656,6 +658,28 @@ namespace Theresa3rd_Bot.Business
                 tagstr += pixivTagModel.translation != null && string.IsNullOrEmpty(pixivTagModel.translation.en) == false ? pixivTagModel.translation.en : pixivTagModel.tag;
             }
             return tagstr;
+        }
+
+        /// <summary>
+        /// 将用户输入的关键词转换为pixiv可搜索的word
+        /// </summary>
+        /// <param name="tagNames"></param>
+        /// <returns></returns>
+        public string formatSearchWord(string tagNames)
+        {
+            tagNames = tagNames.Trim().Replace("(", "（").Replace(")", "）");
+            string[] andArr = tagNames.Split(new char[] { ' ', '+' }, StringSplitOptions.RemoveEmptyEntries);
+            if (andArr == null || andArr.Length == 0) return tagNames;
+            StringBuilder searchBuilder = new StringBuilder();
+            foreach (string andStr in andArr)
+            {
+                if (string.IsNullOrEmpty(andStr)) continue;
+                string[] orArr = andStr.Split(new char[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
+                string appendWord = orArr.Length > 1 ? $"({string.Join(" OR ", orArr)})" : orArr[0];
+                if (searchBuilder.Length > 0) searchBuilder.Append(" ");
+                searchBuilder.Append(appendWord);
+            }
+            return searchBuilder.ToString();
         }
 
         /*-------------------------------------------------------------接口相关--------------------------------------------------------------------------*/

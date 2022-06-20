@@ -16,7 +16,7 @@ namespace Theresa3rd_Bot.Handler
 
         public async Task searchSource(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
         {
-
+            await Task.CompletedTask;
         }
 
 

@@ -116,6 +116,8 @@ Saucenao:                                                                       
     MemberCD:               0                                                   #独立CD(秒)，单个群员使用命令后需要等待的CD
     MaxDaily:               0                                                   #每人每日最大使用次数，0表示无限制
     MaxReceive:             0                                                   #每次最多接收并查询多少张图片，用户发送的图片数量超出该值时只处理前N张图片
+    SearchOrigin:           true                                                #尝试从pixiv中获取并发送原图
+    WithdrawOver:           79.99                                               #图片匹配度大于该百分比时，撤回群员发送的要查找的图片
 
 Subscribe:                                                                      #订阅相关
     PixivUser:                                                                  #订阅P站用户

@@ -41,16 +41,17 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LoliconResultV2 loliconResult = null;
+                int r18Mode = groupId.IsShowR18() ? 2 : 0;
                 string tagNames = message.splitKeyWord(BotConfig.SetuConfig.Lolicon.Command) ?? "";
                 if (string.IsNullOrEmpty(tagNames))
                 {
-                    loliconResult = await loliconBusiness.getLoliconResultAsync();
+                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode);
                 }
                 else
                 {
                     string[] tagArr = tagNames.Split(new char[] { ' ', ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (await BusinessHelper.CheckSTCustomEnableAsync(session, args) == false) return;
-                    loliconResult = await loliconBusiness.getLoliconResultAsync(tagArr);
+                    if (await BusinessHelper.CheckSetuCustomEnableAsync(session, args) == false) return;
+                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, tagArr);
                 }
 
                 if (loliconResult == null || loliconResult.data.Count == 0)
@@ -60,7 +61,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LoliconDataV2 loliconData = loliconResult.data.First();
-                int todayLeftCount = BusinessHelper.GetSTLeftToday(session, args);
+                int todayLeftCount = BusinessHelper.GetSetuLeftToday(session, args);
                 FileInfo fileInfo = await loliconBusiness.downImgAsync(loliconData);
 
                 int groupMsgId = 0;
@@ -146,7 +147,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 //进入CD状态
-                CoolingCache.SetMemberSTCooling(groupId, memberId);
+                CoolingCache.SetMemberSetuCooling(groupId, memberId);
                 if (groupMsgId == 0 || BotConfig.SetuConfig.RevokeInterval == 0) return;
 
                 try

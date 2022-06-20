@@ -1,5 +1,4 @@
-﻿using Mirai.CSharp.Builders;
-using Mirai.CSharp.HttpApi.Handlers;
+﻿using Mirai.CSharp.HttpApi.Handlers;
 using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
@@ -8,9 +7,7 @@ using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
@@ -149,7 +146,7 @@ namespace Theresa3rd_Bot.Event
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.DisableTagCommand))
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
-                    if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSetuEnableAsync(session, args) == false) return;
                     await new BanWordHandler().disableSetuAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.BanWord, message);
                     args.BlockRemainingHandlers = true;
@@ -160,7 +157,7 @@ namespace Theresa3rd_Bot.Event
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.EnableTagCommand))
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
-                    if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSetuEnableAsync(session, args) == false) return;
                     await new BanWordHandler().enableSetuAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.BanWord, message);
                     args.BlockRemainingHandlers = true;
@@ -170,13 +167,13 @@ namespace Theresa3rd_Bot.Event
                 //瑟图
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.Lolicon?.Command))
                 {
-                    if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
-                    if (await BusinessHelper.CheckSTTagEnableAsync(session, args, message) == false) return;
-                    if (await BusinessHelper.CheckMemberSTCoolingAsync(session, args)) return;
-                    if (await BusinessHelper.ChecekGroupSTCoolingAsync(session, args)) return;
-                    if (await BusinessHelper.CheckSTUseUpAsync(session, args)) return;
+                    if (await BusinessHelper.CheckSetuEnableAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSetuTagEnableAsync(session, args, message) == false) return;
+                    if (await BusinessHelper.CheckMemberSetuCoolingAsync(session, args)) return;
+                    if (await BusinessHelper.ChecekGroupSetuCoolingAsync(session, args)) return;
+                    if (await BusinessHelper.CheckSetuUseUpAsync(session, args)) return;
                     if (await BusinessHelper.CheckHandingAsync(session, args)) return;
-                    CoolingCache.SetGroupSTCooling(groupId, memberId);
+                    CoolingCache.SetGroupSetuCooling(groupId, memberId);
                     await new LoliconHandler().sendGeneralLoliconImageAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
                     args.BlockRemainingHandlers = true;
@@ -186,25 +183,38 @@ namespace Theresa3rd_Bot.Event
                 //涩图
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.Pixiv?.Command))
                 {
-                    if (await BusinessHelper.CheckSTEnableAsync(session, args) == false) return;
-                    if (await BusinessHelper.CheckSTTagEnableAsync(session, args, message) == false) return;
+                    if (await BusinessHelper.CheckSetuEnableAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckSetuTagEnableAsync(session, args, message) == false) return;
                     if (await BusinessHelper.CheckPixivCookieAvailableAsync(session, args) == false) return;
-                    if (await BusinessHelper.CheckMemberSTCoolingAsync(session, args)) return;
-                    if (await BusinessHelper.ChecekGroupSTCoolingAsync(session, args)) return;
-                    if (await BusinessHelper.CheckSTUseUpAsync(session, args)) return;
+                    if (await BusinessHelper.CheckMemberSetuCoolingAsync(session, args)) return;
+                    if (await BusinessHelper.ChecekGroupSetuCoolingAsync(session, args)) return;
+                    if (await BusinessHelper.CheckSetuUseUpAsync(session, args)) return;
                     if (await BusinessHelper.CheckHandingAsync(session, args)) return;
-                    CoolingCache.SetGroupSTCooling(groupId, memberId);
+                    CoolingCache.SetGroupSetuCooling(groupId, memberId);
                     await new PixivHandler().sendGeneralPixivImageAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
                     args.BlockRemainingHandlers = true;
                     return;
                 }
 
+                //原图
+                if (instructions.StartWithCommand(BotConfig.SaucenaoConfig?.Command))
+                {
+                    if (await BusinessHelper.CheckSaucenaoEnableAsync(session, args) == false) return;
+                    if (BotConfig.SaucenaoConfig.SearchOrigin && await BusinessHelper.CheckPixivCookieAvailableAsync(session, args) == false) return;
+                    if (await BusinessHelper.CheckMemberSaucenaoCoolingAsync(session, args)) return;
+                    if (await BusinessHelper.CheckSaucenaoUseUpAsync(session, args)) return;
+                    if (await BusinessHelper.CheckHandingAsync(session, args)) return;
+                    await new SaucenaoHandler().searchSource(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Saucenao, message);
+                    args.BlockRemainingHandlers = true;
+                    return;
+                }
+
+                //测试指令
                 if (instructions.StartWithCommand("test"))
                 {
-                    //await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("hello word"));
-                    IChatMessage imgMessage = (IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, "D:\\other\\85972415_p0.jpg");
-                    await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, imgMessage);
+                    await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("hello word"));
                     return;
                 }
             }

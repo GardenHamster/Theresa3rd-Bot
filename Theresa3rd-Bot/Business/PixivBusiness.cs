@@ -192,7 +192,7 @@ namespace Theresa3rd_Bot.Business
             int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / pixivPageSize);
             if (pageCount < 3) pageCount = 3;
 
-            PixivSearchDto pageOne = await getPixivSearchDtoAsync(tagName, 1, false);
+            PixivSearchDto pageOne = await getPixivSearchDtoAsync(tagName, 1, false, includeR18);
             int total = pageOne.body.getIllust().total;
             int maxPage = (int)Math.Ceiling(Convert.ToDecimal(total) / pixivPageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
@@ -203,7 +203,7 @@ namespace Theresa3rd_Bot.Business
             List<PixivIllust> tempIllustList = new List<PixivIllust>();
             foreach (int page in pageArr)
             {
-                PixivSearchDto pixivSearchDto = await getPixivSearchDtoAsync(tagName, page, false);
+                PixivSearchDto pixivSearchDto = await getPixivSearchDtoAsync(tagName, page, false, includeR18);
                 tempIllustList.AddRange(pixivSearchDto.body.getIllust().data);
                 Thread.Sleep(1000);
             }
@@ -432,9 +432,9 @@ namespace Theresa3rd_Bot.Business
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(string tagName, int subscribeId)
+        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(string tagName, int subscribeId, bool includeR18)
         {
-            PixivSearchDto pageOne = await getPixivSearchDtoAsync(tagName, 1, false);
+            PixivSearchDto pageOne = await getPixivSearchDtoAsync(tagName, 1, false, includeR18);
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             if (pageOne == null) return pixivSubscribeList;
             foreach (PixivIllust item in pageOne.body.getIllust().data)
@@ -660,11 +660,11 @@ namespace Theresa3rd_Bot.Business
 
         /*-------------------------------------------------------------接口相关--------------------------------------------------------------------------*/
 
-        public async Task<PixivSearchDto> getPixivSearchDtoAsync(string keyword, int pageNo, bool isMatchAll)
+        public async Task<PixivSearchDto> getPixivSearchDtoAsync(string keyword, int pageNo, bool isMatchAll, bool includeR18)
         {
-            string referer = HttpUrl.getPixivSearchReferer(keyword);
+            string referer = HttpUrl.getPixivSearchReferer();
             Dictionary<string, string> headerDic = getPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll);
+            string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll, includeR18);
             string json = await HttpHelper.PixivGetAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivSearchDto>(json);
         }

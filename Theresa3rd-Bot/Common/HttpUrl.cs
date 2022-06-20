@@ -23,10 +23,11 @@ namespace Theresa3rd_Bot.Common
         /// </summary>
         /// <param name="searchWord"></param>
         /// <returns></returns>
-        public static string getPixivSearchUrl(string searchWord, int pageNo, bool isMatchAll)
+        public static string getPixivSearchUrl(string searchWord, int pageNo, bool isMatchAll, bool includeR18)
         {
-            string keyword = System.Web.HttpUtility.UrlEncode(searchWord).Replace("+", " ");
-            string mode = "safe";//r18,safe;
+            searchWord = searchWord.Replace(",", "OR").Replace("，", "OR");
+            string keyword = System.Web.HttpUtility.UrlEncode(searchWord).Replace("+", "%20");
+            string mode = includeR18 ? "all" : "safe";//all,safe,r18;
             string s_mode = isMatchAll ? "s_tag_full" : "s_tag";//s_tag_full,s_tag,s_tc
             return $"{PixivHomeUrl}/ajax/search/illustrations/{keyword}?order=date_d&mode={mode}&p={pageNo}&s_mode={s_mode}&type=illust_and_ugoira&lang=zh";
         }
@@ -86,12 +87,9 @@ namespace Theresa3rd_Bot.Common
         /// </summary>
         /// <param name="searchWord"></param>
         /// <returns></returns>
-        public static string getPixivSearchReferer(string searchWord)
+        public static string getPixivSearchReferer()
         {
-            string keyword = System.Web.HttpUtility.UrlEncode(searchWord).Replace("+", " ");
-            string mode = "safe";
-            string s_mode = "s_tag";//s_tag_full/s_tag
-            return $"{PixivHomeUrl}/tags/{keyword}/illustrations?mode={mode}&s_mode={s_mode}";
+            return PixivHomeUrl;
         }
 
         /// <summary>

@@ -134,7 +134,7 @@ namespace Theresa3rd_Bot.Util
         /// <param name="session"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static async Task<bool> CheckSTEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckSetuEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.PermissionsConfig.SetuGroups.Contains(args.Sender.Group.Id) == false)
             {
@@ -155,7 +155,7 @@ namespace Theresa3rd_Bot.Util
         /// <param name="session"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static async Task<bool> CheckSTTagEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        public static async Task<bool> CheckSetuTagEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
         {
             message = message.ToLower().Trim();
             long groupId = args.Sender.Group.Id;
@@ -171,6 +171,27 @@ namespace Theresa3rd_Bot.Util
             if (banSetuList.Where(o => message.IndexOf(o.KeyWord.ToLower()) > -1).Any())
             {
                 await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 检查原图功能是否可用
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static async Task<bool> CheckSaucenaoEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            if (BotConfig.PermissionsConfig.SaucenaoGroups.Contains(args.Sender.Group.Id) == false)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                return false;
+            }
+            if (BotConfig.SaucenaoConfig == null || BotConfig.SaucenaoConfig.Enable == false)
+            {
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.DisableMsg, "该功能已关闭");
                 return false;
             }
             return true;
@@ -215,10 +236,25 @@ namespace Theresa3rd_Bot.Util
         /// <param name="session"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static async Task<bool> CheckMemberSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckMemberSetuCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
-            int cdSecond = CoolingCache.GetMemberSTCooling(args.Sender.Group.Id, args.Sender.Id);
+            int cdSecond = CoolingCache.GetMemberSetuCooling(args.Sender.Group.Id, args.Sender.Id);
+            if (cdSecond <= 0) return false;
+            await session.SendMessageWithAtAsync(args, new PlainMessage($" 功能冷却中，{cdSecond}秒后再来哦~"));
+            return true;
+        }
+
+        /// <summary>
+        /// 检查原图功能是否在冷却中
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static async Task<bool> CheckMemberSaucenaoCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
+            int cdSecond = CoolingCache.GetMemberSaucenaoCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
             await session.SendMessageWithAtAsync(args, new PlainMessage($" 功能冷却中，{cdSecond}秒后再来哦~"));
             return true;
@@ -230,10 +266,10 @@ namespace Theresa3rd_Bot.Util
         /// <param name="session"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static async Task<bool> ChecekGroupSTCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> ChecekGroupSetuCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
-            int cdSecond = CoolingCache.GetGroupSTCooling(args.Sender.Group.Id, args.Sender.Id);
+            int cdSecond = CoolingCache.GetGroupSetuCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
             await session.SendMessageWithAtAsync(args, new PlainMessage($" 群功能冷却中，{cdSecond}秒后再来哦~"));
             return true;
@@ -245,12 +281,27 @@ namespace Theresa3rd_Bot.Util
         /// <param name="session"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static async Task<bool> CheckSTUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckSetuUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id)) return false;
             if (BotConfig.SetuConfig.MaxDaily == 0) return false;
             int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
             if (useCount < BotConfig.SetuConfig.MaxDaily) return false;
+            await session.SendMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));
+            return true;
+        }
+
+        /// <summary>
+        /// 检查原图功能可用次数
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static async Task<bool> CheckSaucenaoUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            if (BotConfig.SaucenaoConfig.MaxDaily == 0) return false;
+            int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Saucenao);
+            if (useCount < BotConfig.SaucenaoConfig.MaxDaily) return false;
             await session.SendMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));
             return true;
         }
@@ -274,7 +325,7 @@ namespace Theresa3rd_Bot.Util
         /// <param name="session"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static async Task<bool> CheckSTCustomEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<bool> CheckSetuCustomEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(args.Sender.Group.Id)) return true;
             await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.SetuCustomDisableMsg, " 自定义功能已关闭");
@@ -287,7 +338,7 @@ namespace Theresa3rd_Bot.Util
         /// <param name="session"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static int GetSTLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static int GetSetuLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
             if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id)) return BotConfig.SetuConfig.MaxDaily;

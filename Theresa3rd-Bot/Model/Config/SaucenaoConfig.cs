@@ -16,15 +16,15 @@
 
         public string Template { get; set; }
 
-        public int GroupCD { get; set; }
-
         public int MemberCD { get; set; }
 
         public int MaxDaily { get; set; }
 
-        public int WaitSeconds { get; set; }
-
         public int MaxReceive { get; set; }
+
+        public bool SearchOrigin { get; set; }
+
+        public double WithdrawOver { get; set; }
 
     }
 }

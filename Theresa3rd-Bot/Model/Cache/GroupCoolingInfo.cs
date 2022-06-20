@@ -6,7 +6,7 @@ namespace Theresa3rd_Bot.Model.Cache
     {
         public long GroupId { get; set; }
 
-        public DateTime? LastGetSTTime { get; set; }
+        public DateTime? LastGetSetuTime { get; set; }
 
         public DateTime? LastSaucenaoTime { get; set; }
 

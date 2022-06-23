@@ -53,13 +53,11 @@ namespace Theresa3rd_Bot.Handler
                 bool includeR18 = groupId.IsShowR18();
                 PixivWorkInfoDto pixivWorkInfoDto = null;
                 string tagName = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
-                tagName = tagName.Replace("（", ")").Replace("）", ")");
-
-
+                
                 if (StringHelper.isPureNumber(tagName))
                 {
                     if (await BusinessHelper.CheckSetuCustomEnableAsync(session, args) == false) return;
-                    pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(tagName);//根据作品id获取作品
+                    pixivWorkInfoDto = await pixivBusiness.getPixivWorkInfoDtoAsync(tagName);//根据作品id获取作品
                 }
                 else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.随机订阅)
                 {
@@ -260,7 +258,7 @@ namespace Theresa3rd_Bot.Handler
                         if (dbSubscribe == null)
                         {
                             //添加订阅
-                            PixivUserInfoDto pixivUserInfoDto = await PixivHelper.GetPixivUserInfoAsync(pixivUserId);
+                            PixivUserInfoDto pixivUserInfoDto = await pixivBusiness.getPixivUserInfoDtoAsync(pixivUserId);
                             dbSubscribe = subscribeBusiness.insertSurscribe(pixivUserInfoDto, pixivUserId);
                         }
 
@@ -446,7 +444,7 @@ namespace Theresa3rd_Bot.Handler
         {
             try
             {
-                string pixivTag = null;
+                string pixivTags = null;
                 SubscribeGroupType? groupType = null;
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
@@ -454,9 +452,9 @@ namespace Theresa3rd_Bot.Handler
                 string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.PixivTag.AddCommand);
                 if (paramArr != null && paramArr.Length >= 2)
                 {
-                    pixivTag = paramArr.Length > 0 ? paramArr[0] : null;
+                    pixivTags = paramArr.Length > 0 ? paramArr[0] : null;
                     string groupTypeStr = paramArr.Length > 1 ? paramArr[1] : null;
-                    if (await CheckPixivTagAsync(session, args, pixivTag) == false) return;
+                    if (await CheckPixivTagAsync(session, args, pixivTags) == false) return;
                     if (await CheckSubscribeGroupAsync(session, args, groupTypeStr) == false) return;
                     groupType = (SubscribeGroupType)Convert.ToInt32(groupTypeStr);
                 }
@@ -469,19 +467,20 @@ namespace Theresa3rd_Bot.Handler
                     stepInfo.AddStep(tagStep);
                     stepInfo.AddStep(groupStep);
                     if (await stepInfo.StartStep(session, args) == false) return;
-                    pixivTag = tagStep.Answer;
+                    pixivTags = tagStep.Answer;
                     groupType = (SubscribeGroupType)Convert.ToInt32(groupStep.Answer);
                 }
 
-                PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(pixivTag, 1, false, groupId.IsShowR18());
+                string searchWord = pixivBusiness.formatSearchWord(pixivTags);
+                PixivSearchDto pageOne = await pixivBusiness.getPixivSearchDtoAsync(searchWord, 1, false, groupId.IsShowR18());
                 if (pageOne == null || pageOne.body.getIllust().data.Count == 0)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 该标签中没有任何作品，订阅失败"));
                     return;
                 }
 
-                SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivTag, SubscribeType.P站标签);
-                if (dbSubscribe == null) dbSubscribe = subscribeBusiness.insertSurscribe(pixivTag);
+                SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivTags, SubscribeType.P站标签);
+                if (dbSubscribe == null) dbSubscribe = subscribeBusiness.insertSurscribe(pixivTags);
 
                 long subscribeGroupId = groupType == SubscribeGroupType.All ? 0 : groupId;
                 if (subscribeBusiness.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
@@ -492,7 +491,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 标签[{pixivTag}]订阅成功,该标签总作品数为:{pageOne.body.illust.total}"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage($" 标签[{pixivTags}]订阅成功,该标签总作品数为:{pageOne.body.illust.total}"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
@@ -600,7 +599,7 @@ namespace Theresa3rd_Bot.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "读取画师最新作品时出现异常");
-                await session.SendMessageWithAtAsync(args, new PlainMessage($"读取画师[{dbSubscribe.SubscribeName}]的最新作品失败~"));
+                await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage($"读取画师[{dbSubscribe.SubscribeName}]的最新作品失败~"));
             }
         }
 

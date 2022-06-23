@@ -102,7 +102,7 @@ namespace Theresa3rd_Bot.Util
             }
             if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0)
             {
-                await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("缺少userId，请更新cookie"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage("缺少userId，请更新cookie"));
                 return false;
             }
             return true;
@@ -345,6 +345,21 @@ namespace Theresa3rd_Bot.Util
             RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
             int todayUseCount = requestRecordBusiness.getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
             int leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
+            return leftToday < 0 ? 0 : leftToday;
+        }
+
+        /// <summary>
+        /// 获取今日原图可用次数
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static int GetSaucenaoLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            if (BotConfig.SaucenaoConfig.MaxDaily == 0) return 0;
+            RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
+            int todayUseCount = requestRecordBusiness.getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Saucenao);
+            int leftToday = BotConfig.SaucenaoConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
         }
 

@@ -16,6 +16,11 @@ namespace Theresa3rd_Bot.Common
         public static readonly string PixivHomeUrl = "https://www.pixiv.net";
 
 
+        /// <summary>
+        /// Saucenao搜索地址
+        /// </summary>
+        public static readonly string SaucenaoUrl = "https://saucenao.com/search.php";
+
         /*---------------------------------------------------------------pixiv-----------------------------------------------------------------------*/
 
         /// <summary>

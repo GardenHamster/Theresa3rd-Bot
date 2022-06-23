@@ -2,11 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Security;
-using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
@@ -15,15 +12,9 @@ namespace Theresa3rd_Bot.Util
 {
     public static class HttpHelper
     {
-        private static readonly string Pixiv_DNS_AND_SNI = "www.pixivision.net";
-
-        private static readonly string Pixiv_Client_Name = "PixivClient";
-
         private static readonly IHttpClientFactory DefaultHttpClientFactory;
 
-        private static readonly IHttpClientFactory PixivHttpClientFactory;
-
-        public static readonly string[] UserAgent = new string[] {
+        public static readonly string[] UserAgents = new string[] {
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36",
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11",
@@ -44,38 +35,6 @@ namespace Theresa3rd_Bot.Util
         static HttpHelper()
         {
             DefaultHttpClientFactory = new ServiceCollection().AddHttpClient().BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
-
-            IServiceCollection pixivServiceCollection = new ServiceCollection();
-            pixivServiceCollection.AddHttpClient(Pixiv_Client_Name).ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                return new SocketsHttpHandler()
-                {
-                    ConnectCallback = (info, token) =>
-                    {
-                        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        socket.Connect(Pixiv_DNS_AND_SNI, 443);
-                        var stream = new NetworkStream(socket, true);
-                        SslStream sslstream = new SslStream(stream, false);
-                        sslstream.AuthenticateAsClient(new SslClientAuthenticationOptions
-                        {
-                            TargetHost = Pixiv_DNS_AND_SNI,
-                            ApplicationProtocols = new List<SslApplicationProtocol>(new SslApplicationProtocol[] { SslApplicationProtocol.Http3 })
-                        });
-                        return new ValueTask<Stream>(sslstream);
-                    }
-                };
-            });
-            PixivHttpClientFactory = pixivServiceCollection.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
-        }
-
-        /// <summary>
-        /// 将一个Https地址转换为Http地址
-        /// </summary>
-        /// <param name="httpUrl"></param>
-        /// <returns></returns>
-        public static string ToHttpUrl(this string httpUrl)
-        {
-            return httpUrl.Replace("https://", "http://");
         }
 
         /// <summary>
@@ -85,33 +44,13 @@ namespace Theresa3rd_Bot.Util
         /// <param name="headerDic"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static async Task<string> HttpGetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        public static async Task<string> GetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.BaseAddress = new Uri(url);
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            HttpResponseMessage response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
-        }
-
-        /// <summary>
-        /// HttpGet
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="headerDic"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public static async Task<string> PixivGetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
-        {
-            HttpClient client = GetPixivHttpClient();
-            client.BaseAddress = new Uri(url);
-            client.addHeaders(headerDic);
-            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
-            client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            if (BotConfig.GeneralConfig.PixivFreeProxy) url = url.ToHttpUrl();
             HttpResponseMessage response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
@@ -125,7 +64,7 @@ namespace Theresa3rd_Bot.Util
         /// <param name="headerDic"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static async Task<string> HttpPostAsync(string url, string postJsonStr, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        public static async Task<string> PostJsonAsync(string url, string postJsonStr, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             HttpContent content = new StringContent(postJsonStr);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -138,6 +77,17 @@ namespace Theresa3rd_Bot.Util
             return await response.Content.ReadAsStringAsync();
         }
 
+        public static async Task<string> PostFormAsync(string url, Dictionary<string, string> paramDic, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        {
+            HttpClient client = DefaultHttpClientFactory.CreateClient();
+            client.addHeaders(headerDic);
+            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
+            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            HttpResponseMessage response = await client.PostAsync(url, new FormUrlEncodedContent(paramDic));
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+
         /// <summary>
         /// post方式提交图片
         /// </summary>
@@ -145,7 +95,7 @@ namespace Theresa3rd_Bot.Util
         /// <param name="imgPath"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static async Task<string> HttpPostImageAsync(string postUrl, FileInfo imageFile, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        public static async Task<string> PostImageAsync(string postUrl, FileInfo imageFile, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             using FileStream fs = new FileStream(imageFile.FullName, FileMode.Open, FileAccess.Read);
             HttpClient client = DefaultHttpClientFactory.CreateClient();
@@ -162,7 +112,6 @@ namespace Theresa3rd_Bot.Util
             HttpResponseMessage res = client.PostAsync(postUrl, formData).Result;
             return await res.Content.ReadAsStringAsync();
         }
-
 
         /// <summary>
         /// 根据一个网址获取Html内容
@@ -192,7 +141,6 @@ namespace Theresa3rd_Bot.Util
             return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic, timeout);
         }
 
-
         /// <summary>
         /// 下载文件
         /// </summary>
@@ -219,44 +167,20 @@ namespace Theresa3rd_Bot.Util
         /// <param name="request"></param>
         /// <param name="headerDic"></param>
         /// <returns></returns>
-        private static void addHeaders(this HttpClient client, Dictionary<string, string> headerDic)
+        public static void addHeaders(this HttpClient client, Dictionary<string, string> headerDic)
         {
             if (headerDic == null) return;
-            foreach (var item in headerDic)
-            {
-                client.DefaultRequestHeaders.Add(item.Key, item.Value);
-            }
+            foreach (var item in headerDic) client.DefaultRequestHeaders.Add(item.Key, item.Value);
         }
 
         /// <summary>
         /// 获取随机UserAgent
         /// </summary>
         /// <returns></returns>
-        private static string GetRandomUserAgent()
+        public static string GetRandomUserAgent()
         {
-            int randomIndex = new Random(DateTime.Now.Millisecond).Next(0, UserAgent.Length);
-            return UserAgent[randomIndex];
-        }
-
-        /// <summary>
-        /// 获取一个pixiv免代理的HttpClient
-        /// </summary>
-        /// <returns></returns>
-        private static HttpClient GetPixivHttpClient()
-        {
-            if (BotConfig.GeneralConfig.PixivFreeProxy)
-            {
-                HttpClient httpClient = PixivHttpClientFactory.CreateClient(Pixiv_Client_Name);
-                //httpClient.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                httpClient.DefaultRequestVersion = HttpVersion.Version30;
-                //httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
-                //httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
-                return httpClient;
-            }
-            else
-            {
-                return DefaultHttpClientFactory.CreateClient();
-            }
+            int randomIndex = new Random(DateTime.Now.Millisecond).Next(0, UserAgents.Length);
+            return UserAgents[randomIndex];
         }
 
         /// <summary>

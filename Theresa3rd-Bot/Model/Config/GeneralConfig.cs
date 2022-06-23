@@ -9,6 +9,8 @@ namespace Theresa3rd_Bot.Model.Config
     {
         public string Prefix { get; set; }
 
+        public string DownloadPath { get; set; }
+
         public List<long> ErrorGroups { get; set; }
 
         public string ErrorMsg { get; set; }

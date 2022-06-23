@@ -153,7 +153,7 @@ namespace Theresa3rd_Bot.Business
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             string getUrl = HttpUrl.getMysPostListUrl(userId, size);
-            string json = await HttpHelper.HttpGetAsync(getUrl, headerDic);
+            string json = await HttpHelper.GetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysPostDataDto>>(json);
         }
 
@@ -162,7 +162,7 @@ namespace Theresa3rd_Bot.Business
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             string getUrl = HttpUrl.getMystUserFullInfo(userId);
-            string json = await HttpHelper.HttpGetAsync(getUrl, headerDic);
+            string json = await HttpHelper.GetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysUserFullInfoDto>>(json);
         }
 

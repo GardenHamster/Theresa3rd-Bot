@@ -34,8 +34,8 @@ namespace Theresa3rd_Bot.Event
                 new PlainMessage("\n")
             };
             List<IChatMessage> templateList = await BusinessHelper.SplitToChainAsync(client, template);
-            await client.SendGroupMessageAsync(groupId, atList.Concat(templateList).ToArray()); // 自己填群号, 一般由 IGroupMessageEventArgs 提供
-            message.BlockRemainingHandlers = true; // 不阻断消息传递。如需阻断请返回true
+            await client.SendGroupMessageAsync(groupId, atList.Concat(templateList).ToArray());
+            message.BlockRemainingHandlers = true;
         }
     }
 }

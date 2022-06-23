@@ -46,7 +46,7 @@ namespace Theresa3rd_Bot.Business
             LoliconParamV2 param = new LoliconParamV2(r18Mode, 1, "i.pixiv.re", tags == null || tags.Length == 0 ? null : tags);
             string httpUrl = HttpUrl.getLoliconApiV2Url();
             string postJson = JsonConvert.SerializeObject(param);
-            string json = await HttpHelper.HttpPostAsync(httpUrl, postJson);
+            string json = await HttpHelper.PostJsonAsync(httpUrl, postJson);
             return JsonConvert.DeserializeObject<LoliconResultV2>(json);
         }
 

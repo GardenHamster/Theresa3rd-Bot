@@ -59,7 +59,7 @@ namespace Theresa3rd_Bot.Handler
                 if (StringHelper.isPureNumber(tagName))
                 {
                     if (await BusinessHelper.CheckSetuCustomEnableAsync(session, args) == false) return;
-                    pixivWorkInfoDto = await pixivBusiness.getPixivWorkInfoDtoAsync(tagName);//根据作品id获取作品
+                    pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(tagName);//根据作品id获取作品
                 }
                 else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.随机订阅)
                 {
@@ -260,7 +260,7 @@ namespace Theresa3rd_Bot.Handler
                         if (dbSubscribe == null)
                         {
                             //添加订阅
-                            PixivUserInfoDto pixivUserInfoDto = await pixivBusiness.getPixivUserInfoDtoAsync(pixivUserId);
+                            PixivUserInfoDto pixivUserInfoDto = await PixivHelper.GetPixivUserInfoAsync(pixivUserId);
                             dbSubscribe = subscribeBusiness.insertSurscribe(pixivUserInfoDto, pixivUserId);
                         }
 
@@ -473,7 +473,7 @@ namespace Theresa3rd_Bot.Handler
                     groupType = (SubscribeGroupType)Convert.ToInt32(groupStep.Answer);
                 }
 
-                PixivSearchDto pageOne = await pixivBusiness.getPixivSearchDtoAsync(pixivTag, 1, false, groupId.IsShowR18());
+                PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(pixivTag, 1, false, groupId.IsShowR18());
                 if (pageOne == null || pageOne.body.getIllust().data.Count == 0)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 该标签中没有任何作品，订阅失败"));
@@ -600,7 +600,7 @@ namespace Theresa3rd_Bot.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "读取画师最新作品时出现异常");
-                await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage($"读取画师[{dbSubscribe.SubscribeName}]的最新作品失败~"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage($"读取画师[{dbSubscribe.SubscribeName}]的最新作品失败~"));
             }
         }
 

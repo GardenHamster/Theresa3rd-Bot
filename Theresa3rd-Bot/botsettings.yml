@@ -1,5 +1,6 @@
 ﻿General:                                                                        #基础设置
     Prefix:                 '#'                                                 #指令前缀，如果接收到的消息带有该前缀将视为一个指令处理
+    DownloadPath:           'C:\BotImg\download'                                #下载文件(比如p站图片等)存放目录
     ErrorGroups:            [284196392]                                         #错误日志群，发生错误时会将日志发送到这个群
     ErrorMsg:               |                                                   #处理异常时返回的消息
                             出了点小问题，稍后再试吧
@@ -14,7 +15,7 @@
     SetuCustomDisableMsg:   '自定义功能已关闭'                                  #禁用自定义时返回的消息
 
 Permissions:
-    SuperManagers:          [1145141919,1608405161]                             #超级管理员列表,可以使用管理指令
+    SuperManagers:          [12345678,23456789]                             #超级管理员列表,可以使用管理指令
     AcceptGroups:           [1234567890,284196392]                              #白名单，只处理这些群的消息
     SetuGroups:             [284196392]                                         #拥有涩图权限的群
     SetuShowR18Groups:      []                                                  #允许搜索和发送r18的群，不包含r18图片
@@ -68,7 +69,6 @@ Setu:                                                                           
     DisableTags:            ['R-18','R18','R18+','R18G','R17.9']                #禁止的涩图关键词.所有群通用
     DisableTagsMsg:         '禁止查找这个类型的涩图'                            #标签被禁用时返回的消息
     MaxDaily:               20                                                  #每人每日最大使用次数，0表示无限制
-    ImgSavePath:            'C:\BotImg\download'                                #图片存放目录
     RevokeInterval:         0                                                   #N秒后撤回,0表示不撤回
     SendPrivate:            true                                                #私聊发送，需要用户主动发送任意消息给机器人开启临时会话
     Lolicon:                                                                    #Lolicon图床https://api.lolicon.app/#/setu
@@ -109,15 +109,15 @@ Saucenao:                                                                       
     Enable:                 true                                                #是否启用
     Command:                '原图'                                              #命令，用法：#原图 或 原图+图片
     DisableMsg:             '没有，快爬！'                                      #功能未启用时返回的消息
-    NotFoundMsg:            '色图探测器毫无反应，找不到你想要的色图'            #找不到相应色图时返回的消息
-    ErrorMsg:               '申请色色失败！请重新尝试'                          #发生错误时返回的消息
-    ProcessingMsg:          '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息
-    Template:               ''
+    NotFoundMsg:            '找不到相似的图哦~'                                  #找不到相应色图时返回的消息
+    ErrorMsg:               '出了点小问题，再试一次吧'                          #发生错误时返回的消息
+    ProcessingMsg:          '正在通过saucenao尝试搜索原图...'                  #开始查找前返回的消息
     MemberCD:               0                                                   #独立CD(秒)，单个群员使用命令后需要等待的CD
     MaxDaily:               0                                                   #每人每日最大使用次数，0表示无限制
-    MaxReceive:             0                                                   #每次最多接收并查询多少张图片，用户发送的图片数量超出该值时只处理前N张图片
+    MaxReceive:             0                                                   #每次最多接收并查询多少张图片，0表示无限制
     SearchOrigin:           true                                                #尝试从pixiv中获取并发送原图
     WithdrawOver:           79.99                                               #图片匹配度大于该百分比时，撤回群员发送的要查找的图片
+    RevokeInterval:         0                                                   #N秒后撤回,0表示不撤回
 
 Subscribe:                                                                      #订阅相关
     PixivUser:                                                                  #订阅P站用户

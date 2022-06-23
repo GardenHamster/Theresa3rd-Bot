@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Model.Cache;
+using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Cache
 {
@@ -43,7 +44,7 @@ namespace Theresa3rd_Bot.Cache
                     return stepInfo;
                 }
             }
-            await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage(" 你的一个指令正在执行中"));
+            await session.SendMessageWithAtAsync(args, new PlainMessage(" 你的一个指令正在执行中"));
             return null;
         }
 

@@ -14,8 +14,6 @@
 
         public string ProcessingMsg { get; set; }
 
-        public string Template { get; set; }
-
         public int MemberCD { get; set; }
 
         public int MaxDaily { get; set; }
@@ -24,7 +22,9 @@
 
         public bool SearchOrigin { get; set; }
 
-        public double WithdrawOver { get; set; }
+        public decimal WithdrawOver { get; set; }
+
+        public int RevokeInterval { get; set; }
 
     }
 }

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Cache;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.Saucenao;
 using Theresa3rd_Bot.Type;
@@ -38,13 +39,16 @@ namespace Theresa3rd_Bot.Handler
                 long groupId = args.Sender.Group.Id;
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
-
                 List<ImageMessage> imgList = args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
 
                 if (imgList == null || imgList.Count == 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有接收到你要找的图片哦~"));
-                    return;
+                    StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
+                    if (stepInfo == null) return;
+                    StepDetail imgStep = new StepDetail(60, " 请在60秒内发送要查找的图片", CheckImageSourceAsync);
+                    stepInfo.AddStep(imgStep);
+                    if (await stepInfo.StartStep(session, args) == false) return;
+                    imgList = imgStep.Args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
                 }
 
                 if (string.IsNullOrWhiteSpace(BotConfig.SaucenaoConfig.ProcessingMsg) == false)
@@ -72,6 +76,13 @@ namespace Theresa3rd_Bot.Handler
             {
                 CoolingCache.SetHandFinish(args.Sender.Group.Id, args.Sender.Id);//请求处理完成
             }
+        }
+
+        private async Task<bool> CheckImageSourceAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string value)
+        {
+            List<ImageMessage> imgList = args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
+            if (imgList == null || imgList.Count == 0) return await Task.FromResult(false);
+            return await Task.FromResult(true);
         }
 
 

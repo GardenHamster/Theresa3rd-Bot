@@ -57,7 +57,7 @@ namespace Theresa3rd_Bot.Handler
                 if (StringHelper.isPureNumber(tagName))
                 {
                     if (await BusinessHelper.CheckSetuCustomEnableAsync(session, args) == false) return;
-                    pixivWorkInfoDto = await pixivBusiness.getPixivWorkInfoDtoAsync(tagName);//根据作品id获取作品
+                    pixivWorkInfoDto = await pixivBusiness.getPixivWorkInfoAsync(tagName);//根据作品id获取作品
                 }
                 else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.随机订阅)
                 {
@@ -81,13 +81,13 @@ namespace Theresa3rd_Bot.Handler
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(tagName, includeR18);//获取随机一个作品
                 }
 
-                if (pixivWorkInfoDto == null)
+                if (pixivWorkInfoDto == null || pixivWorkInfoDto.body.IsImproper())
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.NotFoundMsg, " 找不到这类型的图片或者收藏比过低，换个标签试试吧~");
                     return;
                 }
 
-                int todayLeftCount = BusinessHelper.GetSetuLeftToday(session, args);
+                long todayLeftCount = BusinessHelper.GetSetuLeftToday(session, args);
                 FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivWorkInfoDto);
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
 
@@ -258,7 +258,7 @@ namespace Theresa3rd_Bot.Handler
                         if (dbSubscribe == null)
                         {
                             //添加订阅
-                            PixivUserInfoDto pixivUserInfoDto = await pixivBusiness.getPixivUserInfoDtoAsync(pixivUserId);
+                            PixivUserInfoDto pixivUserInfoDto = await PixivHelper.GetPixivUserInfoAsync(pixivUserId);
                             dbSubscribe = subscribeBusiness.insertSurscribe(pixivUserInfoDto, pixivUserId);
                         }
 
@@ -472,7 +472,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 string searchWord = pixivBusiness.formatSearchWord(pixivTags);
-                PixivSearchDto pageOne = await pixivBusiness.getPixivSearchDtoAsync(searchWord, 1, false, groupId.IsShowR18());
+                PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, groupId.IsShowR18());
                 if (pageOne == null || pageOne.body.getIllust().data.Count == 0)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 该标签中没有任何作品，订阅失败"));

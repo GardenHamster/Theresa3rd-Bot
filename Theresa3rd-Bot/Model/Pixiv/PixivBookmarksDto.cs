@@ -25,10 +25,18 @@ namespace Theresa3rd_Bot.Model.Pixiv
         public List<string> tags { get; set; }
         public string userId { get; set; }
         public string userName { get; set; }
+
+        public bool IsImproper()
+        {
+            return tags != null && tags.IsImproper();
+        }
+
         public bool isR18()
         {
             return tags != null && tags.IsR18();
         }
+
+
     }
 
 

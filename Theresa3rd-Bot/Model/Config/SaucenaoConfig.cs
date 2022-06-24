@@ -20,7 +20,9 @@
 
         public int MaxReceive { get; set; }
 
-        public bool SearchOrigin { get; set; }
+        public decimal MinSimilarity { get; set; }
+
+        public bool PullOrigin { get; set; }
 
         public decimal WithdrawOver { get; set; }
 

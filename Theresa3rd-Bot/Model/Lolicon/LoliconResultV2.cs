@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Lolicon
 {
@@ -20,15 +21,23 @@ namespace Theresa3rd_Bot.Model.Lolicon
         public bool r18 { get; set; }
         public int width { get; set; }
         public int height { get; set; }
-        public string[] tags { get; set; }
+        public List<string> tags { get; set; }
         public string ext { get; set; }
         public long uploadDate { get; set; }
         public LoliconUrlsV2 urls { get; set; }
 
+        public bool IsImproper()
+        {
+            return tags == null ? false : tags.IsImproper();
+        }
+
         public bool isR18()
         {
-            return tags.Where(o => o.ToUpper() == "R-18" || o.ToUpper() == "R18").Any();
+            return tags == null ? false : tags.IsR18();
         }
+
+
+
     }
 
     public class LoliconUrlsV2

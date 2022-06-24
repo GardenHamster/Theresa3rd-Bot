@@ -201,11 +201,11 @@ namespace Theresa3rd_Bot.Event
                 if (instructions.StartWithCommand(BotConfig.SaucenaoConfig?.Command))
                 {
                     if (await BusinessHelper.CheckSaucenaoEnableAsync(session, args) == false) return;
-                    if (BotConfig.SaucenaoConfig.SearchOrigin && await BusinessHelper.CheckPixivCookieAvailableAsync(session, args) == false) return;
+                    if (BotConfig.SaucenaoConfig.PullOrigin && await BusinessHelper.CheckPixivCookieAvailableAsync(session, args) == false) return;
                     if (await BusinessHelper.CheckMemberSaucenaoCoolingAsync(session, args)) return;
                     if (await BusinessHelper.CheckSaucenaoUseUpAsync(session, args)) return;
                     if (await BusinessHelper.CheckHandingAsync(session, args)) return;
-                    await new SaucenaoHandler().searchSource(session, args, message);
+                    await new SaucenaoHandler().saucenaoSearch(session, args);
                     new RequestRecordBusiness().addRecord(args, CommandType.Saucenao, message);
                     args.BlockRemainingHandlers = true;
                     return;

@@ -61,7 +61,13 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LoliconDataV2 loliconData = loliconResult.data.First();
-                int todayLeftCount = BusinessHelper.GetSetuLeftToday(session, args);
+                if (loliconData.IsImproper())
+                {
+                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Lolicon.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
+                    return;
+                }
+
+                long todayLeftCount = BusinessHelper.GetSetuLeftToday(session, args);
                 FileInfo fileInfo = await loliconBusiness.downImgAsync(loliconData);
 
                 int groupMsgId = 0;

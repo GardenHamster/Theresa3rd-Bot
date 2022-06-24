@@ -52,7 +52,7 @@ namespace Theresa3rd_Bot.Util
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             HttpResponseMessage response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
 
@@ -73,10 +73,18 @@ namespace Theresa3rd_Bot.Util
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             HttpResponseMessage response = await client.PostAsync(url, content);
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
 
+        /// <summary>
+        /// HttpPostForm
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="paramDic"></param>
+        /// <param name="headerDic"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
         public static async Task<string> PostFormAsync(string url, Dictionary<string, string> paramDic, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             HttpClient client = DefaultHttpClientFactory.CreateClient();
@@ -84,7 +92,7 @@ namespace Theresa3rd_Bot.Util
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             HttpResponseMessage response = await client.PostAsync(url, new FormUrlEncodedContent(paramDic));
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
 

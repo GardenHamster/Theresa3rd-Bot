@@ -83,6 +83,7 @@ namespace Theresa3rd_Bot.Timer
                 {
                     try
                     {
+                        if (pixivSubscribe.PixivWorkInfoDto.body.IsImproper()) continue;
                         if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18() == false) continue;
 
                         FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto);

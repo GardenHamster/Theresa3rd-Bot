@@ -12,7 +12,7 @@ namespace Theresa3rd_Bot.Business
 {
     public class LoliconBusiness
     {
-        public string getWorkInfo(LoliconDataV2 loliconData, FileInfo fileInfo, DateTime startTime, int todayLeft, string template = "")
+        public string getWorkInfo(LoliconDataV2 loliconData, FileInfo fileInfo, DateTime startTime, long todayLeft, string template = "")
         {
             if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(loliconData, fileInfo, startTime);
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
@@ -25,7 +25,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{UserId}", loliconData.uid);
             template = template.Replace("{SizeMB}", sizeMB.ToString());
             template = template.Replace("{CostSecond}", costSecond.ToString());
-            template = template.Replace("{Tags}", string.Join('，', loliconData.tags ?? new string[] { }));
+            template = template.Replace("{Tags}", string.Join('，', loliconData.tags ?? new List<string>()));
             template = template.Replace("{Urls}", getProxyUrl(loliconData.urls.original));
             return template;
         }
@@ -36,7 +36,7 @@ namespace Theresa3rd_Bot.Business
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
             double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
             workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}，大小：{sizeMB}MB，耗时：{costSecond}s");
-            workInfoStr.AppendLine($"标签：{string.Join('，', loliconData.tags ?? new string[] { })}");
+            workInfoStr.AppendLine($"标签：{string.Join('，', loliconData.tags ?? new List<string>())}");
             workInfoStr.Append(getProxyUrl(loliconData.urls.original));
             return workInfoStr.ToString();
         }

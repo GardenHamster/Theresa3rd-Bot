@@ -46,71 +46,80 @@ namespace Theresa3rd_Bot.Util
             PixivHttpClientFactory = pixivServiceCollection.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
         }
 
-        //if ()
-        /*-------------------------------------------------------------接口相关--------------------------------------------------------------------------*/
-
-        public async static Task<PixivSearchDto> GetPixivSearchAsync(string keyword, int pageNo, bool isMatchAll, bool includeR18)
+        public static async Task<PixivSearchDto> GetPixivSearchAsync(string keyword, int pageNo, bool isMatchAll, bool includeR18)
         {
             string referer = HttpUrl.getPixivSearchReferer();
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll, includeR18);
-            string json = await GetAsync(postUrl, headerDic);
+            string json = await GetPixivAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivSearchDto>(json);
         }
 
-        public async static Task<PixivWorkInfoDto> GetPixivWorkInfoAsync(string wordId)
+        public static async Task<PixivWorkInfoDto> GetPixivWorkInfoAsync(string workId)
         {
-            string referer = HttpUrl.getPixivArtworksReferer(wordId);
+            string referer = HttpUrl.getPixivArtworksReferer(workId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivWorkInfoUrl(wordId);
-            string json = await GetAsync(postUrl, headerDic);
+            string postUrl = HttpUrl.getPixivWorkInfoUrl(workId);
+            string json = await GetPixivAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivWorkInfoDto>(json);
         }
 
-        public async static Task<PixivUserWorkInfoDto> GetPixivUserWorkInfoAsync(string userId)
+        public static async Task<PixivUserWorkInfoDto> GetPixivUserWorkInfoAsync(string userId)
         {
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
-            string json = await GetAsync(postUrl, headerDic);
+            string json = await GetPixivAsync(postUrl, headerDic);
             if (string.IsNullOrEmpty(json) == false && json.Contains("\"illusts\":[]")) return null;
             return JsonConvert.DeserializeObject<PixivUserWorkInfoDto>(json);
         }
 
-        public async static Task<PixivUserInfoDto> GetPixivUserInfoAsync(string userId)
+        public static async Task<PixivUserInfoDto> GetPixivUserInfoAsync(string userId)
         {
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
-            string json = await GetAsync(postUrl, headerDic);
+            string json = await GetPixivAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivUserInfoDto>(json);
         }
 
-        public async static Task<PixivUgoiraMetaDto> GetPixivUgoiraMetaAsync(string wordId)
+        public static async Task<PixivUgoiraMetaDto> GetPixivUgoiraMetaAsync(string workId)
         {
-            string referer = HttpUrl.getPixivArtworksReferer(wordId);
+            string referer = HttpUrl.getPixivArtworksReferer(workId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivUgoiraMetaUrl(wordId);
-            string json = await GetAsync(postUrl, headerDic);
+            string postUrl = HttpUrl.getPixivUgoiraMetaUrl(workId);
+            string json = await GetPixivAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivUgoiraMetaDto>(json);
         }
 
-        public async static Task<PixivFollowDto> GetPixivFollowAsync(long loginId, int offset, int limit)
+        public static async Task<PixivFollowDto> GetPixivFollowAsync(long loginId, int offset, int limit)
         {
             string referer = HttpUrl.getPixivFollowReferer(loginId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivFollowUrl(loginId, offset, limit);
-            string json = await GetAsync(postUrl, headerDic);
+            string json = await GetPixivAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivFollowDto>(json);
         }
 
-        public async static Task<PixivBookmarksDto> GetPixivBookmarkAsync(long loginId, int offset, int limit)
+        public static async Task<PixivBookmarksDto> GetPixivBookmarkAsync(long loginId, int offset, int limit)
         {
             string referer = HttpUrl.getPixivBookmarkReferer(loginId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivBookmarkUrl(loginId, offset, limit);
-            string json = await GetAsync(postUrl, headerDic);
+            string json = await GetPixivAsync(postUrl, headerDic);
             return JsonConvert.DeserializeObject<PixivBookmarksDto>(json);
+        }
+
+        public static async Task<string> GetPixivAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        {
+            if (BotConfig.GeneralConfig.PixivFreeProxy)
+            {
+                return await PixivHelper.GetAsync(url, headerDic, timeout);
+            }
+            else
+            {
+                return await HttpHelper.GetAsync(url, headerDic, timeout);
+            }
         }
 
         private static Dictionary<string, string> GetPixivHeader(string referer)
@@ -134,22 +143,15 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         private static async Task<string> GetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            if (BotConfig.GeneralConfig.PixivFreeProxy)
-            {
-                HttpClient client = GetHttpClient();
-                client.BaseAddress = new Uri(url);
-                client.addHeaders(headerDic);
-                client.DefaultRequestHeaders.Add("User-Agent", HttpHelper.GetRandomUserAgent());
-                client.Timeout = TimeSpan.FromMilliseconds(timeout);
-                if (BotConfig.GeneralConfig.PixivFreeProxy) url = url.ToHttpUrl();
-                HttpResponseMessage response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStringAsync();
-            }
-            else
-            {
-                return await HttpHelper.GetAsync(url, headerDic);
-            }
+            HttpClient client = GetHttpClient();
+            client.BaseAddress = new Uri(url);
+            client.addHeaders(headerDic);
+            client.DefaultRequestHeaders.Add("User-Agent", HttpHelper.GetRandomUserAgent());
+            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            if (BotConfig.GeneralConfig.PixivFreeProxy) url = url.ToHttpUrl();
+            HttpResponseMessage response = await client.GetAsync(url);
+            //response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
         }
 
         /// <summary>

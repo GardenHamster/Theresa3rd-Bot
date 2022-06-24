@@ -42,6 +42,11 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
         public PixivTagDto tags { get; set; }
 
+        public bool IsImproper()
+        {
+            return tags?.tags == null ? false : tags.tags.Select(o => o.tag).ToList().IsImproper();
+        }
+
         public bool isR18()
         {
             return tags?.tags == null ? false : tags.tags.Select(o => o.tag).ToList().IsR18();

@@ -16,7 +16,7 @@ namespace Theresa3rd_Bot.Model.Config
 
         public string EnableTagCommand { get; set; }
 
-        public int MaxDaily { get; set; }
+        public long MaxDaily { get; set; }
 
         public int RevokeInterval { get; set; }
 

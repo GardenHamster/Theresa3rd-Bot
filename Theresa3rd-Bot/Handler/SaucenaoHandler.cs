@@ -30,76 +30,107 @@ namespace Theresa3rd_Bot.Handler
             saucenaoBusiness = new SaucenaoBusiness();
         }
 
-        public async Task searchSource(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        public async Task saucenaoSearch(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
-            List<ImageMessage> imgList = args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
-
-            if (imgList == null || imgList.Count == 0)
+            try
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有接收到你要找的图片哦~"));
-                return;
-            }
+                long memberId = args.Sender.Id;
+                long groupId = args.Sender.Group.Id;
+                DateTime startDateTime = DateTime.Now;
+                CoolingCache.SetHanding(groupId, memberId);//请求处理中
 
-            if (BotConfig.SaucenaoConfig.MaxReceive > 0 && imgList.Count > BotConfig.SaucenaoConfig.MaxReceive)
-            {
-                imgList = imgList.Take(BotConfig.SaucenaoConfig.MaxReceive).ToList();
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~"));
-                await Task.Delay(500);
-            }
+                List<ImageMessage> imgList = args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
 
-            foreach (var item in imgList)
-            {
-                try
+                if (imgList == null || imgList.Count == 0)
                 {
-                    SaucenaoSearch saucenaoSearch = await saucenaoBusiness.getSearchResultAsync(item.Url);
-                    if (saucenaoSearch == null)
-                    {
-                        await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.NotFoundMsg, " 找不到相似的图哦~");
-                        return;
-                    }
-
-                    decimal similar = 0;
-                    string similarStr = string.IsNullOrEmpty(saucenaoSearch.Similarity) ? "" : saucenaoSearch.Similarity.Trim().Replace("%", "");
-                    decimal.TryParse(similarStr, out similar);
-
-                    if (saucenaoSearch.SourceType == SaucenaoSourceType.Pixiv)
-                    {
-                        List<IChatMessage> warnList = getWarnMessage(session, args, saucenaoSearch, "Pixiv");
-                        FileInfo fileInfo = await pixivBusiness.downImgAsync(saucenaoSearch.pixivWorkInfoDto);
-                        List<IChatMessage> groupMsgs = await getPixivMessageAsync(session, args, fileInfo, saucenaoSearch, warnList, UploadTarget.Group);
-                        List<IChatMessage> tempMsgs = await getPixivMessageAsync(session, args, fileInfo, saucenaoSearch, warnList, UploadTarget.Temp);
-                        SaucenaoMessage saucenaoMessage = new SaucenaoMessage(groupMsgs, tempMsgs, similar);
-                        Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
-                    }
-                    if (saucenaoSearch.SourceType == SaucenaoSourceType.Twitter)
-                    {
-                        List<IChatMessage> warnList = getWarnMessage(session, args, saucenaoSearch, "Twitter");
-                        List<IChatMessage> chatList = getSingleMessageAsync(saucenaoSearch, warnList);
-                        SaucenaoMessage saucenaoMessage = new SaucenaoMessage(chatList, chatList, similar);
-                        Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
-                    }
-                    if (saucenaoSearch.SourceType == SaucenaoSourceType.FanBox)
-                    {
-                        List<IChatMessage> warnList = getWarnMessage(session, args, saucenaoSearch, "FanBox");
-                        List<IChatMessage> chatList = getSingleMessageAsync(saucenaoSearch, warnList);
-                        SaucenaoMessage saucenaoMessage = new SaucenaoMessage(chatList, chatList, similar);
-                        Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
-                    }
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有接收到你要找的图片哦~"));
+                    return;
                 }
-                catch (Exception ex)
+
+                if (string.IsNullOrWhiteSpace(BotConfig.SaucenaoConfig.ProcessingMsg) == false)
                 {
-                    LogHelper.Error(ex, $"原图功能异常，url={item.Url}");
-                    await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, " 出了点小问题，再试一次吧~");
+                    await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ProcessingMsg, null);
+                    await Task.Delay(500);
                 }
-            }
 
-            CoolingCache.SetMemberSaucenaoCooling(args.Sender.Group.Id, args.Sender.Id);
+                if (BotConfig.SaucenaoConfig.MaxReceive > 0 && imgList.Count > BotConfig.SaucenaoConfig.MaxReceive)
+                {
+                    imgList = imgList.Take(BotConfig.SaucenaoConfig.MaxReceive).ToList();
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~"));
+                    await Task.Delay(500);
+                }
+
+                for (int i = 0; i < imgList.Count; i++) await searchSource(session, args, imgList[i], i + 1);
+                CoolingCache.SetMemberSaucenaoCooling(groupId, memberId);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "searchSource异常");
+                await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, " 出了点小问题，任务结束~");
+            }
+            finally
+            {
+                CoolingCache.SetHandFinish(args.Sender.Group.Id, args.Sender.Id);//请求处理完成
+            }
         }
 
-        public List<IChatMessage> getWarnMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoSearch saucenaoSearch, string source)
+
+        private async Task searchSource(IMiraiHttpSession session, IGroupMessageEventArgs args, ImageMessage imageMessage, int index)
+        {
+            try
+            {
+                SaucenaoResult saucenaoResult = await saucenaoBusiness.getSaucenaoResultAsync(imageMessage.Url);
+                if (saucenaoResult == null || saucenaoResult.Items.Count == 0)
+                {
+                    await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.NotFoundMsg, $" 找不到与第{index}张图片相似的图");
+                    return;
+                }
+
+                if (BotConfig.SaucenaoConfig.PullOrigin == false)
+                {
+                    SaucenaoItem firstItem = saucenaoResult.Items[0];
+                    List<IChatMessage> warnList = getWarnMessage(session, args, saucenaoResult, firstItem);
+                    List<IChatMessage> chatList = getSingleMessageAsync(firstItem, warnList);
+                    SaucenaoMessage saucenaoMessage = new SaucenaoMessage(firstItem, chatList, chatList);
+                    Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
+                    return;
+                }
+
+                SaucenaoItem saucenaoItem = await saucenaoBusiness.getBestMatchAsync(saucenaoResult);
+                if (saucenaoItem == null)
+                {
+                    await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.NotFoundMsg, $" 找不到与第{index}张图片相似的图");
+                    return;
+                }
+
+                if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
+                {
+                    List<IChatMessage> warnList = getWarnMessage(session, args, saucenaoResult, saucenaoItem);
+                    FileInfo fileInfo = await pixivBusiness.downImgAsync(saucenaoItem.PixivWorkInfo);
+                    List<IChatMessage> groupMsgs = await getPixivMessageAsync(session, args, warnList, saucenaoResult, saucenaoItem, fileInfo, UploadTarget.Group);
+                    List<IChatMessage> tempMsgs = await getPixivMessageAsync(session, args, warnList, saucenaoResult, saucenaoItem, fileInfo, UploadTarget.Temp);
+                    SaucenaoMessage saucenaoMessage = new SaucenaoMessage(saucenaoItem, groupMsgs, tempMsgs);
+                    Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
+                }
+                else
+                {
+                    List<IChatMessage> warnList = getWarnMessage(session, args, saucenaoResult, saucenaoItem);
+                    List<IChatMessage> chatList = getSingleMessageAsync(saucenaoItem, warnList);
+                    SaucenaoMessage saucenaoMessage = new SaucenaoMessage(saucenaoItem, chatList, chatList);
+                    Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"原图功能异常，url={imageMessage.Url}");
+                await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, $" 查找第{index}张图片失败，再试一次吧~");
+            }
+        }
+
+        public List<IChatMessage> getWarnMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem)
         {
             StringBuilder warnBuilder = new StringBuilder();
-            warnBuilder.Append($"共找到 {saucenaoSearch.MatchCount} 条匹配信息，相似度：{saucenaoSearch.Similarity}，来源：{source}");
+            warnBuilder.Append($"共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}，来源：{Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType)}");
             if (BotConfig.SaucenaoConfig.MaxDaily > 0)
             {
                 if (warnBuilder.Length > 0) warnBuilder.Append("，");
@@ -121,18 +152,18 @@ namespace Theresa3rd_Bot.Handler
         }
 
 
-        public List<IChatMessage> getSingleMessageAsync(SaucenaoSearch saucenaoSearch, List<IChatMessage> warnList)
+        public List<IChatMessage> getSingleMessageAsync(SaucenaoItem saucenaoItem, List<IChatMessage> warnList)
         {
             List<IChatMessage> chatList = new List<IChatMessage>(warnList);
-            chatList.Add(new PlainMessage($"链接：{saucenaoSearch.SourceUrl}"));
+            chatList.Add(new PlainMessage($"链接：{saucenaoItem.SourceUrl}"));
             return chatList;
         }
 
-        public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, FileInfo fileInfo, SaucenaoSearch saucenaoSearch, List<IChatMessage> warnList, UploadTarget target)
+        public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> warnList, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, FileInfo fileInfo, UploadTarget target)
         {
             List<IChatMessage> chatList = new List<IChatMessage>(warnList);
-            PixivWorkInfo pixivWorkInfo = saucenaoSearch.pixivWorkInfoDto.body;
-
+            PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
+                
             if (fileInfo == null)
             {
                 chatList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, target));
@@ -146,10 +177,17 @@ namespace Theresa3rd_Bot.Handler
                 chatList.Add((IChatMessage)await session.UploadPictureAsync(target, fileInfo.FullName));
             }
 
-            chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, saucenaoSearch.StartDateTime)));
+            chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, saucenaoResult.StartDateTime)));
             return chatList;
         }
 
+        /// <summary>
+        /// 发送并撤回消息
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <param name="saucenaoMessage"></param>
+        /// <returns></returns>
         private async Task sendAndRevokeMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoMessage saucenaoMessage)
         {
             long groupId = args.Sender.Group.Id;

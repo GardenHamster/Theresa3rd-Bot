@@ -11,11 +11,11 @@ namespace Theresa3rd_Bot.Model.Saucenao
 
         public List<IChatMessage> TempMsgs { get; set; }
 
-        public SaucenaoMessage(List<IChatMessage> groupMsgs, List<IChatMessage> tempMsgs,decimal similar)
+        public SaucenaoMessage(SaucenaoItem saucenaoItem, List<IChatMessage> groupMsgs, List<IChatMessage> tempMsgs)
         {
             this.GroupMsgs = groupMsgs;
             this.TempMsgs = tempMsgs;
-            this.Similar = similar;
+            this.Similar = saucenaoItem.Similarity;
         }
 
 

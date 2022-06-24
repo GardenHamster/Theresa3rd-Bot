@@ -110,14 +110,16 @@ Saucenao:                                                                       
     Command:                '原图'                                              #命令，用法：#原图 或 原图+图片
     DisableMsg:             '没有，快爬！'                                      #功能未启用时返回的消息
     NotFoundMsg:            '找不到相似的图哦~'                                  #找不到相应色图时返回的消息
-    ErrorMsg:               '出了点小问题，再试一次吧'                          #发生错误时返回的消息
-    ProcessingMsg:          '正在通过saucenao尝试搜索原图...'                  #开始查找前返回的消息
+    ErrorMsg:               '出了点小问题，再试一次吧'                            #发生错误时返回的消息
+    ProcessingMsg:          '正在通过尝试搜索原图...'                             #开始查找前返回的消息
     MemberCD:               0                                                   #独立CD(秒)，单个群员使用命令后需要等待的CD
     MaxDaily:               0                                                   #每人每日最大使用次数，0表示无限制
     MaxReceive:             0                                                   #每次最多接收并查询多少张图片，0表示无限制
-    SearchOrigin:           true                                                #尝试从pixiv中获取并发送原图
+    MinSimilarity:          50.00                                               #最低相似度(百分比)
+    PullOrigin:             true                                                #尝试从源网站中获取原图
     WithdrawOver:           79.99                                               #图片匹配度大于该百分比时，撤回群员发送的要查找的图片
     RevokeInterval:         0                                                   #N秒后撤回,0表示不撤回
+
 
 Subscribe:                                                                      #订阅相关
     PixivUser:                                                                  #订阅P站用户

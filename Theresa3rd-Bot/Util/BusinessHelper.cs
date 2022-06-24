@@ -78,6 +78,18 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 判断标签中是否包含R18标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static bool IsImproper(this List<string> tags)
+        {
+            if (tags == null || tags.Count == 0) return false;
+            if (tags.Where(o => o.ToUpper().Replace("-", "").Replace(" ", "").Contains("R18G")).Any()) return true;
+            return false;
+        }
+
+        /// <summary>
         /// 判断标签中是否包含动图标签
         /// </summary>
         /// <param name="tags"></param>
@@ -191,7 +203,7 @@ namespace Theresa3rd_Bot.Util
             }
             if (BotConfig.SaucenaoConfig == null || BotConfig.SaucenaoConfig.Enable == false)
             {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.DisableMsg, "该功能已关闭");
+                await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.DisableMsg, "该功能已关闭");
                 return false;
             }
             return true;
@@ -338,13 +350,13 @@ namespace Theresa3rd_Bot.Util
         /// <param name="session"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static int GetSetuLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static long GetSetuLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
             if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id)) return BotConfig.SetuConfig.MaxDaily;
             RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
             int todayUseCount = requestRecordBusiness.getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
-            int leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
+            long leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
         }
 

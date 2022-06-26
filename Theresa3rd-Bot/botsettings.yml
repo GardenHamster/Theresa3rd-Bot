@@ -120,7 +120,7 @@ Saucenao:                                                                       
     MinSimilarity:          50.00                                               #最低相似度(百分比)
     PullOrigin:             true                                                #尝试从源网站中获取原图
     RevokeInterval:         0                                                   #N秒后撤回，0表示不撤回
-    RevokeSearched:         true                                                #是否撤回要查找的图片
+    RevokeSearched:         false                                                #是否撤回要查找的图片
 
 
 Subscribe:                                                                      #订阅相关

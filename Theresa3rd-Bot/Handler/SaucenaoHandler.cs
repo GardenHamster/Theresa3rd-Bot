@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Cache;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.Saucenao;
@@ -137,6 +138,11 @@ namespace Theresa3rd_Bot.Handler
                     SaucenaoMessage saucenaoMessage = new SaucenaoMessage(saucenaoItem, chatList, chatList);
                     Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
                 }
+            }
+            catch (BaseException ex)
+            {
+                LogHelper.Error(ex, $"原图功能异常，url={imageMessage.Url}，{ex.Message}");
+                await session.SendMessageWithAtAsync(args, new PlainMessage($" 查找第{index}张图片失败，{ex.Message}，再试一次吧~"));
             }
             catch (Exception ex)
             {

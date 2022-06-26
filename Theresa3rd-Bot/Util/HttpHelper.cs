@@ -85,15 +85,13 @@ namespace Theresa3rd_Bot.Util
         /// <param name="headerDic"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static async Task<string> PostFormAsync(string url, Dictionary<string, string> paramDic, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        public static async Task<HttpResponseMessage> PostFormForHtml(string url, Dictionary<string, string> paramDic, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            HttpResponseMessage response = await client.PostAsync(url, new FormUrlEncodedContent(paramDic));
-            //response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            return await client.PostAsync(url, new FormUrlEncodedContent(paramDic));
         }
 
         /// <summary>
@@ -189,6 +187,24 @@ namespace Theresa3rd_Bot.Util
         {
             int randomIndex = new Random(DateTime.Now.Millisecond).Next(0, UserAgents.Length);
             return UserAgents[randomIndex];
+        }
+
+        /// <summary>
+        /// 获取响应的html内容
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        public static async Task<string> GetContentStringAsync(this HttpResponseMessage response)
+        {
+            try
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "GetContentString异常", false);
+                return string.Empty;
+            }
         }
 
         /// <summary>

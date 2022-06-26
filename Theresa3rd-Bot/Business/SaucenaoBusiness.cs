@@ -1,12 +1,14 @@
 ﻿using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
-using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.Saucenao;
 using Theresa3rd_Bot.Type;
@@ -20,6 +22,7 @@ namespace Theresa3rd_Bot.Business
         {
             DateTime startTime = DateTime.Now;
             string saucenaoHtml = await SearchResultAsync(imgHttpUrl);
+
             HtmlParser htmlParser = new HtmlParser();
             IHtmlDocument document = await htmlParser.ParseDocumentAsync(saucenaoHtml);
             IEnumerable<IElement> domList = document.All.Where(m => m.ClassList.Contains("result"));
@@ -125,12 +128,12 @@ namespace Theresa3rd_Bot.Business
         public async Task<SaucenaoItem> getBestMatchAsync(SaucenaoResult saucenaoResult)
         {
             if (saucenaoResult.Items.Count == 0) return null;
-            List<SaucenaoItem> itemList = saucenaoResult.Items.OrderByDescending(o => o.Similarity).ToList();
-            for (int i = 0; i < itemList.Count; i++)
+            List<SaucenaoItem> sortList = sortSaucenaoItem(saucenaoResult.Items);
+            for (int i = 0; i < sortList.Count; i++)
             {
                 try
                 {
-                    SaucenaoItem saucenaoItem = itemList[i];
+                    SaucenaoItem saucenaoItem = sortList[i];
                     if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
                     {
                         PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
@@ -159,16 +162,38 @@ namespace Theresa3rd_Bot.Business
             return null;
         }
 
-        private async static Task<string> SearchResultAsync(string imgHttpUrl)
+        /// <summary>
+        /// 对搜索结果进行优先级排序
+        /// </summary>
+        /// <param name="itemList"></param>
+        /// <returns></returns>
+        private List<SaucenaoItem> sortSaucenaoItem(List<SaucenaoItem> itemList)
         {
-            Dictionary<string, string> paramDic = new Dictionary<string, string>()
-            {
-                {"url",imgHttpUrl }
-            };
-            return await HttpHelper.PostFormAsync(HttpUrl.SaucenaoUrl, paramDic);
+            if (itemList == null) return new List<SaucenaoItem>();
+            List<SaucenaoItem> sortList = new List<SaucenaoItem>();
+            sortList.AddRange(itemList.Where(o => o.SourceType == SaucenaoSourceType.Pixiv && o.Similarity >= 80).OrderByDescending(o => o.Similarity).ToList());
+            sortList.AddRange(itemList);
+            return sortList.Distinct().ToList();
         }
 
-
+        /// <summary>
+        /// 请求saucenao,获取返回结果
+        /// </summary>
+        /// <param name="imgHttpUrl"></param>
+        /// <returns></returns>
+        /// <exception cref="BaseException"></exception>
+        private async static Task<string> SearchResultAsync(string imgHttpUrl)
+        {
+            Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "url", imgHttpUrl } };
+            HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.SaucenaoUrl, paramDic);
+            await response.Content.ReadAsStringAsync();
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                string contentString = await response.GetContentStringAsync();
+                throw new BaseException($"saucenao返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(200)}");
+            }
+            return await response.Content.ReadAsStringAsync();
+        }
 
     }
 }

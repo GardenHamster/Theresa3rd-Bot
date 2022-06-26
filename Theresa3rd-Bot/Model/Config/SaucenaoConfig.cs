@@ -24,9 +24,9 @@
 
         public bool PullOrigin { get; set; }
 
-        public decimal WithdrawOver { get; set; }
-
         public int RevokeInterval { get; set; }
+
+        public bool RevokeSearched { get; set; }
 
     }
 }

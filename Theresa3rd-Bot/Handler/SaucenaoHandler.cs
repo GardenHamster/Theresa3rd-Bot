@@ -38,6 +38,7 @@ namespace Theresa3rd_Bot.Handler
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
                 DateTime startDateTime = DateTime.Now;
+                IGroupMessageEventArgs imgArgs = args;
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
                 List<ImageMessage> imgList = args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
 
@@ -49,22 +50,29 @@ namespace Theresa3rd_Bot.Handler
                     stepInfo.AddStep(imgStep);
                     if (await stepInfo.StartStep(session, args) == false) return;
                     imgList = imgStep.Args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
+                    imgArgs = imgStep.Args;
                 }
 
                 if (string.IsNullOrWhiteSpace(BotConfig.SaucenaoConfig.ProcessingMsg) == false)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ProcessingMsg, null);
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                 }
 
                 if (BotConfig.SaucenaoConfig.MaxReceive > 0 && imgList.Count > BotConfig.SaucenaoConfig.MaxReceive)
                 {
                     imgList = imgList.Take(BotConfig.SaucenaoConfig.MaxReceive).ToList();
                     await session.SendMessageWithAtAsync(args, new PlainMessage($" 总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~"));
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                 }
 
                 for (int i = 0; i < imgList.Count; i++) await searchSource(session, args, imgList[i], i + 1);
+
+                if (BotConfig.SaucenaoConfig.RevokeSearched)
+                {
+                    await session.RevokeMessageAsync(imgArgs);
+                    await Task.Delay(1000);
+                }
                 CoolingCache.SetMemberSaucenaoCooling(groupId, memberId);
             }
             catch (Exception ex)
@@ -84,7 +92,6 @@ namespace Theresa3rd_Bot.Handler
             if (imgList == null || imgList.Count == 0) return await Task.FromResult(false);
             return await Task.FromResult(true);
         }
-
 
         private async Task searchSource(IMiraiHttpSession session, IGroupMessageEventArgs args, ImageMessage imageMessage, int index)
         {
@@ -141,7 +148,7 @@ namespace Theresa3rd_Bot.Handler
         public List<IChatMessage> getWarnMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem)
         {
             StringBuilder warnBuilder = new StringBuilder();
-            warnBuilder.Append($"共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}，来源：{Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType)}");
+            warnBuilder.Append($" 共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType)}");
             if (BotConfig.SaucenaoConfig.MaxDaily > 0)
             {
                 if (warnBuilder.Length > 0) warnBuilder.Append("，");
@@ -156,6 +163,10 @@ namespace Theresa3rd_Bot.Handler
             {
                 if (warnBuilder.Length > 0) warnBuilder.Append("，");
                 warnBuilder.Append($"CD{BotConfig.SetuConfig.MemberCD}秒");
+            }
+            if (warnBuilder.Length > 0)
+            {
+                warnBuilder.Append("\r\n");
             }
             return new List<IChatMessage>() {
                 new PlainMessage(warnBuilder.ToString())
@@ -172,9 +183,11 @@ namespace Theresa3rd_Bot.Handler
 
         public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> warnList, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, FileInfo fileInfo, UploadTarget target)
         {
-            List<IChatMessage> chatList = new List<IChatMessage>(warnList);
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
-                
+
+            List<IChatMessage> chatList = new List<IChatMessage>(warnList);
+            chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, saucenaoResult.StartDateTime)));
+
             if (fileInfo == null)
             {
                 chatList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, target));
@@ -187,8 +200,6 @@ namespace Theresa3rd_Bot.Handler
             {
                 chatList.Add((IChatMessage)await session.UploadPictureAsync(target, fileInfo.FullName));
             }
-
-            chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, saucenaoResult.StartDateTime)));
             return chatList;
         }
 
@@ -207,12 +218,6 @@ namespace Theresa3rd_Bot.Handler
             await Task.Delay(1000);
             await session.SendTempMessageAsync(memberId, groupId, saucenaoMessage.TempMsgs.ToArray());
             await Task.Delay(1000);
-
-            if (saucenaoMessage.Similar > BotConfig.SaucenaoConfig.WithdrawOver)
-            {
-                await session.RevokeMessageAsync(Convert.ToInt32(args.Chain.First().ToString()));
-                await Task.Delay(1000);
-            }
             if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
             {
                 await Task.Delay(BotConfig.SaucenaoConfig.RevokeInterval * 1000);

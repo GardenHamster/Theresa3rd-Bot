@@ -51,11 +51,11 @@ namespace Theresa3rd_Bot.Util
         /// 记录Error级别的日志
         /// </summary>
         /// <param name="ex"></param>
-        public static void Error(Exception ex)
+        public static void Error(Exception ex, bool sendError = true)
         {
             ConsoleLog.Error(ex.Message);
             RollingLog.Error("", ex);
-            SendError(ex);
+            if (sendError) SendError(ex);
         }
 
         /// <summary>
@@ -63,11 +63,11 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="ex"></param>
         /// <param name="message"></param>
-        public static void Error(Exception ex, string message)
+        public static void Error(Exception ex, string message, bool sendError = true)
         {
             ConsoleLog.Error($"{message}：{ex.Message}");
             RollingLog.Error(message, ex);
-            SendError(ex, message);
+            if (sendError) SendError(ex, message);
         }
 
         /// <summary>

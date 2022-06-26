@@ -16,40 +16,6 @@ namespace Theresa3rd_Bot.Business
 {
     public class SaucenaoBusiness
     {
-
-        public async Task<SaucenaoItem> getBestMatchAsync(SaucenaoResult saucenaoResult)
-        {
-            if (saucenaoResult.Items.Count == 0) return null;
-            for (int i = 0; i < saucenaoResult.Items.Count; i++)
-            {
-                try
-                {
-                    SaucenaoItem saucenaoItem = saucenaoResult.Items[i];
-                    if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
-                    {
-                        PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
-                        if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
-                        if (pixivWorkInfo.body.IsImproper()) continue;
-                        saucenaoItem.PixivWorkInfo = pixivWorkInfo;
-                        return saucenaoItem;
-                    }
-                    if (saucenaoItem.SourceType == SaucenaoSourceType.Twitter)
-                    {
-                        return saucenaoItem;
-                    }
-                    if (saucenaoItem.SourceType == SaucenaoSourceType.FanBox)
-                    {
-                        return saucenaoItem;
-                    }
-                }
-                catch (Exception)
-                {
-                    
-                }
-            }
-            return null;
-        }
-
         public async Task<SaucenaoResult> getSaucenaoResultAsync(string imgHttpUrl)
         {
             DateTime startTime = DateTime.Now;
@@ -62,7 +28,10 @@ namespace Theresa3rd_Bot.Business
             if (domList == null || domList.Count() == 0) return new SaucenaoResult(itemList, startTime, 0);
             foreach (IElement resultElement in domList)
             {
-                IHtmlCollection<IElement> linkifyList = resultElement.GetElementsByTagName("a");
+                IHtmlCollection<IElement> contentList = resultElement.GetElementsByClassName("resulttablecontent");
+                if (contentList == null || contentList.Length == 0) continue;
+
+                IHtmlCollection<IElement> linkifyList = contentList.First().GetElementsByTagName("a");
                 if (linkifyList == null || linkifyList.Length == 0) continue;
 
                 decimal similarity = 0;
@@ -81,83 +50,113 @@ namespace Theresa3rd_Bot.Business
                     itemList.Add(saucenaoItem);
                 }
             }
-            return new SaucenaoResult(itemList,startTime, domList.Count());
+            return new SaucenaoResult(itemList, startTime, domList.Count());
         }
 
 
         public SaucenaoItem getSaucenaoItem(IElement linkElement, decimal similarity)
         {
-            try
+            string href = linkElement.GetAttribute("href");
+            if (string.IsNullOrWhiteSpace(href)) return null;
+
+            href = href.Trim();
+            string hrefLower = href.ToLower();
+            Dictionary<string, string> paramDic = StringHelper.splitHttpUrl(href);
+
+            //https://www.pixiv.net/member_illust.php?mode=medium&illust_id=73572009
+            if (hrefLower.Contains("www.pixiv.net/member_illust"))
             {
-                string href = linkElement.GetAttribute("href");
-                if (string.IsNullOrWhiteSpace(href)) return null;
-
-                href = href.Trim();
-                string hrefLower = href.ToLower();
-                Dictionary<string, string> paramDic = StringHelper.splitHttpUrl(href);
-
-                //https://www.pixiv.net/member_illust.php?mode=medium&illust_id=73572009
-                if (hrefLower.Contains("www.pixiv.net/member_illust"))
-                {
-                    string illustId = paramDic["illust_id"].Trim();
-                    return new SaucenaoItem(SaucenaoSourceType.Pixiv, href, illustId, similarity);
-                }
-
-                //https://www.pixiv.net/fanbox/creator/705370
-                if (hrefLower.Contains("www.pixiv.net/fanbox"))
-                {
-                    return new SaucenaoItem(SaucenaoSourceType.FanBox, href, "", similarity);
-                }
-
-                //https://yande.re/post/show/523988
-                if (hrefLower.Contains("yande.re"))
-                {
-                    return new SaucenaoItem(SaucenaoSourceType.Yande, href, "", similarity);
-                }
-
-                //https://twitter.com/i/web/status/1007548268048416769
-                if (hrefLower.Contains("twitter.com"))
-                {
-                    return new SaucenaoItem(SaucenaoSourceType.Twitter, href, "", similarity);
-                }
-
-                //https://danbooru.donmai.us/post/show/3438512
-                if (hrefLower.Contains("danbooru.donmai.us"))
-                {
-                    return new SaucenaoItem(SaucenaoSourceType.Danbooru, href, "", similarity);
-                }
-
-                //https://gelbooru.com/index.php?page=post&s=view&id=4639560
-                if (hrefLower.Contains("gelbooru.com"))
-                {
-                    return new SaucenaoItem(SaucenaoSourceType.Gelbooru, href, "", similarity);
-                }
-
-                //https://konachan.com/post/show/279886
-                if (hrefLower.Contains("konachan.com"))
-                {
-                    return new SaucenaoItem(SaucenaoSourceType.Konachan, href, "", similarity);
-                }
-
-                //https://anime-pictures.net/pictures/view_post/602645
-                if (hrefLower.Contains("anime-pictures.net"))
-                {
-                    return new SaucenaoItem(SaucenaoSourceType.AnimePictures, href, "", similarity);
-                }
-
-                //https://anidb.net/anime/4427
-                //https://bcy.net/illust/detail/120185/1519032
-                //https://mangadex.org/chapter/07c706d9-e575-4498-b504-dd85014c555b
-                //https://www.mangaupdates.com/series.html?id=13582
-                //https://myanimelist.net/manga/5255/
-                //https://www.imdb.com/title/tt2402101/
-
-                return null;
+                string illustId = paramDic["illust_id"].Trim();
+                return new SaucenaoItem(SaucenaoSourceType.Pixiv, href, illustId, similarity);
             }
-            catch (Exception ex)
+
+            //https://www.pixiv.net/fanbox/creator/705370
+            if (hrefLower.Contains("www.pixiv.net/fanbox"))
             {
-                return null;
+                return new SaucenaoItem(SaucenaoSourceType.FanBox, href, "", similarity);
             }
+
+            //https://yande.re/post/show/523988
+            if (hrefLower.Contains("yande.re"))
+            {
+                return new SaucenaoItem(SaucenaoSourceType.Yande, href, "", similarity);
+            }
+
+            //https://twitter.com/i/web/status/1007548268048416769
+            if (hrefLower.Contains("twitter.com"))
+            {
+                return new SaucenaoItem(SaucenaoSourceType.Twitter, href, "", similarity);
+            }
+
+            //https://danbooru.donmai.us/post/show/3438512
+            if (hrefLower.Contains("danbooru.donmai.us"))
+            {
+                return new SaucenaoItem(SaucenaoSourceType.Danbooru, href, "", similarity);
+            }
+
+            //https://gelbooru.com/index.php?page=post&s=view&id=4639560
+            if (hrefLower.Contains("gelbooru.com"))
+            {
+                return new SaucenaoItem(SaucenaoSourceType.Gelbooru, href, "", similarity);
+            }
+
+            //https://konachan.com/post/show/279886
+            if (hrefLower.Contains("konachan.com"))
+            {
+                return new SaucenaoItem(SaucenaoSourceType.Konachan, href, "", similarity);
+            }
+
+            //https://anime-pictures.net/pictures/view_post/602645
+            if (hrefLower.Contains("anime-pictures.net"))
+            {
+                return new SaucenaoItem(SaucenaoSourceType.AnimePictures, href, "", similarity);
+            }
+
+            //https://anidb.net/anime/4427
+            //https://bcy.net/illust/detail/120185/1519032
+            //https://mangadex.org/chapter/07c706d9-e575-4498-b504-dd85014c555b
+            //https://www.mangaupdates.com/series.html?id=13582
+            //https://myanimelist.net/manga/5255/
+            //https://www.imdb.com/title/tt2402101/
+
+            return null;
+        }
+
+        public async Task<SaucenaoItem> getBestMatchAsync(SaucenaoResult saucenaoResult)
+        {
+            if (saucenaoResult.Items.Count == 0) return null;
+            List<SaucenaoItem> itemList = saucenaoResult.Items.OrderByDescending(o => o.Similarity).ToList();
+            for (int i = 0; i < itemList.Count; i++)
+            {
+                try
+                {
+                    SaucenaoItem saucenaoItem = itemList[i];
+                    if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
+                    {
+                        PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
+                        if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
+                        if (pixivWorkInfo.body.IsImproper()) continue;
+                        saucenaoItem.PixivWorkInfo = pixivWorkInfo;
+                        return saucenaoItem;
+                    }
+                    if (saucenaoItem.SourceType == SaucenaoSourceType.Twitter)
+                    {
+                        //ToDo
+                        return saucenaoItem;
+                    }
+                    if (saucenaoItem.SourceType == SaucenaoSourceType.FanBox)
+                    {
+                        //ToDo
+                        return saucenaoItem;
+                    }
+                    return saucenaoItem;
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex, "尝试获取原图信息时异常", false);
+                }
+            }
+            return null;
         }
 
         private async static Task<string> SearchResultAsync(string imgHttpUrl)

@@ -31,20 +31,17 @@ namespace Theresa3rd_Bot.Event
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
 
                 string prefix = BotConfig.GeneralConfig.Prefix;
-                bool isAt = args.Chain.Where(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber).Any();
-
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
                 if (chainList == null || chainList.Count == 0) return;
-                if (plainList == null || plainList.Count == 0) return;
 
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
-                string instructions = plainList.FirstOrDefault();
-                if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(instructions)) return;
-                instructions = instructions.Trim();
+                string instructions = plainList.FirstOrDefault()?.Trim() ?? "";
+                if (string.IsNullOrWhiteSpace(message)) return;
                 message = message.Trim();
 
-                bool isInstruct = instructions != null && prefix != null && prefix.Trim().Length > 0 && instructions.StartsWith(prefix);
+                bool isAt = args.Chain.Where(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber).Any();
+                bool isInstruct = string.IsNullOrWhiteSpace(instructions) == false && string.IsNullOrWhiteSpace(prefix) == false && instructions.StartsWith(prefix);
                 if (isInstruct) instructions = instructions.Remove(0, prefix.Length).Trim();
 
                 if (isAt == false && isInstruct == false)//没有@也不是一条指令
@@ -53,6 +50,8 @@ namespace Theresa3rd_Bot.Event
                     if (RepeatCache.CheckCanRepeat(groupId, botId, memberId, message)) await SendRepeat(session, args);//复读机
                     return;
                 }
+
+                if (string.IsNullOrWhiteSpace(instructions)) return;//不存在任何指令
 
                 //菜单
                 if (instructions.StartWithCommand(BotConfig.MenuConfig?.Commands))

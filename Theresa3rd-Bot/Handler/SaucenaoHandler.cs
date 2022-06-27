@@ -54,6 +54,12 @@ namespace Theresa3rd_Bot.Handler
                     imgArgs = imgStep.Args;
                 }
 
+                if (imgList == null || imgList.Count == 0)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 没有接收到图片，请重新发送指令开始操作"));
+                    return;
+                }
+
                 if (string.IsNullOrWhiteSpace(BotConfig.SaucenaoConfig.ProcessingMsg) == false)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ProcessingMsg, null);

@@ -74,11 +74,11 @@ namespace Theresa3rd_Bot.Util
         public static bool IsR18(this List<string> tags)
         {
             if (tags == null || tags.Count == 0) return false;
-            return tags.Where(o => o.ToUpper().StartsWith("R-18") || o.ToUpper().StartsWith("R18")).Any();
+            return tags.Where(o => o.ToUpper().StartsWith("R-18") || o.ToUpper().StartsWith("R18") || o.ToUpper().StartsWith("R18G")).Any();
         }
 
         /// <summary>
-        /// 判断标签中是否包含R18标签
+        /// 判断标签中是否包含不合法标签
         /// </summary>
         /// <param name="tags"></param>
         /// <returns></returns>
@@ -171,9 +171,7 @@ namespace Theresa3rd_Bot.Util
         {
             message = message.ToLower().Trim();
             long groupId = args.Sender.Group.Id;
-
-            bool isR18 = message.Contains("r18") || message.Contains("r-18");
-            if (isR18 || BotConfig.SetuConfig.DisableTags.Where(o => message == o.ToLower()).Any())
+            if (BotConfig.SetuConfig.DisableTags.Where(o => message == o.ToLower()).Any())
             {
                 await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
                 return false;

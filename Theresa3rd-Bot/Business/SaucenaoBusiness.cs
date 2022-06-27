@@ -131,9 +131,9 @@ namespace Theresa3rd_Bot.Business
             List<SaucenaoItem> sortList = sortSaucenaoItem(saucenaoResult.Items);
             for (int i = 0; i < sortList.Count; i++)
             {
+                SaucenaoItem saucenaoItem = sortList[i];
                 try
                 {
-                    SaucenaoItem saucenaoItem = sortList[i];
                     if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
                     {
                         PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
@@ -155,7 +155,7 @@ namespace Theresa3rd_Bot.Business
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error(ex, "尝试获取原图信息时异常", false);
+                    LogHelper.Error(ex, $"尝试获取原图信息时异常,PixivId={saucenaoItem.SourceId}", false);
                 }
             }
             return null;
@@ -170,8 +170,9 @@ namespace Theresa3rd_Bot.Business
         {
             if (itemList == null) return new List<SaucenaoItem>();
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();
-            sortList.AddRange(itemList.Where(o => o.SourceType == SaucenaoSourceType.Pixiv && o.Similarity >= 80).OrderByDescending(o => o.Similarity).ToList());
-            sortList.AddRange(itemList.OrderBy(o => o.SourceType).OrderByDescending(o => o.Similarity));
+            sortList.AddRange(itemList.Where(o => o.SourceType == SaucenaoSourceType.Pixiv && o.Similarity >= 80).ToList());
+            sortList.AddRange(itemList.Where(o => o.Similarity >= 70).OrderBy(o => o.SourceType).ToList());
+            sortList.AddRange(itemList.OrderByDescending(o => o.Similarity).ThenBy(o => o.SourceType));
             return sortList.Distinct().ToList();
         }
 

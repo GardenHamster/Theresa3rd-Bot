@@ -32,14 +32,8 @@ namespace Theresa3rd_Bot.Common
 
         public static WebsiteConfig WebsiteConfig = new WebsiteConfig();
 
-        /// <summary>
-        /// 订阅任务
-        /// </summary>
         public static Dictionary<SubscribeType, List<SubscribeTask>> SubscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
 
-        /// <summary>
-        /// 订阅任务
-        /// </summary>
         public static Dictionary<long, List<BanWordPO>> BanSetuMap = new Dictionary<long, List<BanWordPO>>();
 
 

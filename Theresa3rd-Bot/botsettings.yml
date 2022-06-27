@@ -104,7 +104,7 @@ Setu:                                                                           
         MinBookRate:        0.05                                                #最低收藏率，收藏数/浏览数(标签搜索时试用)
         CookieExpire:       1296000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每15天更新一次
         CookieExpireMsg:    'emmmm,cookie过期了,请艾特管理员更新cookie'         #cookie过期时返回的消息
-                            
+
 Saucenao:                                                                       #Saucenao以图搜图，查找原图功能
     Enable:                 true                                                #是否启用
     Command:                '原图'                                              #命令，用法：#原图 或 原图+图片
@@ -121,7 +121,6 @@ Saucenao:                                                                       
     PullOrigin:             true                                                #尝试从源网站中获取原图
     RevokeInterval:         0                                                   #N秒后撤回，0表示不撤回
     RevokeSearched:         false                                                #是否撤回要查找的图片
-
 
 Subscribe:                                                                      #订阅相关
     PixivUser:                                                                  #订阅P站用户

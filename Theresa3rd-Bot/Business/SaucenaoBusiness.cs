@@ -203,7 +203,8 @@ namespace Theresa3rd_Bot.Business
         private static Dictionary<string, string> getSaucenaoHeader()
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            headerDic.Add("Cookie", BotConfig.WebsiteConfig.Saucenao.Cookie);
+            string cookie = BotConfig.WebsiteConfig.Saucenao.Cookie;
+            if (string.IsNullOrWhiteSpace(cookie) == false) headerDic.Add("Cookie", cookie);
             return headerDic;
         }
 

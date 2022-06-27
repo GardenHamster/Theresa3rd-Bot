@@ -50,7 +50,7 @@ namespace Theresa3rd_Bot.Handler
                     await Task.Delay(1000);
                 }
 
-                bool includeR18 = groupId.IsShowR18();
+                bool includeR18 = groupId.IsShowR18Setu();
                 PixivWorkInfoDto pixivWorkInfoDto = null;
                 string tagName = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
                 
@@ -137,7 +137,7 @@ namespace Theresa3rd_Bot.Handler
                     {
                         groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                     }
-                    else if (pixivWorkInfoDto.body.isR18() && groupId.IsShowR18Img())
+                    else if (pixivWorkInfoDto.body.isR18() && groupId.IsShowR18SetuImg())
                     {
                         groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                     }
@@ -165,7 +165,7 @@ namespace Theresa3rd_Bot.Handler
                         {
                             memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
                         }
-                        else if (pixivWorkInfoDto.body.isR18() && groupId.IsShowR18Img())
+                        else if (pixivWorkInfoDto.body.isR18() && groupId.IsShowR18SetuImg())
                         {
                             memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
                         }
@@ -278,7 +278,7 @@ namespace Theresa3rd_Bot.Handler
                         await session.SendMessageWithAtAsync(args, new PlainMessage($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~"));
 
                         await Task.Delay(1000);
-                        await sendPixivUserNewestWorkAsync(session, args, dbSubscribe, groupId.IsShowR18(), groupId.IsShowR18Img());
+                        await sendPixivUserNewestWorkAsync(session, args, dbSubscribe, groupId.IsShowR18Setu(), groupId.IsShowR18SetuImg());
                     }
                     catch (Exception ex)
                     {
@@ -476,7 +476,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 string searchWord = pixivBusiness.formatSearchWord(pixivTags);
-                PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, groupId.IsShowR18());
+                PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, groupId.IsShowR18Setu());
                 if (pageOne == null || pageOne.body.getIllust().data.Count == 0)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 该标签中没有任何作品，订阅失败"));

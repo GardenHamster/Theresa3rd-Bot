@@ -41,7 +41,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LoliconResultV2 loliconResult = null;
-                int r18Mode = groupId.IsShowR18() ? 2 : 0;
+                int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
                 string tagNames = message.splitKeyWord(BotConfig.SetuConfig.Lolicon.Command) ?? "";
                 if (string.IsNullOrEmpty(tagNames))
                 {
@@ -116,7 +116,7 @@ namespace Theresa3rd_Bot.Handler
                     {
                         groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                     }
-                    else if (loliconData.isR18() && groupId.IsShowR18Img())
+                    else if (loliconData.isR18() && groupId.IsShowR18SetuImg())
                     {
                         groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                     }
@@ -143,7 +143,7 @@ namespace Theresa3rd_Bot.Handler
                         {
                             memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
                         }
-                        else if (loliconData.isR18() && groupId.IsShowR18Img())
+                        else if (loliconData.isR18() && groupId.IsShowR18SetuImg())
                         {
                             memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
                         }

@@ -197,7 +197,7 @@ namespace Theresa3rd_Bot.Handler
                 return chatList;
             }
 
-            if (pixivWorkInfo.isR18())
+            if (pixivWorkInfo.isR18() && args.Sender.Group.Id.IsShowR18Saucenao() == false)
             {
                 chatList.Add(new PlainMessage($"该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                 return chatList;
@@ -212,7 +212,7 @@ namespace Theresa3rd_Bot.Handler
             {
                 chatList.Add((IChatMessage)await session.UploadPictureAsync(target, fileInfo.FullName));
             }
-            else if (pixivWorkInfo.isR18() && args.Sender.Group.Id.IsShowR18Img())
+            else if (pixivWorkInfo.isR18() && args.Sender.Group.Id.IsShowR18SaucenaoImg())
             {
                 chatList.Add((IChatMessage)await session.UploadPictureAsync(target, fileInfo.FullName));
             }

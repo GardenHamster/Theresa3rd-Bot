@@ -97,7 +97,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper()) continue;
-                    if (pixivUserWorkInfo.isR18() && groupId.IsShowR18() == false) continue;
+                    if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     await Task.Delay(500);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
@@ -148,7 +148,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper()) continue;
-                    if (pixivUserWorkInfo.isR18() && groupId.IsShowR18() == false) continue;
+                    if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     await Task.Delay(500);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
@@ -186,7 +186,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     PixivBookmarksWork randomWork = workList[new Random().Next(0, workList.Count)];
                     if (randomWork.IsImproper()) continue;
-                    if (randomWork.isR18() && groupId.IsShowR18() == false) continue;
+                    if (randomWork.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(randomWork.id);
                     await Task.Delay(500);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;

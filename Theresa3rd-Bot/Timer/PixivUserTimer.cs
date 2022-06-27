@@ -83,7 +83,7 @@ namespace Theresa3rd_Bot.Timer
                     try
                     {
                         if (pixivSubscribe.PixivWorkInfoDto.body.IsImproper()) continue;
-                        if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18() == false) continue;
+                        if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18Setu() == false) continue;
 
                         FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto);
 
@@ -106,7 +106,7 @@ namespace Theresa3rd_Bot.Timer
                         {
                             chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                         }
-                        else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18Img())
+                        else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18SetuImg())
                         {
                             chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                         }

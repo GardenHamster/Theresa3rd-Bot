@@ -25,6 +25,10 @@ namespace Theresa3rd_Bot.Model.Config
 
         public List<long> SaucenaoGroups { get; set; }
 
+        public List<long> SaucenaoR18Groups { get; set; }
+
+        public List<long> SaucenaoR18ImgGroups { get; set; }
+
         public List<long> SubscribeGroups { get; set; }
 
     }

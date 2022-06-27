@@ -3,15 +3,15 @@
 
 
 ## 简介
- - 某舰团长利用摸鱼时间写出来自用的bot，准备移植到mirai。基于 .net core 6.0 和 mirai-api-http
- - 相关功能还在摸鱼开发中，windows下部署请参考 [Document.md](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md)，使用方法请参考 [Menu.md](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md)
+ - 某舰团长利用摸鱼时间写出来自用的bot，准备移植到 [mirai](https://github.com/mamoe/mirai)。基于 .net core 6.0 和 mirai-api-http
+ - 相关功能还在摸鱼开发中，[windows下部署请点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md)，[使用方法点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md)
  - 开始白嫖前，请在右上角点一下:star:Star
 
 ## 声明
  - 本项目为个人自娱自乐写出来的项目，并没有任何收益，并不负责由于使用本项目所产生的任何问题，不得将项目用于任何商业用途
  - 有想法或问题请发issues
 
-## 功能
+## 进度
 - [x] 自定义入群欢迎
 - [x] 简易版复读机
 - [x] 自定义定时提醒功能
@@ -20,7 +20,7 @@
 - [x] 涩图 - pixiv画师订阅功能(自动推送关注画师的最新作品)
 - [x] 涩图 - pixiv标签订阅功能(自动推送关注标签的收藏度较高的最新作品)
 - [x] 涩图 - pixiv免代理 
-- [ ] 搜图 - 以图搜图功能(saucenao)
+- [x] 搜图 - 以图搜图功能(saucenao)
 - [ ] 色图 - 定时随机发送本地色图功能
 - [ ] BiliBili - 订阅功能(自动推送关注up的最新动态)
 - [ ] BiliBili - 直播推送功能(up开始直播时在群里发送开播提醒)
@@ -29,7 +29,6 @@
 - [ ] 小游戏 - 群狼人杀(计划中)
 - [ ] 关键词 - 关键词自动回复/禁言/撤回功能
 - [ ] 词云 - 每日/周/月词云功能
-- [ ] 漂流瓶 - 漂流瓶功能(跨群聊天,计划中)
 
 ## 致谢
 - 感谢[mamoe/mirai](https://github.com/mamoe/mirai)提供的支持

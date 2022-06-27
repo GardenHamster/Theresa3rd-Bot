@@ -29,23 +29,8 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
-                string prefix = BotConfig.GeneralConfig.Prefix;
-                StringBuilder menuBuilder = new StringBuilder();
-                menuBuilder.AppendLine($"");
-                menuBuilder.AppendLine($"目前实现的功能如下：");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SetuConfig.Pixiv.Command}[标签/pid]?：从pixiv中搜索一张涩图");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SetuConfig.Lolicon.Command}[标签]?：从Lolicon中搜索一张涩图");
-                menuBuilder.AppendLine($"");
-                menuBuilder.AppendLine($"超级管理员的功能如下：");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.Mihoyo.AddCommand}：订阅米游社用户");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.Mihoyo.RmCommand}：退订米游社用户");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.PixivUser.AddCommand}：订阅P站画师");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.PixivUser.SyncCommand}：订阅所有P站已关注的画师");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.PixivUser.RmCommand}：退订P站画师");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.PixivTag.AddCommand}：订阅P站标签");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.PixivTag.RmCommand}：退订P站标签");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SetuConfig.DisableTagCommand}：禁止搜索一个pixiv标签");
-                menuBuilder.AppendLine($"{prefix}{BotConfig.SetuConfig.EnableTagCommand}：允许搜索一个pixiv标签");
+                StringBuilder menuBuilder = new StringBuilder(getMemberMenu());
+                if (memberId.IsSuperManager()) menuBuilder.Append(getManagerMenu());
                 await session.SendMessageWithAtAsync(args, new PlainMessage(menuBuilder.ToString()));
             }
             catch (Exception ex)
@@ -53,6 +38,36 @@ namespace Theresa3rd_Bot.Handler
                 LogHelper.Error(ex, "sendMenuAsync异常");
                 throw;
             }
+        }
+
+        private string getMemberMenu()
+        {
+            string prefix = BotConfig.GeneralConfig.Prefix;
+            StringBuilder menuBuilder = new StringBuilder();
+            menuBuilder.AppendLine();
+            menuBuilder.AppendLine($"目前实现的功能如下：");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SetuConfig.Pixiv.Command}[标签/pid]?：从pixiv中搜索一张涩图");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SetuConfig.Lolicon.Command}[标签]?：从Lolicon中搜索一张涩图");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SaucenaoConfig.Command}[图片]?：尝试用Saucenao查找来源，并返回原图等信息");
+            return menuBuilder.ToString();
+        }
+
+        private string getManagerMenu()
+        {
+            string prefix = BotConfig.GeneralConfig.Prefix;
+            StringBuilder menuBuilder = new StringBuilder();
+            menuBuilder.AppendLine();
+            menuBuilder.AppendLine($"超级管理员的功能如下：");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.Mihoyo.AddCommand}：订阅米游社用户");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.Mihoyo.RmCommand}：退订米游社用户");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.PixivUser.AddCommand}：订阅P站画师");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.PixivUser.SyncCommand}：订阅所有P站已关注的画师");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.PixivUser.RmCommand}：退订P站画师");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.PixivTag.AddCommand}：订阅P站标签");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SubscribeConfig.PixivTag.RmCommand}：退订P站标签");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SetuConfig.DisableTagCommand}：禁止搜索一个pixiv标签");
+            menuBuilder.AppendLine($"{prefix}{BotConfig.SetuConfig.EnableTagCommand}：允许搜索一个pixiv标签");
+            return menuBuilder.ToString();
         }
 
 

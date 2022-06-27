@@ -577,7 +577,7 @@ namespace Theresa3rd_Bot.Handler
                 PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
                 if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && includeR18 == false)
                 {
-                    await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage(" 该作品为R-18作品，根据设置不显示相关内容"));
+                    await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                     return;
                 }
 

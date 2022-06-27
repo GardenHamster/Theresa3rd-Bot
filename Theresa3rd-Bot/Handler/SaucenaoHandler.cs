@@ -190,10 +190,20 @@ namespace Theresa3rd_Bot.Handler
         public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> warnList, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, FileInfo fileInfo, UploadTarget target)
         {
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
-
             List<IChatMessage> chatList = new List<IChatMessage>(warnList);
-            chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, saucenaoResult.StartDateTime)));
+            if (pixivWorkInfo.IsImproper())
+            {
+                chatList.Add(new PlainMessage($"该作品含有被屏蔽的标签，不显示相关内容"));
+                return chatList;
+            }
 
+            if (pixivWorkInfo.isR18())
+            {
+                chatList.Add(new PlainMessage($"该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
+                return chatList;
+            }
+
+            chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, saucenaoResult.StartDateTime)));
             if (fileInfo == null)
             {
                 chatList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, target));

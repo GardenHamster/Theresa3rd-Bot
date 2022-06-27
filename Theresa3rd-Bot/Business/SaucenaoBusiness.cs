@@ -138,7 +138,6 @@ namespace Theresa3rd_Bot.Business
                     {
                         PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
                         if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
-                        if (pixivWorkInfo.body.IsImproper()) continue;
                         saucenaoItem.PixivWorkInfo = pixivWorkInfo;
                         return saucenaoItem;
                     }
@@ -172,7 +171,7 @@ namespace Theresa3rd_Bot.Business
             if (itemList == null) return new List<SaucenaoItem>();
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();
             sortList.AddRange(itemList.Where(o => o.SourceType == SaucenaoSourceType.Pixiv && o.Similarity >= 80).OrderByDescending(o => o.Similarity).ToList());
-            sortList.AddRange(itemList);
+            sortList.AddRange(itemList.OrderBy(o => o.SourceType).OrderByDescending(o => o.Similarity));
             return sortList.Distinct().ToList();
         }
 

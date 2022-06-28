@@ -16,6 +16,6 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
     public class PixivFollowLatestPage
     {
-        public List<string> ids { get; set; }
+        public List<int> ids { get; set; }
     }
 }

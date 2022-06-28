@@ -362,7 +362,7 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
-        
+
         /*-------------------------------------------------------------获取最新订阅--------------------------------------------------------------------------*/
 
         /// <summary>
@@ -374,23 +374,23 @@ namespace Theresa3rd_Bot.Business
         /// <returns></returns>
         public async Task<List<PixivSubscribe>> getPixivUserNewestAsync(string userId, int subscribeId, int getCount = 2)
         {
-            int index = 0;
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             PixivUserWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivUserWorkInfoAsync(userId);
             if (pixivWorkInfo == null) return pixivSubscribeList;
             Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
             if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
-            foreach (KeyValuePair<string, PixivUserWorkInfo> workInfo in illusts)
+            List<PixivUserWorkInfo> workInfoList = illusts.Select(o => o.Value).OrderByDescending(o => o.createDate).ToList();
+            foreach (PixivUserWorkInfo workInfo in workInfoList)
             {
-                if (++index > getCount) break;
-                if (workInfo.Value == null) continue;
-                PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.Value.id);
+                if (pixivSubscribeList.Count >= getCount) break;
+                if (workInfo == null) continue;
+                PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id);
                 if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                 SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
                 subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
                 subscribeRecord.Content = subscribeRecord.Title;
-                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
-                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
+                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.id);
+                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.id);
                 subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
                 subscribeRecord.DynamicType = SubscribeDynamicType.插画;
                 PixivSubscribe pixivSubscribe = new PixivSubscribe();
@@ -417,27 +417,36 @@ namespace Theresa3rd_Bot.Business
             Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
             if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
-            foreach (KeyValuePair<string, PixivUserWorkInfo> workInfo in illusts)
+            List<PixivUserWorkInfo> workInfoList = illusts.Select(o => o.Value).OrderByDescending(o => o.createDate).ToList();
+            foreach (PixivUserWorkInfo workInfo in workInfoList)
             {
-                if (++index > getCount) break;
-                if (workInfo.Value == null) continue;
-                SubscribeRecordPO dbSubscribeRecord = subscribeRecordDao.checkExists(subscribeId, workInfo.Value.id);
-                if (dbSubscribeRecord != null) break;
-                PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.Value.id);
-                if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
-                if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
-                subscribeRecord.Content = subscribeRecord.Title;
-                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
-                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.Value.id);
-                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
-                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
-                subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                pixivSubscribe.SubscribeRecord = subscribeRecord;
-                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
-                pixivSubscribeList.Add(pixivSubscribe);
+                try
+                {
+                    if (++index > getCount) break;
+                    if (workInfo == null) continue;
+                    if (shelfLife > 0 && workInfo.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
+                    SubscribeRecordPO dbSubscribeRecord = subscribeRecordDao.checkExists(subscribeId, workInfo.id);
+                    if (dbSubscribeRecord != null) continue;
+                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id);
+                    if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
+                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+                    subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
+                    subscribeRecord.Content = subscribeRecord.Title;
+                    subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.id);
+                    subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.id);
+                    subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
+                    subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                    subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                    PixivSubscribe pixivSubscribe = new PixivSubscribe();
+                    pixivSubscribe.SubscribeRecord = subscribeRecord;
+                    pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                    pixivSubscribeList.Add(pixivSubscribe);
+                    await Task.Delay(1000);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex, $"读取画师[{userId}]作品[{workInfo.id}]时出现异常");
+                }
             }
             return pixivSubscribeList;
         }
@@ -455,27 +464,36 @@ namespace Theresa3rd_Bot.Business
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             if (pageOne.error || pageOne?.body?.getIllust()?.data == null) return pixivSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
-            foreach (PixivIllust item in pageOne.body.getIllust().data)
+            List<PixivIllust> illutsList = pageOne.body.getIllust().data.OrderByDescending(o => o.createDate).ToList();
+            foreach (PixivIllust item in illutsList)
             {
-                if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
-                PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(item.id);
-                if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
-                if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
-                SubscribeRecordPO dbSubscribeRecord = subscribeRecordDao.checkExists(subscribeId, pixivWorkInfoDto.body.illustId);
-                if (dbSubscribeRecord != null) break;
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
-                subscribeRecord.Content = subscribeRecord.Title;
-                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
-                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
-                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
-                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
-                subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                pixivSubscribe.SubscribeRecord = subscribeRecord;
-                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
-                pixivSubscribeList.Add(pixivSubscribe);
-                await Task.Delay(1000);
+                try
+                {
+                    if (item == null) continue;
+                    if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
+                    SubscribeRecordPO dbSubscribeRecord = subscribeRecordDao.checkExists(subscribeId, item.id);
+                    if (dbSubscribeRecord != null) continue;
+                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(item.id);
+                    if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
+                    if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
+                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+                    subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
+                    subscribeRecord.Content = subscribeRecord.Title;
+                    subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
+                    subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
+                    subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
+                    subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                    subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                    PixivSubscribe pixivSubscribe = new PixivSubscribe();
+                    pixivSubscribe.SubscribeRecord = subscribeRecord;
+                    pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                    pixivSubscribeList.Add(pixivSubscribe);
+                    await Task.Delay(1000);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex, $"读取标签[{tagNames}]作品[{item.id}]时出现异常");
+                }
             }
             return pixivSubscribeList;
         }
@@ -494,31 +512,45 @@ namespace Theresa3rd_Bot.Business
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             if (pageOne.error || pageOne?.body?.page?.ids == null) return pixivSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
-            foreach (string workId in pageOne.body.page.ids)
+            List<int> wordIds = pageOne.body.page.ids.OrderByDescending(o => o).ToList();
+            foreach (int workId in pageOne.body.page.ids)
             {
-                PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workId);
-                if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
-                if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
-                SubscribePO dbSubscribe = getOrInsertUserSubscribe(pixivWorkInfoDto);
-                SubscribeRecordPO dbSubscribeRecord = subscribeRecordDao.checkExists(dbSubscribe.Id, pixivWorkInfoDto.body.illustId);
-                if (dbSubscribeRecord != null) break;
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(dbSubscribe.Id);
-                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
-                subscribeRecord.Content = subscribeRecord.Title;
-                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
-                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
-                subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
-                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
-                subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                pixivSubscribe.SubscribeRecord = subscribeRecord;
-                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
-                pixivSubscribeList.Add(pixivSubscribe);
-                await Task.Delay(1000);
+                try
+                {
+                    if (workId <= 0) continue;
+                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString());
+                    if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
+                    if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+                    SubscribePO dbSubscribe = getOrInsertUserSubscribe(pixivWorkInfoDto);
+                    SubscribeRecordPO dbSubscribeRecord = subscribeRecordDao.checkExists(dbSubscribe.Id, pixivWorkInfoDto.body.illustId);
+                    if (dbSubscribeRecord != null) continue;
+                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(dbSubscribe.Id);
+                    subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
+                    subscribeRecord.Content = subscribeRecord.Title;
+                    subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
+                    subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.body.illustId);
+                    subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
+                    subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                    subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                    PixivSubscribe pixivSubscribe = new PixivSubscribe();
+                    pixivSubscribe.SubscribeRecord = subscribeRecord;
+                    pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                    pixivSubscribeList.Add(pixivSubscribe);
+                    await Task.Delay(1000);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex, $"读取关注用户作品[{workId}]时出现异常");
+                }
             }
             return pixivSubscribeList;
         }
 
+        /// <summary>
+        /// 创建或返回一个订阅
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <returns></returns>
         private SubscribePO getOrInsertUserSubscribe(PixivWorkInfoDto pixivWorkInfo)
         {
             string userId = pixivWorkInfo.body.userId.ToString();
@@ -755,13 +787,6 @@ namespace Theresa3rd_Bot.Business
             }
             return searchBuilder.ToString();
         }
-
-       
-
-
-
-
-
 
     }
 }

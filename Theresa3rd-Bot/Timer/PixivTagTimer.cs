@@ -63,7 +63,7 @@ namespace Theresa3rd_Bot.Timer
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error(ex, $"获取pixiv标签[{subscribeTask.SubscribeCode}]订阅失败");
+                    LogHelper.Error(ex, $"推送pixiv标签[{subscribeTask.SubscribeCode}]订阅时异常");
                 }
                 finally
                 {

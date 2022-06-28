@@ -71,7 +71,7 @@ namespace Theresa3rd_Bot.Timer
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error(ex, $"获取pixiv用户[{subscribeTask.SubscribeCode}]订阅失败");
+                    LogHelper.Error(ex, $"推送pixiv用户[{subscribeTask.SubscribeCode}]订阅时异常");
                 }
                 finally
                 {
@@ -83,10 +83,17 @@ namespace Theresa3rd_Bot.Timer
 
         private static async Task SendWithFollow(PixivBusiness pixivBusiness)
         {
-            DateTime startTime = DateTime.Now;
-            List<PixivSubscribe> pixivFollowLatestList = await pixivBusiness.getPixivFollowLatestAsync();
-            if (pixivFollowLatestList == null || pixivFollowLatestList.Count == 0) return;
-            await sendGroupSubscribeAsync(pixivBusiness, pixivFollowLatestList, BotConfig.PermissionsConfig.SubscribeGroups, startTime);
+            try
+            {
+                DateTime startTime = DateTime.Now;
+                List<PixivSubscribe> pixivFollowLatestList = await pixivBusiness.getPixivFollowLatestAsync();
+                if (pixivFollowLatestList == null || pixivFollowLatestList.Count == 0) return;
+                await sendGroupSubscribeAsync(pixivBusiness, pixivFollowLatestList, BotConfig.PermissionsConfig.SubscribeGroups, startTime);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"推送pixiv关注用户最新作品时异常");
+            }
         }
 
 

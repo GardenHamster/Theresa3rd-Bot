@@ -33,6 +33,8 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
         public List<string> tags { get; set; }
 
+        public DateTime createDate { get; set; }
+
         public bool IsImproper()
         {
             return tags != null && tags.IsImproper();

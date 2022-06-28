@@ -32,7 +32,15 @@ namespace Theresa3rd_Bot.Timer
             {
                 timer.Enabled = false;
                 LogHelper.Info("开始扫描pixiv画师最新作品...");
-                SubscribeMethodAsync(new PixivBusiness()).Wait();
+                PixivBusiness pixivBusiness = new PixivBusiness();
+                if (BotConfig.SubscribeConfig.PixivUser.ScanMode == PixivScanMode.ScanSubscribe)
+                {
+                    SendWithSubscribe(pixivBusiness).Wait();
+                }
+                else
+                {
+                    SendWithFollow(pixivBusiness).Wait();
+                }
                 LogHelper.Info("pixiv画师作品扫描完毕...");
             }
             catch (Exception ex)
@@ -45,7 +53,7 @@ namespace Theresa3rd_Bot.Timer
             }
         }
 
-        private static async Task SubscribeMethodAsync(PixivBusiness pixivBusiness)
+        private static async Task SendWithSubscribe(PixivBusiness pixivBusiness)
         {
             SubscribeType subscribeType = SubscribeType.P站画师;
             if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return;
@@ -59,7 +67,7 @@ namespace Theresa3rd_Bot.Timer
                     DateTime startTime = DateTime.Now;
                     List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserSubscribeAsync(subscribeTask.SubscribeCode, subscribeTask.SubscribeId);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
-                    await sendGroupSubscribeAsync(pixivBusiness, subscribeTask, pixivSubscribeList, startTime);
+                    await sendGroupSubscribeAsync(pixivBusiness, pixivSubscribeList, subscribeTask.GroupIdList, startTime);
                 }
                 catch (Exception ex)
                 {
@@ -72,13 +80,23 @@ namespace Theresa3rd_Bot.Timer
             }
         }
 
-        private static async Task sendGroupSubscribeAsync(PixivBusiness pixivBusiness, SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList, DateTime startTime)
+
+        private static async Task SendWithFollow(PixivBusiness pixivBusiness)
+        {
+            DateTime startTime = DateTime.Now;
+            List<PixivSubscribe> pixivFollowLatestList = await pixivBusiness.getPixivFollowLatestAsync();
+            if (pixivFollowLatestList == null || pixivFollowLatestList.Count == 0) return;
+            await sendGroupSubscribeAsync(pixivBusiness, pixivFollowLatestList, BotConfig.PermissionsConfig.SubscribeGroups, startTime);
+        }
+
+
+        private static async Task sendGroupSubscribeAsync(PixivBusiness pixivBusiness, List<PixivSubscribe> pixivSubscribeList, List<long> groupIds, DateTime startTime)
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
                 string template = BotConfig.SubscribeConfig.PixivUser.Template;
 
-                foreach (long groupId in subscribeTask.GroupIdList)
+                foreach (long groupId in groupIds)
                 {
                     try
                     {
@@ -90,7 +108,7 @@ namespace Theresa3rd_Bot.Timer
                         List<IChatMessage> chailList = new List<IChatMessage>();
                         if (string.IsNullOrWhiteSpace(template))
                         {
-                            chailList.Add(new PlainMessage($"pixiv画师[{subscribeTask.SubscribeName}]发布了新作品："));
+                            chailList.Add(new PlainMessage($"pixiv画师[{pixivSubscribe.PixivWorkInfoDto.body.userName}]发布了新作品："));
                             chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
                         }
                         else

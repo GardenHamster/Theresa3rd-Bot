@@ -8,7 +8,5 @@ namespace Theresa3rd_Bot.Model.Config
 
         public WebsitePO Bili { get; set; }
 
-        public WebsitePO Saucenao { get; set; }
-
     }
 }

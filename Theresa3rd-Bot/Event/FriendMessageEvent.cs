@@ -41,29 +41,20 @@ namespace Theresa3rd_Bot.Event
                 if (instructions.StartsWith(Command.PixivCookie))
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
-                    await new WebsiteHandler().UpdatePixivCookieAsync(session, args, message);
+                    await new WebsiteHandler().UpdateCookieAsync(session, args, WebsiteType.Pixiv, Command.PixivCookie, message, BotConfig.SetuConfig.Pixiv.CookieExpire);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                     args.BlockRemainingHandlers = true;
                     return;
                 }
 
-                if (instructions.StartsWith(Command.SaucenaoCookie))
+                if (instructions.StartsWith(Command.BiliCookie))
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
-                    await new WebsiteHandler().UpdateSaucenaoCookieAsync(session, args, message);
+                    await new WebsiteHandler().UpdateCookieAsync(session, args, WebsiteType.Bili, Command.BiliCookie, message, 60);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                     args.BlockRemainingHandlers = true;
                     return;
                 }
-
-                //if (instructions.StartsWith(Command.BiliCookie))
-                //{
-                //    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
-                //    await new WebsiteHandler().UpdateBiliCookieAsync(session, args, message);
-                //    new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
-                //    args.BlockRemainingHandlers = true;
-                //    return;
-                //}
 
                 await Task.Delay(1000);
                 await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage("ヾ(≧∇≦*)ゝ"));

@@ -2,10 +2,10 @@
 {
     public enum PixivRandomMode
     {
-        默认 = 0,
-        随机标签 = 1,
-        随机订阅 = 2,
-        随机关注 = 3,
-        随机收藏 = 4,
+        Default = 0,
+        RandomTag = 1,
+        RandomSubscribe = 2,
+        RandomFollow = 3,
+        RandomBookmark = 4,
     }
 }

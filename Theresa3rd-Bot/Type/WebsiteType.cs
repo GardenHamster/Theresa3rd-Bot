@@ -4,7 +4,6 @@
     {
         Other = 0,
         Pixiv = 1,
-        Bili = 2,
-        Saucenao = 3
+        Bili = 2
     }
 }

@@ -111,22 +111,23 @@ Saucenao:                                                                       
     Enable:                 true                                                #是否启用
     Command:                '原图'                                              #命令，用法：#原图 或 原图+图片
     DisableMsg:             '没有，快爬！'                                      #功能未启用时返回的消息
-    NotFoundMsg:            |                                                   #找不到相应色图时返回的消息
+    NotFoundMsg:            |                                                  #找不到相应色图时返回的消息
                             找不到相似的图，请换一张图片重试。
                             tips：如果通过截图获取搜索图片时，请只截取包含图片的部分，多余的色块只会影响搜索结果
-    ErrorMsg:               '出了点小问题，再试一次吧'                          #发生错误时返回的消息
-    ProcessingMsg:          '正在通过saucenao尝试搜索原图...'                   #开始查找前返回的消息
-    MemberCD:               30                                                  #独立CD(秒)，单个群员使用命令后需要等待的CD
+    ErrorMsg:               '出了点小问题，再试一次吧'                            #发生错误时返回的消息
+    ProcessingMsg:          '正在通过saucenao尝试搜索原图...'                     #开始查找前返回的消息
+    MemberCD:               30                                                   #独立CD(秒)，单个群员使用命令后需要等待的CD
     MaxDaily:               0                                                   #每人每日最大使用次数，0表示无限制
-    MaxReceive:             10                                                  #每次最多接收并查询多少张图片，0表示无限制
+    MaxReceive:             10                                                   #每次最多接收并查询多少张图片，0表示无限制
     MinSimilarity:          50.00                                               #最低相似度(百分比)
     PullOrigin:             true                                                #尝试从源网站中获取原图
     RevokeInterval:         0                                                   #N秒后撤回，0表示不撤回
-    RevokeSearched:         false                                               #是否撤回要查找的图片
+    RevokeSearched:         false                                                #是否撤回要查找的图片
 
 Subscribe:                                                                      #订阅相关
     PixivUser:                                                                  #订阅P站用户
         Enable:             true                                                #是否启用
+        ScanMode:           1                                                   #1：从pixiv账号获取已关注用户的最新作品并推送到拥有订阅权限的群（耗时短），2：逐个扫描订阅命令所订阅的画师（可自定义）
         AddCommand:         '订阅画师'                                          #订阅命令,需要管理员执行
         RmCommand:          '退订画师'                                          #退订命令,需要管理员执行
         SyncCommand:        '同步画师'                                          #同步命令,从p站账号中获取关注画师列表并添加到订阅中,需要管理员执行

@@ -52,6 +52,7 @@ namespace Theresa3rd_Bot.Util
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll, includeR18);
             string json = await GetPixivAsync(postUrl, headerDic);
+            json = json.Replace("[]", "null");
             return JsonConvert.DeserializeObject<PixivSearchDto>(json);
         }
 
@@ -61,6 +62,7 @@ namespace Theresa3rd_Bot.Util
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivWorkInfoUrl(workId);
             string json = await GetPixivAsync(postUrl, headerDic);
+            json = json.Replace("[]", "null");
             return JsonConvert.DeserializeObject<PixivWorkInfoDto>(json);
         }
 
@@ -70,7 +72,7 @@ namespace Theresa3rd_Bot.Util
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
             string json = await GetPixivAsync(postUrl, headerDic);
-            if (string.IsNullOrEmpty(json) == false && json.Contains("\"illusts\":[]")) return null;
+            json = json.Replace("[]", "null");
             return JsonConvert.DeserializeObject<PixivUserWorkInfoDto>(json);
         }
 
@@ -80,6 +82,7 @@ namespace Theresa3rd_Bot.Util
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
             string json = await GetPixivAsync(postUrl, headerDic);
+            json = json.Replace("[]", "null");
             return JsonConvert.DeserializeObject<PixivUserInfoDto>(json);
         }
 
@@ -89,6 +92,7 @@ namespace Theresa3rd_Bot.Util
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUgoiraMetaUrl(workId);
             string json = await GetPixivAsync(postUrl, headerDic);
+            json = json.Replace("[]", "null");
             return JsonConvert.DeserializeObject<PixivUgoiraMetaDto>(json);
         }
 
@@ -98,6 +102,7 @@ namespace Theresa3rd_Bot.Util
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivFollowUrl(loginId, offset, limit);
             string json = await GetPixivAsync(postUrl, headerDic);
+            json = json.Replace("[]", "null");
             return JsonConvert.DeserializeObject<PixivFollowDto>(json);
         }
 
@@ -107,7 +112,18 @@ namespace Theresa3rd_Bot.Util
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivBookmarkUrl(loginId, offset, limit);
             string json = await GetPixivAsync(postUrl, headerDic);
+            json = json.Replace("[]", "null");
             return JsonConvert.DeserializeObject<PixivBookmarksDto>(json);
+        }
+
+        public static async Task<PixivFollowLatestDto> GetPixivFollowLatestAsync(int page)
+        {
+            string referer = HttpUrl.getPixivFollowLatestReferer();
+            Dictionary<string, string> headerDic = GetPixivHeader(referer);
+            string postUrl = HttpUrl.getPixivFollowLatestUrl(page);
+            string json = await GetPixivAsync(postUrl, headerDic);
+            json = json.Replace("[]", "null");
+            return JsonConvert.DeserializeObject<PixivFollowLatestDto>(json);
         }
 
         public static async Task<string> GetPixivAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)

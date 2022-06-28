@@ -30,7 +30,8 @@ namespace Theresa3rd_Bot.Timer
             try
             {
                 timer.Enabled = false;
-                SubscribeMethodAsync(source, e).Wait();
+                MYSBusiness mysBusiness = new MYSBusiness();
+                SubscribeMethodAsync(mysBusiness).Wait();
             }
             catch (Exception ex)
             {
@@ -42,9 +43,8 @@ namespace Theresa3rd_Bot.Timer
             }
         }
 
-        private static async Task SubscribeMethodAsync(object source, System.Timers.ElapsedEventArgs e)
+        private static async Task SubscribeMethodAsync(MYSBusiness mysBusiness)
         {
-            MYSBusiness mysBusiness = new MYSBusiness();
             SubscribeType subscribeType = SubscribeType.米游社用户;
             if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return;
             List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];

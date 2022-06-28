@@ -24,17 +24,6 @@ namespace Theresa3rd_Bot.Business
             return website;
         }
 
-        public WebsitePO updateWebsite(string code, string cookie, long userid, DateTime expireDate)
-        {
-            WebsitePO website = getOrInsertWebsite(code);
-            website.Cookie = cookie;
-            website.UserId = userid;
-            website.UpdateDate = DateTime.Now;
-            website.CookieExpireDate = expireDate;
-            websiteDao.Update(website);
-            return website;
-        }
-
         public WebsitePO getOrInsertWebsite(string code)
         {
             WebsitePO website = websiteDao.getByCode(code);

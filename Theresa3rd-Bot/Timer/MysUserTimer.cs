@@ -73,6 +73,7 @@ namespace Theresa3rd_Bot.Timer
         {
             foreach (MysSubscribe mysSubscribe in mysSubscribeList)
             {
+                if (subscribeTask.GroupIdList == null || subscribeTask.GroupIdList.Count == 0) continue;
                 List<IChatMessage> chailList = await mysBusiness.getSubscribeInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Mihoyo.Template);
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {

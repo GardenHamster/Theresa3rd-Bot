@@ -101,16 +101,17 @@ namespace Theresa3rd_Bot.Timer
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
+                if (pixivSubscribe.PixivWorkInfoDto.body.IsImproper()) continue;
+                if (groupIds == null || groupIds.Count == 0) continue;
+
                 string template = BotConfig.SubscribeConfig.PixivUser.Template;
+                FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto);
 
                 foreach (long groupId in groupIds)
                 {
                     try
                     {
-                        if (pixivSubscribe.PixivWorkInfoDto.body.IsImproper()) continue;
                         if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18Setu() == false) continue;
-
-                        FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto);
 
                         List<IChatMessage> chailList = new List<IChatMessage>();
                         if (string.IsNullOrWhiteSpace(template))

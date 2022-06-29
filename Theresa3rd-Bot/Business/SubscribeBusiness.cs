@@ -144,7 +144,7 @@ namespace Theresa3rd_Bot.Business
             return subscribeDao.getSubscribe(subscribeCode, subscribeType, subscribeSubType);
         }
 
-        public SubscribeGroupPO getSubscribeGroup(long groupId, long subscribeId)
+        public SubscribeGroupPO getSubscribeGroup(long groupId, int subscribeId)
         {
             return subscribeDao.getSubscribeGroup(groupId, subscribeId);
         }

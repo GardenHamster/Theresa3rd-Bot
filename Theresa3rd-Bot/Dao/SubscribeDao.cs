@@ -12,7 +12,7 @@ namespace Theresa3rd_Bot.Dao
         {
             StringBuilder sqlBuilder = new StringBuilder();
             sqlBuilder.Append(" select s.id as subscribeId,s.subscribeCode,s.subscribeType,s.subscribeSubType,s.subscribeName,");
-            sqlBuilder.Append(" s.subscribeDescription,sg.groupId from subscribe s");
+            sqlBuilder.Append(" s.subscribeDescription,s.latestCode,sg.groupId from subscribe s");
             sqlBuilder.Append(" inner join subscribe_group sg on sg.subscribeId=s.id");
             sqlBuilder.Append(" order by s.subscribeType asc,sg.groupId asc");
             return Db.Ado.SqlQuery<SubscribeInfo>(sqlBuilder.ToString());
@@ -38,9 +38,14 @@ namespace Theresa3rd_Bot.Dao
             return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).OrderBy(o => o.SubscribeSubType).ToList();
         }
 
-        public SubscribeGroupPO getSubscribeGroup(long groupId, long subscribeId)
+        public SubscribeGroupPO getSubscribeGroup(long groupId, int subscribeId)
         {
             return Db.Queryable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).First();
+        }
+
+        public int updateLatest(int subscribeId, string latestCode)
+        {
+            return Db.Updateable<SubscribePO>().SetColumns(it => it.LatestCode == latestCode).Where(it => it.Id == subscribeId).ExecuteCommand();
         }
 
     }

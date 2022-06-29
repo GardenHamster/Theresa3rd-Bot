@@ -16,6 +16,7 @@ namespace Theresa3rd_Bot.Model.Subscribe
         public int SubscribeSubType { get; set; }
         public string SubscribeName { get; set; }
         public string SubscribeDescription { get; set; }
+        public string LatestCode { get; set; }
         public List<long> GroupIdList { get; set; }
 
         public SubscribeTask(SubscribeInfo subscribeInfo)
@@ -26,6 +27,7 @@ namespace Theresa3rd_Bot.Model.Subscribe
             this.SubscribeSubType = subscribeInfo.SubscribeSubType;
             this.SubscribeName = subscribeInfo.SubscribeName;
             this.SubscribeDescription = subscribeInfo.SubscribeDescription;
+            this.LatestCode = subscribeInfo.LatestCode;
             this.GroupIdList = new List<long>();
         }
 

@@ -15,6 +15,7 @@ namespace Theresa3rd_Bot.Model.Subscribe
         public int SubscribeSubType { get; set; }
         public string SubscribeName { get; set; }
         public string SubscribeDescription { get; set; }
+        public string LatestCode { get; set; }
         public long GroupId { get; set; }
     }
 

@@ -22,6 +22,9 @@ namespace Theresa3rd_Bot.Model.PO
         [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "订阅描述")]
         public string SubscribeDescription { get; set; }
 
+        [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "最新文章编号")]
+        public string LatestCode { get; set; }
+
         [SugarColumn(IsNullable = false, ColumnDataType = "tinyint", ColumnDescription = "是否直播中")]
         public bool Isliving { get; set; }
 

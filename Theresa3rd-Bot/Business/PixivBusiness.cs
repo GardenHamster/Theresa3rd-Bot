@@ -530,14 +530,16 @@ namespace Theresa3rd_Bot.Business
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             if (pageOne.error || pageOne?.body?.page?.ids == null) return pixivSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
-            List<int> wordIds = pageOne.body.page.ids.OrderByDescending(o => o).ToList();
-            foreach (int workId in pageOne.body.page.ids)
+            List<SubscribePO> updateList = new List<SubscribePO>();
+            List<int> wordIdList = pageOne.body.page.ids.OrderByDescending(o => o).ToList();
+            foreach (int workId in wordIdList)
             {
                 try
                 {
                     if (workId <= 0) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString());
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
+                    
                     if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
                     SubscribePO dbSubscribe = getOrInsertUserSubscribe(pixivWorkInfoDto);
                     SubscribeRecordPO dbSubscribeRecord = subscribeRecordDao.checkExists(dbSubscribe.Id, pixivWorkInfoDto.body.illustId);
@@ -550,6 +552,12 @@ namespace Theresa3rd_Bot.Business
                     subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
                     subscribeRecord.DynamicType = SubscribeDynamicType.插画;
                     subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                    if(updateList.Where(o => o.Id == dbSubscribe.Id).Count() == 0)
+                    {
+                        dbSubscribe.LatestCode = pixivWorkInfoDto.body.illustId;
+                        subscribeDao.Update(dbSubscribe);
+                        updateList.Add(dbSubscribe);
+                    }
                     PixivSubscribe pixivSubscribe = new PixivSubscribe();
                     pixivSubscribe.SubscribeRecord = subscribeRecord;
                     pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;

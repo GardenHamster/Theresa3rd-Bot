@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
@@ -80,33 +81,49 @@ namespace Theresa3rd_Bot.Business
         public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(SubscribeTask subscribeTask, int getCount = 5)
         {
             int index = 0;
+            int subscribeId = subscribeTask.SubscribeId;
             List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
             MysResult<MysPostDataDto> mysPostDataDto = await getMysUserPostDtoAsync(subscribeTask.SubscribeCode, 10);
             if (mysPostDataDto?.data?.list == null || mysPostDataDto.data.list.Count == 0) return mysSubscribeList;
-            foreach (var item in mysPostDataDto.data.list)
+            int shelfLife = BotConfig.SubscribeConfig.Mihoyo.ShelfLife;
+            List<MysPostListDto> postList = mysPostDataDto.data.list;
+            string latestCode = postList.FirstOrDefault()?.post.post_id ?? "";
+            foreach (var item in postList)
             {
-                if (++index > getCount) break;
-                int shelfLife = BotConfig.SubscribeConfig.Mihoyo.ShelfLife;
-                DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
-                if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
-
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeTask.SubscribeId);
-                subscribeRecord.Title = item.post.subject?.filterEmoji().cutString(200);
-                subscribeRecord.Content = item.post.content?.filterEmoji().cutString(500);
-                subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
-                subscribeRecord.LinkUrl = HttpUrl.getMysArticleUrl(item.post.post_id);
-                subscribeRecord.DynamicCode = item.post.post_id;
-                subscribeRecord.DynamicType = SubscribeDynamicType.帖子;
-
-                SubscribeRecordPO dbSubscribe = subscribeRecordDao.checkExists(subscribeTask.SubscribeId, item.post.post_id);
-                if (dbSubscribe != null) continue;
-
-                MysSubscribe mysSubscribe = new MysSubscribe();
-                mysSubscribe.SubscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                mysSubscribe.MysUserPostDto = item;
-                mysSubscribe.CreateTime = createTime;
-                mysSubscribeList.Add(mysSubscribe);
-                await Task.Delay(1000);
+                try
+                {
+                    if (++index > getCount) break;
+                    string postId = item.post.post_id;
+                    DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
+                    if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+                    if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, postId)) continue;
+                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+                    subscribeRecord.Title = item.post.subject?.filterEmoji().cutString(200);
+                    subscribeRecord.Content = item.post.content?.filterEmoji().cutString(500);
+                    subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
+                    subscribeRecord.LinkUrl = HttpUrl.getMysArticleUrl(postId);
+                    subscribeRecord.DynamicCode = postId;
+                    subscribeRecord.DynamicType = SubscribeDynamicType.帖子;
+                    MysSubscribe mysSubscribe = new MysSubscribe();
+                    mysSubscribe.SubscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                    mysSubscribe.MysUserPostDto = item;
+                    mysSubscribe.CreateTime = createTime;
+                    mysSubscribeList.Add(mysSubscribe);
+                    if (subscribeTask.LatestCode == postId) break;
+                }
+                catch (Exception ex)
+                {
+                    latestCode = item.post.post_id;//遇到网络错误时，下次扫描到这个错误ID后为止
+                    LogHelper.Error(ex, $"读取米游社[{subscribeTask.SubscribeId}]贴子[{item.post.post_id}]时出现异常");
+                }
+                finally
+                {
+                    await Task.Delay(1000);
+                }
+            }
+            if (string.IsNullOrWhiteSpace(latestCode) == false)
+            {
+                subscribeDao.updateLatest(subscribeId, latestCode);
             }
             return mysSubscribeList;
         }

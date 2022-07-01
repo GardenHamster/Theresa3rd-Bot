@@ -64,7 +64,7 @@ namespace Theresa3rd_Bot.Timer
                 }
                 finally
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(3000);
                 }
             }
         }

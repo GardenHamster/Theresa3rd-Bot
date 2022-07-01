@@ -58,6 +58,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivWorkInfoDto> GetPixivWorkInfoAsync(string workId)
         {
+            await Task.Delay(1000);
             string referer = HttpUrl.getPixivArtworksReferer(workId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivWorkInfoUrl(workId);
@@ -68,6 +69,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivUserWorkInfoDto> GetPixivUserWorkInfoAsync(string userId)
         {
+            await Task.Delay(1000);
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
@@ -78,6 +80,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivUserInfoDto> GetPixivUserInfoAsync(string userId)
         {
+            await Task.Delay(1000);
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
@@ -88,6 +91,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivUgoiraMetaDto> GetPixivUgoiraMetaAsync(string workId)
         {
+            await Task.Delay(1000);
             string referer = HttpUrl.getPixivArtworksReferer(workId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUgoiraMetaUrl(workId);
@@ -98,6 +102,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivFollowDto> GetPixivFollowAsync(long loginId, int offset, int limit)
         {
+            await Task.Delay(1000);
             string referer = HttpUrl.getPixivFollowReferer(loginId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivFollowUrl(loginId, offset, limit);
@@ -108,6 +113,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivBookmarksDto> GetPixivBookmarkAsync(long loginId, int offset, int limit)
         {
+            await Task.Delay(1000);
             string referer = HttpUrl.getPixivBookmarkReferer(loginId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivBookmarkUrl(loginId, offset, limit);
@@ -118,6 +124,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivFollowLatestDto> GetPixivFollowLatestAsync(int page)
         {
+            await Task.Delay(1000);
             string referer = HttpUrl.getPixivFollowLatestReferer();
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivFollowLatestUrl(page);

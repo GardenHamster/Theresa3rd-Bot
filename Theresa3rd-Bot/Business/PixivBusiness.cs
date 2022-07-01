@@ -99,7 +99,6 @@ namespace Theresa3rd_Bot.Business
                     if (pixivUserWorkInfo.IsImproper()) continue;
                     if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
-                    await Task.Delay(500);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (pixivWorkInfoDto.body.bookmarkCount < 100) continue;
                     return pixivWorkInfoDto;
@@ -122,7 +121,6 @@ namespace Theresa3rd_Bot.Business
             PixivFollowDto firstFollowDto = await PixivHelper.GetPixivFollowAsync(userId, 0, eachPage);
             int total = firstFollowDto.body.total;
             int page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
-            await Task.Delay(1000);
 
             int randomPage = new Random().Next(page);
             PixivFollowDto randomFollow = randomPage == 0 ? firstFollowDto : await PixivHelper.GetPixivFollowAsync(userId, randomPage * eachPage, eachPage);
@@ -150,7 +148,6 @@ namespace Theresa3rd_Bot.Business
                     if (pixivUserWorkInfo.IsImproper()) continue;
                     if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
-                    await Task.Delay(500);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (pixivWorkInfoDto.body.bookmarkCount < 100) continue;
                     return pixivWorkInfoDto;
@@ -174,7 +171,6 @@ namespace Theresa3rd_Bot.Business
             PixivBookmarksDto firstBookmarksDto = await PixivHelper.GetPixivBookmarkAsync(userId, 0, eachPage);
             int total = firstBookmarksDto.body.total;
             int page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
-            await Task.Delay(1000);
 
             for (int i = 0; i < loopPageTimes; i++)
             {
@@ -188,7 +184,6 @@ namespace Theresa3rd_Bot.Business
                     if (randomWork.IsImproper()) continue;
                     if (randomWork.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(randomWork.id);
-                    await Task.Delay(500);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     return pixivWorkInfoDto;
                 }
@@ -254,7 +249,7 @@ namespace Theresa3rd_Bot.Business
             for (int i = 0; i < taskList.Length; i++)
             {
                 tasks[i] = getPixivWorkInfoMethodAsync(taskList[i], includeR18);
-                await Task.Delay(RandomHelper.getRandomBetween(500, 1000));//将每条线程的间隔错开
+                await Task.Delay(1000);//将每条线程的间隔错开
             }
             Task.WaitAll(tasks);
 
@@ -289,7 +284,7 @@ namespace Theresa3rd_Bot.Business
                 }
                 finally
                 {
-                    Thread.Sleep(500);//防止请求过快被检测
+                    Thread.Sleep(1000);//防止请求过快被检测
                 }
             }
         }
@@ -615,7 +610,6 @@ namespace Theresa3rd_Bot.Business
             PixivFollowDto firstFollowDto = await PixivHelper.GetPixivFollowAsync(userId, 0, eachPage);
             int total = firstFollowDto.body.total;
             int page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
-            await Task.Delay(1000);
             for (int i = 0; i < page; i++)
             {
                 PixivFollowDto pixivFollowDto = await PixivHelper.GetPixivFollowAsync(userId, offset, eachPage);
@@ -625,7 +619,6 @@ namespace Theresa3rd_Bot.Business
                     followUserList.Add(item);
                 }
                 offset += eachPage;
-                await Task.Delay(1000);
             }
             return followUserList;
         }

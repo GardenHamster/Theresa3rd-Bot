@@ -367,7 +367,7 @@ namespace Theresa3rd_Bot.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivUserNewestAsync(string userId, int subscribeId, int getCount = 2)
+        public async Task<List<PixivSubscribe>> getPixivUserNewestAsync(string userId, int subscribeId, int getCount = 1)
         {
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             PixivUserWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivUserWorkInfoAsync(userId);
@@ -403,7 +403,7 @@ namespace Theresa3rd_Bot.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivUserSubscribeAsync(SubscribeTask subscribeTask, int getCount = 2)
+        public async Task<List<PixivSubscribe>> getPixivUserSubscribeAsync(SubscribeTask subscribeTask, int getCount = 5)
         {
             int index = 0;
             string userId = subscribeTask.SubscribeCode;
@@ -415,7 +415,6 @@ namespace Theresa3rd_Bot.Business
             if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
             List<PixivUserWorkInfo> workInfoList = illusts.Select(o => o.Value).OrderByDescending(o => o.createDate).ToList();
-            string latestCode = workInfoList.FirstOrDefault()?.id ?? "";
             foreach (PixivUserWorkInfo workInfo in workInfoList)
             {
                 try
@@ -438,21 +437,15 @@ namespace Theresa3rd_Bot.Business
                     pixivSubscribe.SubscribeRecord = subscribeRecord;
                     pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
                     pixivSubscribeList.Add(pixivSubscribe);
-                    if (subscribeTask.LatestCode == workInfo.id) break;
                 }
                 catch (Exception ex)
                 {
-                    latestCode = workInfo.id;//遇到网络错误时，下次扫描到这个错误ID后为止
                     LogHelper.Error(ex, $"读取画师[{userId}]作品[{workInfo.id}]时出现异常");
                 }
                 finally
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(2000);
                 }
-            }
-            if (string.IsNullOrWhiteSpace(latestCode) == false)
-            {
-                subscribeDao.updateLatest(subscribeId, latestCode);
             }
             return pixivSubscribeList;
         }
@@ -473,7 +466,6 @@ namespace Theresa3rd_Bot.Business
             if (pageOne.error || pageOne?.body?.getIllust()?.data == null) return pixivSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
             List<PixivIllust> illutsList = pageOne.body.getIllust().data.OrderByDescending(o => o.createDate).ToList();
-            string latestCode = illutsList.FirstOrDefault()?.id ?? "";
             foreach (PixivIllust item in illutsList)
             {
                 try
@@ -496,21 +488,15 @@ namespace Theresa3rd_Bot.Business
                     pixivSubscribe.SubscribeRecord = subscribeRecord;
                     pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
                     pixivSubscribeList.Add(pixivSubscribe);
-                    if (subscribeTask.LatestCode == item.id) break;
                 }
                 catch (Exception ex)
                 {
-                    latestCode = item.id;//遇到网络错误时，下次扫描到这个错误ID后为止
                     LogHelper.Error(ex, $"读取标签[{tagNames}]作品[{item.id}]时出现异常");
                 }
                 finally
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(2000);
                 }
-            }
-            if (string.IsNullOrWhiteSpace(latestCode) == false)
-            {
-                subscribeDao.updateLatest(subscribeId, latestCode);
             }
             return pixivSubscribeList;
         }
@@ -529,7 +515,6 @@ namespace Theresa3rd_Bot.Business
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             if (pageOne.error || pageOne?.body?.page?.ids == null) return pixivSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
-            List<SubscribePO> updateList = new List<SubscribePO>();
             List<int> wordIdList = pageOne.body.page.ids.OrderByDescending(o => o).ToList();
             foreach (int workId in wordIdList)
             {
@@ -549,12 +534,6 @@ namespace Theresa3rd_Bot.Business
                     subscribeRecord.DynamicCode = pixivWorkInfoDto.body.illustId;
                     subscribeRecord.DynamicType = SubscribeDynamicType.插画;
                     subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                    if (updateList.Where(o => o.Id == dbSubscribe.Id).Count() == 0)
-                    {
-                        dbSubscribe.LatestCode = pixivWorkInfoDto.body.illustId;
-                        subscribeDao.Update(dbSubscribe);
-                        updateList.Add(dbSubscribe);
-                    }
                     PixivSubscribe pixivSubscribe = new PixivSubscribe();
                     pixivSubscribe.SubscribeRecord = subscribeRecord;
                     pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;

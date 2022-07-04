@@ -86,8 +86,7 @@ namespace Theresa3rd_Bot.Business
             MysResult<MysPostDataDto> mysPostDataDto = await getMysUserPostDtoAsync(subscribeTask.SubscribeCode, 10);
             if (mysPostDataDto?.data?.list == null || mysPostDataDto.data.list.Count == 0) return mysSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.Mihoyo.ShelfLife;
-            List<MysPostListDto> postList = mysPostDataDto.data.list;
-            string latestCode = postList.FirstOrDefault()?.post.post_id ?? "";
+            List<MysPostListDto> postList = mysPostDataDto.data.list.OrderByDescending(o => o.post.created_at).ToList();
             foreach (var item in postList)
             {
                 try
@@ -95,7 +94,7 @@ namespace Theresa3rd_Bot.Business
                     if (++index > getCount) break;
                     string postId = item.post.post_id;
                     DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
-                    if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) continue;
+                    if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, postId)) continue;
                     SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
                     subscribeRecord.Title = item.post.subject?.filterEmoji().cutString(200);
@@ -109,21 +108,15 @@ namespace Theresa3rd_Bot.Business
                     mysSubscribe.MysUserPostDto = item;
                     mysSubscribe.CreateTime = createTime;
                     mysSubscribeList.Add(mysSubscribe);
-                    if (subscribeTask.LatestCode == postId) break;
                 }
                 catch (Exception ex)
                 {
-                    latestCode = item.post.post_id;//遇到网络错误时，下次扫描到这个错误ID后为止
                     LogHelper.Error(ex, $"读取米游社[{subscribeTask.SubscribeId}]贴子[{item.post.post_id}]时出现异常");
                 }
                 finally
                 {
                     await Task.Delay(1000);
                 }
-            }
-            if (string.IsNullOrWhiteSpace(latestCode) == false)
-            {
-                subscribeDao.updateLatest(subscribeId, latestCode);
             }
             return mysSubscribeList;
         }

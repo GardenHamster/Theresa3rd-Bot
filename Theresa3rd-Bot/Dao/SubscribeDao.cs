@@ -43,10 +43,5 @@ namespace Theresa3rd_Bot.Dao
             return Db.Queryable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).First();
         }
 
-        public int updateLatest(int subscribeId, string latestCode)
-        {
-            return Db.Updateable<SubscribePO>().SetColumns(it => it.LatestCode == latestCode).Where(it => it.Id == subscribeId).ExecuteCommand();
-        }
-
     }
 }

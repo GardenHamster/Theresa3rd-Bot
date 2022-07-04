@@ -567,7 +567,7 @@ namespace Theresa3rd_Bot.Handler
             {
                 DateTime startTime = DateTime.Now;
                 List<IChatMessage> chatList = new List<IChatMessage>();
-                List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id);
+                List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, 1);
                 if (pixivSubscribeList == null || pixivSubscribeList.Count == 0)
                 {
                     await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage($"画师[{dbSubscribe.SubscribeName}]还没有发布任何作品~"));

@@ -12,7 +12,7 @@ namespace Theresa3rd_Bot.Dao
         {
             StringBuilder sqlBuilder = new StringBuilder();
             sqlBuilder.Append(" select s.id as subscribeId,s.subscribeCode,s.subscribeType,s.subscribeSubType,s.subscribeName,");
-            sqlBuilder.Append(" s.subscribeDescription,s.latestCode,sg.groupId from subscribe s");
+            sqlBuilder.Append(" s.subscribeDescription,sg.groupId from subscribe s");
             sqlBuilder.Append(" inner join subscribe_group sg on sg.subscribeId=s.id");
             sqlBuilder.Append(" order by s.subscribeType asc,sg.groupId asc");
             return Db.Ado.SqlQuery<SubscribeInfo>(sqlBuilder.ToString());

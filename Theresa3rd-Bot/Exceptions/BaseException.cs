@@ -8,5 +8,9 @@ namespace Theresa3rd_Bot.Exceptions
         {
         }
 
+        public BaseException(Exception innerException, string message) : base(message, innerException)
+        {
+        }
+
     }
 }

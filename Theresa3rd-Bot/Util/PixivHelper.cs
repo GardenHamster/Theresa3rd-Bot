@@ -9,6 +9,7 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Pixiv;
 
 namespace Theresa3rd_Bot.Util
@@ -48,89 +49,127 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivSearchDto> GetPixivSearchAsync(string keyword, int pageNo, bool isMatchAll, bool includeR18)
         {
-            string referer = HttpUrl.getPixivSearchReferer();
-            Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll, includeR18);
-            string json = await GetPixivAsync(postUrl, headerDic);
-            json = json.Replace("[]", "null");
-            return JsonConvert.DeserializeObject<PixivSearchDto>(json);
+            try
+            {
+                string referer = HttpUrl.getPixivSearchReferer();
+                Dictionary<string, string> headerDic = GetPixivHeader(referer);
+                string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll, includeR18);
+                string json = await GetPixivAsync(postUrl, headerDic);
+                json = json.Replace("[]", "null");
+                return JsonConvert.DeserializeObject<PixivSearchDto>(json);
+            }
+            catch (Exception ex)
+            {
+                throw new BaseException(ex, $"搜索pixiv标签{keyword}失败");
+            }
         }
 
         public static async Task<PixivWorkInfoDto> GetPixivWorkInfoAsync(string workId)
         {
-            await Task.Delay(1000);
-            string referer = HttpUrl.getPixivArtworksReferer(workId);
-            Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivWorkInfoUrl(workId);
-            string json = await GetPixivAsync(postUrl, headerDic);
-            json = json.Replace("[]", "null");
-            return JsonConvert.DeserializeObject<PixivWorkInfoDto>(json);
-        }
-
-        public static async Task<PixivUserWorkInfoDto> GetPixivUserWorkInfoAsync(string userId)
-        {
-            await Task.Delay(1000);
-            string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
-            Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
-            string json = await GetPixivAsync(postUrl, headerDic);
-            json = json.Replace("[]", "null");
-            return JsonConvert.DeserializeObject<PixivUserWorkInfoDto>(json);
+            try
+            {
+                await Task.Delay(1000);
+                string referer = HttpUrl.getPixivArtworksReferer(workId);
+                Dictionary<string, string> headerDic = GetPixivHeader(referer);
+                string postUrl = HttpUrl.getPixivWorkInfoUrl(workId);
+                string json = await GetPixivAsync(postUrl, headerDic);
+                json = json.Replace("[]", "null");
+                return JsonConvert.DeserializeObject<PixivWorkInfoDto>(json);
+            }
+            catch (Exception ex)
+            {
+                throw new BaseException(ex, $"获取pixiv作品信息{workId}失败");
+            }
         }
 
         public static async Task<PixivUserInfoDto> GetPixivUserInfoAsync(string userId)
         {
-            await Task.Delay(1000);
-            string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
-            Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
-            string json = await GetPixivAsync(postUrl, headerDic);
-            json = json.Replace("[]", "null");
-            return JsonConvert.DeserializeObject<PixivUserInfoDto>(json);
+            try
+            {
+                await Task.Delay(1000);
+                string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
+                Dictionary<string, string> headerDic = GetPixivHeader(referer);
+                string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
+                string json = await GetPixivAsync(postUrl, headerDic);
+                json = json.Replace("[]", "null");
+                return JsonConvert.DeserializeObject<PixivUserInfoDto>(json);
+            }
+            catch (Exception ex)
+            {
+                throw new BaseException(ex, $"获取pixiv画师{userId}作品列表失败");
+            }
         }
 
         public static async Task<PixivUgoiraMetaDto> GetPixivUgoiraMetaAsync(string workId)
         {
-            await Task.Delay(1000);
-            string referer = HttpUrl.getPixivArtworksReferer(workId);
-            Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivUgoiraMetaUrl(workId);
-            string json = await GetPixivAsync(postUrl, headerDic);
-            json = json.Replace("[]", "null");
-            return JsonConvert.DeserializeObject<PixivUgoiraMetaDto>(json);
+            try
+            {
+                await Task.Delay(1000);
+                string referer = HttpUrl.getPixivArtworksReferer(workId);
+                Dictionary<string, string> headerDic = GetPixivHeader(referer);
+                string postUrl = HttpUrl.getPixivUgoiraMetaUrl(workId);
+                string json = await GetPixivAsync(postUrl, headerDic);
+                json = json.Replace("[]", "null");
+                return JsonConvert.DeserializeObject<PixivUgoiraMetaDto>(json);
+            }
+            catch (Exception ex)
+            {
+                throw new BaseException(ex, $"获取pixiv动图{workId}失败");
+            }
         }
 
         public static async Task<PixivFollowDto> GetPixivFollowAsync(long loginId, int offset, int limit)
         {
-            await Task.Delay(1000);
-            string referer = HttpUrl.getPixivFollowReferer(loginId);
-            Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivFollowUrl(loginId, offset, limit);
-            string json = await GetPixivAsync(postUrl, headerDic);
-            json = json.Replace("[]", "null");
-            return JsonConvert.DeserializeObject<PixivFollowDto>(json);
+            try
+            {
+                await Task.Delay(1000);
+                string referer = HttpUrl.getPixivFollowReferer(loginId);
+                Dictionary<string, string> headerDic = GetPixivHeader(referer);
+                string postUrl = HttpUrl.getPixivFollowUrl(loginId, offset, limit);
+                string json = await GetPixivAsync(postUrl, headerDic);
+                json = json.Replace("[]", "null");
+                return JsonConvert.DeserializeObject<PixivFollowDto>(json);
+            }
+            catch (Exception ex)
+            {
+                throw new BaseException(ex, $"获取pixiv关注列表失败");
+            }
         }
 
         public static async Task<PixivBookmarksDto> GetPixivBookmarkAsync(long loginId, int offset, int limit)
         {
-            await Task.Delay(1000);
-            string referer = HttpUrl.getPixivBookmarkReferer(loginId);
-            Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivBookmarkUrl(loginId, offset, limit);
-            string json = await GetPixivAsync(postUrl, headerDic);
-            json = json.Replace("[]", "null");
-            return JsonConvert.DeserializeObject<PixivBookmarksDto>(json);
+            try
+            {
+                await Task.Delay(1000);
+                string referer = HttpUrl.getPixivBookmarkReferer(loginId);
+                Dictionary<string, string> headerDic = GetPixivHeader(referer);
+                string postUrl = HttpUrl.getPixivBookmarkUrl(loginId, offset, limit);
+                string json = await GetPixivAsync(postUrl, headerDic);
+                json = json.Replace("[]", "null");
+                return JsonConvert.DeserializeObject<PixivBookmarksDto>(json);
+            }
+            catch (Exception ex)
+            {
+                throw new BaseException(ex, $"获取pixiv收藏列表失败");
+            }
         }
 
         public static async Task<PixivFollowLatestDto> GetPixivFollowLatestAsync(int page)
         {
-            await Task.Delay(1000);
-            string referer = HttpUrl.getPixivFollowLatestReferer();
-            Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivFollowLatestUrl(page);
-            string json = await GetPixivAsync(postUrl, headerDic);
-            json = json.Replace("[]", "null");
-            return JsonConvert.DeserializeObject<PixivFollowLatestDto>(json);
+            try
+            {
+                await Task.Delay(1000);
+                string referer = HttpUrl.getPixivFollowLatestReferer();
+                Dictionary<string, string> headerDic = GetPixivHeader(referer);
+                string postUrl = HttpUrl.getPixivFollowLatestUrl(page);
+                string json = await GetPixivAsync(postUrl, headerDic);
+                json = json.Replace("[]", "null");
+                return JsonConvert.DeserializeObject<PixivFollowLatestDto>(json);
+            }
+            catch (Exception ex)
+            {
+                throw new BaseException(ex, $"获取pixiv关注最新作品失败");
+            }
         }
 
         public static async Task<string> GetPixivAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)

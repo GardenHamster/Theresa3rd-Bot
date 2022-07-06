@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Error;
 
 namespace Theresa3rd_Bot.Util
@@ -94,14 +95,24 @@ namespace Theresa3rd_Bot.Util
             {
                 if (BotConfig.GeneralConfig?.ErrorGroups == null) return;
                 if (IsSendError(exception) == false) return;
-
-                if (string.IsNullOrWhiteSpace(message)) message = "未知错误";
-                string sendMessage = $"{message}：{exception.Message}\r\n详细请查看Log日志";
+                StringBuilder messageBuilder = new StringBuilder();
+                if (string.IsNullOrWhiteSpace(message) == false)
+                {
+                    messageBuilder.AppendLine(message);
+                }
+                if (string.IsNullOrWhiteSpace(exception.Message) == false)
+                {
+                    messageBuilder.AppendLine(exception.Message);
+                }
+                if (exception is BaseException && exception.InnerException != null)
+                {
+                    messageBuilder.AppendLine(exception.InnerException?.Message ?? "");
+                }
+                messageBuilder.Append("详细请查看Log日志");
                 foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups)
                 {
-                    MiraiHelper.Session.SendGroupMessageAsync(groupId, new Mirai.CSharp.HttpApi.Models.ChatMessages.PlainMessage(sendMessage));
+                    MiraiHelper.Session.SendGroupMessageAsync(groupId, new Mirai.CSharp.HttpApi.Models.ChatMessages.PlainMessage(messageBuilder.ToString()));
                 }
-
                 AddSendError(exception);
             }
             catch (Exception ex)
@@ -141,8 +152,10 @@ namespace Theresa3rd_Bot.Util
         {
             if (LastSendHour != DateTime.Now.Hour) return true;
             if (SendErrorList.Count >= 10) return false;
-            string message = exception.Message;
-            SendError sendError = SendErrorList.Where(m => m.Message == message).FirstOrDefault();
+            string message = exception.Message?.Trim() ?? "";
+            if (exception is BaseException) message = exception?.InnerException?.Message?.Trim() ?? exception.Message?.Trim();
+            if (string.IsNullOrWhiteSpace(message)) return false;
+            SendError sendError = SendErrorList.Where(m => m.Message != null && m.Message.ToLower() == message.ToLower()).FirstOrDefault();
             if (sendError == null) return true;
             return sendError.SendTimes < 3;
         }

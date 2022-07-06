@@ -275,14 +275,14 @@ namespace Theresa3rd_Bot.Handler
                         }
 
                         SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
-                        await session.SendMessageWithAtAsync(args, new PlainMessage($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~"));
+                        await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~"));
 
                         await Task.Delay(1000);
                         await sendPixivUserNewestWorkAsync(session, args, dbSubscribe, groupId.IsShowR18Setu(), groupId.IsShowR18SetuImg());
                     }
                     catch (Exception ex)
                     {
-                        LogHelper.Error(ex, $"pixiv画师[{pixivUserId}]订阅异常");
+                        LogHelper.Error(ex, $" pixiv画师[{pixivUserId}]订阅异常");
                         await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师id[{pixivUserId}]订阅失败~"));
                     }
                     finally

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
+using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Model.Subscribe;
@@ -88,9 +89,9 @@ namespace Theresa3rd_Bot.Business
             {
                 int randomUserIndex = RandomHelper.getRandomBetween(0, subscribeTaskList.Count - 1);
                 SubscribeTask subscribeTask = subscribeTaskList[randomUserIndex];
-                PixivUserWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivUserWorkInfoAsync(subscribeTask.SubscribeCode);
-                if (pixivWorkInfo == null || pixivWorkInfo.error) continue;
-                Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
+                PixivUserInfoDto pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(subscribeTask.SubscribeCode);
+                if (pixivUserInfo == null || pixivUserInfo.error) continue;
+                Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo.body.illusts;
                 if (illusts == null || illusts.Count == 0) continue;
                 List<PixivUserWorkInfo> workList = illusts.Select(o => o.Value).ToList();
                 for (int j = 0; j < loopWorkTimes; j++)
@@ -137,9 +138,9 @@ namespace Theresa3rd_Bot.Business
 
             foreach (PixivFollowUser user in randomUserList)
             {
-                PixivUserWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivUserWorkInfoAsync(user.userId);
-                if (pixivWorkInfo == null || pixivWorkInfo.error) continue;
-                Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
+                PixivUserInfoDto pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(user.userId);
+                if (pixivUserInfo == null || pixivUserInfo.error) continue;
+                Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo.body.illusts;
                 if (illusts == null || illusts.Count == 0) continue;
                 List<PixivUserWorkInfo> workList = illusts.Select(o => o.Value).ToList();
                 for (int i = 0; i < loopWorkTimes; i++)
@@ -278,9 +279,9 @@ namespace Theresa3rd_Bot.Business
                     if (checkRandomWorkIsOk(pixivWorkInfo) == false) continue;
                     lock (bookUpList) bookUpList.Add(pixivWorkInfo);
                 }
-                catch (Exception ex)
+                catch (BaseException ex)
                 {
-                    LogHelper.Error(ex, "获取作品信息时出现异常");
+                    LogHelper.Error(ex);
                 }
                 finally
                 {
@@ -370,9 +371,9 @@ namespace Theresa3rd_Bot.Business
         public async Task<List<PixivSubscribe>> getPixivUserNewestAsync(string userId, int subscribeId, int getCount = 1)
         {
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            PixivUserWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivUserWorkInfoAsync(userId);
-            if (pixivWorkInfo == null) return pixivSubscribeList;
-            Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo.body.illusts;
+            PixivUserInfoDto pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(userId);
+            if (pixivUserInfo == null) return pixivSubscribeList;
+            Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo.body.illusts;
             if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
             List<PixivUserWorkInfo> workInfoList = illusts.Select(o => o.Value).OrderByDescending(o => o.createDate).ToList();
             foreach (PixivUserWorkInfo workInfo in workInfoList)
@@ -409,9 +410,9 @@ namespace Theresa3rd_Bot.Business
             string userId = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            PixivUserWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivUserWorkInfoAsync(userId);
-            if (pixivWorkInfo.error || pixivWorkInfo == null) return pixivSubscribeList;
-            Dictionary<string, PixivUserWorkInfo> illusts = pixivWorkInfo?.body?.illusts;
+            PixivUserInfoDto pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(userId);
+            if (pixivUserInfo.error || pixivUserInfo == null) return pixivSubscribeList;
+            Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo?.body?.illusts;
             if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
             List<PixivUserWorkInfo> workInfoList = illusts.Select(o => o.Value).OrderByDescending(o => o.createDate).ToList();
@@ -438,13 +439,13 @@ namespace Theresa3rd_Bot.Business
                     pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
                     pixivSubscribeList.Add(pixivSubscribe);
                 }
-                catch (Exception ex)
+                catch (BaseException ex)
                 {
-                    LogHelper.Error(ex, $"读取画师[{userId}]作品[{workInfo.id}]时出现异常");
+                    LogHelper.Error(ex);
                 }
                 finally
                 {
-                    await Task.Delay(2000);
+                    await Task.Delay(1000);
                 }
             }
             return pixivSubscribeList;
@@ -489,13 +490,13 @@ namespace Theresa3rd_Bot.Business
                     pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
                     pixivSubscribeList.Add(pixivSubscribe);
                 }
-                catch (Exception ex)
+                catch (BaseException ex)
                 {
-                    LogHelper.Error(ex, $"读取标签[{tagNames}]作品[{item.id}]时出现异常");
+                    LogHelper.Error(ex);
                 }
                 finally
                 {
-                    await Task.Delay(2000);
+                    await Task.Delay(1000);
                 }
             }
             return pixivSubscribeList;
@@ -539,9 +540,9 @@ namespace Theresa3rd_Bot.Business
                     pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
                     pixivSubscribeList.Add(pixivSubscribe);
                 }
-                catch (Exception ex)
+                catch (BaseException ex)
                 {
-                    LogHelper.Error(ex, $"读取关注用户作品[{workId}]时出现异常");
+                    LogHelper.Error(ex);
                 }
                 finally
                 {

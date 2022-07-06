@@ -107,6 +107,11 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static async Task<bool> CheckPixivCookieAvailableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
+            if (string.IsNullOrWhiteSpace(BotConfig.WebsiteConfig.Pixiv.Cookie))
+            {
+                await session.SendMessageWithAtAsync(args, new PlainMessage("缺少pixiv cookie，请设置cookie"));
+                return false;
+            }
             if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate)
             {
                 await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");

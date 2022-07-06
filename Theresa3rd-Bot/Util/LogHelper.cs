@@ -155,7 +155,7 @@ namespace Theresa3rd_Bot.Util
             string message = exception.Message?.Trim() ?? "";
             if (exception is BaseException) message = exception?.InnerException?.Message?.Trim() ?? exception.Message?.Trim();
             if (string.IsNullOrWhiteSpace(message)) return false;
-            SendError sendError = SendErrorList.Where(m => m.Message != null && m.Message.ToLower() == message.ToLower()).FirstOrDefault();
+            SendError sendError = SendErrorList.Where(m => m.Message == message || m.InnerMessage == message).FirstOrDefault();
             if (sendError == null) return true;
             return sendError.SendTimes < 3;
         }
@@ -167,14 +167,12 @@ namespace Theresa3rd_Bot.Util
         private static void AddSendError(Exception exception)
         {
             if (LastSendHour != DateTime.Now.Hour) SendErrorList.Clear();
-
             LastSendHour = DateTime.Now.Hour;
-
             string message = exception.Message;
-            SendError sendError = SendErrorList.Where(m => m.Message == message).FirstOrDefault();
+            SendError sendError = SendErrorList.Where(m => m.Message == message || m.InnerMessage == message).FirstOrDefault();
             if (sendError == null)
             {
-                SendErrorList.Add(new SendError(message));
+                SendErrorList.Add(new SendError(exception));
             }
             else
             {

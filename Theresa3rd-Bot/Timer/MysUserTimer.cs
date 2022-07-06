@@ -1,8 +1,6 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;

@@ -1,12 +1,14 @@
 ﻿using log4net;
 using log4net.Config;
 using log4net.Repository;
+using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Error;
@@ -111,13 +113,13 @@ namespace Theresa3rd_Bot.Util
                 messageBuilder.Append("详细请查看Log日志");
                 foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups)
                 {
-                    MiraiHelper.Session.SendGroupMessageAsync(groupId, new Mirai.CSharp.HttpApi.Models.ChatMessages.PlainMessage(messageBuilder.ToString()));
+                    sendErrorToGroup(groupId, messageBuilder.ToString());
                 }
                 AddSendError(exception);
             }
             catch (Exception ex)
             {
-                Error(ex);
+                Error(ex, false);
             }
         }
 
@@ -134,12 +136,28 @@ namespace Theresa3rd_Bot.Util
                 string sendMessage = $"{message}\r\n{exception.Message}\r\n{exception.StackTrace}";
                 foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups)
                 {
-                    MiraiHelper.Session.SendGroupMessageAsync(groupId, new Mirai.CSharp.HttpApi.Models.ChatMessages.PlainMessage(sendMessage));
+                    sendErrorToGroup(groupId, sendMessage);
                 }
             }
             catch (Exception ex)
             {
-                Error(ex);
+                Error(ex, false);
+            }
+        }
+
+        private static void sendErrorToGroup(long groupId, string message)
+        {
+            try
+            {
+                MiraiHelper.Session.SendGroupMessageAsync(groupId, new PlainMessage(message)).Wait();
+            }
+            catch (Exception ex)
+            {
+                Error(ex, false);
+            }
+            finally
+            {
+                Task.Delay(1000).Wait();
             }
         }
 

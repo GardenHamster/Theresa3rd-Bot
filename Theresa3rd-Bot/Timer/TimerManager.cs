@@ -16,6 +16,7 @@ namespace Theresa3rd_Bot.Timer
             initCustomJob();//初始化配置列表中的定时器
             initSubscribeTimers();//初始化订阅任务
             initClearJobAsync();//初始化清理任务
+            initCookieJobAsync();//初始化cookie检查任务
         }
 
         private static void initCustomJob()
@@ -48,6 +49,24 @@ namespace Theresa3rd_Bot.Timer
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"清理定时器启动失败");
+            }
+        }
+
+        private static async void initCookieJobAsync()
+        {
+            try
+            {
+                string cookieCron = "0 0 9 * * ?";
+                ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(cookieCron).Build();
+                IJobDetail jobDetail = JobBuilder.Create<CookieJob>().WithIdentity("CookieJob", "CookieJob").Build();//创建作业
+                IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+                await scheduler.ScheduleJob(jobDetail, trigger);
+                await scheduler.Start();
+                LogHelper.Info($"Cookie检查定时器启动完毕...");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"Cookie检查定时器启动失败");
             }
         }
 

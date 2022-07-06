@@ -104,12 +104,12 @@ Setu:                                                                           
         MaxScreen:          60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
         MinBookmark:        800                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时适用)
         MinBookRate:        0.05                                                #最低收藏率，收藏数/浏览数(标签搜索时试用)
-        CookieExpire:       1296000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每15天更新一次
+        CookieExpire:       2592000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每30天更新一次
         CookieExpireMsg:    'emmmm,cookie过期了,请艾特管理员更新cookie'         #cookie过期时返回的消息
 
 Saucenao:                                                                       #Saucenao以图搜图，查找原图功能
     Enable:                 true                                                #是否启用
-    Command:                '原图'                                              #命令，用法：#原图 或 原图+图片
+    Command:                '原图'                                              #命令，用法：#原图 或 #原图+图片
     DisableMsg:             '没有，快爬！'                                      #功能未启用时返回的消息
     NotFoundMsg:            |                                                  #找不到相应色图时返回的消息
                             找不到相似的图，请换一张图片重试。

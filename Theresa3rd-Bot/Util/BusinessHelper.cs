@@ -105,6 +105,19 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
+        public static bool IsPixivCookieAvailable()
+        {
+            if (string.IsNullOrWhiteSpace(BotConfig.WebsiteConfig.Pixiv.Cookie)) return false;
+            if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate) return false;
+            if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// 检查pixiv cookie是否已经过期
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
         public static async Task<bool> CheckPixivCookieAvailableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (string.IsNullOrWhiteSpace(BotConfig.WebsiteConfig.Pixiv.Cookie))

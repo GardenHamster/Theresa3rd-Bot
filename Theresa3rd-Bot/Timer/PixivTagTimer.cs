@@ -31,6 +31,11 @@ namespace Theresa3rd_Bot.Timer
             try
             {
                 timer.Enabled = false;
+                if (BusinessHelper.IsPixivCookieAvailable() == false)
+                {
+                    LogHelper.Info("Pixiv Cookie过期或不可用，已停止扫描pixiv标签最新作品，请更新Cookie...");
+                    return;
+                }
                 LogHelper.Info("开始扫描pixiv标签最新作品...");
                 SubscribeMethodAsync(new PixivBusiness()).Wait();
                 LogHelper.Info("pixiv标签作品扫描完毕...");

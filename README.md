@@ -6,7 +6,7 @@
  - 某舰团长利用摸鱼时间写出来的自用的bot，准备移植到 [mirai](https://github.com/mamoe/mirai)。基于 .net core 6.0 和 mirai-api-http。
  - 部分功能还在摸鱼开发中，[windows下部署请点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md)，[食用教程点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md)
  - 开始白嫖前，请在右上角点一下:star:Star
- - ~~bot名字是xjb起的~~
+ - ~~不要问bot的名字是什么，因为名字是xjb起的~~
 
 ## 声明
  - 本项目为个人自娱自乐写出来的项目，并没有任何收益，并不负责由于使用本项目所产生的任何问题，不得将项目用于任何商业用途

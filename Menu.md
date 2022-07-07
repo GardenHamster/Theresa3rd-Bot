@@ -41,7 +41,7 @@
 - 根据配置文件，从 [lolicon api](https://api.lolicon.app) 中获取色图，并发送到qq群中
 
 ### 指令
-- 发送 `#瑟图` 可以根据随机获取一张Lolicon图床中的瑟图
+- 发送 `#瑟图` 可以随机获取一张Lolicon图床中的瑟图
 - 发送 `#瑟图 [自定义标签]` 可以随机搜索一张该标签的瑟图，多标签可以使用逗号或者空格分割，可以进行多标签搜索
 ![image](https://user-images.githubusercontent.com/89188316/177755716-0bbbaa13-4b94-4d14-a4d4-a2d93789ff87.png)
 
@@ -50,7 +50,7 @@
 - 通过调用 [saucenao](https://saucenao.com) 尝试搜索原图，如果存在匹配度较高的结果时，尝试获取下载并返回原图以及信息
 
 ### Saucenao Cookie
-- 在未设置cookie的情况下，Saucenao搜索限制为每个ip每日搜索50次，每30秒搜索3次，在使用频率较高的情况下建议设置cookie
+- 在未设置cookie的情况下，Saucenao搜索限制为每个ip每日搜索50次，每30秒搜索3次，在使用频率较高的情况下，建议设置cookie
 - pc端打开[https://saucenao.com](https://saucenao.com)，点击右下角的Account然后登录saucenao
 - 按下F12，然后在控制台/Console中输入`document.cookie`
 ![image](https://user-images.githubusercontent.com/89188316/177758500-94720035-c11a-4689-bb91-eca1ac95ce7e.png)
@@ -61,7 +61,7 @@
 ### 指令
 - 发送 `#原图` 根据提示进行操作
 - 发送 `#原图`+`一张或多张需要搜索图片` 
-![image](https://user-images.githubusercontent.com/89188316/175912401-1d3a6b08-8130-48c8-b864-8c160a8ef065.png)
+![image](https://user-images.githubusercontent.com/89188316/177800178-4d6821c6-426c-4e19-8770-67222a3b0339.png)
 
 ## 禁止标签
 ### 说明

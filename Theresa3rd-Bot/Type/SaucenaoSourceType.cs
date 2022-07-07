@@ -4,8 +4,8 @@
     {
         Pixiv,
         FanBox,
-        Konachan,
         Twitter,
+        Konachan,
         Yande,
         Danbooru,
         Gelbooru,

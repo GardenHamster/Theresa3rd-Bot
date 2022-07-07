@@ -73,6 +73,12 @@ namespace Theresa3rd_Bot.Business
                 return new SaucenaoItem(SaucenaoSourceType.Pixiv, href, illustId, similarity);
             }
 
+            //https://szcb911.fanbox.cc/posts/4045588
+            if (hrefLower.Contains("fanbox.cc"))
+            {
+                return new SaucenaoItem(SaucenaoSourceType.FanBox, href, "", similarity);
+            }
+
             //https://www.pixiv.net/fanbox/creator/705370
             if (hrefLower.Contains("www.pixiv.net/fanbox"))
             {

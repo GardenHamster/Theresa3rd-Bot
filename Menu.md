@@ -18,14 +18,12 @@
 - 从0.4.0版本开始加入了免代理，通过修改SNI的方式访问pixiv，然后通过pixiv.cat代理下载图片，有时候或许使用代理下载图片的速度会更高，可以在botsetting.yml中开启或关闭该功能
 
 ### 设置cookie
-- 初次使用时需要设置cookie，使用一个平时较少使用的账号登录[pixiv](https://www.pixiv.net)，然后获取cookie，cookie中必须包含PHPSESSID
-- pc端登录pixiv后按下F12，在p站中随意搜索一个标签，在网络中找到如下请求，这里以搜索Hololive为例
+- pc端登录pixiv后按下F12，在p站中随意搜索一个标签，在网络中找到如下请求，这里以搜索Hololive为例，获取的cookie中必须包含PHPSESSID
+![image](https://user-images.githubusercontent.com/89188316/177747559-168c1377-db4a-49f0-869f-78749f80707e.png)
+
 - 然后使用 #pixivcookie [获取到的cookie] 格式私聊发送给机器人，与机器人必须为好友
 
-![image](https://user-images.githubusercontent.com/89188316/153154862-8785396e-414a-4f2d-bba3-f7ca8c34f144.png)
-
-![image](https://user-images.githubusercontent.com/89188316/153157373-047aa094-483f-4051-9833-ca6af15698ff.png)
-- cookie需要定期更新，在获取色图失败时可以先尝试更新cookie
+![image](https://user-images.githubusercontent.com/89188316/177748449-02f59d79-a0bc-4475-80f6-40f0c56e06a6.png)
 
 ### 指令
 - 发送 `#涩图` 可以根据配置获取随机涩图
@@ -36,9 +34,7 @@
 - `萝莉 巨乳` 表示同时包含 `萝莉` 和 `巨乳` 这两个标签的涩图
 - `白丝,黑丝` 表示只需要存在其中一个标签的涩图
 - `萝莉,少女 白丝,黑丝` 表示包含`萝莉`或者`少女`,并且包含`白丝`或者`黑丝` 的涩图
-![image](https://user-images.githubusercontent.com/89188316/153163179-cab64f76-8b5b-47b5-a59b-099168d8a995.png)
-![image](https://user-images.githubusercontent.com/89188316/153164054-604ad40e-d272-4652-923b-88fd45d911d8.png)
-![image](https://user-images.githubusercontent.com/89188316/153159925-d0dff1cd-0e26-4be1-9870-c16d57ea01b5.png)
+![image](https://user-images.githubusercontent.com/89188316/177752424-78319721-337c-41ff-ac6e-31b64b6a4cb8.png)
 
 ## 通过Lolicon搜索色图
 ### 说明

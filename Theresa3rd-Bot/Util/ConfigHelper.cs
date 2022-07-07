@@ -16,8 +16,10 @@ namespace Theresa3rd_Bot.Util
                 WebsiteBusiness websiteBusiness = new WebsiteBusiness();
                 WebsitePO pixivWebsite = new WebsiteBusiness().getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv));
                 WebsitePO biliWebsite = new WebsiteBusiness().getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Bili));
+                WebsitePO saucenaoWebsite = new WebsiteBusiness().getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao));
                 BotConfig.WebsiteConfig.Pixiv = pixivWebsite;
                 BotConfig.WebsiteConfig.Bili = biliWebsite;
+                BotConfig.WebsiteConfig.Saucenao = saucenaoWebsite;
                 LogHelper.Info("网站cookie加载完成...");
             }
             catch (Exception ex)

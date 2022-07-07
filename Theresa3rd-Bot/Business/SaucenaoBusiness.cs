@@ -185,14 +185,27 @@ namespace Theresa3rd_Bot.Business
         private async static Task<string> SearchResultAsync(string imgHttpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "url", imgHttpUrl } };
-            HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.SaucenaoUrl, paramDic);
+            Dictionary<string, string> headerDic = getSaucenaoHeader();
+            HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.SaucenaoUrl, paramDic, headerDic);
             await response.Content.ReadAsStringAsync();
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 string contentString = await response.GetContentStringAsync();
-                throw new BaseException($"saucenao返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(200)}");
+                throw new BaseException($"saucenao返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(500)}");
             }
             return await response.Content.ReadAsStringAsync();
+        }
+
+        /// <summary>
+        /// 获取Header
+        /// </summary>
+        /// <returns></returns>
+        private static Dictionary<string, string> getSaucenaoHeader()
+        {
+            Dictionary<string, string> headerDic = new Dictionary<string, string>();
+            string cookie = BotConfig.WebsiteConfig.Saucenao.Cookie;
+            if (string.IsNullOrWhiteSpace(cookie) == false) headerDic.Add("Cookie", cookie);
+            return headerDic;
         }
 
     }

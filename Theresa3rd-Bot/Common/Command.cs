@@ -6,6 +6,7 @@
 
         public static readonly string BiliCookie = "bilicookie";
 
+        public static readonly string SaucenaoCookie = "saucenaocookie";
 
     }
 }

@@ -63,6 +63,7 @@
 - 发送 `#原图`+`一张或多张需要搜索图片` 
 ![image](https://user-images.githubusercontent.com/89188316/177800178-4d6821c6-426c-4e19-8770-67222a3b0339.png)
 
+
 ## 禁止标签
 ### 说明
 - 将一个标签加入到禁止搜索列表中，防止群友整活，匹配方式为完全一致
@@ -75,8 +76,7 @@
 ## 订阅pixiv画师
 ### 说明
 - 使用轮询的方式定时扫描画师的最新作品，并将作品自动推送到qq群，可以在权限中设置是否显示R18或R18图片
-
-![image](https://user-images.githubusercontent.com/89188316/153171928-b9e90263-5351-41a4-824f-6a999feca886.png)
+![image](https://user-images.githubusercontent.com/89188316/177912501-5166798c-c021-465a-a689-7b0486f04cc3.png)
 
 ### 获取画师id
 - 在pixiv网页版中点开画师头像后，网页地址中 [https://www.pixiv.net/users/15034125](https://www.pixiv.net/users/15034125) 的 15034125 为画师id
@@ -87,16 +87,13 @@
 - 发送 `#订阅画师 [画师id] [目标id]` 一次性订阅一个画师
 - 发送 `#退订画师 [画师id]` 一次性退订一个画师
 - 发送 `#同步画师` 根据提示将pixiv账号中关注的画师批量加入到订阅列表中
-
-![image](https://user-images.githubusercontent.com/89188316/174473049-5f46b11a-3fda-4298-bebf-747adda9a5d5.png)
-![image](https://user-images.githubusercontent.com/89188316/174473145-97e16062-17a1-443f-9ec0-92b8bcb0003e.png)
+![image](https://user-images.githubusercontent.com/89188316/177914681-dc8069e2-accc-4359-9b6e-dfbf8fe7fa31.png)
 
 
 ## 订阅pixiv标签
 ### 说明
 - 使用轮询的方式定时扫描标签的最新作品，并将作品自动推送到qq群，匹配方式为部分一致
-
-![image](https://user-images.githubusercontent.com/89188316/153169722-389c2058-a54f-46e6-9004-c9073498f0b9.png)
+![image](https://user-images.githubusercontent.com/89188316/177915391-5356879c-5254-420f-af9f-f660c6e3b15e.png)
 
 ### 指令
 - 发送 `#订阅标签` 根据提示分步订阅

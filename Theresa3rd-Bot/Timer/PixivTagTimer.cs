@@ -86,14 +86,17 @@ namespace Theresa3rd_Bot.Timer
 
                 string tagName = subscribeTask.SubscribeName;
                 string template = BotConfig.SubscribeConfig.PixivTag.Template;
-                FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto);
+                bool isR18Img = pixivSubscribe.PixivWorkInfoDto.body.isR18();
+                bool isDownImg = subscribeTask.GroupIdList.IsDownImg(isR18Img);
+                FileInfo fileInfo = isDownImg ? await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto) : null;
 
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
                     try
                     {
-                        if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18Setu() == false) continue;
+                        if (isR18Img && groupId.IsShowR18Setu() == false) continue;
 
+                        bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                         List<IChatMessage> chailList = new List<IChatMessage>();
                         if (string.IsNullOrWhiteSpace(template))
                         {
@@ -105,17 +108,13 @@ namespace Theresa3rd_Bot.Timer
                             chailList.Add(new PlainMessage(pixivBusiness.getWorkInfoWithTag(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime, tagName, template)));
                         }
 
-                        if (fileInfo == null)
-                        {
-                            chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
-                        }
-                        else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() == false)
+                        if (isShowImg && fileInfo != null)
                         {
                             chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                         }
-                        else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18SetuImg())
+                        else if (isShowImg && fileInfo == null)
                         {
-                            chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                            chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
                         }
 
                         await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());

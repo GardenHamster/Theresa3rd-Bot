@@ -18,8 +18,9 @@ Permissions:
     SuperManagers:          [12345,45678]                                       #超级管理员列表,可以使用管理指令
     AcceptGroups:           [284196392]                                         #白名单，只处理这些群的消息
     SetuGroups:             [284196392]                                         #拥有涩图权限的群
-    SetuShowR18Groups:      []                                                  #订阅或搜索允许发送r18的群，图片将使用链接代替
-    SetuShowR18ImgGroups:   []                                                  #订阅或搜索允许直接发送r18图片的群，而不是发送链接地址
+    SetuShowImgGroups:      [284196392]                                         #允许发送图片的群，否则只发送图片链接
+    SetuShowR18Groups:      []                                                  #允许出现r18内容的群，图片将使用链接代替
+    SetuShowR18ImgGroups:   []                                                  #允许直接发送r18图片的群，而不是发送链接地址
     SetuCustomGroups:       [284196392]                                         #允许查找自定义涩图的群
     SetuNoneCDGroups:       [284196392]                                         #涩图没有CD的群
     SetuLimitlessGroups:    [284196392]                                         #涩图次数无限制的群

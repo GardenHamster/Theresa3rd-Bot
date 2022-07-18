@@ -67,8 +67,9 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
+                bool isShowImg = groupId.IsShowSetuImg(loliconData.isR18());
                 long todayLeftCount = BusinessHelper.GetSetuLeftToday(session, args);
-                FileInfo fileInfo = await loliconBusiness.downImgAsync(loliconData);
+                FileInfo fileInfo = isShowImg ? await loliconBusiness.downImgAsync(loliconData) : null;
 
                 int groupMsgId = 0;
                 string template = BotConfig.SetuConfig.Lolicon.Template;
@@ -107,20 +108,16 @@ namespace Theresa3rd_Bot.Handler
                 try
                 {
                     //发送群消息
-                    List<IChatMessage> groupList = new List<IChatMessage>(chatList);
-                    if (fileInfo == null)
+                    List<IChatMessage> groupMsgList = new List<IChatMessage>(chatList);
+                    if (isShowImg && fileInfo != null)
                     {
-                        groupList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
+                        groupMsgList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                     }
-                    else if (loliconData.isR18() == false)
+                    else if (isShowImg && fileInfo == null)
                     {
-                        groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                        groupMsgList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
                     }
-                    else if (loliconData.isR18() && groupId.IsShowR18SetuImg())
-                    {
-                        groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                    }
-                    groupMsgId = await session.SendMessageWithAtAsync(args, groupList);
+                    groupMsgId = await session.SendMessageWithAtAsync(args, groupMsgList);
                     await Task.Delay(1000);
                 }
                 catch (Exception ex)
@@ -135,17 +132,13 @@ namespace Theresa3rd_Bot.Handler
                     {
                         //发送临时会话
                         List<IChatMessage> memberList = new List<IChatMessage>(chatList);
-                        if (fileInfo == null)
+                        if (isShowImg && fileInfo != null)
+                        {
+                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
+                        }
+                        else if (isShowImg && fileInfo == null)
                         {
                             memberList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Temp));
-                        }
-                        else if (loliconData.isR18() == false)
-                        {
-                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
-                        }
-                        else if (loliconData.isR18() && groupId.IsShowR18SetuImg())
-                        {
-                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
                         }
                         await session.SendTempMessageAsync(memberId, groupId, memberList.ToArray());
                         await Task.Delay(1000);

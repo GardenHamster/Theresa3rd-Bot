@@ -87,8 +87,9 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
+                bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfoDto.body.isR18());
                 long todayLeftCount = BusinessHelper.GetSetuLeftToday(session, args);
-                FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivWorkInfoDto);
+                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfoDto) : null;
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
 
                 int groupMsgId = 0;
@@ -129,17 +130,13 @@ namespace Theresa3rd_Bot.Handler
                 {
                     //发送群消息
                     List<IChatMessage> groupList = new List<IChatMessage>(chatList);
-                    if (fileInfo == null)
-                    {
-                        groupList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
-                    }
-                    else if (pixivWorkInfoDto.body.isR18() == false)
+                    if (isShowImg && fileInfo != null)
                     {
                         groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                     }
-                    else if (pixivWorkInfoDto.body.isR18() && groupId.IsShowR18SetuImg())
+                    else if (isShowImg && fileInfo == null)
                     {
-                        groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                        groupList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg,UploadTarget.Group));
                     }
                     groupMsgId = await session.SendMessageWithAtAsync(args, groupList);
                     await Task.Delay(1000);
@@ -157,17 +154,13 @@ namespace Theresa3rd_Bot.Handler
                     {
                         //发送临时会话
                         List<IChatMessage> memberList = new List<IChatMessage>(chatList);
-                        if (fileInfo == null)
+                        if (isShowImg && fileInfo != null)
+                        {
+                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
+                        }
+                        else if (isShowImg && fileInfo == null)
                         {
                             memberList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Temp));
-                        }
-                        else if (pixivWorkInfoDto.body.isR18() == false)
-                        {
-                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
-                        }
-                        else if (pixivWorkInfoDto.body.isR18() && groupId.IsShowR18SetuImg())
-                        {
-                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
                         }
                         await session.SendTempMessageAsync(memberId, args.Sender.Group.Id, memberList.ToArray());
                         await Task.Delay(1000);
@@ -278,7 +271,7 @@ namespace Theresa3rd_Bot.Handler
                         await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~"));
 
                         await Task.Delay(1000);
-                        await sendPixivUserNewestWorkAsync(session, args, dbSubscribe, groupId.IsShowR18Setu(), groupId.IsShowR18SetuImg());
+                        await sendPixivUserNewestWorkAsync(session, args, dbSubscribe, groupId.IsShowR18Setu());
                     }
                     catch (Exception ex)
                     {
@@ -561,41 +554,39 @@ namespace Theresa3rd_Bot.Handler
         /// <param name="userId"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public async Task sendPixivUserNewestWorkAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, SubscribePO dbSubscribe, bool includeR18, bool includeR18Img)
+        public async Task sendPixivUserNewestWorkAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, SubscribePO dbSubscribe, bool isShowR18)
         {
             try
             {
                 DateTime startTime = DateTime.Now;
+                long groupId = args.Sender.Group.Id;
                 List<IChatMessage> chatList = new List<IChatMessage>();
                 List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, 1);
                 if (pixivSubscribeList == null || pixivSubscribeList.Count == 0)
                 {
-                    await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage($"画师[{dbSubscribe.SubscribeName}]还没有发布任何作品~"));
+                    await session.SendGroupMessageAsync(groupId, new PlainMessage($"画师[{dbSubscribe.SubscribeName}]还没有发布任何作品~"));
                     return;
                 }
 
                 PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
-                if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && includeR18 == false)
+                if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && isShowR18 == false)
                 {
-                    await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
+                    await session.SendGroupMessageAsync(groupId, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                     return;
                 }
 
-                FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto);
+                bool isShowImg = groupId.IsShowSetuImg(pixivSubscribe.PixivWorkInfoDto.body.isR18());
+                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto) : null;
                 chatList.Add(new PlainMessage($"pixiv画师[{pixivSubscribe.PixivWorkInfoDto.body.userName}]的最新作品："));
                 chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
 
-                if (fileInfo == null)
-                {
-                    chatList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
-                }
-                else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() == false)
+                if (isShowImg && fileInfo != null)
                 {
                     chatList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                 }
-                else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && includeR18Img)
+                else if (isShowImg && fileInfo == null)
                 {
-                    chatList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                    chatList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
                 }
 
                 await session.SendMessageWithAtAsync(args, chatList);

@@ -104,6 +104,7 @@ namespace Theresa3rd_Bot.Handler
         {
             try
             {
+                long groupId = args.Sender.Group.Id;
                 SaucenaoResult saucenaoResult = await saucenaoBusiness.getSaucenaoResultAsync(imageMessage.Url);
                 if (saucenaoResult == null || saucenaoResult.Items.Count == 0)
                 {
@@ -128,12 +129,14 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
+
                 if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
                 {
+                    bool isShowImg = groupId.IsShowSaucenaoImg(saucenaoItem.PixivWorkInfo.body.isR18());
+                    FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(saucenaoItem.PixivWorkInfo) : null;
                     List<IChatMessage> warnList = getWarnMessage(session, args, saucenaoResult, saucenaoItem);
-                    FileInfo fileInfo = await pixivBusiness.downImgAsync(saucenaoItem.PixivWorkInfo);
-                    List<IChatMessage> groupMsgs = await getPixivMessageAsync(session, args, warnList, saucenaoResult, saucenaoItem, fileInfo, UploadTarget.Group);
-                    List<IChatMessage> tempMsgs = await getPixivMessageAsync(session, args, warnList, saucenaoResult, saucenaoItem, fileInfo, UploadTarget.Temp);
+                    List<IChatMessage> groupMsgs = await getPixivMessageAsync(session, args, warnList, saucenaoResult, saucenaoItem, fileInfo, UploadTarget.Group, isShowImg);
+                    List<IChatMessage> tempMsgs = await getPixivMessageAsync(session, args, warnList, saucenaoResult, saucenaoItem, fileInfo, UploadTarget.Temp, isShowImg);
                     SaucenaoMessage saucenaoMessage = new SaucenaoMessage(saucenaoItem, groupMsgs, tempMsgs);
                     Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
                 }
@@ -193,8 +196,9 @@ namespace Theresa3rd_Bot.Handler
             return chatList;
         }
 
-        public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> warnList, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, FileInfo fileInfo, UploadTarget target)
+        public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> warnList, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, FileInfo fileInfo, UploadTarget target, bool isShowImg)
         {
+            long groupId = args.Sender.Group.Id;
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
             List<IChatMessage> chatList = new List<IChatMessage>(warnList);
             if (pixivWorkInfo.IsImproper())
@@ -210,18 +214,16 @@ namespace Theresa3rd_Bot.Handler
             }
 
             chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, saucenaoResult.StartDateTime)));
-            if (fileInfo == null)
+
+            if (isShowImg && fileInfo != null)
+            {
+                chatList.Add((IChatMessage)await session.UploadPictureAsync(target, fileInfo.FullName));
+            }
+            else if (isShowImg && fileInfo == null)
             {
                 chatList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, target));
             }
-            else if (pixivWorkInfo.isR18() == false)
-            {
-                chatList.Add((IChatMessage)await session.UploadPictureAsync(target, fileInfo.FullName));
-            }
-            else if (pixivWorkInfo.isR18() && args.Sender.Group.Id.IsShowR18SaucenaoImg())
-            {
-                chatList.Add((IChatMessage)await session.UploadPictureAsync(target, fileInfo.FullName));
-            }
+
             return chatList;
         }
 

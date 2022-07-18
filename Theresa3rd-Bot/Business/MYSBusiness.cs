@@ -98,7 +98,7 @@ namespace Theresa3rd_Bot.Business
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, postId)) continue;
                     SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
                     subscribeRecord.Title = item.post.subject?.filterEmoji().cutString(200);
-                    subscribeRecord.Content = item.post.content?.filterEmoji().cutString(500);
+                    subscribeRecord.Content = item.post.content?.filterEmoji().cutString(200);
                     subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
                     subscribeRecord.LinkUrl = HttpUrl.getMysArticleUrl(postId);
                     subscribeRecord.DynamicCode = postId;
@@ -128,7 +128,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{UserName}", mysSubscribe.MysUserPostDto.user.nickname);
             template = template.Replace("{CreateTime}", mysSubscribe.CreateTime.ToSimpleString());
             template = template.Replace("{Title}", mysSubscribe.SubscribeRecord.Title);
-            template = template.Replace("{Content}", mysSubscribe.SubscribeRecord.Content.cutString(200));
+            template = template.Replace("{Content}", mysSubscribe.SubscribeRecord.Content);
             template = template.Replace("{Urls}", mysSubscribe.SubscribeRecord.LinkUrl);
             List<IChatMessage> chailList = new List<IChatMessage>();
             chailList.Add(new PlainMessage(template));

@@ -37,7 +37,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool StartWithCommand(this string instructions, string command)
         {
-            return string.IsNullOrWhiteSpace(command) == false && instructions.StartsWith(command.Trim());
+            return string.IsNullOrWhiteSpace(command) == false && instructions.ToLower().StartsWith(command.Trim().ToLower());
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Theresa3rd_Bot.Util
         public static bool StartWithCommand(this string instructions, string[] commands)
         {
             if (commands == null || commands.Length == 0) return false;
-            return commands.Where(o => string.IsNullOrWhiteSpace(o) == false && instructions.StartsWith(o.Trim())).Any();
+            return commands.Where(o => string.IsNullOrWhiteSpace(o) == false && instructions.ToLower().StartsWith(o.Trim().ToLower())).Any();
         }
 
         /// <summary>

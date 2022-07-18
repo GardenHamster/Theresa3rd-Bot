@@ -35,10 +35,10 @@ namespace Theresa3rd_Bot.Event
                 instructions = instructions.Trim();
                 message = message.Trim();
 
-                bool isInstruct = instructions != null && prefix != null && prefix.Trim().Length > 0 && instructions.StartsWith(prefix);
+                bool isInstruct = string.IsNullOrWhiteSpace(instructions) == false && string.IsNullOrWhiteSpace(prefix) == false && instructions.StartsWith(prefix);
                 if (isInstruct) instructions = instructions.Remove(0, prefix.Length).Trim();
 
-                if (instructions.StartsWith(Command.PixivCookie))
+                if (instructions.StartWithCommand(Command.PixivCookie))
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     await new WebsiteHandler().UpdatePixivCookieAsync(session, args, message);
@@ -47,7 +47,7 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
-                if (instructions.StartsWith(Command.SaucenaoCookie))
+                if (instructions.StartWithCommand(Command.SaucenaoCookie))
                 {
                     if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                     await new WebsiteHandler().UpdateSaucenaoCookieAsync(session, args, message);

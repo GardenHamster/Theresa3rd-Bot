@@ -68,7 +68,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 bool isShowImg = groupId.IsShowSetuImg(loliconData.isR18());
-                long todayLeftCount = GetSetuLeftToday(session, args);
+                long todayLeftCount = GetSetuLeftToday(groupId, memberId);
                 FileInfo fileInfo = isShowImg ? await loliconBusiness.downImgAsync(loliconData) : null;
 
                 int groupMsgId = 0;

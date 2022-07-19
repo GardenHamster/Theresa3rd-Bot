@@ -18,7 +18,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
 {
-    public class SaucenaoBusiness : SetuBusiness
+    public class SaucenaoBusiness
     {
         public async Task<SaucenaoResult> getSaucenaoResultAsync(string imgHttpUrl)
         {
@@ -167,6 +167,44 @@ namespace Theresa3rd_Bot.Business
                 }
             }
             return null;
+        }
+
+
+        public string getDefaultRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, long todayLeft)
+        {
+            StringBuilder warnBuilder = new StringBuilder();
+            warnBuilder.Append($" 共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType)}");
+            if (BotConfig.SaucenaoConfig.MaxDaily > 0)
+            {
+                if (warnBuilder.Length > 0) warnBuilder.Append("，");
+                warnBuilder.Append($"今天剩余使用次数{todayLeft}次");
+            }
+            if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
+            {
+                if (warnBuilder.Length > 0) warnBuilder.Append("，");
+                warnBuilder.Append($"本消息将在{BotConfig.SaucenaoConfig.RevokeInterval}秒后撤回");
+            }
+            if (BotConfig.SaucenaoConfig.MemberCD > 0)
+            {
+                if (warnBuilder.Length > 0) warnBuilder.Append("，");
+                warnBuilder.Append($"CD{BotConfig.SetuConfig.MemberCD}秒");
+            }
+            if (warnBuilder.Length > 0)
+            {
+                warnBuilder.Append("\r\n");
+            }
+            return warnBuilder.ToString();
+        }
+
+        public string getSaucenaoRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, string template, long todayLeft)
+        {
+            template = template.Replace("{MatchCount}", saucenaoResult.MatchCount.ToString());
+            template = template.Replace("{Similarity}", saucenaoItem.Similarity.ToString());
+            template = template.Replace("{SourceType}", Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType));
+            template = template.Replace("{TodayLeft}", todayLeft.ToString());
+            template = template.Replace("{RevokeInterval}", BotConfig.SaucenaoConfig.RevokeInterval.ToString());
+            template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
+            return template;
         }
 
         /// <summary>

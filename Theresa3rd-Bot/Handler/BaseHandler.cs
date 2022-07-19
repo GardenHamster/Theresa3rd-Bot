@@ -27,15 +27,15 @@ namespace Theresa3rd_Bot.Handler
         /// <summary>
         /// 获取今日涩图可用次数
         /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
         /// <returns></returns>
-        public static long GetSetuLeftToday(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static long GetSetuLeftToday(long groupId, long memberId)
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
-            if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id)) return BotConfig.SetuConfig.MaxDaily;
+            if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(groupId)) return BotConfig.SetuConfig.MaxDaily;
             RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
-            int todayUseCount = requestRecordBusiness.getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
+            int todayUseCount = requestRecordBusiness.getUsedCountToday(groupId, memberId, CommandType.Setu);
             long leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
         }
@@ -43,14 +43,14 @@ namespace Theresa3rd_Bot.Handler
         /// <summary>
         /// 获取今日原图可用次数
         /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
         /// <returns></returns>
-        public static int GetSaucenaoLeftToday(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static int GetSaucenaoLeftToday(long groupId, long memberId)
         {
             if (BotConfig.SaucenaoConfig.MaxDaily == 0) return 0;
             RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
-            int todayUseCount = requestRecordBusiness.getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Saucenao);
+            int todayUseCount = requestRecordBusiness.getUsedCountToday(groupId, memberId, CommandType.Saucenao);
             int leftToday = BotConfig.SaucenaoConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
         }

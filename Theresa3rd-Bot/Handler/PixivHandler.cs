@@ -88,7 +88,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfoDto.body.isR18());
-                long todayLeft = GetSetuLeftToday(session, args);
+                long todayLeft = GetSetuLeftToday(groupId, memberId);
                 FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfoDto.body) : null;
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
 
@@ -96,7 +96,11 @@ namespace Theresa3rd_Bot.Handler
                 string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
                 string pixivTemplate = BotConfig.GeneralConfig.PixivTemplate;
                 List<IChatMessage> chatList = new List<IChatMessage>();
-                if (string.IsNullOrWhiteSpace(remindTemplate) == false)
+                if (string.IsNullOrWhiteSpace(remindTemplate))
+                {
+                    chatList.Add(new PlainMessage(pixivBusiness.getDefaultRemindMsg(groupId, todayLeft)));
+                }
+                else
                 {
                     chatList.Add(new PlainMessage(pixivBusiness.getSetuRemindMsg(remindTemplate, todayLeft)));
                 }

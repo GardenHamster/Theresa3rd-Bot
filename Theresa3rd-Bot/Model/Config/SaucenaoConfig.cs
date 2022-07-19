@@ -14,6 +14,8 @@
 
         public string ProcessingMsg { get; set; }
 
+        public string Template { get; set; }
+
         public int MemberCD { get; set; }
 
         public int MaxDaily { get; set; }

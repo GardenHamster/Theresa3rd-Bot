@@ -689,19 +689,19 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
-            return template;
+            return template + "\r\n";
         }
 
         public string getUserPushRemindMsg(string template, string userName)
         {
             template = template.Replace("{UserName}", userName);
-            return template;
+            return template + "\r\n";
         }
 
         public string getTagPushRemindMsg(string template, string tagName)
         {
             template = template.Replace("{TagName}", tagName);
-            return template;
+            return template + "\r\n";
         }
 
         public string getWorkInfo(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime, string template = "")

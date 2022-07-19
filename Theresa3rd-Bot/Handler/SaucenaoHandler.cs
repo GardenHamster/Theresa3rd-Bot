@@ -104,6 +104,7 @@ namespace Theresa3rd_Bot.Handler
         {
             try
             {
+                long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
                 DateTime startTime = DateTime.Now;
                 SaucenaoResult saucenaoResult = await saucenaoBusiness.getSaucenaoResultAsync(imageMessage.Url);
@@ -116,8 +117,9 @@ namespace Theresa3rd_Bot.Handler
                 if (BotConfig.SaucenaoConfig.PullOrigin == false)
                 {
                     SaucenaoItem firstItem = saucenaoResult.Items[0];
-                    List<IChatMessage> warnList = getRemindMessage(session, args, saucenaoResult, firstItem);
-                    List<IChatMessage> chatList = getSingleMessageAsync(firstItem, warnList);
+                    List<IChatMessage> chatList = new List<IChatMessage>();
+                    chatList.AddRange(getRemindMessage(saucenaoResult, firstItem, groupId, memberId));
+                    chatList.AddRange(getSimpleMessage(firstItem));
                     SaucenaoMessage saucenaoMessage = new SaucenaoMessage(firstItem, chatList, chatList);
                     Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
                     return;
@@ -133,17 +135,20 @@ namespace Theresa3rd_Bot.Handler
                 if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
                 {
                     bool isShowImg = groupId.IsShowSaucenaoImg(saucenaoItem.PixivWorkInfo.body.isR18());
-                    FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(saucenaoItem.PixivWorkInfo) : null;
-                    List<IChatMessage> remindMsgs = getRemindMessage(session, args, saucenaoResult, saucenaoItem);
-                    List<IChatMessage> groupMsgs = await getPixivMessageAsync(session, args, remindMsgs, saucenaoItem, UploadTarget.Group, startTime, fileInfo, isShowImg);
-                    List<IChatMessage> tempMsgs = await getPixivMessageAsync(session, args, remindMsgs, saucenaoItem, UploadTarget.Temp, startTime, fileInfo, isShowImg);
+                    FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(saucenaoItem.PixivWorkInfo.body) : null;
+                    List<IChatMessage> remindMsgs = getRemindMessage(saucenaoResult, saucenaoItem, groupId, memberId);
+                    List<IChatMessage> groupMsgs = new List<IChatMessage>(remindMsgs);
+                    List<IChatMessage> tempMsgs = new List<IChatMessage>(remindMsgs);
+                    groupMsgs.AddRange(await getPixivMessageAsync(session, args, saucenaoItem, UploadTarget.Group, startTime, fileInfo, isShowImg));
+                    tempMsgs.AddRange(await getPixivMessageAsync(session, args, saucenaoItem, UploadTarget.Temp, startTime, fileInfo, isShowImg));
                     SaucenaoMessage saucenaoMessage = new SaucenaoMessage(saucenaoItem, groupMsgs, tempMsgs);
                     Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
                 }
                 else
                 {
-                    List<IChatMessage> warnList = getRemindMessage(session, args, saucenaoResult, saucenaoItem);
-                    List<IChatMessage> chatList = getSingleMessageAsync(saucenaoItem, warnList);
+                    List<IChatMessage> chatList = new List<IChatMessage>();
+                    chatList.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, groupId, memberId));
+                    chatList.AddRange(getSimpleMessage(saucenaoItem));
                     SaucenaoMessage saucenaoMessage = new SaucenaoMessage(saucenaoItem, chatList, chatList);
                     Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
                 }
@@ -160,48 +165,36 @@ namespace Theresa3rd_Bot.Handler
             }
         }
 
-        public List<IChatMessage> getRemindMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem)
+        public List<IChatMessage> getRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, long groupId, long memberId)
         {
-            StringBuilder warnBuilder = new StringBuilder();
-            warnBuilder.Append($" 共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType)}");
-            if (BotConfig.SaucenaoConfig.MaxDaily > 0)
+            List<IChatMessage> chatList = new List<IChatMessage>();
+            string remindTemplate = BotConfig.SaucenaoConfig.Template;
+            long todayLeft = GetSaucenaoLeftToday(groupId, memberId);
+            if (string.IsNullOrWhiteSpace(remindTemplate))
             {
-                if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                warnBuilder.Append($"今天剩余使用次数{GetSaucenaoLeftToday(session, args)}次");
+                chatList.Add(new PlainMessage(saucenaoBusiness.getDefaultRemindMessage(saucenaoResult, saucenaoItem, todayLeft)));
             }
-            if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
+            else
             {
-                if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                warnBuilder.Append($"本消息将在{BotConfig.SaucenaoConfig.RevokeInterval}秒后撤回");
+                chatList.Add(new PlainMessage(saucenaoBusiness.getSaucenaoRemindMessage(saucenaoResult, saucenaoItem, remindTemplate, todayLeft)));
             }
-            if (BotConfig.SaucenaoConfig.MemberCD > 0)
-            {
-                if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                warnBuilder.Append($"CD{BotConfig.SetuConfig.MemberCD}秒");
-            }
-            if (warnBuilder.Length > 0)
-            {
-                warnBuilder.Append("\r\n");
-            }
-            return new List<IChatMessage>() {
-                new PlainMessage(warnBuilder.ToString())
-            };
+            return chatList;
         }
 
 
-        public List<IChatMessage> getSingleMessageAsync(SaucenaoItem saucenaoItem, List<IChatMessage> warnList)
+        public List<IChatMessage> getSimpleMessage(SaucenaoItem saucenaoItem)
         {
-            List<IChatMessage> chatList = new List<IChatMessage>(warnList);
+            List<IChatMessage> chatList = new List<IChatMessage>();
             chatList.Add(new PlainMessage($"链接：{saucenaoItem.SourceUrl}"));
             return chatList;
         }
 
-        public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> remindMsgs, SaucenaoItem saucenaoItem, UploadTarget target, DateTime startTime, FileInfo fileInfo, bool isShowImg)
+        public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoItem saucenaoItem, UploadTarget target, DateTime startTime, FileInfo fileInfo, bool isShowImg)
         {
             long groupId = args.Sender.Group.Id;
             string template = BotConfig.GeneralConfig.PixivTemplate;
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
-            List<IChatMessage> chatList = new List<IChatMessage>(remindMsgs);
+            List<IChatMessage> chatList = new List<IChatMessage>();
             if (pixivWorkInfo.IsImproper())
             {
                 chatList.Add(new PlainMessage($"该作品含有被屏蔽的标签，不显示相关内容"));

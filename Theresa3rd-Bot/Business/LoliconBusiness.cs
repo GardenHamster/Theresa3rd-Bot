@@ -10,7 +10,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
 {
-    public class LoliconBusiness
+    public class LoliconBusiness : SetuBusiness
     {
         public string getWorkInfo(LoliconDataV2 loliconData, FileInfo fileInfo, DateTime startTime, long todayLeft, string template = "")
         {

@@ -23,7 +23,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class PixivHandler
+    public class PixivHandler : BaseHandler
     {
         private PixivBusiness pixivBusiness;
         private SubscribeBusiness subscribeBusiness;
@@ -56,7 +56,7 @@ namespace Theresa3rd_Bot.Handler
                 
                 if (StringHelper.isPureNumber(tagName))
                 {
-                    if (await BusinessHelper.CheckSetuCustomEnableAsync(session, args) == false) return;
+                    if (await CheckSetuCustomEnableAsync(session, args) == false) return;
                     pixivWorkInfoDto = await pixivBusiness.getPixivWorkInfoAsync(tagName);//根据作品id获取作品
                 }
                 else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomSubscribe)
@@ -77,7 +77,7 @@ namespace Theresa3rd_Bot.Handler
                 }
                 else
                 {
-                    if (await BusinessHelper.CheckSetuCustomEnableAsync(session, args) == false) return;
+                    if (await CheckSetuCustomEnableAsync(session, args) == false) return;
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(tagName, includeR18);//获取随机一个作品
                 }
 
@@ -88,42 +88,25 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfoDto.body.isR18());
-                long todayLeftCount = BusinessHelper.GetSetuLeftToday(session, args);
-                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfoDto) : null;
+                long todayLeft = GetSetuLeftToday(session, args);
+                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfoDto.body) : null;
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
 
                 int groupMsgId = 0;
-                string template = BotConfig.SetuConfig.Pixiv.Template;
+                string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
+                string pixivTemplate = BotConfig.GeneralConfig.PixivTemplate;
                 List<IChatMessage> chatList = new List<IChatMessage>();
-                if (string.IsNullOrWhiteSpace(template))
+                if (string.IsNullOrWhiteSpace(remindTemplate) == false)
                 {
-                    StringBuilder warnBuilder = new StringBuilder();
-                    if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(groupId) == false)
-                    {
-                        if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                        warnBuilder.Append($"{BotConfig.SetuConfig.MemberCD}秒后再来哦");
-                    }
-                    if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(groupId) == false && BotConfig.SetuConfig.MaxDaily > 0)
-                    {
-                        if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                        warnBuilder.Append($"今天剩余使用次数{todayLeftCount}次");
-                    }
-                    if (BotConfig.SetuConfig.RevokeInterval > 0)
-                    {
-                        if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                        warnBuilder.Append($"本消息将在{BotConfig.SetuConfig.RevokeInterval}秒后撤回，尽快保存哦");
-                    }
-                    if (warnBuilder.Length > 0)
-                    {
-                        warnBuilder.Append("\r\n");
-                    }
-
-                    chatList.Add(new PlainMessage(warnBuilder.ToString()));
+                    chatList.Add(new PlainMessage(pixivBusiness.getSetuRemindMsg(remindTemplate, todayLeft)));
+                }
+                if (string.IsNullOrWhiteSpace(pixivTemplate))
+                {
                     chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startDateTime)));
                 }
                 else
                 {
-                    chatList.Add(new PlainMessage(pixivBusiness.getWorkInfoWithLeft(pixivWorkInfo, fileInfo, startDateTime, todayLeftCount, template)));
+                    chatList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startDateTime, pixivTemplate)));
                 }
 
                 try
@@ -569,16 +552,23 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
-                if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && isShowR18 == false)
+                PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
+
+                if (pixivWorkInfo.IsImproper())
+                {
+                    await session.SendGroupMessageAsync(groupId, new PlainMessage($" 该作品含有被屏蔽的标签，不显示相关内容"));
+                    return;
+                }
+                if (pixivWorkInfo.isR18() && isShowR18 == false)
                 {
                     await session.SendGroupMessageAsync(groupId, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                     return;
                 }
 
-                bool isShowImg = groupId.IsShowSetuImg(pixivSubscribe.PixivWorkInfoDto.body.isR18());
-                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto) : null;
-                chatList.Add(new PlainMessage($"pixiv画师[{pixivSubscribe.PixivWorkInfoDto.body.userName}]的最新作品："));
-                chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
+                bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.isR18());
+                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo) : null;
+                chatList.Add(new PlainMessage($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
+                chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
 
                 if (isShowImg && fileInfo != null)
                 {

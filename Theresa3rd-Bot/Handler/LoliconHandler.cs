@@ -16,7 +16,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class LoliconHandler
+    public class LoliconHandler : BaseHandler
     {
         private LoliconBusiness loliconBusiness;
 
@@ -50,7 +50,7 @@ namespace Theresa3rd_Bot.Handler
                 else
                 {
                     string[] tagArr = tagNames.Split(new char[] { ' ', ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (await BusinessHelper.CheckSetuCustomEnableAsync(session, args) == false) return;
+                    if (await CheckSetuCustomEnableAsync(session, args) == false) return;
                     loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, tagArr);
                 }
 
@@ -68,7 +68,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 bool isShowImg = groupId.IsShowSetuImg(loliconData.isR18());
-                long todayLeftCount = BusinessHelper.GetSetuLeftToday(session, args);
+                long todayLeftCount = GetSetuLeftToday(session, args);
                 FileInfo fileInfo = isShowImg ? await loliconBusiness.downImgAsync(loliconData) : null;
 
                 int groupMsgId = 0;
@@ -76,28 +76,7 @@ namespace Theresa3rd_Bot.Handler
                 List<IChatMessage> chatList = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(template))
                 {
-                    StringBuilder warnBuilder = new StringBuilder();
-                    if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(groupId) == false)
-                    {
-                        if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                        warnBuilder.Append($"{BotConfig.SetuConfig.MemberCD}秒后再来哦");
-                    }
-                    if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(groupId) == false && BotConfig.SetuConfig.MaxDaily > 0)
-                    {
-                        if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                        warnBuilder.Append($"今天剩余使用次数{todayLeftCount}次");
-                    }
-                    if (BotConfig.SetuConfig.RevokeInterval > 0)
-                    {
-                        if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                        warnBuilder.Append($"本消息将在{BotConfig.SetuConfig.RevokeInterval}秒后撤回，尽快保存哦");
-                    }
-                    if (warnBuilder.Length > 0)
-                    {
-                        warnBuilder.Append("\r\n");
-                    }
-
-                    chatList.Add(new PlainMessage(warnBuilder.ToString()));
+                    chatList.Add(new PlainMessage(loliconBusiness.getDefaultRemindMsg(groupId, todayLeftCount)));
                     chatList.Add(new PlainMessage(loliconBusiness.getDefaultWorkInfo(loliconData, fileInfo, startDateTime)));
                 }
                 else

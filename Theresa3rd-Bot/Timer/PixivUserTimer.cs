@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.Subscribe;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
@@ -106,30 +107,40 @@ namespace Theresa3rd_Bot.Timer
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
-                if (pixivSubscribe.PixivWorkInfoDto.body.IsImproper()) continue;
+                PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
+                if (pixivWorkInfo == null || pixivWorkInfo.IsImproper()) continue;
                 if (groupIds == null || groupIds.Count == 0) continue;
 
-                bool isR18Img = pixivSubscribe.PixivWorkInfoDto.body.isR18();
+                bool isR18Img = pixivWorkInfo.isR18();
                 bool isDownImg = groupIds.IsDownImg(isR18Img);
-                string template = BotConfig.SubscribeConfig.PixivUser.Template;
-                FileInfo fileInfo = isDownImg ? await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto) : null;
+                string remindTemplate = BotConfig.SubscribeConfig.PixivUser.Template;
+                string pixivTemplate = BotConfig.GeneralConfig.PixivTemplate;
+                FileInfo fileInfo = isDownImg ? await pixivBusiness.downImgAsync(pixivWorkInfo) : null;
 
                 foreach (long groupId in groupIds)
                 {
                     try
                     {
                         if (isR18Img && groupId.IsShowR18Setu() == false) continue;
-
                         bool isShowImg = groupId.IsShowSetuImg(isR18Img);
+                        
                         List<IChatMessage> chailList = new List<IChatMessage>();
-                        if (string.IsNullOrWhiteSpace(template))
+                        if (string.IsNullOrWhiteSpace(remindTemplate))
                         {
-                            chailList.Add(new PlainMessage($"pixiv画师[{pixivSubscribe.PixivWorkInfoDto.body.userName}]发布了新作品："));
-                            chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
+                            chailList.Add(new PlainMessage($"pixiv画师[{pixivWorkInfo.userName}]发布了新作品："));
                         }
                         else
                         {
-                            chailList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime, template)));
+                            chailList.Add(new PlainMessage(pixivBusiness.getUserPushRemindMsg(remindTemplate, pixivWorkInfo.userName)));
+                        }
+
+                        if (string.IsNullOrWhiteSpace(pixivTemplate))
+                        {
+                            chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
+                        }
+                        else
+                        {
+                            chailList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startTime, pixivTemplate)));
                         }
 
                         if (isShowImg && fileInfo != null)

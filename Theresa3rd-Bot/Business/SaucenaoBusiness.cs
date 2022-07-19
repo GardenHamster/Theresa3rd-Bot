@@ -3,9 +3,11 @@ using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Exceptions;
@@ -16,7 +18,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
 {
-    public class SaucenaoBusiness
+    public class SaucenaoBusiness : SetuBusiness
     {
         public async Task<SaucenaoResult> getSaucenaoResultAsync(string imgHttpUrl)
         {

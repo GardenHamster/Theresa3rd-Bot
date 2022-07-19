@@ -21,7 +21,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class SaucenaoHandler
+    public class SaucenaoHandler : BaseHandler
     {
         private PixivBusiness pixivBusiness;
         private SaucenaoBusiness saucenaoBusiness;
@@ -105,6 +105,7 @@ namespace Theresa3rd_Bot.Handler
             try
             {
                 long groupId = args.Sender.Group.Id;
+                DateTime startTime = DateTime.Now;
                 SaucenaoResult saucenaoResult = await saucenaoBusiness.getSaucenaoResultAsync(imageMessage.Url);
                 if (saucenaoResult == null || saucenaoResult.Items.Count == 0)
                 {
@@ -115,7 +116,7 @@ namespace Theresa3rd_Bot.Handler
                 if (BotConfig.SaucenaoConfig.PullOrigin == false)
                 {
                     SaucenaoItem firstItem = saucenaoResult.Items[0];
-                    List<IChatMessage> warnList = getWarnMessage(session, args, saucenaoResult, firstItem);
+                    List<IChatMessage> warnList = getRemindMessage(session, args, saucenaoResult, firstItem);
                     List<IChatMessage> chatList = getSingleMessageAsync(firstItem, warnList);
                     SaucenaoMessage saucenaoMessage = new SaucenaoMessage(firstItem, chatList, chatList);
                     Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
@@ -129,20 +130,19 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
-
                 if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
                 {
                     bool isShowImg = groupId.IsShowSaucenaoImg(saucenaoItem.PixivWorkInfo.body.isR18());
                     FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(saucenaoItem.PixivWorkInfo) : null;
-                    List<IChatMessage> warnList = getWarnMessage(session, args, saucenaoResult, saucenaoItem);
-                    List<IChatMessage> groupMsgs = await getPixivMessageAsync(session, args, warnList, saucenaoResult, saucenaoItem, fileInfo, UploadTarget.Group, isShowImg);
-                    List<IChatMessage> tempMsgs = await getPixivMessageAsync(session, args, warnList, saucenaoResult, saucenaoItem, fileInfo, UploadTarget.Temp, isShowImg);
+                    List<IChatMessage> remindMsgs = getRemindMessage(session, args, saucenaoResult, saucenaoItem);
+                    List<IChatMessage> groupMsgs = await getPixivMessageAsync(session, args, remindMsgs, saucenaoItem, UploadTarget.Group, startTime, fileInfo, isShowImg);
+                    List<IChatMessage> tempMsgs = await getPixivMessageAsync(session, args, remindMsgs, saucenaoItem, UploadTarget.Temp, startTime, fileInfo, isShowImg);
                     SaucenaoMessage saucenaoMessage = new SaucenaoMessage(saucenaoItem, groupMsgs, tempMsgs);
                     Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
                 }
                 else
                 {
-                    List<IChatMessage> warnList = getWarnMessage(session, args, saucenaoResult, saucenaoItem);
+                    List<IChatMessage> warnList = getRemindMessage(session, args, saucenaoResult, saucenaoItem);
                     List<IChatMessage> chatList = getSingleMessageAsync(saucenaoItem, warnList);
                     SaucenaoMessage saucenaoMessage = new SaucenaoMessage(saucenaoItem, chatList, chatList);
                     Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
@@ -160,14 +160,14 @@ namespace Theresa3rd_Bot.Handler
             }
         }
 
-        public List<IChatMessage> getWarnMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem)
+        public List<IChatMessage> getRemindMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem)
         {
             StringBuilder warnBuilder = new StringBuilder();
             warnBuilder.Append($" 共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType)}");
             if (BotConfig.SaucenaoConfig.MaxDaily > 0)
             {
                 if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                warnBuilder.Append($"今天剩余使用次数{BusinessHelper.GetSaucenaoLeftToday(session, args)}次");
+                warnBuilder.Append($"今天剩余使用次数{GetSaucenaoLeftToday(session, args)}次");
             }
             if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
             {
@@ -196,24 +196,32 @@ namespace Theresa3rd_Bot.Handler
             return chatList;
         }
 
-        public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> warnList, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, FileInfo fileInfo, UploadTarget target, bool isShowImg)
+        public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> remindMsgs, SaucenaoItem saucenaoItem, UploadTarget target, DateTime startTime, FileInfo fileInfo, bool isShowImg)
         {
             long groupId = args.Sender.Group.Id;
+            string template = BotConfig.GeneralConfig.PixivTemplate;
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
-            List<IChatMessage> chatList = new List<IChatMessage>(warnList);
+            List<IChatMessage> chatList = new List<IChatMessage>(remindMsgs);
             if (pixivWorkInfo.IsImproper())
             {
                 chatList.Add(new PlainMessage($"该作品含有被屏蔽的标签，不显示相关内容"));
                 return chatList;
             }
 
-            if (pixivWorkInfo.isR18() && args.Sender.Group.Id.IsShowR18Saucenao() == false)
+            if (pixivWorkInfo.isR18() && groupId.IsShowR18Saucenao() == false)
             {
                 chatList.Add(new PlainMessage($"该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                 return chatList;
             }
 
-            chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, saucenaoResult.StartDateTime)));
+            if (string.IsNullOrWhiteSpace(template))
+            {
+                chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
+            }
+            else
+            {
+                chatList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startTime, template)));
+            }
 
             if (isShowImg && fileInfo != null)
             {

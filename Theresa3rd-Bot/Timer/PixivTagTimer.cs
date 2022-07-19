@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.Subscribe;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
@@ -81,31 +82,42 @@ namespace Theresa3rd_Bot.Timer
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
-                if (pixivSubscribe.PixivWorkInfoDto.body.IsImproper()) continue;
-                if (subscribeTask.GroupIdList == null || subscribeTask.GroupIdList.Count == 0) continue;
+                List<long> groupIds = subscribeTask.GroupIdList;
+                PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
+                if (pixivWorkInfo == null || pixivWorkInfo.IsImproper()) continue;
+                if (groupIds == null || groupIds.Count == 0) continue;
 
                 string tagName = subscribeTask.SubscribeName;
-                string template = BotConfig.SubscribeConfig.PixivTag.Template;
-                bool isR18Img = pixivSubscribe.PixivWorkInfoDto.body.isR18();
-                bool isDownImg = subscribeTask.GroupIdList.IsDownImg(isR18Img);
-                FileInfo fileInfo = isDownImg ? await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto) : null;
+                bool isR18Img = pixivWorkInfo.isR18();
+                bool isDownImg = groupIds.IsDownImg(isR18Img);
+                string remindTemplate = BotConfig.SubscribeConfig.PixivTag.Template;
+                string pixivTemplate = BotConfig.GeneralConfig.PixivTemplate;
+                FileInfo fileInfo = isDownImg ? await pixivBusiness.downImgAsync(pixivWorkInfo) : null;
 
-                foreach (long groupId in subscribeTask.GroupIdList)
+                foreach (long groupId in groupIds)
                 {
                     try
                     {
                         if (isR18Img && groupId.IsShowR18Setu() == false) continue;
-
                         bool isShowImg = groupId.IsShowSetuImg(isR18Img);
+
                         List<IChatMessage> chailList = new List<IChatMessage>();
-                        if (string.IsNullOrWhiteSpace(template))
+                        if (string.IsNullOrWhiteSpace(remindTemplate))
                         {
                             chailList.Add(new PlainMessage($"pixiv标签[{tagName}]发布了新作品："));
-                            chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
                         }
                         else
                         {
-                            chailList.Add(new PlainMessage(pixivBusiness.getWorkInfoWithTag(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime, tagName, template)));
+                            chailList.Add(new PlainMessage(pixivBusiness.getTagPushRemindMsg(remindTemplate, pixivWorkInfo.userName)));
+                        }
+
+                        if (string.IsNullOrWhiteSpace(pixivTemplate))
+                        {
+                            chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
+                        }
+                        else
+                        {
+                            chailList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startTime, pixivTemplate)));
                         }
 
                         if (isShowImg && fileInfo != null)

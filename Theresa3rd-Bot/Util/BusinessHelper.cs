@@ -1,19 +1,16 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Theresa3rd_Bot.Business;
-using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
-using Theresa3rd_Bot.Model.PO;
-using Theresa3rd_Bot.Type;
+using Theresa3rd_Bot.Model.Pixiv;
 
 namespace Theresa3rd_Bot.Util
 {
@@ -114,284 +111,6 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
-        /// 检查pixiv cookie是否已经过期
-        /// </summary>
-        /// <param name="e"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckPixivCookieAvailableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (string.IsNullOrWhiteSpace(BotConfig.WebsiteConfig.Pixiv.Cookie))
-            {
-                await session.SendMessageWithAtAsync(args, new PlainMessage("缺少pixiv cookie，请设置cookie"));
-                return false;
-            }
-            if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate)
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
-                return false;
-            }
-            if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0)
-            {
-                await session.SendMessageWithAtAsync(args, new PlainMessage("缺少userId，请更新cookie"));
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 检查订阅功能是否开启
-        /// </summary>
-        /// <param name="e"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckSubscribeEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, BaseSubscribeConfig subscribeConfig)
-        {
-            if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(args.Sender.Group.Id) == false)
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
-                return false;
-            }
-            if (subscribeConfig == null || subscribeConfig.Enable == false)
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 检查涩图功能是否可用
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckSetuEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.PermissionsConfig.SetuGroups.Contains(args.Sender.Group.Id) == false)
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
-                return false;
-            }
-            if (BotConfig.SetuConfig?.Pixiv == null || BotConfig.SetuConfig.Pixiv.Enable == false)
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.DisableMsg, "该功能已关闭");
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 检查涩图标签是否被禁止
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckSetuTagEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
-        {
-            message = message.ToLower().Trim();
-            long groupId = args.Sender.Group.Id;
-            if (BotConfig.SetuConfig.DisableTags.Where(o => message == o.ToLower()).Any())
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
-                return false;
-            }
-
-            List<BanWordPO> banSetuList = BotConfig.BanSetuMap.ContainsKey(groupId) ? BotConfig.BanSetuMap[groupId] : new List<BanWordPO>();
-            if (banSetuList.Where(o => message.IndexOf(o.KeyWord.ToLower()) > -1).Any())
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 检查原图功能是否可用
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckSaucenaoEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.PermissionsConfig.SaucenaoGroups.Contains(args.Sender.Group.Id) == false)
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
-                return false;
-            }
-            if (BotConfig.SaucenaoConfig == null || BotConfig.SaucenaoConfig.Enable == false)
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.DisableMsg, "该功能已关闭");
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 检查是否超级管理员
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckSuperManagersAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.PermissionsConfig.SuperManagers.Contains(args.Sender.Id) == false)
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.ManagersRequiredMsg, "该功能需要管理员执行");
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 检查是否超级管理员
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckSuperManagersAsync(this IMiraiHttpSession session, IFriendMessageEventArgs args)
-        {
-            if (BotConfig.PermissionsConfig.SuperManagers.Contains(args.Sender.Id) == false)
-            {
-                await session.SendTemplateAsync(args, BotConfig.GeneralConfig.ManagersRequiredMsg, "该功能需要管理员执行");
-                return false;
-            }
-            return true;
-        }
-
-
-        /// <summary>
-        /// 检查涩图功能是否在冷却中
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckMemberSetuCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
-            int cdSecond = CoolingCache.GetMemberSetuCooling(args.Sender.Group.Id, args.Sender.Id);
-            if (cdSecond <= 0) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage($" 功能冷却中，{cdSecond}秒后再来哦~"));
-            return true;
-        }
-
-        /// <summary>
-        /// 检查原图功能是否在冷却中
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckMemberSaucenaoCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
-            int cdSecond = CoolingCache.GetMemberSaucenaoCooling(args.Sender.Group.Id, args.Sender.Id);
-            if (cdSecond <= 0) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage($" 功能冷却中，{cdSecond}秒后再来哦~"));
-            return true;
-        }
-
-        /// <summary>
-        /// 检查涩图功能是否开启
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> ChecekGroupSetuCoolingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
-            int cdSecond = CoolingCache.GetGroupSetuCooling(args.Sender.Group.Id, args.Sender.Id);
-            if (cdSecond <= 0) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage($" 群功能冷却中，{cdSecond}秒后再来哦~"));
-            return true;
-        }
-
-        /// <summary>
-        /// 检查涩图功能可用次数
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckSetuUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id)) return false;
-            if (BotConfig.SetuConfig.MaxDaily == 0) return false;
-            int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
-            if (useCount < BotConfig.SetuConfig.MaxDaily) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));
-            return true;
-        }
-
-        /// <summary>
-        /// 检查原图功能可用次数
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckSaucenaoUseUpAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.SaucenaoConfig.MaxDaily == 0) return false;
-            int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Saucenao);
-            if (useCount < BotConfig.SaucenaoConfig.MaxDaily) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));
-            return true;
-        }
-
-        /// <summary>
-        /// 检查是否有涩图请求在处理中
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckHandingAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (CoolingCache.IsHanding(args.Sender.Group.Id, args.Sender.Id) == false) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage(" 你的一个请求正在处理中，稍后再来吧"));
-            return true;
-        }
-
-        /// <summary>
-        /// 检查是否拥有自定义涩图权限
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> CheckSetuCustomEnableAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(args.Sender.Group.Id)) return true;
-            await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.SetuCustomDisableMsg, " 自定义功能已关闭");
-            return false;
-        }
-
-        /// <summary>
-        /// 获取今日涩图可用次数
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static long GetSetuLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
-            if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id)) return BotConfig.SetuConfig.MaxDaily;
-            RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
-            int todayUseCount = requestRecordBusiness.getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
-            long leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
-            return leftToday < 0 ? 0 : leftToday;
-        }
-
-        /// <summary>
-        /// 获取今日原图可用次数
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static int GetSaucenaoLeftToday(this IMiraiHttpSession session, IGroupMessageEventArgs args)
-        {
-            if (BotConfig.SaucenaoConfig.MaxDaily == 0) return 0;
-            RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
-            int todayUseCount = requestRecordBusiness.getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Saucenao);
-            int leftToday = BotConfig.SaucenaoConfig.MaxDaily - todayUseCount - 1;
-            return leftToday < 0 ? 0 : leftToday;
-        }
-
-        /// <summary>
         /// 将模版转换为消息链
         /// </summary>
         /// <param name="session"></param>
@@ -445,6 +164,54 @@ namespace Theresa3rd_Bot.Util
             }
             if (template.Length > 0) SplitList.Add(template);
             return SplitList;
+        }
+
+        /// <summary>
+        /// 拼接pixiv作品路径
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <param name="maxShowCount"></param>
+        /// <returns></returns>
+        public static string JoinPixivWorkUrls(PixivWorkInfo pixivWorkInfo, int maxShowCount = 3)
+        {
+            string proxy = BotConfig.GeneralConfig.PixivProxy;
+            if (string.IsNullOrWhiteSpace(proxy)) proxy = "https://i.pixiv.re";
+            StringBuilder LinkStr = new StringBuilder();
+            int endCount = pixivWorkInfo.pageCount > maxShowCount ? maxShowCount : pixivWorkInfo.pageCount;
+            for (int i = 0; i < endCount; i++)
+            {
+                string imgUrl = pixivWorkInfo.urls.original.Replace("https://i.pximg.net", proxy);
+                if (i > 0) imgUrl = imgUrl.Replace("_p0.", $"_p{i}.");
+                if (i < endCount - 1)
+                {
+                    LinkStr.AppendLine(imgUrl);
+                }
+                else
+                {
+                    LinkStr.Append(imgUrl);
+                }
+            }
+            return LinkStr.ToString();
+        }
+
+        /// <summary>
+        /// 拼接pixiv标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <param name="maxShowCount"></param>
+        /// <returns></returns>
+        public static string JoinPixivTagsStr(PixivTagDto tags, int maxShowCount = 0)
+        {
+            string tagstr = "";
+            if (tags?.tags == null) return String.Empty;
+            for (int i = 0; i < tags.tags.Count; i++)
+            {
+                if (maxShowCount > 0 && i >= maxShowCount) return $"{tagstr}...";
+                PixivTagModel tag = tags.tags[i];
+                if (tagstr.Length > 0) tagstr += "，";
+                tagstr += tag.tag;
+            }
+            return tagstr;
         }
 
 

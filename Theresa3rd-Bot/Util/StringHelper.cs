@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Model.Pixiv;
 
 namespace Theresa3rd_Bot.Util
 {

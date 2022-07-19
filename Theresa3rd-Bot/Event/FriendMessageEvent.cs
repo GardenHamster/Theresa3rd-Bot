@@ -16,7 +16,7 @@ using Theresa3rd_Bot.Util;
 namespace Theresa3rd_Bot.Event
 {
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IFriendMessageEventArgs, FriendMessageEventArgs>))]
-    public class FriendMessageEvent : IMiraiHttpMessageHandler<IFriendMessageEventArgs>
+    public class FriendMessageEvent : BaseEvent, IMiraiHttpMessageHandler<IFriendMessageEventArgs>
     {
         public async Task HandleMessageAsync(IMiraiHttpSession session, IFriendMessageEventArgs args)
         {
@@ -40,7 +40,7 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartWithCommand(Command.PixivCookie))
                 {
-                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await CheckSuperManagersAsync(session, args) == false) return;
                     await new WebsiteHandler().UpdatePixivCookieAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                     args.BlockRemainingHandlers = true;
@@ -49,7 +49,7 @@ namespace Theresa3rd_Bot.Event
 
                 if (instructions.StartWithCommand(Command.SaucenaoCookie))
                 {
-                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await CheckSuperManagersAsync(session, args) == false) return;
                     await new WebsiteHandler().UpdateSaucenaoCookieAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                     args.BlockRemainingHandlers = true;

@@ -50,7 +50,7 @@ namespace Theresa3rd_Bot.Handler
                     await Task.Delay(1000);
                 }
 
-                bool includeR18 = groupId.IsShowR18Setu();
+                bool isShowR18 = groupId.IsShowR18Setu();
                 PixivWorkInfoDto pixivWorkInfoDto = null;
                 string tagName = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
                 
@@ -73,17 +73,23 @@ namespace Theresa3rd_Bot.Handler
                 }
                 else if (string.IsNullOrEmpty(tagName))
                 {
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInTagsAsync(includeR18);//获取随机一个标签中的作品
+                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInTagsAsync(isShowR18);//获取随机一个标签中的作品
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(tagName, includeR18);//获取随机一个作品
+                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(tagName, isShowR18);//获取随机一个作品
                 }
 
                 if (pixivWorkInfoDto == null || pixivWorkInfoDto.body.IsImproper())
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.NotFoundMsg, " 找不到这类型的图片或者收藏比过低，换个标签试试吧~");
+                    return;
+                }
+
+                if (pixivWorkInfoDto.body.isR18() && isShowR18 == false)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                     return;
                 }
 

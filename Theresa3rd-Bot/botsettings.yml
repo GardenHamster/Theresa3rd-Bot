@@ -10,7 +10,7 @@
     DownWithProxy:          false                                               #通过代理下载图片
     PixivFreeProxy:         true                                                #开启pixiv免代理模式，在没有vpn的情况下可以设置为true，在梯子速度较快的情况下推荐设置为false
     PixivTagShowMaximum:    3                                                   #最多显示N个pixiv标签，0表示无限制，建议设置该参数降低关键标签触发tx风控的概率
-    PixivCookieExpire:      2592000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每30天更新一次
+    PixivCookieExpire:      5184000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每60天更新一次
     PixivCookieExpireMsg:   'emmmm,cookie过期了,请艾特管理员更新cookie'           #cookie过期时返回的消息
     PixivTemplate:          |                                                   #pixiv模版，值为空时将使用默认模版
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，

@@ -722,7 +722,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{RelevantCount}", pixivWorkInfo.RelevantCount.ToString());
             template = template.Replace("{PageCount}", pixivWorkInfo.pageCount.ToString());
-            template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(pixivWorkInfo.tags, pixivWorkInfo.isR18() ? 3 : 0));
+            template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(pixivWorkInfo.tags, BotConfig.GeneralConfig.PixivTagShowMaximum));
             template = template.Replace("{Urls}", BusinessHelper.JoinPixivWorkUrls(pixivWorkInfo));
             return template;
         }

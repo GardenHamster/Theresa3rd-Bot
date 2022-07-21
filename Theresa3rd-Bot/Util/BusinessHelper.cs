@@ -197,19 +197,31 @@ namespace Theresa3rd_Bot.Util
         /// <summary>
         /// 拼接pixiv标签
         /// </summary>
+        /// <param name="pixivTag"></param>
+        /// <param name="maxShowCount"></param>
+        /// <returns></returns>
+        public static string JoinPixivTagsStr(PixivTagDto pixivTag, int maxShowCount = 0)
+        {
+            if (pixivTag?.tags == null) return String.Empty;
+            List<string> tags = pixivTag.tags.Select(o => o.tag).ToList();
+            return JoinPixivTagsStr(tags, maxShowCount);
+        }
+
+        /// <summary>
+        /// 拼接pixiv标签
+        /// </summary>
         /// <param name="tags"></param>
         /// <param name="maxShowCount"></param>
         /// <returns></returns>
-        public static string JoinPixivTagsStr(PixivTagDto tags, int maxShowCount = 0)
+        public static string JoinPixivTagsStr(List<string> tags, int maxShowCount = 0)
         {
             string tagstr = "";
-            if (tags?.tags == null) return String.Empty;
-            for (int i = 0; i < tags.tags.Count; i++)
+            if (tags == null || tags.Count == 0) return String.Empty;
+            for (int i = 0; i < tags.Count; i++)
             {
                 if (maxShowCount > 0 && i >= maxShowCount) return $"{tagstr}...";
-                PixivTagModel tag = tags.tags[i];
                 if (tagstr.Length > 0) tagstr += "，";
-                tagstr += tag.tag;
+                tagstr += tags[i];
             }
             return tagstr;
         }

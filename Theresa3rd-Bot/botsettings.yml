@@ -106,7 +106,7 @@ Setu:                                                                           
         ProcessingMsg:      '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息，值为空时不发送
         Template:           '{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~'
         MaxScreen:          60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
-        MinBookmark:        800                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时适用)
+        MinBookmark:        1500                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时适用)
         MinBookRate:        0.05                                                #最低收藏率，收藏数/浏览数(标签搜索时试用)
         
 Saucenao:                                                                       #Saucenao以图搜图，查找原图功能

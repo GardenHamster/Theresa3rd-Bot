@@ -210,7 +210,7 @@ namespace Theresa3rd_Bot.Handler
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
 
-                string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.PixivUser.AddCommand);
+                string[] paramArr = message.splitParams(BotConfig.SubscribeConfig.PixivUser.AddCommand);
                 if (paramArr != null && paramArr.Length >= 2)
                 {
                     pixivUserIds = paramArr.Length > 0 ? paramArr[0] : null;
@@ -385,13 +385,8 @@ namespace Theresa3rd_Bot.Handler
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
 
-                string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.PixivUser.RmCommand);
-                if (paramArr != null && paramArr.Length >= 1)
-                {
-                    pixivUserIds = paramArr.Length > 0 ? paramArr[0] : null;
-                    if (await CheckPixivUserIdsAsync(session, args, pixivUserIds) == false) return;
-                }
-                else
+                string paramStr = message.splitParam(BotConfig.SubscribeConfig.PixivUser.RmCommand);
+                if (string.IsNullOrWhiteSpace(paramStr))
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
                     if (stepInfo == null) return;
@@ -399,6 +394,11 @@ namespace Theresa3rd_Bot.Handler
                     stepInfo.AddStep(uidStep);
                     if (await stepInfo.StartStep(session, args) == false) return;
                     pixivUserIds = uidStep.Answer;
+                }
+                else
+                {
+                    pixivUserIds = paramStr.Trim();
+                    if (await CheckPixivUserIdsAsync(session, args, pixivUserIds) == false) return;
                 }
 
                 string[] pixivUserIdArr = pixivUserIds.splitParams();
@@ -413,7 +413,7 @@ namespace Theresa3rd_Bot.Handler
                     subscribeBusiness.delSubscribeGroup(dbSubscribe.Id);
                 }
 
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了相关用户~"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了pixiv用户[{pixivUserIds}]~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
@@ -439,7 +439,7 @@ namespace Theresa3rd_Bot.Handler
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
 
-                string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.PixivTag.AddCommand);
+                string[] paramArr = message.splitParams(BotConfig.SubscribeConfig.PixivTag.AddCommand);
                 if (paramArr != null && paramArr.Length >= 2)
                 {
                     pixivTags = paramArr.Length > 0 ? paramArr[0] : null;
@@ -506,13 +506,8 @@ namespace Theresa3rd_Bot.Handler
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
 
-                string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.PixivTag.RmCommand);
-                if (paramArr != null && paramArr.Length >= 1)
-                {
-                    pixivTag = paramArr.Length > 0 ? paramArr[0] : null;
-                    if (await CheckPixivTagAsync(session, args, pixivTag) == false) return;
-                }
-                else
+                string paramStr = message.splitParam(BotConfig.SubscribeConfig.PixivTag.RmCommand);
+                if (string.IsNullOrWhiteSpace(paramStr))
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
                     if (stepInfo == null) return;
@@ -520,6 +515,11 @@ namespace Theresa3rd_Bot.Handler
                     stepInfo.AddStep(tagStep);
                     if (await stepInfo.StartStep(session, args) == false) return;
                     pixivTag = tagStep.Answer;
+                }
+                else
+                {
+                    pixivTag = paramStr.Trim();
+                    if (await CheckPixivTagAsync(session, args, pixivTag) == false) return;
                 }
 
                 SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivTag, SubscribeType.P站标签);
@@ -530,7 +530,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 subscribeBusiness.delSubscribeGroup(dbSubscribe.Id);
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了相关标签~"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了pixiv标签[{pixivTag}]~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
@@ -662,12 +662,12 @@ namespace Theresa3rd_Bot.Handler
             int typeId = 0;
             if (int.TryParse(value, out typeId) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 必须为数字"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 目标必须为数字"));
                 return false;
             }
             if (Enum.IsDefined(typeof(SubscribeGroupType), typeId) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 不在范围内"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage(" 目标不在范围内"));
                 return false;
             }
             return true;

@@ -67,7 +67,20 @@ namespace Theresa3rd_Bot.Util
         /// <param name="message"></param>
         /// <param name="commandStr"></param>
         /// <returns></returns>
-        public static string[] splitParam(this string message, string commandStr)
+        public static string splitParam(this string message, string commandStr)
+        {
+            string paramStr = message.splitKeyWord(commandStr);
+            if (paramStr == null) return null;
+            return paramStr.Trim();
+        }
+
+        /// <summary>
+        /// 提取参数
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="commandStr"></param>
+        /// <returns></returns>
+        public static string[] splitParams(this string message, string commandStr)
         {
             string paramStr = message.splitKeyWord(commandStr);
             if (paramStr == null) return null;

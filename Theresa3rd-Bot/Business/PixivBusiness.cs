@@ -205,7 +205,7 @@ namespace Theresa3rd_Bot.Business
             string searchWord = formatSearchWord(tagNames);
             PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, includeR18);
             int total = pageOne.body.getIllust().total;
-            int maxPage = (int)Math.Ceiling(Convert.ToDecimal(total) / pixivPageSize);
+            int maxPage = MathHelper.getMaxPage(total, pixivPageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
             Thread.Sleep(1000);
 
@@ -451,22 +451,36 @@ namespace Theresa3rd_Bot.Business
             return pixivSubscribeList;
         }
 
+        private async Task<List<PixivIllust>> getTagIllustListAsync(string searchWord, int maxScan)
+        {
+            int maxPage = MathHelper.getMaxPage(maxScan, pixivPageSize);
+            List<PixivIllust> pixivIllustList = new List<PixivIllust>();
+
+            for (int i = 1; i <= maxPage; i++)
+            {
+                if (pixivIllustList.Count >= maxScan) break;
+                PixivSearchDto pixivSearch = await PixivHelper.GetPixivSearchAsync(searchWord, i, false, true);
+                if (pixivSearch.error || pixivSearch?.body?.getIllust()?.data == null) break;
+                if (pixivSearch.body.getIllust().data.Count < pixivPageSize) break;
+                pixivIllustList.AddRange(pixivSearch.body.getIllust().data);
+            }
+            return pixivIllustList.OrderByDescending(o => o.createDate).Take(maxScan).ToList();
+        }
+
         /// <summary>
         /// 获取订阅标签的最新作品
         /// </summary>
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(SubscribeTask subscribeTask)
+        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(SubscribeTask subscribeTask, int maxScan)
         {
             string tagNames = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
             string searchWord = formatSearchWord(tagNames);
-            PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, true);
-            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            if (pageOne.error || pageOne?.body?.getIllust()?.data == null) return pixivSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
-            List<PixivIllust> illutsList = pageOne.body.getIllust().data.OrderByDescending(o => o.createDate).ToList();
+            List<PixivIllust> illutsList = await getTagIllustListAsync(searchWord, maxScan);
+            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             foreach (PixivIllust item in illutsList)
             {
                 try

@@ -53,6 +53,7 @@ namespace Theresa3rd_Bot.Timer
 
         private static async Task SubscribeMethodAsync(PixivBusiness pixivBusiness)
         {
+            int maxScan = BotConfig.SubscribeConfig.PixivTag.MaxScan;
             SubscribeType subscribeType = SubscribeType.P站标签;
             if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return;
             List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];
@@ -63,7 +64,7 @@ namespace Theresa3rd_Bot.Timer
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
                     DateTime startTime = DateTime.Now;
-                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivTagSubscribeAsync(subscribeTask);
+                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivTagSubscribeAsync(subscribeTask, maxScan);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
                     await sendGroupSubscribeAsync(pixivBusiness, subscribeTask, pixivSubscribeList, startTime);
                 }
@@ -108,7 +109,7 @@ namespace Theresa3rd_Bot.Timer
                         }
                         else
                         {
-                            chailList.Add(new PlainMessage(pixivBusiness.getTagPushRemindMsg(remindTemplate, pixivWorkInfo.userName)));
+                            chailList.Add(new PlainMessage(pixivBusiness.getTagPushRemindMsg(remindTemplate, tagName)));
                         }
 
                         if (string.IsNullOrWhiteSpace(pixivTemplate))

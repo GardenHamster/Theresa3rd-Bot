@@ -65,5 +65,17 @@ namespace Theresa3rd_Bot.Util
             return getRate(num1, num2, keep) * 100 + "%";
         }
 
+        /// <summary>
+        /// 通过总数和每页数量计算总页数
+        /// </summary>
+        /// <param name="total"></param>
+        /// <param name="eachPage"></param>
+        /// <returns></returns>
+        public static int getMaxPage(int total, int eachPage)
+        {
+            return (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
+        }
+
+
     }
 }

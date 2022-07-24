@@ -451,22 +451,6 @@ namespace Theresa3rd_Bot.Business
             return pixivSubscribeList;
         }
 
-        private async Task<List<PixivIllust>> getTagIllustListAsync(string searchWord, int maxScan)
-        {
-            int maxPage = MathHelper.getMaxPage(maxScan, pixivPageSize);
-            List<PixivIllust> pixivIllustList = new List<PixivIllust>();
-
-            for (int i = 1; i <= maxPage; i++)
-            {
-                if (pixivIllustList.Count >= maxScan) break;
-                PixivSearchDto pixivSearch = await PixivHelper.GetPixivSearchAsync(searchWord, i, false, true);
-                if (pixivSearch.error || pixivSearch?.body?.getIllust()?.data == null) break;
-                if (pixivSearch.body.getIllust().data.Count < pixivPageSize) break;
-                pixivIllustList.AddRange(pixivSearch.body.getIllust().data);
-            }
-            return pixivIllustList.OrderByDescending(o => o.createDate).Take(maxScan).ToList();
-        }
-
         /// <summary>
         /// 获取订阅标签的最新作品
         /// </summary>
@@ -564,6 +548,28 @@ namespace Theresa3rd_Bot.Business
                 }
             }
             return pixivSubscribeList;
+        }
+
+        /// <summary>
+        /// 根据最大扫描数量,读取该数量的作品列表
+        /// </summary>
+        /// <param name="searchWord"></param>
+        /// <param name="maxScan"></param>
+        /// <returns></returns>
+        private async Task<List<PixivIllust>> getTagIllustListAsync(string searchWord, int maxScan)
+        {
+            int maxPage = MathHelper.getMaxPage(maxScan, pixivPageSize);
+            List<PixivIllust> pixivIllustList = new List<PixivIllust>();
+
+            for (int i = 1; i <= maxPage; i++)
+            {
+                if (pixivIllustList.Count >= maxScan) break;
+                PixivSearchDto pixivSearch = await PixivHelper.GetPixivSearchAsync(searchWord, i, false, true);
+                if (pixivSearch.error || pixivSearch?.body?.getIllust()?.data == null) break;
+                if (pixivSearch.body.getIllust().data.Count < pixivPageSize) break;
+                pixivIllustList.AddRange(pixivSearch.body.getIllust().data);
+            }
+            return pixivIllustList.OrderByDescending(o => o.createDate).Take(maxScan).ToList();
         }
 
         /// <summary>

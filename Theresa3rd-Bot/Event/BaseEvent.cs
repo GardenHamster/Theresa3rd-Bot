@@ -77,7 +77,7 @@ namespace Theresa3rd_Bot.Event
             }
             if (BotConfig.SetuConfig?.Pixiv == null || BotConfig.SetuConfig.Pixiv.Enable == false)
             {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.Pixiv.DisableMsg, "该功能已关闭");
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableMsg, "该功能已关闭");
                 return false;
             }
             return true;

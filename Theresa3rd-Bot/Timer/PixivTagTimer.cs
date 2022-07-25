@@ -63,10 +63,9 @@ namespace Theresa3rd_Bot.Timer
                 try
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
-                    DateTime startTime = DateTime.Now;
                     List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivTagSubscribeAsync(subscribeTask, maxScan);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
-                    await sendGroupSubscribeAsync(pixivBusiness, subscribeTask, pixivSubscribeList, startTime);
+                    await sendGroupSubscribeAsync(pixivBusiness, subscribeTask, pixivSubscribeList);
                 }
                 catch (Exception ex)
                 {
@@ -79,10 +78,11 @@ namespace Theresa3rd_Bot.Timer
             }
         }
 
-        private static async Task sendGroupSubscribeAsync(PixivBusiness pixivBusiness, SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList, DateTime startTime)
+        private static async Task sendGroupSubscribeAsync(PixivBusiness pixivBusiness, SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList)
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
+                DateTime startTime = DateTime.Now;
                 List<long> groupIds = subscribeTask.GroupIdList;
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
                 if (pixivWorkInfo == null || pixivWorkInfo.IsImproper()) continue;

@@ -159,13 +159,25 @@ namespace Theresa3rd_Bot.Common
         /*---------------------------------------------------------------Lolicon-----------------------------------------------------------------------*/
 
         /// <summary>
-        /// 画师作品地址
+        /// Lolicon Api 地址
         /// </summary>
         /// <param name="userid"></param>
         /// <returns></returns>
         public static string getLoliconApiV2Url()
         {
             return "https://api.lolicon.app/setu/v2";
+        }
+
+        /*---------------------------------------------------------------Lolisuki-----------------------------------------------------------------------*/
+
+        /// <summary>
+        /// Lolisuki Api 地址
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        public static string getLolisukiApiUrl()
+        {
+            return "https://lolisuki.cc/api/setu/v1";
         }
 
         /*---------------------------------------------------------------米游社-----------------------------------------------------------------------*/

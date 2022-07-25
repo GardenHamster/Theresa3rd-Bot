@@ -80,35 +80,47 @@ Setu:                                                                           
     EnableTagCommand:       '解禁标签'                                          #解禁一个涩图关键词
     DisableTags:            ['R-18','R18','R18+','R18G','R17.9']                #禁止的涩图关键词.所有群通用
     DisableTagsMsg:         '禁止查找这个类型的涩图'                             #标签被禁用时返回的消息
+    DisableMsg:             '不可以色色！'                                      #功能未启用时返回的消息，值为空时不发送
+    NotFoundMsg:            '色图探测器毫无反应，找不到你要的色图'              #找不到相应色图时返回的消息
+    ErrorMsg:               '申请色色失败！请重新尝试'                          #发生错误时返回的消息
+    ProcessingMsg:          '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息，值为空时不发送
     MaxDaily:               20                                                  #每人每日最大使用次数，0表示无限制
     RevokeInterval:         0                                                   #N秒后撤回,0表示不撤回
     SendPrivate:            true                                                #私聊发送，需要用户主动发送任意消息给机器人开启临时会话
+    
     Lolicon:                                                                    #Lolicon图床https://api.lolicon.app/#/setu
         Enable:             true                                                #是否启用
         Command:            '瑟图'                                              #命令，用法：#瑟图合法萝莉
-        DisableMsg:         '不可以色色！'                                      #功能未启用时返回的消息，值为空时不发送
-        NotFoundMsg:        '色图探测器毫无反应，找不到你要的色图'              #找不到相应色图时返回的消息
-        ErrorMsg:           '申请色色失败！请重新尝试'                          #发生错误时返回的消息
-        ProcessingMsg:      '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息，值为空时不发送
         Template:           |                                                   #消息模版，值为空时将使用默认模版
-                            本条数据来源于Lolicon Api，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
+                            本条数据来源于Lolicon，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
                             标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，耗时：{CostSecond}s
                             标签：{Tags}
                             {Urls}
     Pixiv:                                                                      #Pixiv图床https://www.pixiv.net
         Enable:             true                                                #是否启用
         Command:            '涩图'                                              #命令，用法：#涩图 或 #涩图可可萝
-        DisableMsg:         '不可以色色！'                                      #功能未启用时返回的消息，值为空时不发送
-        NotFoundMsg:        '色图探测器毫无反应，找不到你要的色图'              #找不到相应色图时返回的消息
-        ErrorMsg:           '申请色色失败！请重新尝试'                          #发生错误时返回的消息
         RandomMode:         1                                                   #没有指定标签时获取图片的模式，1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品，3：随机获取一个关注中画师的作品，4：随机获取一个收藏中的作品
         RandomTags:         ['德丽莎','テレサ・アポカリプス']                    #RandomMode=1时查找的标签
-        ProcessingMsg:      '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息，值为空时不发送
-        Template:           '{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~'
+        Template:           '本条数据来源于Pixiv，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~'
         MaxScreen:          60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
         MinBookmark:        1500                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时适用)
         MinBookRate:        0.05                                                #最低收藏率，收藏数/浏览数(标签搜索时试用)
-        
+    
+    Lolisuki:                                                                   #Lolisuki图床https://lolisuki.cc，https://github.com/GardenHamster/LoliSuki
+        Enable:             true                                                #是否启用
+        Command:            'setu'                                              #命令，用法：#瑟图合法萝莉
+        Level:              '0-6'                                               #Level范围，数字越大表示越涩，最小为0最大为6，5-6为R18
+        Template:           |                                                   #消息模版，值为空时将使用默认模版
+                            本条数据来源于Lolisuki，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
+                            标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，Level：{Level}，大小：{SizeMB}MB，耗时：{CostSecond}s
+                            标签：{Tags}
+                            {Urls}
+
+    Local:                                                                      #本地图床
+        Enable:             true                                                #是否启用
+        Command:            '色图'                                              #命令，用法：#瑟图合法萝莉
+        Template:           '本条数据来源于Pixiv，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~'
+
 Saucenao:                                                                       #Saucenao以图搜图，查找原图功能
     Enable:                 true                                                #是否启用
     Command:                '原图'                                              #命令，用法：#原图 或 #原图+图片

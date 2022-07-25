@@ -179,6 +179,22 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
+                //setu
+                if (instructions.StartWithCommand(BotConfig.SetuConfig?.Lolisuki?.Command))
+                {
+                    if (await CheckSetuEnableAsync(session, args) == false) return;
+                    if (await CheckSetuTagEnableAsync(session, args, message) == false) return;
+                    if (await CheckMemberSetuCoolingAsync(session, args)) return;
+                    if (await CheckGroupSetuCoolingAsync(session, args)) return;
+                    if (await CheckSetuUseUpAsync(session, args)) return;
+                    if (await CheckHandingAsync(session, args)) return;
+                    CoolingCache.SetGroupSetuCooling(groupId, memberId);
+                    await new LolisukiHandler().sendGeneralLolisukiImageAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
+                    args.BlockRemainingHandlers = true;
+                    return;
+                }
+
                 //涩图
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.Pixiv?.Command))
                 {

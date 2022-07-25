@@ -35,9 +35,6 @@ namespace Theresa3rd_Bot.Model.Lolicon
         {
             return tags == null ? false : tags.IsR18();
         }
-
-
-
     }
 
     public class LoliconUrlsV2

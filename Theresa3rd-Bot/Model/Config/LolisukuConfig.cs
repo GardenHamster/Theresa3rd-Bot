@@ -1,6 +1,6 @@
 ﻿namespace Theresa3rd_Bot.Model.Config
 {
-    public class LoliconConfig
+    public class LolisukuConfig
     {
         public bool Enable { get; set; }
 

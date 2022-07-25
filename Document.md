@@ -38,7 +38,7 @@
     "botQQ": "123456789"            //mcl中登录的QQ号
   },
   "Database": {
-    "ConnectionString": "Data Source=127.0.0.1;port=3306;Initial Catalog=theresa_bot;uid=root;pwd=123456;CharSet=utf8mb4;"    //mysql数据库链接，确保能连上数据库以后，然后改成自己的
+    "ConnectionString": "Data Source=127.0.0.1;port=3306;Initial Catalog=theresa_bot;uid=root;pwd=123456;CharSet=utf8mb4;SslMode=None;"    //mysql数据库链接，确保能连上数据库以后，然后改成自己的
   }
 }
 
@@ -117,7 +117,7 @@ System.Collections.Generic.KeyNotFoundException: The given key '25185' was not p
 ```
 - 检查appsettings.Production.json中数据库链接字符串中是否包含CharSet，完整的链接字符串如下
 ```bash
-Data Source=127.0.0.1;port=3306;Initial Catalog=theresa_bot;uid=root;pwd=123456;CharSet=utf8mb4;
+Data Source=127.0.0.1;port=3306;Initial Catalog=theresa_bot;uid=root;pwd=123456;CharSet=utf8mb4;SslMode=None;
 ```
 - 如果还是不行，推荐更换Mysql数据库版本为8.0.28
 

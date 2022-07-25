@@ -202,7 +202,7 @@ namespace Theresa3rd_Bot.Business
             int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / pixivPageSize);
             if (pageCount < 3) pageCount = 3;
 
-            string searchWord = formatSearchWord(tagNames);
+            string searchWord = toPixivSearchWord(tagNames);
             PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, includeR18);
             int total = pageOne.body.getIllust().total;
             int maxPage = MathHelper.getMaxPage(total, pixivPageSize);
@@ -461,7 +461,7 @@ namespace Theresa3rd_Bot.Business
         {
             string tagNames = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
-            string searchWord = formatSearchWord(tagNames);
+            string searchWord = toPixivSearchWord(tagNames);
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
             List<PixivIllust> illutsList = await getTagIllustListAsync(searchWord, maxScan);
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
@@ -760,12 +760,13 @@ namespace Theresa3rd_Bot.Business
             return workInfoStr.ToString();
         }
 
+
         /// <summary>
         /// 将用户输入的关键词转换为pixiv可搜索的word
         /// </summary>
         /// <param name="tagNames"></param>
         /// <returns></returns>
-        public string formatSearchWord(string tagNames)
+        public string toPixivSearchWord(string tagNames)
         {
             tagNames = tagNames.Trim().Replace("(", "（").Replace(")", "）");
             string[] andArr = tagNames.Split(new char[] { ' ', '+' }, StringSplitOptions.RemoveEmptyEntries);

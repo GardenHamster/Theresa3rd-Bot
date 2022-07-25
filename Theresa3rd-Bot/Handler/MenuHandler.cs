@@ -29,9 +29,14 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
-                StringBuilder menuBuilder = new StringBuilder(getMemberMenu());
-                if (memberId.IsSuperManager()) menuBuilder.Append(getManagerMenu());
-                await session.SendMessageWithAtAsync(args, new PlainMessage(menuBuilder.ToString()));
+                await session.SendGroupMessageAsync(groupId, new PlainMessage(getMemberMenu()));
+                
+                if (memberId.IsSuperManager())
+                {
+                    await Task.Delay(1000);
+                    await session.SendGroupMessageAsync(groupId, new PlainMessage(getManagerMenu()));
+                }
+               
             }
             catch (Exception ex)
             {
@@ -44,10 +49,10 @@ namespace Theresa3rd_Bot.Handler
         {
             string prefix = BotConfig.GeneralConfig.Prefix;
             StringBuilder menuBuilder = new StringBuilder();
-            menuBuilder.AppendLine();
             menuBuilder.AppendLine($"目前实现的功能如下：");
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SetuConfig.Pixiv.Command}[标签/pid]?】 从pixiv中搜索一张涩图");
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SetuConfig.Lolicon.Command}[标签]?】 从Lolicon中搜索一张涩图");
+            menuBuilder.AppendLine($"【{prefix}{BotConfig.SetuConfig.Lolisuki.Command}[标签]?】 从Lolisuki中搜索一张涩图");
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SaucenaoConfig.Command}[图片]?】 尝试用Saucenao查找来源，并返回原图等信息");
             return menuBuilder.ToString();
         }
@@ -56,7 +61,6 @@ namespace Theresa3rd_Bot.Handler
         {
             string prefix = BotConfig.GeneralConfig.Prefix;
             StringBuilder menuBuilder = new StringBuilder();
-            menuBuilder.AppendLine();
             menuBuilder.AppendLine($"超级管理员的功能如下：");
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SubscribeConfig.Mihoyo.AddCommand}】 订阅米游社用户");
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SubscribeConfig.Mihoyo.RmCommand}】 退订米游社用户");

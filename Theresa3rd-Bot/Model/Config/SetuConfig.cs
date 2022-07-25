@@ -36,6 +36,8 @@ namespace Theresa3rd_Bot.Model.Config
 
         public PixivConfig Pixiv { get; set; }
 
+        public LocalSetuConfig Local { get; set; }
+
     }
 
 

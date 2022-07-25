@@ -1,6 +1,6 @@
 ﻿using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
-using System.Text;
+using System;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
@@ -55,6 +55,17 @@ namespace Theresa3rd_Bot.Handler
             return leftToday < 0 ? 0 : leftToday;
         }
 
+        /// <summary>
+        /// 将一个tag字符串拆分为LoliconApi的tag参数
+        /// </summary>
+        /// <param name="tagStr"></param>
+        /// <returns></returns>
+        public string[] toLoliconTagArr(string tagStr)
+        {
+            if (string.IsNullOrWhiteSpace(tagStr)) return new string[0];
+            tagStr = tagStr.Trim().Replace(",", "|").Replace("，", "|");
+            return tagStr.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        }
 
     }
 }

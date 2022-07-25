@@ -1,10 +1,17 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Theresa3rd_Bot.Common;
 
 namespace Theresa3rd_Bot.Business
 {
     public abstract class SetuBusiness
     {
+        /// <summary>
+        /// 获取色图默认提示信息
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="todayLeftCount"></param>
+        /// <returns></returns>
         public string getDefaultRemindMsg(long groupId, long todayLeftCount)
         {
             StringBuilder remindBuilder = new StringBuilder();

@@ -42,15 +42,15 @@ namespace Theresa3rd_Bot.Handler
                 LolisukiResult lolisukiResult = null;
                 int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
                 string levelStr = BotConfig.SetuConfig.Lolisuki.Level;
-                string tagNames = message.splitKeyWord(BotConfig.SetuConfig.Lolisuki.Command) ?? "";
-                if (string.IsNullOrEmpty(tagNames))
+                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolisuki.Command) ?? "";
+                if (string.IsNullOrEmpty(tagStr))
                 {
                     lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
-                    string[] tagArr = tagNames.Split(new char[] { ' ', ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] tagArr = toLoliconTagArr(tagStr);
                     lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr, tagArr);
                 }
 

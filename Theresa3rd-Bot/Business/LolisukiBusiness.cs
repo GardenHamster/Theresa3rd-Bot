@@ -44,7 +44,7 @@ namespace Theresa3rd_Bot.Business
 
         public async Task<LolisukiResult> getLolisukiResultAsync(int r18Mode, string level, string[] tags = null)
         {
-            string[] postTags = tags == null || tags.Length == 0 ? null : tags;
+            string[] postTags = tags == null || tags.Length == 0 ? new string[0] : tags;
             LolisukiParam param = new LolisukiParam(r18Mode, 1, "i.pixiv.re", postTags, level, 0);
             string httpUrl = HttpUrl.getLolisukiApiUrl();
             string postJson = JsonConvert.SerializeObject(param);

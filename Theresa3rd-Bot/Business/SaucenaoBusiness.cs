@@ -140,31 +140,24 @@ namespace Theresa3rd_Bot.Business
             for (int i = 0; i < sortList.Count; i++)
             {
                 SaucenaoItem saucenaoItem = sortList[i];
-                try
+                if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
                 {
-                    if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
-                    {
-                        PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
-                        if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
-                        saucenaoItem.PixivWorkInfo = pixivWorkInfo;
-                        return saucenaoItem;
-                    }
-                    if (saucenaoItem.SourceType == SaucenaoSourceType.Twitter)
-                    {
-                        //ToDo
-                        return saucenaoItem;
-                    }
-                    if (saucenaoItem.SourceType == SaucenaoSourceType.FanBox)
-                    {
-                        //ToDo
-                        return saucenaoItem;
-                    }
+                    PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
+                    if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
+                    saucenaoItem.PixivWorkInfo = pixivWorkInfo;
                     return saucenaoItem;
                 }
-                catch (Exception ex)
+                if (saucenaoItem.SourceType == SaucenaoSourceType.Twitter)
                 {
-                    LogHelper.Error(ex, $"尝试获取原图信息时异常,PixivId={saucenaoItem.SourceId}", false);
+                    //ToDo
+                    return saucenaoItem;
                 }
+                if (saucenaoItem.SourceType == SaucenaoSourceType.FanBox)
+                {
+                    //ToDo
+                    return saucenaoItem;
+                }
+                return saucenaoItem;
             }
             return null;
         }

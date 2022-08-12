@@ -53,19 +53,7 @@ namespace Theresa3rd_Bot.Business
             return JsonConvert.DeserializeObject<LolisukiResult>(json);
         }
 
-        public string getOriginalUrl(string imgUrl)
-        {
-            imgUrl = imgUrl.Replace("https://i.pixiv.cat", "https://i.pximg.net");
-            imgUrl = imgUrl.Replace("https://i.pixiv.re", "https://i.pximg.net");
-            return imgUrl;
-        }
-
-        public string getProxyUrl(string imgUrl)
-        {
-            imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
-            imgUrl = imgUrl.Replace("https://i.pixiv.cat", BotConfig.GeneralConfig.PixivProxy);
-            return imgUrl;
-        }
+        
 
         public async Task<FileInfo> downImgAsync(LolisukiData lolisukiData)
         {
@@ -73,7 +61,7 @@ namespace Theresa3rd_Bot.Business
             {
                 string fullFileName = $"{lolisukiData.pid}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                string imgUrl = lolisukiData.urls.original;
+                string imgUrl = getDownImgUrl(lolisukiData);
                 if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
                 {
                     imgUrl = getProxyUrl(imgUrl);
@@ -93,6 +81,21 @@ namespace Theresa3rd_Bot.Business
                 LogHelper.Error(ex, "LolisukiBusiness.downImg下载图片失败");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 根据配置文件设置的图片大小获取图片下载地址
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <returns></returns>
+        private string getDownImgUrl(LolisukiData lolisukiData)
+        {
+            string imgSize = BotConfig.GeneralConfig.PixivImgSize?.ToLower();
+            if (imgSize == "original") return lolisukiData.urls?.original;
+            if (imgSize == "regular") return lolisukiData.urls?.regular;
+            if (imgSize == "small") return lolisukiData.urls?.small;
+            if (imgSize == "thumb") return lolisukiData.urls?.thumb;
+            return lolisukiData.urls?.original;
         }
 
 

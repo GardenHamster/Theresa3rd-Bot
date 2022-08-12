@@ -78,5 +78,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
     {
         public string original { get; set; }
         public string regular { get; set; }
+        public string small { get; set; }
+        public string thumb { get; set; }
     }
 }

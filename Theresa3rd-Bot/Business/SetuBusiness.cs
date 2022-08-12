@@ -37,6 +37,20 @@ namespace Theresa3rd_Bot.Business
             return remindBuilder.ToString();
         }
 
+        public string getOriginalUrl(string imgUrl)
+        {
+            imgUrl = imgUrl.Replace("https://i.pixiv.cat", "https://i.pximg.net");
+            imgUrl = imgUrl.Replace("https://i.pixiv.re", "https://i.pximg.net");
+            return imgUrl;
+        }
+
+        public string getProxyUrl(string imgUrl)
+        {
+            imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
+            imgUrl = imgUrl.Replace("https://i.pixiv.cat", BotConfig.GeneralConfig.PixivProxy);
+            return imgUrl;
+        }
+
 
     }
 }

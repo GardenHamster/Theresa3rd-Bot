@@ -85,10 +85,16 @@ namespace Theresa3rd_Bot.Handler
             try
             {
                 string memberCode = message.splitKeyWord(BotConfig.ManageConfig.DisableMemberCommand);
-
+                
                 if (string.IsNullOrEmpty(memberCode))
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要禁止的qq号，请确保指令格式正确"));
+                    return;
+                }
+
+                if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(Convert.ToInt64(memberCode)))
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 无法拉黑超级管理员"));
                     return;
                 }
 

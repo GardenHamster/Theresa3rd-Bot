@@ -51,27 +51,13 @@ namespace Theresa3rd_Bot.Business
             return JsonConvert.DeserializeObject<LoliconResultV2>(json);
         }
 
-        public string getOriginalUrl(string imgUrl)
-        {
-            imgUrl = imgUrl.Replace("https://i.pixiv.cat", "https://i.pximg.net");
-            imgUrl = imgUrl.Replace("https://i.pixiv.re", "https://i.pximg.net");
-            return imgUrl;
-        }
-
-        public string getProxyUrl(string imgUrl)
-        {
-            imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
-            imgUrl = imgUrl.Replace("https://i.pixiv.cat", BotConfig.GeneralConfig.PixivProxy);
-            return imgUrl;
-        }
-
         public async Task<FileInfo> downImgAsync(LoliconDataV2 loliconData)
         {
             try
             {
                 string fullFileName = $"{loliconData.pid}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                string imgUrl = loliconData.urls.original;
+                string imgUrl = getDownImgUrl(loliconData);
                 if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
                 {
                     imgUrl = getProxyUrl(imgUrl);
@@ -92,6 +78,22 @@ namespace Theresa3rd_Bot.Business
                 return null;
             }
         }
+
+        /// <summary>
+        /// 根据配置文件设置的图片大小获取图片下载地址
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <returns></returns>
+        private string getDownImgUrl(LoliconDataV2 loliconData)
+        {
+            string imgSize = BotConfig.GeneralConfig.PixivImgSize?.ToLower();
+            if (imgSize == "original") return loliconData.urls?.original;
+            if (imgSize == "regular") return loliconData.urls?.original.Replace("img-original", "img-master").Replace(".", "_master1200.");
+            if (imgSize == "small") return loliconData.urls?.original.Replace("img-original", "c/540x540_70/img-master").Replace(".", "_master1200.");
+            if (imgSize == "thumb") return loliconData.urls?.original.Replace("img-original", "c/250x250_80_a2/img-master").Replace(".", "_square1200.");
+            return loliconData.urls?.original;
+        }
+
 
 
     }

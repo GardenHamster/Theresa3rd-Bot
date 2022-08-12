@@ -635,7 +635,7 @@ namespace Theresa3rd_Bot.Business
             try
             {
                 if (pixivWorkInfo.isGif()) return await downAndComposeGifAsync(pixivWorkInfo);
-                string imgUrl = pixivWorkInfo.urls.original;
+                string imgUrl = getDownImgUrl(pixivWorkInfo);
                 string fullFileName = $"{pixivWorkInfo.illustId}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
                 if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
@@ -658,6 +658,20 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
+        /// <summary>
+        /// 根据配置文件设置的图片大小获取图片下载地址
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <returns></returns>
+        private string getDownImgUrl(PixivWorkInfo pixivWorkInfo)
+        {
+            string imgSize = BotConfig.GeneralConfig.PixivImgSize?.ToLower();
+            if (imgSize == "original") return pixivWorkInfo.urls?.original;
+            if (imgSize == "regular") return pixivWorkInfo.urls?.regular;
+            if (imgSize == "small") return pixivWorkInfo.urls?.small;
+            if (imgSize == "thumb") return pixivWorkInfo.urls?.thumb;
+            return pixivWorkInfo.urls?.original;
+        }
 
         /// <summary>
         /// 下载动图zip包并合成gif图片

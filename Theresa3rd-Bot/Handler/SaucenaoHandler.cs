@@ -195,7 +195,7 @@ namespace Theresa3rd_Bot.Handler
             string template = BotConfig.GeneralConfig.PixivTemplate;
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
             List<IChatMessage> chatList = new List<IChatMessage>();
-            if (pixivWorkInfo.IsImproper())
+            if (pixivWorkInfo.IsImproper() || pixivWorkInfo.hasBanTag())
             {
                 chatList.Add(new PlainMessage($"该作品含有被屏蔽的标签，不显示相关内容"));
                 return chatList;

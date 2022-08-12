@@ -21,6 +21,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{IllustTitle}", loliconData.title);
+            template = template.Replace("{PixivId}", loliconData.pid.ToString());
             template = template.Replace("{UserName}", loliconData.author);
             template = template.Replace("{UserId}", loliconData.uid);
             template = template.Replace("{SizeMB}", sizeMB.ToString());

@@ -50,6 +50,7 @@ namespace Theresa3rd_Bot.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
+                    if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
                     string[] tagArr = toLoliconTagArr(tagStr);
                     loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, tagArr);
                 }
@@ -61,7 +62,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LoliconDataV2 loliconData = loliconResult.data.First();
-                if (loliconData.IsImproper())
+                if (loliconData.IsImproper() || loliconData.hasBanTag())
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
                     return;

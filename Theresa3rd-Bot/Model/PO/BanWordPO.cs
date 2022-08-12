@@ -7,9 +7,6 @@ namespace Theresa3rd_Bot.Model.PO
     [SugarTable("ban_word")]
     public class BanWordPO : BasePO
     {
-        [SugarColumn(IsNullable = false, ColumnDescription = "群ID")]
-        public long GroupId { get; set; }
-
         [SugarColumn(IsNullable = false, ColumnDescription = "禁止类型")]
         public BanType BanType { get; set; }
 

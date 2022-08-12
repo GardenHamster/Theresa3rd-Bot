@@ -4,7 +4,6 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +28,7 @@ namespace Theresa3rd_Bot.Event
                 long groupId = args.Sender.Group.Id;
                 long botId = session.QQNumber ?? 0;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
+                if (CheckBanMemberAsync(session, args)) return;//黑名单成员
 
                 string prefix = BotConfig.GeneralConfig.Prefix;
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
@@ -52,11 +52,31 @@ namespace Theresa3rd_Bot.Event
                 }
 
                 if (string.IsNullOrWhiteSpace(instructions)) return;//不存在任何指令
-
+                
                 //菜单
                 if (instructions.StartWithCommand(BotConfig.MenuConfig?.Commands))
                 {
                     await new MenuHandler().sendMenuAsync(session, args);
+                    args.BlockRemainingHandlers = true;
+                    return;
+                }
+
+                //拉黑成员
+                if (instructions.StartWithCommand(BotConfig.ManageConfig?.DisableMemberCommand))
+                {
+                    if (await CheckSuperManagersAsync(session, args) == false) return;
+                    await new BanWordHandler().disableMemberAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.BanMember, message);
+                    args.BlockRemainingHandlers = true;
+                    return;
+                }
+
+                //解禁成员
+                if (instructions.StartWithCommand(BotConfig.ManageConfig?.EnableMemberCommand))
+                {
+                    if (await CheckSuperManagersAsync(session, args) == false) return;
+                    await new BanWordHandler().enableMemberAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.BanMember, message);
                     args.BlockRemainingHandlers = true;
                     return;
                 }
@@ -142,32 +162,31 @@ namespace Theresa3rd_Bot.Event
                 }
 
                 //禁止色图标签
-                if (instructions.StartWithCommand(BotConfig.SetuConfig?.DisableTagCommand))
+                if (instructions.StartWithCommand(BotConfig.ManageConfig?.DisableTagCommand))
                 {
                     if (await CheckSuperManagersAsync(session, args) == false) return;
                     if (await CheckSetuEnableAsync(session, args) == false) return;
-                    await new BanWordHandler().disableSetuAsync(session, args, message);
-                    new RequestRecordBusiness().addRecord(args, CommandType.BanWord, message);
+                    await new BanWordHandler().disableSetuTagAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.BanSetuTag, message);
                     args.BlockRemainingHandlers = true;
                     return;
                 }
 
                 //解禁色图标签
-                if (instructions.StartWithCommand(BotConfig.SetuConfig?.EnableTagCommand))
+                if (instructions.StartWithCommand(BotConfig.ManageConfig?.EnableTagCommand))
                 {
                     if (await CheckSuperManagersAsync(session, args) == false) return;
                     if (await CheckSetuEnableAsync(session, args) == false) return;
-                    await new BanWordHandler().enableSetuAsync(session, args, message);
-                    new RequestRecordBusiness().addRecord(args, CommandType.BanWord, message);
+                    await new BanWordHandler().enableSetuTagAsync(session, args, message);
+                    new RequestRecordBusiness().addRecord(args, CommandType.BanSetuTag, message);
                     args.BlockRemainingHandlers = true;
                     return;
                 }
 
-                //瑟图
+                //Lolicon
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.Lolicon?.Command))
                 {
                     if (await CheckSetuEnableAsync(session, args) == false) return;
-                    if (await CheckSetuTagEnableAsync(session, args, message) == false) return;
                     if (await CheckMemberSetuCoolingAsync(session, args)) return;
                     if (await CheckGroupSetuCoolingAsync(session, args)) return;
                     if (await CheckSetuUseUpAsync(session, args)) return;
@@ -179,11 +198,10 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
-                //setu
+                //Lolisuki
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.Lolisuki?.Command))
                 {
                     if (await CheckSetuEnableAsync(session, args) == false) return;
-                    if (await CheckSetuTagEnableAsync(session, args, message) == false) return;
                     if (await CheckMemberSetuCoolingAsync(session, args)) return;
                     if (await CheckGroupSetuCoolingAsync(session, args)) return;
                     if (await CheckSetuUseUpAsync(session, args)) return;
@@ -195,11 +213,10 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
-                //涩图
+                //Pixiv
                 if (instructions.StartWithCommand(BotConfig.SetuConfig?.Pixiv?.Command))
                 {
                     if (await CheckSetuEnableAsync(session, args) == false) return;
-                    if (await CheckSetuTagEnableAsync(session, args, message) == false) return;
                     if (await CheckPixivCookieAvailableAsync(session, args) == false) return;
                     if (await CheckMemberSetuCoolingAsync(session, args)) return;
                     if (await CheckGroupSetuCoolingAsync(session, args)) return;
@@ -212,7 +229,7 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
-                //原图
+                //Saucenao
                 if (instructions.StartWithCommand(BotConfig.SaucenaoConfig?.Command))
                 {
                     if (await CheckSaucenaoEnableAsync(session, args) == false) return;
@@ -226,10 +243,10 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
-                //测试指令
-                if (instructions.StartWithCommand("test"))
+                //version
+                if (instructions.StartWithCommand("version") || instructions.StartWithCommand("版本"))
                 {
-                    await session.SendGroupMessageAsync(args.Sender.Group.Id, new PlainMessage("hello word"));
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($"Theresa3rd-Bot：Version：{BotConfig.BotVersion}"));
                     return;
                 }
             }

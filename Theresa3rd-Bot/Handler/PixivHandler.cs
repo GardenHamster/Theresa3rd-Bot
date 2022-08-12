@@ -52,38 +52,45 @@ namespace Theresa3rd_Bot.Handler
 
                 bool isShowR18 = groupId.IsShowR18Setu();
                 PixivWorkInfoDto pixivWorkInfoDto = null;
-                string tagName = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
+                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
                 
-                if (StringHelper.isPureNumber(tagName))
+                if (StringHelper.isPureNumber(tagStr))
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
-                    pixivWorkInfoDto = await pixivBusiness.getPixivWorkInfoAsync(tagName);//根据作品id获取作品
+                    pixivWorkInfoDto = await pixivBusiness.getPixivWorkInfoAsync(tagStr);//根据作品id获取作品
                 }
-                else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomSubscribe)
+                else if (string.IsNullOrEmpty(tagStr) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomSubscribe)
                 {
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkInSubscribeAsync(groupId);//获取随机一个订阅中的画师的作品
                 }
-                else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomFollow)
+                else if (string.IsNullOrEmpty(tagStr) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomFollow)
                 {
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkInFollowAsync(groupId);//获取随机一个关注中的画师的作品
                 }
-                else if (string.IsNullOrEmpty(tagName) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomBookmark)
+                else if (string.IsNullOrEmpty(tagStr) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomBookmark)
                 {
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkInBookmarkAsync(groupId);//获取随机一个收藏中的作品
                 }
-                else if (string.IsNullOrEmpty(tagName))
+                else if (string.IsNullOrEmpty(tagStr))
                 {
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkInTagsAsync(isShowR18);//获取随机一个标签中的作品
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(tagName, isShowR18);//获取随机一个作品
+                    if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
+                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(tagStr, isShowR18);//获取随机一个作品
                 }
 
-                if (pixivWorkInfoDto == null || pixivWorkInfoDto.body.IsImproper())
+                if (pixivWorkInfoDto == null)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片或者收藏比过低，换个标签试试吧~");
+                    return;
+                }
+
+                if (pixivWorkInfoDto.body.IsImproper() || pixivWorkInfoDto.body.hasBanTag())
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签，不显示相关内容"));
                     return;
                 }
 
@@ -564,7 +571,7 @@ namespace Theresa3rd_Bot.Handler
                 PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
 
-                if (pixivWorkInfo.IsImproper())
+                if (pixivWorkInfo.IsImproper() || pixivWorkInfo.hasBanTag())
                 {
                     await session.SendGroupMessageAsync(groupId, new PlainMessage($" 该作品含有被屏蔽的标签，不显示相关内容"));
                     return;

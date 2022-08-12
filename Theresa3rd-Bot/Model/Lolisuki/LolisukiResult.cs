@@ -39,8 +39,16 @@ namespace Theresa3rd_Bot.Model.Lolisuki
         }
         public bool isR18()
         {
+            if (r18) return true;
             if (tags != null && tags.IsR18()) return true;
             if (extags != null && tags.IsR18()) return true;
+            return false;
+        }
+
+        public bool hasBanTag()
+        {
+            if (tags != null && tags.hasBanTags()) return true;
+            if (extags != null && tags.hasBanTags()) return true;
             return false;
         }
     }

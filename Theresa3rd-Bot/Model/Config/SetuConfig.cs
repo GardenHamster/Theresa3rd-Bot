@@ -8,13 +8,7 @@ namespace Theresa3rd_Bot.Model.Config
 
         public int MemberCD { get; set; }
 
-        public List<string> DisableTags { get; set; }
-
         public string DisableTagsMsg { get; set; }
-
-        public string DisableTagCommand { get; set; }
-
-        public string EnableTagCommand { get; set; }
 
         public string DisableMsg { get; set; }
 

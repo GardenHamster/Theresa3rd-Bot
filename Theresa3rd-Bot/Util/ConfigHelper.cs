@@ -43,17 +43,29 @@ namespace Theresa3rd_Bot.Util
         }
 
         
-        public static void loadBanWord()
+        public static void loadBanTag()
         {
             try
             {
-                BanWordBusiness banWordBusiness = new BanWordBusiness();
-                BotConfig.BanSetuMap = banWordBusiness.getBanSetuMap();
-                LogHelper.Info("加载违禁词完成");
+                BotConfig.BanSetuTagList = new BanWordBusiness().getBanSetuTagList();
+                LogHelper.Info("加载禁止标签完毕");
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "加载违禁词失败");
+                LogHelper.Error(ex, "加载禁止标签失败");
+            }
+        }
+
+        public static void loadBanMember()
+        {
+            try
+            {
+                BotConfig.BanMemberList = new BanWordBusiness().getBanMemberList();
+                LogHelper.Info("加载黑名单完毕");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "加载黑名单失败");
             }
         }
 

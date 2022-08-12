@@ -6,7 +6,8 @@
         SetCookie = 1,
         Subscribe = 2,
         Setu = 3,
-        BanWord = 4,
-        Saucenao = 5
+        BanSetuTag = 4,
+        Saucenao = 5,
+        BanMember = 6,
     }
 }

@@ -11,6 +11,8 @@ namespace Theresa3rd_Bot.Model.Config
 
         public PermissionsConfig Permissions { get; set; }
 
+        public ManageConfig Manage { get; set; }
+
         public MenuConfig Menu { get; set; }
 
         public RepeaterConfig Repeater { get; set; }

@@ -69,8 +69,10 @@ namespace Theresa3rd_Bot.Handler
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SubscribeConfig.PixivUser.RmCommand}】 退订P站画师");
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SubscribeConfig.PixivTag.AddCommand}】 订阅P站标签");
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SubscribeConfig.PixivTag.RmCommand}】 退订P站标签");
-            menuBuilder.AppendLine($"【{prefix}{BotConfig.SetuConfig.DisableTagCommand}】 禁止搜索一个pixiv标签");
-            menuBuilder.AppendLine($"【{prefix}{BotConfig.SetuConfig.EnableTagCommand}】 允许搜索一个pixiv标签");
+            menuBuilder.AppendLine($"【{prefix}{BotConfig.ManageConfig.DisableMemberCommand}】 拉黑一个成员，不处理该成员的指令");
+            menuBuilder.AppendLine($"【{prefix}{BotConfig.ManageConfig.EnableMemberCommand}】 解禁一个成员，允许该成员使用指令");
+            menuBuilder.AppendLine($"【{prefix}{BotConfig.ManageConfig.DisableTagCommand}】 禁止搜索一个pixiv标签");
+            menuBuilder.AppendLine($"【{prefix}{BotConfig.ManageConfig.EnableTagCommand}】 允许搜索一个pixiv标签");
             return menuBuilder.ToString();
         }
 

@@ -25,6 +25,8 @@ namespace Theresa3rd_Bot.Model.Config
 
         public int PixivTagShowMaximum { get; set; }
 
+        public string PixivImgSize { get; set; }
+
         public int PixivCookieExpire { get; set; }
 
         public string PixivCookieExpireMsg { get; set; }

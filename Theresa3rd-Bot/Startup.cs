@@ -2,13 +2,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using SqlSugar.IOC;
 using System;
 using System.IO;
 using System.Net;
-using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
@@ -52,13 +49,16 @@ namespace Theresa3rd_Bot
 
             ConfigHelper.loadWebsite();
             ConfigHelper.loadSubscribeTask();
-            ConfigHelper.loadBanWord();
+            ConfigHelper.loadBanTag();
+            ConfigHelper.loadBanMember();
 
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Theresa3rd_Bot", Version = "v1" });
-            });
+            LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£º{BotConfig.BotVersion}");
+
+            //services.AddControllers();
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Theresa3rd_Bot", Version = "v1" });
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,23 +67,23 @@ namespace Theresa3rd_Bot
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Theresa3rd_Bot v1"));
-            }
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //    app.UseSwagger();
+            //    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Theresa3rd_Bot v1"));
+            //}
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
-            app.UseRouting();
+            //app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //});
 
             MiraiTask = MiraiHelper.ConnectMirai();
             TimerManager.init();
@@ -108,6 +108,7 @@ namespace Theresa3rd_Bot
             BotConfigDto botConfig = deserializer.Deserialize<BotConfigDto>(reader);
             BotConfig.GeneralConfig = botConfig.General;
             BotConfig.PermissionsConfig = botConfig.Permissions;
+            BotConfig.ManageConfig = botConfig.Manage;
             BotConfig.MenuConfig = botConfig.Menu;
             BotConfig.RepeaterConfig = botConfig.Repeater;
             BotConfig.WelcomeConfig = botConfig.Welcome;

@@ -68,10 +68,22 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="tags"></param>
         /// <returns></returns>
+        public static bool IsR18(this string tagStr)
+        {
+            if (string.IsNullOrWhiteSpace(tagStr)) return false;
+            string tagUpperStr = tagStr.ToUpper();
+            return tagUpperStr.Contains("R-18") || tagUpperStr.Contains("R18") || tagUpperStr.Contains("R18G");
+        }
+
+        /// <summary>
+        /// 判断标签中是否包含R18标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
         public static bool IsR18(this List<string> tags)
         {
             if (tags == null || tags.Count == 0) return false;
-            return tags.Where(o => o.ToUpper().StartsWith("R-18") || o.ToUpper().StartsWith("R18") || o.ToUpper().StartsWith("R18G")).Any();
+            return tags.Where(o => o.IsR18()).Any();
         }
 
         /// <summary>
@@ -83,6 +95,21 @@ namespace Theresa3rd_Bot.Util
         {
             if (tags == null || tags.Count == 0) return false;
             if (tags.Where(o => o.ToUpper().Replace("-", "").Replace(" ", "").Contains("R18G")).Any()) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 判断标签中是否包含被禁止的标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static bool hasBanTags(this List<string> tags)
+        {
+            if (tags == null || tags.Count == 0) return false;
+            foreach (string tag in tags)
+            {
+                if (BotConfig.BanSetuTagList.Where(o => tag.Trim().ToUpper().Contains(o.KeyWord.Trim().ToUpper())).Any()) return true;
+            }
             return false;
         }
 

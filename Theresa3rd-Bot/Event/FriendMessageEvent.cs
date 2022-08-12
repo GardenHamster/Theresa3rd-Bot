@@ -38,7 +38,7 @@ namespace Theresa3rd_Bot.Event
                 bool isInstruct = string.IsNullOrWhiteSpace(instructions) == false && string.IsNullOrWhiteSpace(prefix) == false && instructions.StartsWith(prefix);
                 if (isInstruct) instructions = instructions.Remove(0, prefix.Length).Trim();
 
-                if (instructions.StartWithCommand(Command.PixivCookie))
+                if (instructions.StartWithCommand(BotConfig.ManageConfig?.PixivCookie))
                 {
                     if (await CheckSuperManagersAsync(session, args) == false) return;
                     await new WebsiteHandler().UpdatePixivCookieAsync(session, args, message);
@@ -47,7 +47,7 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
-                if (instructions.StartWithCommand(Command.SaucenaoCookie))
+                if (instructions.StartWithCommand(BotConfig.ManageConfig?.SaucenaoCookie))
                 {
                     if (await CheckSuperManagersAsync(session, args) == false) return;
                     await new WebsiteHandler().UpdateSaucenaoCookieAsync(session, args, message);
@@ -56,7 +56,7 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
-                //if (instructions.StartsWith(Command.BiliCookie))
+                //if (instructions.StartsWith(BotConfig.ManageConfig?.BiliCookie))
                 //{
                 //    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                 //    await new WebsiteHandler().UpdateBiliCookieAsync(session, args, message);

@@ -2,14 +2,12 @@
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
-using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
@@ -17,6 +15,18 @@ namespace Theresa3rd_Bot.Event
 {
     public abstract class BaseEvent
     {
+
+        /// <summary>
+        /// 检查是否黑名单成员
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public bool CheckBanMemberAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        {
+            return BotConfig.BanMemberList.Where(o => o.KeyWord == args.Sender.Id.ToString()).Any();
+        }
+
         /// <summary>
         /// 检查pixiv cookie是否已经过期
         /// </summary>
@@ -78,31 +88,6 @@ namespace Theresa3rd_Bot.Event
             if (BotConfig.SetuConfig?.Pixiv == null || BotConfig.SetuConfig.Pixiv.Enable == false)
             {
                 await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableMsg, "该功能已关闭");
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 检查涩图标签是否被禁止
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public async Task<bool> CheckSetuTagEnableAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
-        {
-            message = message.ToLower().Trim();
-            long groupId = args.Sender.Group.Id;
-            if (BotConfig.SetuConfig.DisableTags.Where(o => message == o.ToLower()).Any())
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
-                return false;
-            }
-
-            List<BanWordPO> banSetuList = BotConfig.BanSetuMap.ContainsKey(groupId) ? BotConfig.BanSetuMap[groupId] : new List<BanWordPO>();
-            if (banSetuList.Where(o => message.IndexOf(o.KeyWord.ToLower()) > -1).Any())
-            {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
                 return false;
             }
             return true;

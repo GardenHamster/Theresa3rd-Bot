@@ -11,6 +11,7 @@ using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Lolisuki;
+using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
@@ -40,8 +41,9 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LolisukiResult lolisukiResult = null;
-                int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
-                string levelStr = BotConfig.SetuConfig.Lolisuki.Level;
+                bool isShowR18 = groupId.IsShowR18Setu();
+                int r18Mode = isShowR18 ? 2 : 0;
+                string levelStr = getLevelStr(isShowR18);
                 string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolisuki.Command) ?? "";
                 if (string.IsNullOrEmpty(tagStr))
                 {
@@ -50,6 +52,7 @@ namespace Theresa3rd_Bot.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
+                    if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
                     string[] tagArr = toLoliconTagArr(tagStr);
                     lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr, tagArr);
                 }
@@ -61,7 +64,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LolisukiData lolisukiData = lolisukiResult.data.First();
-                if (lolisukiData.IsImproper())
+                if (lolisukiData.IsImproper() || lolisukiData.hasBanTag())
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
                     return;
@@ -152,6 +155,30 @@ namespace Theresa3rd_Bot.Handler
             finally
             {
                 CoolingCache.SetHandFinish(args.Sender.Group.Id, args.Sender.Id);//请求处理完成
+            }
+        }
+
+
+        private string getLevelStr(bool isShowR18)
+        {
+            try
+            {
+                string levelStr = BotConfig.SetuConfig.Lolisuki.Level;
+                if (string.IsNullOrWhiteSpace(levelStr)) return $"{(int)LolisukiLevel.Level0}-{(int)LolisukiLevel.Level3}";
+
+                string[] levelArr = levelStr.Split('-', StringSplitOptions.RemoveEmptyEntries);
+                string minLevelStr = levelArr[0].Trim();
+                string maxLevelStr = levelArr.Length > 1 ? levelArr[1].Trim() : levelArr[0].Trim();
+                int minLevel = int.Parse(minLevelStr);
+                int maxLevel = int.Parse(maxLevelStr);
+                if (minLevel < (int)LolisukiLevel.Level0) minLevel = (int)LolisukiLevel.Level0;
+                if (maxLevel > (int)LolisukiLevel.Level6) maxLevel = (int)LolisukiLevel.Level6;
+                if (maxLevel > (int)LolisukiLevel.Level4 && isShowR18 == false) maxLevel = (int)LolisukiLevel.Level4;
+                return minLevel == maxLevel ? $"{minLevel}" : $"{minLevel}-{maxLevel}";
+            }
+            catch (Exception)
+            {
+                return $"{(int)LolisukiLevel.Level0}-{(int)(isShowR18 ? LolisukiLevel.Level6 : LolisukiLevel.Level3)}";
             }
         }
 

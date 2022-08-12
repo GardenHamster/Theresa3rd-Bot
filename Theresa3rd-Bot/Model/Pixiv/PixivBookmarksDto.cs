@@ -37,6 +37,10 @@ namespace Theresa3rd_Bot.Model.Pixiv
             return xRestrict > 0 || (tags != null && tags.IsR18());
         }
 
+        public bool hasBanTag()
+        {
+            return tags != null && tags.hasBanTags();
+        }
     }
 
 

@@ -44,27 +44,32 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
         public int xRestrict { get; set; }
 
+        public List<string> getTags()
+        {
+            return tags?.tags == null ? new List<string>() : tags.tags.Select(o => o.tag).Where(o => string.IsNullOrWhiteSpace(o) == false).ToList();
+        }
+
         public bool IsImproper()
         {
-            //xRestrict=1为R18,xRestrict=2为R18G
-            return xRestrict > 1 || (tags?.tags == null ? false : tags.tags.Select(o => o.tag).ToList().IsImproper());
+            if (xRestrict > 1) return true;
+            if (getTags().IsImproper()) return true;
+            return false;
         }
 
         public bool isR18()
         {
             //xRestrict=1为R18,xRestrict=2为R18G
-            return xRestrict > 0 || (tags?.tags == null ? false : tags.tags.Select(o => o.tag).ToList().IsR18());
+            return xRestrict > 0 || getTags().IsR18();
         }
 
         public bool isGif()
         {
-            return tags?.tags == null ? false : tags.tags.Select(o => o.tag).ToList().IsGif();
+            return getTags().IsGif();
         }
 
         public bool hasBanTag()
         {
-            //return tags.tags.Where(o => Setting.Pixiv.BanTag.Contains(o.tag.ToUpper())).FirstOrDefault() != null;
-            return false;
+            return getTags().hasBanTags();
         }
 
     }

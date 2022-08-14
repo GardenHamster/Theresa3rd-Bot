@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
@@ -33,7 +32,9 @@ namespace Theresa3rd_Bot.Handler
                 long groupId = args.Sender.Group.Id;
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
+                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolicon.Command) ?? "";
 
+                if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.ProcessingMsg, null);
@@ -42,7 +43,7 @@ namespace Theresa3rd_Bot.Handler
 
                 LoliconResultV2 loliconResult = null;
                 int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
-                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolicon.Command) ?? "";
+                
                 if (string.IsNullOrEmpty(tagStr))
                 {
                     loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode);
@@ -50,7 +51,6 @@ namespace Theresa3rd_Bot.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
-                    if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
                     string[] tagArr = toLoliconTagArr(tagStr);
                     loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, tagArr);
                 }
@@ -64,7 +64,7 @@ namespace Theresa3rd_Bot.Handler
                 LoliconDataV2 loliconData = loliconResult.data.First();
                 if (loliconData.IsImproper() || loliconData.hasBanTag())
                 {
-                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
+                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 该作品含有被屏蔽的标签，不显示相关内容");
                     return;
                 }
 

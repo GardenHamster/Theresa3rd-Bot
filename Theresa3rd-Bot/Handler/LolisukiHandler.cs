@@ -33,7 +33,9 @@ namespace Theresa3rd_Bot.Handler
                 long groupId = args.Sender.Group.Id;
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
+                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolisuki.Command) ?? "";
 
+                if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.ProcessingMsg, null);
@@ -44,7 +46,7 @@ namespace Theresa3rd_Bot.Handler
                 bool isShowR18 = groupId.IsShowR18Setu();
                 int r18Mode = isShowR18 ? 2 : 0;
                 string levelStr = getLevelStr(isShowR18);
-                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolisuki.Command) ?? "";
+                
                 if (string.IsNullOrEmpty(tagStr))
                 {
                     lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr);
@@ -52,7 +54,6 @@ namespace Theresa3rd_Bot.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
-                    if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
                     string[] tagArr = toLoliconTagArr(tagStr);
                     lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr, tagArr);
                 }
@@ -66,7 +67,7 @@ namespace Theresa3rd_Bot.Handler
                 LolisukiData lolisukiData = lolisukiResult.data.First();
                 if (lolisukiData.IsImproper() || lolisukiData.hasBanTag())
                 {
-                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
+                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 该作品含有被屏蔽的标签，不显示相关内容");
                     return;
                 }
 

@@ -52,8 +52,6 @@ namespace Theresa3rd_Bot
             ConfigHelper.loadBanTag();
             ConfigHelper.loadBanMember();
 
-            LogHelper.Info($"Theresa3rd-Bot启动完毕，版本：{BotConfig.BotVersion}");
-
             //services.AddControllers();
             //services.AddSwaggerGen(c =>
             //{
@@ -87,6 +85,7 @@ namespace Theresa3rd_Bot
 
             MiraiTask = MiraiHelper.ConnectMirai();
             TimerManager.init();
+            LogHelper.Info($"Theresa3rd-Bot启动完毕，版本：{BotConfig.BotVersion}");
         }
 
         /// <summary>

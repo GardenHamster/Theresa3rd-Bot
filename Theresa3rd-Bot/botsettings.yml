@@ -10,7 +10,7 @@
     PixivProxy:                 'https://i.pixiv.re'                                #图片反向代理地址
     PixivFreeProxy:             true                                                #开启pixiv免代理模式，在没有vpn的情况下可以设置为true，在梯子速度较快的情况下推荐设置为false
     PixivTagShowMaximum:        3                                                   #最多显示N个pixiv标签，0表示无限制，建议设置该参数降低触发风控的概率
-    PixivImgSize:               'original'                                          #发送色图的尺寸：thumb，small，regular，original。默认为original，推荐使用small降低触发风控的概率
+    PixivImgSize:               'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb，推荐使用thumb降低触发风控的概率
     PixivCookieExpire:          5184000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每60天更新一次
     PixivCookieExpireMsg:       'emmmm,cookie过期了,请艾特管理员更新cookie'           #cookie过期时返回的消息
     PixivTemplate:              |                                                   #pixiv模版，值为空时将使用默认模版
@@ -116,17 +116,12 @@ Setu:                                                                           
     Lolisuki:                                                                       #Lolisuki图床https://lolisuki.cc，https://github.com/GardenHamster/LoliSuki
         Enable:                 true                                                #是否启用
         Command:                'setu'                                              #命令，用法：#瑟图合法萝莉
-        Level:                  '0-6'                                               #Level范围，数字越大表示越涩，最小为0最大为6，5-6为R18
+        Level:                  '0-6'                                               #Level范围，数字越大表示越涩，最小为0，最大为6，5-6为R18
         Template:               |                                                   #消息模版，值为空时将使用默认模版
                                 本条数据来源于Lolisuki，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
                                 标题：{IllustTitle}，PixivId：{PixivId}，画师：{UserName}，画师id：{UserId}，Level：{Level}，大小：{SizeMB}MB，耗时：{CostSecond}s
                                 标签：{Tags}
                                 {Urls}
-
-    Local:                                                                          #本地图床
-        Enable:                 true                                                #是否启用
-        Command:                '色图'                                              #命令，用法：#瑟图合法萝莉
-        Template:               '本条数据来源于Pixiv，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~'
 
 Saucenao:                                                                           #Saucenao以图搜图，查找原图功能
     Enable:                     true                                                #是否启用

@@ -2,11 +2,11 @@
 {
     public class ManageConfig
     {
-        public string PixivCookie { get; set; }
+        public string PixivCookieCommand { get; set; }
 
-        public string BiliCookie { get; set; }
+        public string BiliCookieCommand { get; set; }
 
-        public string SaucenaoCookie { get; set; }
+        public string SaucenaoCookieCommand { get; set; }
 
         public string DisableTagCommand { get; set; }
 

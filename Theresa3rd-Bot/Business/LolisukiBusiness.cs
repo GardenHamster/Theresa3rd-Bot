@@ -94,8 +94,8 @@ namespace Theresa3rd_Bot.Business
             if (imgSize == "original") return lolisukiData.urls?.original;
             if (imgSize == "regular") return lolisukiData.urls?.regular;
             if (imgSize == "small") return lolisukiData.urls?.small;
-            if (imgSize == "thumb") return lolisukiData.urls?.thumb;
-            return lolisukiData.urls?.original;
+            // if (imgSize == "thumb") return lolisukiData.urls?.thumb;
+            return lolisukiData.urls?.thumb;
         }
 
 

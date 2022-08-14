@@ -669,8 +669,8 @@ namespace Theresa3rd_Bot.Business
             if (imgSize == "original") return pixivWorkInfo.urls?.original;
             if (imgSize == "regular") return pixivWorkInfo.urls?.regular;
             if (imgSize == "small") return pixivWorkInfo.urls?.small;
-            if (imgSize == "thumb") return pixivWorkInfo.urls?.thumb;
-            return pixivWorkInfo.urls?.original;
+            // if (imgSize == "thumb") return pixivWorkInfo.urls?.thumb;
+            return pixivWorkInfo.urls?.thumb;
         }
 
         /// <summary>

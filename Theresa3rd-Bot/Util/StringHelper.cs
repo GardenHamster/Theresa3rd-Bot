@@ -57,7 +57,7 @@ namespace Theresa3rd_Bot.Util
         public static string splitKeyWord(this string message, string commandStr)
         {
             string[] messageSplit = message.Split(new string[] { commandStr }, StringSplitOptions.RemoveEmptyEntries);
-            if (messageSplit.Length < 2) return null;
+            if (messageSplit.Length < 2) return String.Empty;
             return messageSplit[1].Trim();
         }
 

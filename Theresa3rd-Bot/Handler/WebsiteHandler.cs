@@ -30,10 +30,10 @@ namespace Theresa3rd_Bot.Handler
         /// <returns></returns>
         public async Task UpdatePixivCookieAsync(IMiraiHttpSession session, IFriendMessageEventArgs args, string message)
         {
-            string cookie = message.splitKeyWord(BotConfig.ManageConfig?.PixivCookie);
+            string cookie = message.splitKeyWord(BotConfig.ManageConfig?.PixivCookieCommand);
             if (string.IsNullOrWhiteSpace(cookie))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用{BotConfig.GeneralConfig.Prefix}{BotConfig.ManageConfig.PixivCookie} + cookie形式发送"));
+                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用{BotConfig.GeneralConfig.Prefix}{BotConfig.ManageConfig.PixivCookieCommand} + cookie形式发送"));
                 return;
             }
 
@@ -82,10 +82,10 @@ namespace Theresa3rd_Bot.Handler
         /// <returns></returns>
         public async Task UpdateSaucenaoCookieAsync(IMiraiHttpSession session, IFriendMessageEventArgs args, string message)
         {
-            string cookie = message.splitKeyWord(BotConfig.ManageConfig?.SaucenaoCookie);
+            string cookie = message.splitKeyWord(BotConfig.ManageConfig?.SaucenaoCookieCommand);
             if (string.IsNullOrWhiteSpace(cookie))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用{BotConfig.GeneralConfig.Prefix}{BotConfig.ManageConfig.SaucenaoCookie} + cookie形式发送"));
+                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用{BotConfig.GeneralConfig.Prefix}{BotConfig.ManageConfig.SaucenaoCookieCommand} + cookie形式发送"));
                 return;
             }
 

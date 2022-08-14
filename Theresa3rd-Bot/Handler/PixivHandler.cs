@@ -44,16 +44,17 @@ namespace Theresa3rd_Bot.Handler
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
 
+                bool isShowR18 = groupId.IsShowR18Setu();
+                PixivWorkInfoDto pixivWorkInfoDto = null;
+                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
+                if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
+
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.ProcessingMsg, null);
                     await Task.Delay(1000);
                 }
 
-                bool isShowR18 = groupId.IsShowR18Setu();
-                PixivWorkInfoDto pixivWorkInfoDto = null;
-                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
-                
                 if (StringHelper.isPureNumber(tagStr))
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
@@ -78,7 +79,6 @@ namespace Theresa3rd_Bot.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
-                    if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(tagStr, isShowR18);//获取随机一个作品
                 }
 

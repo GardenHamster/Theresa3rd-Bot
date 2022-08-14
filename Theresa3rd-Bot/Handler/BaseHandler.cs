@@ -36,8 +36,10 @@ namespace Theresa3rd_Bot.Handler
         /// <returns></returns>
         public async Task<bool> CheckSetuTagEnableAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string tagName)
         {
-            tagName = tagName.ToLower().Trim();
             long groupId = args.Sender.Group.Id;
+            tagName = tagName.ToLower().Trim();
+
+            if (string.IsNullOrWhiteSpace(tagName)) return true;
             if (tagName.IsR18() && groupId.IsShowR18Setu() == false)
             {
                 await session.SendMessageWithAtAsync(args, new PlainMessage("本群未设置R18权限，禁止搜索R18相关标签"));

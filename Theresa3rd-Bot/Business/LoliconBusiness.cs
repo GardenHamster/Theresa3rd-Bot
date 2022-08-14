@@ -87,11 +87,39 @@ namespace Theresa3rd_Bot.Business
         private string getDownImgUrl(LoliconDataV2 loliconData)
         {
             string imgSize = BotConfig.GeneralConfig.PixivImgSize?.ToLower();
-            if (imgSize == "original") return loliconData.urls?.original;
-            if (imgSize == "regular") return loliconData.urls?.original.Replace("img-original", "img-master").Replace(".", "_master1200.");
-            if (imgSize == "small") return loliconData.urls?.original.Replace("img-original", "c/540x540_70/img-master").Replace(".", "_master1200.");
-            if (imgSize == "thumb") return loliconData.urls?.original.Replace("img-original", "c/250x250_80_a2/img-master").Replace(".", "_square1200.");
-            return loliconData.urls?.original;
+            string returnlUrl = loliconData.urls?.original;
+            if (imgSize == "original")
+            {
+                return returnlUrl;
+            }
+            else if (imgSize == "regular")
+            {
+                string replaceStr = $"{loliconData.pid}_p{loliconData.p}";
+                returnlUrl = returnlUrl.Replace("img-original", "img-master");
+                returnlUrl = returnlUrl.Replace(replaceStr, $"{replaceStr}_master1200");
+                return returnlUrl;
+            }
+            else if (imgSize == "small")
+            {
+                string replaceStr = $"{loliconData.pid}_p{loliconData.p}";
+                returnlUrl = returnlUrl.Replace("img-original", "c/540x540_70/img-master");
+                returnlUrl = returnlUrl.Replace(replaceStr, $"{replaceStr}_master1200");
+                return returnlUrl;
+            }
+            else if (imgSize == "thumb")
+            {
+                string replaceStr = $"{loliconData.pid}_p{loliconData.p}";
+                returnlUrl = returnlUrl.Replace("img-original", "c/250x250_80_a2/img-master");
+                returnlUrl = returnlUrl.Replace(replaceStr, $"{replaceStr}_square1200");
+                return returnlUrl;
+            }
+            else
+            {
+                string replaceStr = $"{loliconData.pid}_p{loliconData.p}";
+                returnlUrl = returnlUrl.Replace("img-original", "c/250x250_80_a2/img-master");
+                returnlUrl = returnlUrl.Replace(replaceStr, $"{replaceStr}_square1200");
+                return returnlUrl;
+            }
         }
 
 

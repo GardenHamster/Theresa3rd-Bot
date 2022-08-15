@@ -467,7 +467,7 @@ namespace Theresa3rd_Bot.Business
             int subscribeId = subscribeTask.SubscribeId;
             string searchWord = toPixivSearchWord(tagNames);
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
-            List<PixivIllust> illutsList = await getTagIllustListAsync(searchWord, maxScan);
+            List<PixivIllust> illutsList = await getTagIllustListAsync(searchWord, maxScan, shelfLife);
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             foreach (PixivIllust item in illutsList)
             {
@@ -560,7 +560,7 @@ namespace Theresa3rd_Bot.Business
         /// <param name="searchWord"></param>
         /// <param name="maxScan"></param>
         /// <returns></returns>
-        private async Task<List<PixivIllust>> getTagIllustListAsync(string searchWord, int maxScan)
+        private async Task<List<PixivIllust>> getTagIllustListAsync(string searchWord, int maxScan, int shelfLife)
         {
             int maxPage = MathHelper.getMaxPage(maxScan, pixivPageSize);
             List<PixivIllust> pixivIllustList = new List<PixivIllust>();
@@ -569,9 +569,12 @@ namespace Theresa3rd_Bot.Business
             {
                 if (pixivIllustList.Count >= maxScan) break;
                 PixivSearchDto pixivSearch = await PixivHelper.GetPixivSearchAsync(searchWord, i, false, true);
-                if (pixivSearch.error || pixivSearch?.body?.getIllust()?.data == null) break;
-                if (pixivSearch.body.getIllust().data.Count < pixivPageSize) break;
-                pixivIllustList.AddRange(pixivSearch.body.getIllust().data);
+                if (pixivSearch.error) break;
+                List<PixivIllust> illusts = pixivSearch?.body?.getIllust()?.data;
+                if (illusts == null || illusts.Count == 0) break;
+                pixivIllustList.AddRange(illusts);
+                if (illusts.Count < pixivPageSize) break;
+                if (shelfLife > 0 && illusts.Last().createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
             }
             return pixivIllustList.OrderByDescending(o => o.createDate).Take(maxScan).ToList();
         }

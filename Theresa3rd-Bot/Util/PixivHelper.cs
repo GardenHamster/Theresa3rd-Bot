@@ -240,6 +240,21 @@ namespace Theresa3rd_Bot.Util
             return httpUrl.Replace("https://", "http://");
         }
 
+        /// <summary>
+        /// 将thumb格式的图片路径改为等比缩放
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static string toThumbMasterUrl(this string url)
+        {
+            url = url.Replace("/custom-thumb", "/img-master");
+            url = url.Replace("_custom1200", "_master1200");
+            url = url.Replace("_square1200", "_master1200");
+            url = url.Replace("128x128", "200x200");
+            url = url.Replace(".png", ".jpg");
+            return url;
+        }
+
 
     }
 }

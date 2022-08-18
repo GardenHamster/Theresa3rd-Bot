@@ -6,21 +6,22 @@
  - 某舰团长利用摸鱼时间写出来的自用的bot，准备移植到 [mirai](https://github.com/mamoe/mirai)。基于 .net core 6.0 和 mirai-api-http。
  - 部分功能还在摸鱼开发中，[windows下部署请点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md)，[食用教程点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md)
  - 开始白嫖前，请在右上角点一下:star:Star
- - ~~不要问bot的名字是什么，因为名字是xjb起的~~
+ - 因为还没在Linux上做过测试所以暂时不写Linux上部署的教程
+ - ~~不要问bot的名字是什么，因为还没想到好的名字,所以暂时用舰团的名字命名~~
 
 ## 声明
  - 本项目为个人自娱自乐写出来的项目，并没有任何收益，并不负责由于使用本项目所产生的任何问题，不得将项目用于任何商业用途
  - 有想法或问题请发issues
 
-## 功能
+## 功能和进度
 ### 基本
 - [x] 简易版复读机
 - [x] 自定义入群欢迎
 - [x] 自定义定时提醒功能
 
 ### 色图相关
-- [x] 接入[Lolicon](https://api.lolicon.app/#/setu)
-- [ ] 接入[Lolisuki](https://github.com/GardenHamster/LoliSuki)
+- [x] 接入 [Lolicon Api](https://api.lolicon.app/#/setu)
+- [ ] 接入 [Lolisuki Api](https://github.com/GardenHamster/LoliSuki)
 - [x] pixiv免代理 
 - [x] pixiv标签搜索功能(根据标签获取随机的收藏度较高的色图，可多标签搜索)
 - [x] pixiv随机色图功能(随机标签/随机关注画师的作品/随机收藏中的作品/随机订阅中的作品)
@@ -39,6 +40,9 @@
 
 ### 抽卡
 - [x] ~~原神模拟抽卡，在[GenshinGacha](https://github.com/GardenHamster/GenshinGacha)中实现了~~
+
+### UI
+- [ ] 计划用vue写一个可在外网访问的bot管理页面，用于查询和管理订阅列表和黑名单数据等
 
 ### 其他摆烂中的功能
 - [ ] 小游戏 - 狼人杀

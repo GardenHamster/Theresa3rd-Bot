@@ -638,12 +638,12 @@ namespace Theresa3rd_Bot.Business
             try
             {
                 if (pixivWorkInfo.isGif()) return await downAndComposeGifAsync(pixivWorkInfo);
-                string imgUrl = getDownImgUrl(pixivWorkInfo);
+                string imgUrl = getDownImgUrl(pixivWorkInfo.urls.original);
                 string fullFileName = $"{pixivWorkInfo.illustId}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
                 if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
                 {
-                    imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
+                    imgUrl = imgUrl.ToProxyUrl();
                     return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath);
                 }
                 else
@@ -659,20 +659,6 @@ namespace Theresa3rd_Bot.Business
                 LogHelper.Error(ex, "PixivBusiness.downImg下载图片失败");
                 return null;
             }
-        }
-
-        /// <summary>
-        /// 根据配置文件设置的图片大小获取图片下载地址
-        /// </summary>
-        /// <param name="pixivWorkInfo"></param>
-        /// <returns></returns>
-        private string getDownImgUrl(PixivWorkInfo pixivWorkInfo)
-        {
-            string imgSize = BotConfig.GeneralConfig.PixivImgSize?.ToLower();
-            if (imgSize == "original") return pixivWorkInfo.urls?.original;
-            if (imgSize == "regular") return pixivWorkInfo.urls?.regular;
-            if (imgSize == "small") return pixivWorkInfo.urls?.small;
-            return pixivWorkInfo.urls?.thumb?.toThumbMasterUrl();
         }
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{SizeMB}", sizeMB.ToString());
             template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(loliconData.tags, BotConfig.GeneralConfig.PixivTagShowMaximum));
-            template = template.Replace("{Urls}", getProxyUrl(loliconData.urls.original));
+            template = template.Replace("{Urls}", loliconData.urls.original.ToProxyUrl());
             return template;
         }
 
@@ -38,7 +38,7 @@ namespace Theresa3rd_Bot.Business
             double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
             workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}，大小：{sizeMB}MB，耗时：{costSecond}s");
             workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(loliconData.tags, BotConfig.GeneralConfig.PixivTagShowMaximum)}");
-            workInfoStr.Append(getProxyUrl(loliconData.urls.original));
+            workInfoStr.Append(loliconData.urls.original.ToProxyUrl());
             return workInfoStr.ToString();
         }
 
@@ -57,15 +57,15 @@ namespace Theresa3rd_Bot.Business
             {
                 string fullFileName = $"{loliconData.pid}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                string imgUrl = getDownImgUrl(loliconData);
+                string imgUrl = getDownImgUrl(loliconData.urls.original);
                 if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
                 {
-                    imgUrl = getProxyUrl(imgUrl);
+                    imgUrl = imgUrl.ToProxyUrl();
                     return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath);
                 }
                 else
                 {
-                    imgUrl = getOriginalUrl(imgUrl);
+                    imgUrl = imgUrl.ToPximgUrl();
                     Dictionary<string, string> headerDic = new Dictionary<string, string>();
                     headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString()));
                     headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
@@ -76,41 +76,6 @@ namespace Theresa3rd_Bot.Business
             {
                 LogHelper.Error(ex, "LoliconBusiness.downImg下载图片失败");
                 return null;
-            }
-        }
-
-        /// <summary>
-        /// 根据配置文件设置的图片大小获取图片下载地址
-        /// </summary>
-        /// <param name="pixivWorkInfo"></param>
-        /// <returns></returns>
-        private string getDownImgUrl(LoliconDataV2 loliconData)
-        {
-            string imgSize = BotConfig.GeneralConfig.PixivImgSize?.ToLower();
-            string indexStr = $"{loliconData.pid}_p{loliconData.p}";
-            string returnlUrl = loliconData.urls?.original;
-            if (imgSize == "original")
-            {
-                return returnlUrl;
-            }
-            else if (imgSize == "regular")
-            {
-                returnlUrl = returnlUrl.Replace("img-original", "img-master");
-                returnlUrl = returnlUrl.Replace(indexStr, $"{indexStr}_master1200");
-                return returnlUrl;
-            }
-            else if (imgSize == "small")
-            {
-                returnlUrl = returnlUrl.Replace("img-original", "c/540x540_70/img-master");
-                returnlUrl = returnlUrl.Replace(indexStr, $"{indexStr}_master1200");
-                return returnlUrl;
-            }
-            else
-            {
-                returnlUrl = returnlUrl.Replace(".png", ".jpg");
-                returnlUrl = returnlUrl.Replace("img-original", "c/200x200/img-master");
-                returnlUrl = returnlUrl.Replace(indexStr, $"{indexStr}_master1200");
-                return returnlUrl;
             }
         }
 

@@ -18,15 +18,22 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
 {
-    public class SaucenaoBusiness
+    public class Ascii2dBusiness
     {
-        public async Task<SaucenaoResult> getSaucenaoResultAsync(string imgHttpUrl)
+        public async Task<SaucenaoResult> getAscii2dResultAsync(string imgHttpUrl)
         {
             DateTime startTime = DateTime.Now;
-            string saucenaoHtml = await SearchResultAsync(imgHttpUrl);
-
+            string colorUrl = await GetColorUrlAsync(imgHttpUrl);
+            string bovwUrl = colorUrl.Replace("/color/", "/bovw/");
+            string ascii2dHtml = await SearchResultAsync(imgHttpUrl);
             HtmlParser htmlParser = new HtmlParser();
-            IHtmlDocument document = await htmlParser.ParseDocumentAsync(saucenaoHtml);
+            IHtmlDocument document = await htmlParser.ParseDocumentAsync(ascii2dHtml);
+
+
+
+
+
+
             IEnumerable<IElement> domList = document.All.Where(m => m.ClassList.Contains("result"));
 
             List<SaucenaoItem> itemList = new List<SaucenaoItem>();
@@ -133,86 +140,23 @@ namespace Theresa3rd_Bot.Business
             return null;
         }
 
-        public async Task<SaucenaoItem> getBestMatchAsync(SaucenaoResult saucenaoResult)
-        {
-            if (saucenaoResult.Items.Count == 0) return null;
-            List<SaucenaoItem> sortList = sortSaucenaoItem(saucenaoResult.Items);
-            for (int i = 0; i < sortList.Count; i++)
-            {
-                SaucenaoItem saucenaoItem = sortList[i];
-                if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
-                {
-                    PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
-                    if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
-                    saucenaoItem.PixivWorkInfo = pixivWorkInfo;
-                    return saucenaoItem;
-                }
-                if (saucenaoItem.SourceType == SaucenaoSourceType.Twitter)
-                {
-                    //ToDo
-                    return saucenaoItem;
-                }
-                if (saucenaoItem.SourceType == SaucenaoSourceType.FanBox)
-                {
-                    //ToDo
-                    return saucenaoItem;
-                }
-                return saucenaoItem;
-            }
-            return null;
-        }
-
-
-        public string getDefaultRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, long todayLeft)
-        {
-            StringBuilder warnBuilder = new StringBuilder();
-            warnBuilder.Append($" 共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType)}");
-            if (BotConfig.SaucenaoConfig.MaxDaily > 0)
-            {
-                if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                warnBuilder.Append($"今天剩余使用次数{todayLeft}次");
-            }
-            if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
-            {
-                if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                warnBuilder.Append($"本消息将在{BotConfig.SaucenaoConfig.RevokeInterval}秒后撤回");
-            }
-            if (BotConfig.SaucenaoConfig.MemberCD > 0)
-            {
-                if (warnBuilder.Length > 0) warnBuilder.Append("，");
-                warnBuilder.Append($"CD{BotConfig.SetuConfig.MemberCD}秒");
-            }
-            if (warnBuilder.Length > 0)
-            {
-                warnBuilder.Append("\r\n");
-            }
-            return warnBuilder.ToString();
-        }
-
-        public string getSaucenaoRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, string template, long todayLeft)
-        {
-            template = template.Replace("{MatchCount}", saucenaoResult.MatchCount.ToString());
-            template = template.Replace("{Similarity}", saucenaoItem.Similarity.ToString());
-            template = template.Replace("{SourceType}", Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType));
-            template = template.Replace("{TodayLeft}", todayLeft.ToString());
-            template = template.Replace("{RevokeInterval}", BotConfig.SaucenaoConfig.RevokeInterval.ToString());
-            template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
-            return template;
-        }
-
         /// <summary>
-        /// 对搜索结果进行优先级排序
+        /// 请求ascii2d,获取返回结果
         /// </summary>
-        /// <param name="itemList"></param>
+        /// <param name="imgHttpUrl"></param>
         /// <returns></returns>
-        private List<SaucenaoItem> sortSaucenaoItem(List<SaucenaoItem> itemList)
+        /// <exception cref="BaseException"></exception>
+        private async static Task<string> GetColorUrlAsync(string imgHttpUrl)
         {
-            if (itemList == null) return new List<SaucenaoItem>();
-            List<SaucenaoItem> sortList = new List<SaucenaoItem>();
-            sortList.AddRange(itemList.Where(o => o.SourceType == SaucenaoSourceType.Pixiv && o.Similarity >= 80).ToList());
-            sortList.AddRange(itemList.Where(o => o.Similarity >= 70).OrderBy(o => o.SourceType).ToList());
-            sortList.AddRange(itemList.OrderByDescending(o => o.Similarity).ThenBy(o => o.SourceType));
-            return sortList.Distinct().ToList();
+            Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "uri", imgHttpUrl } };
+            Dictionary<string, string> headerDic = new Dictionary<string, string>();
+            HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.Ascii2dUrl, paramDic, headerDic);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                string contentString = await response.GetContentStringAsync();
+                throw new BaseException($"ascii2d返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(500)}");
+            }
+            return response.RequestMessage.RequestUri.AbsoluteUri;
         }
 
         /// <summary>
@@ -224,27 +168,17 @@ namespace Theresa3rd_Bot.Business
         private async static Task<string> SearchResultAsync(string imgHttpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "url", imgHttpUrl } };
-            Dictionary<string, string> headerDic = getSaucenaoHeader();
+            Dictionary<string, string> headerDic = new Dictionary<string, string>();
             HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.SaucenaoUrl, paramDic, headerDic);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 string contentString = await response.GetContentStringAsync();
-                throw new BaseException($"saucenao返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(500)}");
+                throw new BaseException($"ascii2d返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(500)}");
             }
             return await response.Content.ReadAsStringAsync();
         }
 
-        /// <summary>
-        /// 获取Header
-        /// </summary>
-        /// <returns></returns>
-        private static Dictionary<string, string> getSaucenaoHeader()
-        {
-            Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            string cookie = BotConfig.WebsiteConfig.Saucenao.Cookie;
-            if (string.IsNullOrWhiteSpace(cookie) == false) headerDic.Add("Cookie", cookie);
-            return headerDic;
-        }
+
 
     }
 }

@@ -61,7 +61,7 @@ namespace Theresa3rd_Bot.Handler
                     StepDetail groupStep = new StepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                     stepInfo.AddStep(uidStep);
                     stepInfo.AddStep(groupStep);
-                    if (await stepInfo.StartStep(session, args) == false) return;
+                    if (await stepInfo.HandleStep(session, args) == false) return;
                     userId = uidStep.Answer;
                     groupType = (SubscribeGroupType)Convert.ToInt32(groupStep.Answer);
                 }
@@ -119,7 +119,7 @@ namespace Theresa3rd_Bot.Handler
                     if (stepInfo == null) return;
                     StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要退订用户的id", CheckUserIdAsync);
                     stepInfo.AddStep(uidStep);
-                    if (await stepInfo.StartStep(session, args) == false) return;
+                    if (await stepInfo.HandleStep(session, args) == false) return;
                     userId = uidStep.Answer;
                 }
                 else

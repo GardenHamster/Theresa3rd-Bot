@@ -234,7 +234,7 @@ namespace Theresa3rd_Bot.Handler
                     StepDetail groupStep = new StepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                     stepInfo.AddStep(uidStep);
                     stepInfo.AddStep(groupStep);
-                    if (await stepInfo.StartStep(session, args) == false) return;
+                    if (await stepInfo.HandleStep(session, args) == false) return;
                     pixivUserIds = uidStep.Answer;
                     groupType = (SubscribeGroupType)Convert.ToInt32(groupStep.Answer);
                 }
@@ -318,7 +318,7 @@ namespace Theresa3rd_Bot.Handler
                 StepDetail groupStep = new StepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                 stepInfo.AddStep(modeStep);
                 stepInfo.AddStep(groupStep);
-                if (await stepInfo.StartStep(session, args) == false) return;
+                if (await stepInfo.HandleStep(session, args) == false) return;
 
                 PixivSyncModeType syncMode = (PixivSyncModeType)Convert.ToInt32(modeStep.Answer);
                 SubscribeGroupType syncGroup = (SubscribeGroupType)Convert.ToInt32(groupStep.Answer);
@@ -399,7 +399,7 @@ namespace Theresa3rd_Bot.Handler
                     if (stepInfo == null) return;
                     StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要退订用户的id，多个id之间可以用逗号或者换行隔开", CheckPixivUserIdsAsync);
                     stepInfo.AddStep(uidStep);
-                    if (await stepInfo.StartStep(session, args) == false) return;
+                    if (await stepInfo.HandleStep(session, args) == false) return;
                     pixivUserIds = uidStep.Answer;
                 }
                 else
@@ -463,7 +463,7 @@ namespace Theresa3rd_Bot.Handler
                     StepDetail groupStep = new StepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                     stepInfo.AddStep(tagStep);
                     stepInfo.AddStep(groupStep);
-                    if (await stepInfo.StartStep(session, args) == false) return;
+                    if (await stepInfo.HandleStep(session, args) == false) return;
                     pixivTags = tagStep.Answer;
                     groupType = (SubscribeGroupType)Convert.ToInt32(groupStep.Answer);
                 }
@@ -520,7 +520,7 @@ namespace Theresa3rd_Bot.Handler
                     if (stepInfo == null) return;
                     StepDetail tagStep = new StepDetail(60, " 请在60秒内发送要退订的标签名", CheckPixivTagAsync);
                     stepInfo.AddStep(tagStep);
-                    if (await stepInfo.StartStep(session, args) == false) return;
+                    if (await stepInfo.HandleStep(session, args) == false) return;
                     pixivTag = tagStep.Answer;
                 }
                 else

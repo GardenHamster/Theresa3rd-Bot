@@ -17,13 +17,16 @@ namespace Theresa3rd_Bot.Model.Cache
 
         public bool IsActive { get; set; }
 
+        public bool IsRemindTimeout { get; set; }
+
         public List<StepDetail> StepDetails { get; set; }
 
-        public StepInfo(long groupId, long memberId)
+        public StepInfo(long groupId, long memberId, bool isRemindTimeout = true)
         {
             this.IsActive = true;
             this.GroupId = groupId;
             this.MemberId = memberId;
+            this.IsRemindTimeout = isRemindTimeout;
             this.StepDetails = new List<StepDetail>();
         }
 
@@ -32,7 +35,7 @@ namespace Theresa3rd_Bot.Model.Cache
             StepDetails.Add(stepDetail);
         }
 
-        public Task<bool> StartStep(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public Task<bool> HandleStep(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             return Task.Run(async () =>
             {
@@ -59,7 +62,7 @@ namespace Theresa3rd_Bot.Model.Cache
                             int secondDiff = DateTimeHelper.GetSecondDiff(stepDetail.StartTime.Value, DateTime.Now);
                             if (secondDiff < 0 || secondDiff >= stepDetail.WaitSecond)
                             {
-                                await session.SendMessageWithAtAsync(args, new PlainMessage(" 操作超时了，请重新发送指令开始操作"));
+                                if(IsRemindTimeout) await session.SendMessageWithAtAsync(args, new PlainMessage(" 操作超时了，请重新发送指令开始操作"));
                                 return false;
                             }
                             await Task.Delay(500);

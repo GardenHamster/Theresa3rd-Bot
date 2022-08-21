@@ -34,5 +34,7 @@ namespace Theresa3rd_Bot.Model.Config
 
         public YNAType ContinueAscii2d { get; set; }
 
+        public int Ascii2dReadCount { get; set; }
+
     }
 }

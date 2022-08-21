@@ -66,61 +66,61 @@ namespace Theresa3rd_Bot.Business
 
             href = href.Trim();
             string hrefLower = href.ToLower();
-            Dictionary<string, string> paramDic = StringHelper.splitHttpUrl(href);
+            Dictionary<string, string> paramDic = StringHelper.splitHttpParams(href);
 
             //https://www.pixiv.net/member_illust.php?mode=medium&illust_id=73572009
             if (hrefLower.Contains("www.pixiv.net/member_illust"))
             {
                 string illustId = paramDic["illust_id"].Trim();
-                return new SaucenaoItem(SaucenaoSourceType.Pixiv, href, illustId, similarity);
+                return new SaucenaoItem(SetuSourceType.Pixiv, href, illustId, similarity);
             }
 
             //https://szcb911.fanbox.cc/posts/4045588
             if (hrefLower.Contains("fanbox.cc"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.FanBox, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.FanBox, href, "", similarity);
             }
 
             //https://www.pixiv.net/fanbox/creator/705370
             if (hrefLower.Contains("www.pixiv.net/fanbox"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.FanBox, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.FanBox, href, "", similarity);
             }
 
             //https://yande.re/post/show/523988
             if (hrefLower.Contains("yande.re"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.Yande, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Yande, href, "", similarity);
             }
 
             //https://twitter.com/i/web/status/1007548268048416769
             if (hrefLower.Contains("twitter.com"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.Twitter, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Twitter, href, "", similarity);
             }
 
             //https://danbooru.donmai.us/post/show/3438512
             if (hrefLower.Contains("danbooru.donmai.us"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.Danbooru, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Danbooru, href, "", similarity);
             }
 
             //https://gelbooru.com/index.php?page=post&s=view&id=4639560
             if (hrefLower.Contains("gelbooru.com"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.Gelbooru, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Gelbooru, href, "", similarity);
             }
 
             //https://konachan.com/post/show/279886
             if (hrefLower.Contains("konachan.com"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.Konachan, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Konachan, href, "", similarity);
             }
 
             //https://anime-pictures.net/pictures/view_post/602645
             if (hrefLower.Contains("anime-pictures.net"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.AnimePictures, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.AnimePictures, href, "", similarity);
             }
 
             //https://anidb.net/anime/4427
@@ -140,19 +140,19 @@ namespace Theresa3rd_Bot.Business
             for (int i = 0; i < sortList.Count; i++)
             {
                 SaucenaoItem saucenaoItem = sortList[i];
-                if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
+                if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
                     PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
                     if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
                     saucenaoItem.PixivWorkInfo = pixivWorkInfo;
                     return saucenaoItem;
                 }
-                if (saucenaoItem.SourceType == SaucenaoSourceType.Twitter)
+                if (saucenaoItem.SourceType == SetuSourceType.Twitter)
                 {
                     //ToDo
                     return saucenaoItem;
                 }
-                if (saucenaoItem.SourceType == SaucenaoSourceType.FanBox)
+                if (saucenaoItem.SourceType == SetuSourceType.FanBox)
                 {
                     //ToDo
                     return saucenaoItem;
@@ -166,7 +166,7 @@ namespace Theresa3rd_Bot.Business
         public string getDefaultRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, long todayLeft)
         {
             StringBuilder warnBuilder = new StringBuilder();
-            warnBuilder.Append($" 共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType)}");
+            warnBuilder.Append($" 共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}");
             if (BotConfig.SaucenaoConfig.MaxDaily > 0)
             {
                 if (warnBuilder.Length > 0) warnBuilder.Append("，");
@@ -193,7 +193,7 @@ namespace Theresa3rd_Bot.Business
         {
             template = template.Replace("{MatchCount}", saucenaoResult.MatchCount.ToString());
             template = template.Replace("{Similarity}", saucenaoItem.Similarity.ToString());
-            template = template.Replace("{SourceType}", Enum.GetName(typeof(SaucenaoSourceType), saucenaoItem.SourceType));
+            template = template.Replace("{SourceType}", Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType));
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SaucenaoConfig.RevokeInterval.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
@@ -209,7 +209,7 @@ namespace Theresa3rd_Bot.Business
         {
             if (itemList == null) return new List<SaucenaoItem>();
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();
-            sortList.AddRange(itemList.Where(o => o.SourceType == SaucenaoSourceType.Pixiv && o.Similarity >= 80).ToList());
+            sortList.AddRange(itemList.Where(o => o.SourceType == SetuSourceType.Pixiv && o.Similarity >= 80).ToList());
             sortList.AddRange(itemList.Where(o => o.Similarity >= 70).OrderBy(o => o.SourceType).ToList());
             sortList.AddRange(itemList.OrderByDescending(o => o.Similarity).ThenBy(o => o.SourceType));
             return sortList.Distinct().ToList();

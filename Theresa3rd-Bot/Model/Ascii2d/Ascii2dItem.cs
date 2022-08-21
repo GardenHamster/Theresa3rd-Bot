@@ -3,7 +3,7 @@ using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Model.Saucenao
 {
-    public class SaucenaoItem
+    public class Ascii2dItem
     {
         public SetuSourceType SourceType { get; set; }
 
@@ -11,16 +11,13 @@ namespace Theresa3rd_Bot.Model.Saucenao
 
         public string SourceId { get; set; }
 
-        public decimal Similarity { get; set; }
-
         public PixivWorkInfoDto PixivWorkInfo { get; set; }
 
-        public SaucenaoItem(SetuSourceType sourceType, string sourceUrl, string sourceId, decimal similarity)
+        public Ascii2dItem(SetuSourceType sourceType, string sourceUrl, string sourceId)
         {
             this.SourceType = sourceType;
             this.SourceUrl = sourceUrl;
             this.SourceId = sourceId;
-            this.Similarity = similarity;
         }
 
 

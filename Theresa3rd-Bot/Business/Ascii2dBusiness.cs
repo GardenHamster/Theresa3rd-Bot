@@ -20,124 +20,84 @@ namespace Theresa3rd_Bot.Business
 {
     public class Ascii2dBusiness
     {
-        public async Task<SaucenaoResult> getAscii2dResultAsync(string imgHttpUrl)
+        public async Task<Ascii2dResult> getAscii2dResultAsync(string imgHttpUrl)
         {
             DateTime startTime = DateTime.Now;
             string colorUrl = await GetColorUrlAsync(imgHttpUrl);
             string bovwUrl = colorUrl.Replace("/color/", "/bovw/");
-            string ascii2dHtml = await SearchResultAsync(imgHttpUrl);
+            string ascii2dHtml = await HttpHelper.GetHtmlAsync(bovwUrl);
             HtmlParser htmlParser = new HtmlParser();
             IHtmlDocument document = await htmlParser.ParseDocumentAsync(ascii2dHtml);
+            IEnumerable<IElement> domList = document.All.Where(m => m.ClassList.Contains("detail-box"));
 
-
-
-
-
-
-            IEnumerable<IElement> domList = document.All.Where(m => m.ClassList.Contains("result"));
-
-            List<SaucenaoItem> itemList = new List<SaucenaoItem>();
-            if (domList == null || domList.Count() == 0) return new SaucenaoResult(itemList, startTime, 0);
+            List<Ascii2dItem> itemList = new List<Ascii2dItem>();
+            if (domList == null || domList.Count() == 0) return new Ascii2dResult(itemList, startTime, 0);
             foreach (IElement resultElement in domList)
             {
-                IHtmlCollection<IElement> contentList = resultElement.GetElementsByClassName("resulttablecontent");
-                if (contentList == null || contentList.Length == 0) continue;
-
-                IHtmlCollection<IElement> linkifyList = contentList.First().GetElementsByTagName("a");
-                if (linkifyList == null || linkifyList.Length == 0) continue;
-
-                decimal similarity = 0;
-                IHtmlCollection<IElement> similarityList = resultElement.GetElementsByClassName("resultsimilarityinfo");
-                string similarityStr = similarityList != null && similarityList.Length > 0 ? similarityList.First()?.InnerHtml : "00.00";
-                if (string.IsNullOrWhiteSpace(similarityStr)) similarityStr = "00.00";
-                similarityStr = similarityStr.Replace("%", "");
-                decimal.TryParse(similarityStr, out similarity);
-                if (similarity > 0 && similarity < BotConfig.SaucenaoConfig.MinSimilarity) continue;
-
-                foreach (IElement linkifyElement in linkifyList)
+                IHtmlCollection<IElement> linkList = resultElement.GetElementsByTagName("a");
+                if (linkList == null || linkList.Length == 0) continue;
+                foreach (IElement linkElement in linkList)
                 {
-                    SaucenaoItem saucenaoItem = getSaucenaoItem(linkifyElement, similarity);
+                    Ascii2dItem saucenaoItem = getAscii2dItem(linkElement);
                     if (saucenaoItem == null) continue;
                     if (itemList.Where(o => o.SourceUrl == saucenaoItem.SourceUrl).Any()) continue;
                     itemList.Add(saucenaoItem);
                 }
             }
-            return new SaucenaoResult(itemList, startTime, domList.Count());
+            return new Ascii2dResult(itemList, startTime, domList.Count());
         }
 
 
-        public SaucenaoItem getSaucenaoItem(IElement linkElement, decimal similarity)
+        public Ascii2dItem getAscii2dItem(IElement linkElement)
         {
             string href = linkElement.GetAttribute("href");
             if (string.IsNullOrWhiteSpace(href)) return null;
 
             href = href.Trim();
             string hrefLower = href.ToLower();
-            Dictionary<string, string> paramDic = StringHelper.splitHttpUrl(href);
 
-            //https://www.pixiv.net/member_illust.php?mode=medium&illust_id=73572009
-            if (hrefLower.Contains("www.pixiv.net/member_illust"))
+            //https://www.pixiv.net/artworks/100378274
+            if (hrefLower.Contains("www.pixiv.net/artworks"))
             {
-                string illustId = paramDic["illust_id"].Trim();
-                return new SaucenaoItem(SaucenaoSourceType.Pixiv, href, illustId, similarity);
+                string illustId = href.splitHttpUrl().LastOrDefault() ?? string.Empty;
+                return new Ascii2dItem(SetuSourceType.Pixiv, href, illustId);
             }
 
-            //https://szcb911.fanbox.cc/posts/4045588
-            if (hrefLower.Contains("fanbox.cc"))
+            //https://twitter.com/1_tri_pic/status/1560897111624802304
+            if (hrefLower.Contains("twitter.com") && hrefLower.Contains("/status/"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.FanBox, href, "", similarity);
+                string illustId = href.splitHttpUrl().LastOrDefault() ?? string.Empty;
+                return new Ascii2dItem(SetuSourceType.Twitter, href, illustId);
             }
-
-            //https://www.pixiv.net/fanbox/creator/705370
-            if (hrefLower.Contains("www.pixiv.net/fanbox"))
-            {
-                return new SaucenaoItem(SaucenaoSourceType.FanBox, href, "", similarity);
-            }
-
-            //https://yande.re/post/show/523988
-            if (hrefLower.Contains("yande.re"))
-            {
-                return new SaucenaoItem(SaucenaoSourceType.Yande, href, "", similarity);
-            }
-
-            //https://twitter.com/i/web/status/1007548268048416769
-            if (hrefLower.Contains("twitter.com"))
-            {
-                return new SaucenaoItem(SaucenaoSourceType.Twitter, href, "", similarity);
-            }
-
-            //https://danbooru.donmai.us/post/show/3438512
-            if (hrefLower.Contains("danbooru.donmai.us"))
-            {
-                return new SaucenaoItem(SaucenaoSourceType.Danbooru, href, "", similarity);
-            }
-
-            //https://gelbooru.com/index.php?page=post&s=view&id=4639560
-            if (hrefLower.Contains("gelbooru.com"))
-            {
-                return new SaucenaoItem(SaucenaoSourceType.Gelbooru, href, "", similarity);
-            }
-
-            //https://konachan.com/post/show/279886
-            if (hrefLower.Contains("konachan.com"))
-            {
-                return new SaucenaoItem(SaucenaoSourceType.Konachan, href, "", similarity);
-            }
-
-            //https://anime-pictures.net/pictures/view_post/602645
-            if (hrefLower.Contains("anime-pictures.net"))
-            {
-                return new SaucenaoItem(SaucenaoSourceType.AnimePictures, href, "", similarity);
-            }
-
-            //https://anidb.net/anime/4427
-            //https://bcy.net/illust/detail/120185/1519032
-            //https://mangadex.org/chapter/07c706d9-e575-4498-b504-dd85014c555b
-            //https://www.mangaupdates.com/series.html?id=13582
-            //https://myanimelist.net/manga/5255/
-            //https://www.imdb.com/title/tt2402101/
-
             return null;
+        }
+
+        public async Task<List<Ascii2dItem>> getBestMatchAsync(List<Ascii2dItem> itemList)
+        {
+            if (itemList == null || itemList.Count == 0) return null;
+            List<Ascii2dItem> matchList = new List<Ascii2dItem>();
+            for (int i = 0; i < itemList.Count; i++)
+            {
+                try
+                {
+                    Ascii2dItem ascii2dItem = itemList[i];
+                    if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
+                    {
+                        PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(ascii2dItem.SourceId);
+                        if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
+                        ascii2dItem.PixivWorkInfo = pixivWorkInfo;
+                    }
+                    if (ascii2dItem.SourceType == SetuSourceType.Twitter)
+                    {
+                        //TODO
+                    }
+                    matchList.Add(ascii2dItem);
+                }
+                catch (Exception)
+                {
+                }
+            }
+            return matchList;
         }
 
         /// <summary>

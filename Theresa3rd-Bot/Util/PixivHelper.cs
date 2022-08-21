@@ -240,6 +240,77 @@ namespace Theresa3rd_Bot.Util
             return httpUrl.Replace("https://", "http://");
         }
 
+        /// <summary>
+        /// 转换为代理地址
+        /// </summary>
+        /// <param name="imgUrl"></param>
+        /// <returns></returns>
+        public static string ToPximgUrl(this string imgUrl)
+        {
+            imgUrl = imgUrl.Replace("https://i.pixiv.cat", "https://i.pximg.net");
+            imgUrl = imgUrl.Replace("https://i.pixiv.re", "https://i.pximg.net");
+            imgUrl = imgUrl.Replace(BotConfig.GeneralConfig.PixivProxy, "https://i.pximg.net");
+            return imgUrl;
+        }
+
+        /// <summary>
+        /// 转换为pixiv原地址
+        /// </summary>
+        /// <param name="imgUrl"></param>
+        /// <returns></returns>
+        public static string ToProxyUrl(this string imgUrl)
+        {
+            imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
+            imgUrl = imgUrl.Replace("https://i.pixiv.cat", BotConfig.GeneralConfig.PixivProxy);
+            return imgUrl;
+        }
+
+        /// <summary>
+        /// 将original地址转换为Thumb格式的地址
+        /// </summary>
+        /// <param name="originalUrl"></param>
+        /// <returns></returns>
+        public static string ToThumbUrl(this string originalUrl)
+        {
+            PixivWorkPath workPath = originalUrl.getWorkPath();
+            return $"{workPath.Host}/c/240x240/img-master/{workPath.ImgPath}_master1200.jpg";
+        }
+
+        /// <summary>
+        /// 将original地址转换为Small格式的地址
+        /// </summary>
+        /// <param name="originalUrl"></param>
+        /// <returns></returns>
+        public static string ToSmallUrl(this string originalUrl)
+        {
+            PixivWorkPath workPath = originalUrl.getWorkPath();
+            return $"{workPath.Host}/c/540x540_70/img-master/{workPath.ImgPath}_master1200.jpg";
+        }
+
+        /// <summary>
+        /// 将original地址转换为Regular格式的地址
+        /// </summary>
+        /// <param name="originalUrl"></param>
+        /// <returns></returns>
+        public static string ToRegularUrl(this string originalUrl)
+        {
+            PixivWorkPath workPath = originalUrl.getWorkPath();
+            return $"{workPath.Host}/img-master/{workPath.ImgPath}_master1200.jpg";
+        }
+
+        /// <summary>
+        /// 拆解originalUrl,返回host和文件目录等信息
+        /// </summary>
+        /// <param name="originalUrl"></param>
+        /// <returns></returns>
+        public static PixivWorkPath getWorkPath(this string originalUrl)
+        {
+            originalUrl = originalUrl.Trim();
+            string[] arr = originalUrl.Split("/img-original/", StringSplitOptions.RemoveEmptyEntries);
+            string[] arr2 = arr[1].Split('.', StringSplitOptions.RemoveEmptyEntries);
+            return new PixivWorkPath(arr[0], arr2[0], arr2[1]);
+        }
+
 
     }
 }

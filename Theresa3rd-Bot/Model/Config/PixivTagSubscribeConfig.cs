@@ -7,5 +7,7 @@
         public int MinBookmark { get; set; }
 
         public int MinBookPerHour { get; set; }
+
+        public int MaxScan { get; set; }
     }
 }

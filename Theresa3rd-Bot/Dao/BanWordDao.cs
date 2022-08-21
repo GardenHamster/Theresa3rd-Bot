@@ -11,14 +11,14 @@ namespace Theresa3rd_Bot.Dao
             return Db.Queryable<BanWordPO>().Where(o => o.BanType == type).OrderBy(o => o.CreateDate, SqlSugar.OrderByType.Asc).ToList();
         }
 
-        public BanWordPO getBanWord(BanType type, long groupId, string keyWord)
+        public BanWordPO getBanWord(BanType type, string keyWord)
         {
-            return Db.Queryable<BanWordPO>().Where(o => o.BanType == type && o.GroupId == groupId && o.KeyWord == keyWord).First();
+            return Db.Queryable<BanWordPO>().Where(o => o.BanType == type && o.KeyWord == keyWord).First();
         }
 
-        public void delBanWord(BanType type, long groupId, string keyWord)
+        public void delBanWord(BanType type, string keyWord)
         {
-            Db.Deleteable<BanWordPO>().Where(o => o.BanType == type && o.GroupId == groupId && o.KeyWord == keyWord).ExecuteCommand();
+            Db.Deleteable<BanWordPO>().Where(o => o.BanType == type && o.KeyWord == keyWord).ExecuteCommand();
         }
 
     }

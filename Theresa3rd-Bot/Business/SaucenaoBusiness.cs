@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Exceptions;
@@ -64,61 +65,61 @@ namespace Theresa3rd_Bot.Business
 
             href = href.Trim();
             string hrefLower = href.ToLower();
-            Dictionary<string, string> paramDic = StringHelper.splitHttpUrl(href);
+            Dictionary<string, string> paramDic = StringHelper.splitHttpParams(href);
 
             //https://www.pixiv.net/member_illust.php?mode=medium&illust_id=73572009
             if (hrefLower.Contains("www.pixiv.net/member_illust"))
             {
                 string illustId = paramDic["illust_id"].Trim();
-                return new SaucenaoItem(SaucenaoSourceType.Pixiv, href, illustId, similarity);
+                return new SaucenaoItem(SetuSourceType.Pixiv, href, illustId, similarity);
             }
 
             //https://szcb911.fanbox.cc/posts/4045588
             if (hrefLower.Contains("fanbox.cc"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.FanBox, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.FanBox, href, "", similarity);
             }
 
             //https://www.pixiv.net/fanbox/creator/705370
             if (hrefLower.Contains("www.pixiv.net/fanbox"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.FanBox, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.FanBox, href, "", similarity);
             }
 
             //https://yande.re/post/show/523988
             if (hrefLower.Contains("yande.re"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.Yande, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Yande, href, "", similarity);
             }
 
             //https://twitter.com/i/web/status/1007548268048416769
             if (hrefLower.Contains("twitter.com"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.Twitter, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Twitter, href, "", similarity);
             }
 
             //https://danbooru.donmai.us/post/show/3438512
             if (hrefLower.Contains("danbooru.donmai.us"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.Danbooru, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Danbooru, href, "", similarity);
             }
 
             //https://gelbooru.com/index.php?page=post&s=view&id=4639560
             if (hrefLower.Contains("gelbooru.com"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.Gelbooru, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Gelbooru, href, "", similarity);
             }
 
             //https://konachan.com/post/show/279886
             if (hrefLower.Contains("konachan.com"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.Konachan, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Konachan, href, "", similarity);
             }
 
             //https://anime-pictures.net/pictures/view_post/602645
             if (hrefLower.Contains("anime-pictures.net"))
             {
-                return new SaucenaoItem(SaucenaoSourceType.AnimePictures, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.AnimePictures, href, "", similarity);
             }
 
             //https://anidb.net/anime/4427
@@ -138,33 +139,64 @@ namespace Theresa3rd_Bot.Business
             for (int i = 0; i < sortList.Count; i++)
             {
                 SaucenaoItem saucenaoItem = sortList[i];
-                try
+                if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
-                    if (saucenaoItem.SourceType == SaucenaoSourceType.Pixiv)
-                    {
-                        PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
-                        if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
-                        saucenaoItem.PixivWorkInfo = pixivWorkInfo;
-                        return saucenaoItem;
-                    }
-                    if (saucenaoItem.SourceType == SaucenaoSourceType.Twitter)
-                    {
-                        //ToDo
-                        return saucenaoItem;
-                    }
-                    if (saucenaoItem.SourceType == SaucenaoSourceType.FanBox)
-                    {
-                        //ToDo
-                        return saucenaoItem;
-                    }
+                    PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
+                    if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
+                    saucenaoItem.PixivWorkInfo = pixivWorkInfo;
                     return saucenaoItem;
                 }
-                catch (Exception ex)
+                if (saucenaoItem.SourceType == SetuSourceType.Twitter)
                 {
-                    LogHelper.Error(ex, $"尝试获取原图信息时异常,PixivId={saucenaoItem.SourceId}", false);
+                    //ToDo
+                    return saucenaoItem;
                 }
+                if (saucenaoItem.SourceType == SetuSourceType.FanBox)
+                {
+                    //ToDo
+                    return saucenaoItem;
+                }
+                return saucenaoItem;
             }
             return null;
+        }
+
+
+        public string getDefaultRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, long todayLeft)
+        {
+            StringBuilder warnBuilder = new StringBuilder();
+            warnBuilder.Append($" 共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}");
+            if (BotConfig.SaucenaoConfig.MaxDaily > 0)
+            {
+                if (warnBuilder.Length > 0) warnBuilder.Append("，");
+                warnBuilder.Append($"今天剩余使用次数{todayLeft}次");
+            }
+            if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
+            {
+                if (warnBuilder.Length > 0) warnBuilder.Append("，");
+                warnBuilder.Append($"本消息将在{BotConfig.SaucenaoConfig.RevokeInterval}秒后撤回");
+            }
+            if (BotConfig.SaucenaoConfig.MemberCD > 0)
+            {
+                if (warnBuilder.Length > 0) warnBuilder.Append("，");
+                warnBuilder.Append($"CD{BotConfig.SetuConfig.MemberCD}秒");
+            }
+            if (warnBuilder.Length > 0)
+            {
+                warnBuilder.Append("\r\n");
+            }
+            return warnBuilder.ToString();
+        }
+
+        public string getSaucenaoRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, string template, long todayLeft)
+        {
+            template = template.Replace("{MatchCount}", saucenaoResult.MatchCount.ToString());
+            template = template.Replace("{Similarity}", saucenaoItem.Similarity.ToString());
+            template = template.Replace("{SourceType}", Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType));
+            template = template.Replace("{TodayLeft}", todayLeft.ToString());
+            template = template.Replace("{RevokeInterval}", BotConfig.SaucenaoConfig.RevokeInterval.ToString());
+            template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
+            return template + "\r\n";
         }
 
         /// <summary>
@@ -176,7 +208,7 @@ namespace Theresa3rd_Bot.Business
         {
             if (itemList == null) return new List<SaucenaoItem>();
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();
-            sortList.AddRange(itemList.Where(o => o.SourceType == SaucenaoSourceType.Pixiv && o.Similarity >= 80).ToList());
+            sortList.AddRange(itemList.Where(o => o.SourceType == SetuSourceType.Pixiv && o.Similarity >= 80).ToList());
             sortList.AddRange(itemList.Where(o => o.Similarity >= 70).OrderBy(o => o.SourceType).ToList());
             sortList.AddRange(itemList.OrderByDescending(o => o.Similarity).ThenBy(o => o.SourceType));
             return sortList.Distinct().ToList();
@@ -193,7 +225,6 @@ namespace Theresa3rd_Bot.Business
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "url", imgHttpUrl } };
             Dictionary<string, string> headerDic = getSaucenaoHeader();
             HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.SaucenaoUrl, paramDic, headerDic);
-            await response.Content.ReadAsStringAsync();
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 string contentString = await response.GetContentStringAsync();

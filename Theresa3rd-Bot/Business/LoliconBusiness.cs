@@ -10,7 +10,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
 {
-    public class LoliconBusiness
+    public class LoliconBusiness : SetuBusiness
     {
         public string getWorkInfo(LoliconDataV2 loliconData, FileInfo fileInfo, DateTime startTime, long todayLeft, string template = "")
         {
@@ -21,12 +21,13 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{IllustTitle}", loliconData.title);
+            template = template.Replace("{PixivId}", loliconData.pid.ToString());
             template = template.Replace("{UserName}", loliconData.author);
             template = template.Replace("{UserId}", loliconData.uid);
             template = template.Replace("{SizeMB}", sizeMB.ToString());
             template = template.Replace("{CostSecond}", costSecond.ToString());
-            template = template.Replace("{Tags}", string.Join('，', loliconData.tags ?? new List<string>()));
-            template = template.Replace("{Urls}", getProxyUrl(loliconData.urls.original));
+            template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(loliconData.tags, BotConfig.GeneralConfig.PixivTagShowMaximum));
+            template = template.Replace("{Urls}", loliconData.urls.original.ToProxyUrl());
             return template;
         }
 
@@ -36,8 +37,8 @@ namespace Theresa3rd_Bot.Business
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
             double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
             workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}，大小：{sizeMB}MB，耗时：{costSecond}s");
-            workInfoStr.AppendLine($"标签：{string.Join('，', loliconData.tags ?? new List<string>())}");
-            workInfoStr.Append(getProxyUrl(loliconData.urls.original));
+            workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(loliconData.tags, BotConfig.GeneralConfig.PixivTagShowMaximum)}");
+            workInfoStr.Append(loliconData.urls.original.ToProxyUrl());
             return workInfoStr.ToString();
         }
 
@@ -50,35 +51,21 @@ namespace Theresa3rd_Bot.Business
             return JsonConvert.DeserializeObject<LoliconResultV2>(json);
         }
 
-        public string getOriginalUrl(string imgUrl)
-        {
-            imgUrl = imgUrl.Replace("https://i.pixiv.cat", "https://i.pximg.net");
-            imgUrl = imgUrl.Replace("https://i.pixiv.re", "https://i.pximg.net");
-            return imgUrl;
-        }
-
-        public string getProxyUrl(string imgUrl)
-        {
-            imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
-            imgUrl = imgUrl.Replace("https://i.pixiv.cat", BotConfig.GeneralConfig.PixivProxy);
-            return imgUrl;
-        }
-
         public async Task<FileInfo> downImgAsync(LoliconDataV2 loliconData)
         {
             try
             {
                 string fullFileName = $"{loliconData.pid}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                string imgUrl = loliconData.urls.original;
+                string imgUrl = getDownImgUrl(loliconData.urls.original);
                 if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
                 {
-                    imgUrl = getProxyUrl(imgUrl);
+                    imgUrl = imgUrl.ToProxyUrl();
                     return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath);
                 }
                 else
                 {
-                    imgUrl = getOriginalUrl(imgUrl);
+                    imgUrl = imgUrl.ToPximgUrl();
                     Dictionary<string, string> headerDic = new Dictionary<string, string>();
                     headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString()));
                     headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
@@ -91,7 +78,6 @@ namespace Theresa3rd_Bot.Business
                 return null;
             }
         }
-
 
     }
 }

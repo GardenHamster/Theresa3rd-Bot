@@ -10,21 +10,22 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
-using Theresa3rd_Bot.Model.Lolicon;
+using Theresa3rd_Bot.Model.Lolisuki;
+using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class LoliconHandler : BaseHandler
+    public class LolisukiHandler : BaseHandler
     {
-        private LoliconBusiness loliconBusiness;
+        private LolisukiBusiness lolisukiBusiness;
 
-        public LoliconHandler()
+        public LolisukiHandler()
         {
-            loliconBusiness = new LoliconBusiness();
+            lolisukiBusiness = new LolisukiBusiness();
         }
 
-        public async Task sendGeneralLoliconImageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        public async Task sendGeneralLolisukiImageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
         {
             try
             {
@@ -32,7 +33,7 @@ namespace Theresa3rd_Bot.Handler
                 long groupId = args.Sender.Group.Id;
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
-                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolicon.Command) ?? "";
+                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolisuki.Command) ?? "";
 
                 if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
@@ -41,48 +42,50 @@ namespace Theresa3rd_Bot.Handler
                     await Task.Delay(1000);
                 }
 
-                LoliconResultV2 loliconResult = null;
-                int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
+                LolisukiResult lolisukiResult = null;
+                bool isShowR18 = groupId.IsShowR18Setu();
+                int r18Mode = isShowR18 ? 2 : 0;
+                string levelStr = getLevelStr(isShowR18);
                 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode);
+                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
                     string[] tagArr = toLoliconTagArr(tagStr);
-                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, tagArr);
+                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr, tagArr);
                 }
 
-                if (loliconResult == null || loliconResult.data.Count == 0)
+                if (lolisukiResult == null || lolisukiResult.data.Count == 0)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
-                LoliconDataV2 loliconData = loliconResult.data.First();
-                if (loliconData.IsImproper() || loliconData.hasBanTag())
+                LolisukiData lolisukiData = lolisukiResult.data.First();
+                if (lolisukiData.IsImproper() || lolisukiData.hasBanTag())
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 该作品含有被屏蔽的标签，不显示相关内容");
                     return;
                 }
 
-                bool isShowImg = groupId.IsShowSetuImg(loliconData.isR18());
+                bool isShowImg = groupId.IsShowSetuImg(lolisukiData.isR18());
                 long todayLeftCount = GetSetuLeftToday(groupId, memberId);
-                FileInfo fileInfo = isShowImg ? await loliconBusiness.downImgAsync(loliconData) : null;
+                FileInfo fileInfo = isShowImg ? await lolisukiBusiness.downImgAsync(lolisukiData) : null;
 
                 int groupMsgId = 0;
-                string template = BotConfig.SetuConfig.Lolicon.Template;
+                string template = BotConfig.SetuConfig.Lolisuki.Template;
                 List<IChatMessage> chatList = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(template))
                 {
-                    chatList.Add(new PlainMessage(loliconBusiness.getDefaultRemindMsg(groupId, todayLeftCount)));
-                    chatList.Add(new PlainMessage(loliconBusiness.getDefaultWorkInfo(loliconData, fileInfo, startDateTime)));
+                    chatList.Add(new PlainMessage(lolisukiBusiness.getDefaultRemindMsg(groupId, todayLeftCount)));
+                    chatList.Add(new PlainMessage(lolisukiBusiness.getDefaultWorkInfo(lolisukiData, fileInfo, startDateTime)));
                 }
                 else
                 {
-                    chatList.Add(new PlainMessage(loliconBusiness.getWorkInfo(loliconData, fileInfo, startDateTime, todayLeftCount, template)));
+                    chatList.Add(new PlainMessage(lolisukiBusiness.getWorkInfo(lolisukiData, fileInfo, startDateTime, todayLeftCount, template)));
                 }
 
                 try
@@ -102,7 +105,7 @@ namespace Theresa3rd_Bot.Handler
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error(ex, "sendGeneralLoliconImageAsync群消息发送失败");
+                    LogHelper.Error(ex, "sendGeneralLolisukiImageAsync群消息发送失败");
                     throw;
                 }
 
@@ -141,18 +144,42 @@ namespace Theresa3rd_Bot.Handler
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error(ex, "sendGeneralLoliconImageAsync消息撤回失败");
+                    LogHelper.Error(ex, "sendGeneralLolisukiImageAsync消息撤回失败");
                 }
 
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "sendGeneralLoliconImageAsync异常");
+                LogHelper.Error(ex, "sendGeneralLolisukiImageAsync异常");
                 await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.ErrorMsg, " 获取图片出错了，再试一次吧~");
             }
             finally
             {
                 CoolingCache.SetHandFinish(args.Sender.Group.Id, args.Sender.Id);//请求处理完成
+            }
+        }
+
+
+        private string getLevelStr(bool isShowR18)
+        {
+            try
+            {
+                string levelStr = BotConfig.SetuConfig.Lolisuki.Level;
+                if (string.IsNullOrWhiteSpace(levelStr)) return $"{(int)LolisukiLevel.Level0}-{(int)LolisukiLevel.Level3}";
+
+                string[] levelArr = levelStr.Split('-', StringSplitOptions.RemoveEmptyEntries);
+                string minLevelStr = levelArr[0].Trim();
+                string maxLevelStr = levelArr.Length > 1 ? levelArr[1].Trim() : levelArr[0].Trim();
+                int minLevel = int.Parse(minLevelStr);
+                int maxLevel = int.Parse(maxLevelStr);
+                if (minLevel < (int)LolisukiLevel.Level0) minLevel = (int)LolisukiLevel.Level0;
+                if (maxLevel > (int)LolisukiLevel.Level6) maxLevel = (int)LolisukiLevel.Level6;
+                if (maxLevel > (int)LolisukiLevel.Level4 && isShowR18 == false) maxLevel = (int)LolisukiLevel.Level4;
+                return minLevel == maxLevel ? $"{minLevel}" : $"{minLevel}-{maxLevel}";
+            }
+            catch (Exception)
+            {
+                return $"{(int)LolisukiLevel.Level0}-{(int)(isShowR18 ? LolisukiLevel.Level6 : LolisukiLevel.Level3)}";
             }
         }
 

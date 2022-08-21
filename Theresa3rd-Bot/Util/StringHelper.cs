@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Model.Pixiv;
 
 namespace Theresa3rd_Bot.Util
 {
@@ -56,7 +57,7 @@ namespace Theresa3rd_Bot.Util
         public static string splitKeyWord(this string message, string commandStr)
         {
             string[] messageSplit = message.Split(new string[] { commandStr }, StringSplitOptions.RemoveEmptyEntries);
-            if (messageSplit.Length < 2) return null;
+            if (messageSplit.Length < 2) return String.Empty;
             return messageSplit[1].Trim();
         }
 
@@ -66,7 +67,20 @@ namespace Theresa3rd_Bot.Util
         /// <param name="message"></param>
         /// <param name="commandStr"></param>
         /// <returns></returns>
-        public static string[] splitParam(this string message, string commandStr)
+        public static string splitParam(this string message, string commandStr)
+        {
+            string paramStr = message.splitKeyWord(commandStr);
+            if (paramStr == null) return null;
+            return paramStr.Trim();
+        }
+
+        /// <summary>
+        /// 提取参数
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="commandStr"></param>
+        /// <returns></returns>
+        public static string[] splitParams(this string message, string commandStr)
         {
             string paramStr = message.splitKeyWord(commandStr);
             if (paramStr == null) return null;
@@ -103,28 +117,12 @@ namespace Theresa3rd_Bot.Util
             return cookieDic;
         }
 
-        /// <summary>
-        /// 将键值对重新连接为cookie
-        /// </summary>
-        /// <param name="cookie"></param>
-        /// <returns></returns>
-        public static string joinCookie(this Dictionary<string, string> cookieDic)
-        {
-            StringBuilder cookieBuilder = new StringBuilder();
-            foreach (var item in cookieDic)
-            {
-                if (cookieBuilder.Length > 0) cookieBuilder.Append(" ");
-                cookieBuilder.Append($"{item.Key}={item.Value};");
-            }
-            return cookieBuilder.ToString();
-        }
-
         //// <summary>
         /// 拆分httpUrl,返回参数键值对
         /// </summary>
         /// <param name="httpUrl"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> splitHttpUrl(this string httpUrl)
+        public static Dictionary<string, string> splitHttpParams(this string httpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>();
             if (string.IsNullOrEmpty(httpUrl)) return paramDic;
@@ -141,6 +139,34 @@ namespace Theresa3rd_Bot.Util
                 paramDic[key] = value;
             }
             return paramDic;
+        }
+
+        /// <summary>
+        /// 提取参数
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="commandStr"></param>
+        /// <returns></returns>
+        public static string[] splitHttpUrl(this string value)
+        {
+            string urlStr = value.Split(new char[] { '?', '&' }, StringSplitOptions.RemoveEmptyEntries)[0];
+            return urlStr.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        /// <summary>
+        /// 将键值对重新连接为cookie
+        /// </summary>
+        /// <param name="cookie"></param>
+        /// <returns></returns>
+        public static string joinCookie(this Dictionary<string, string> cookieDic)
+        {
+            StringBuilder cookieBuilder = new StringBuilder();
+            foreach (var item in cookieDic)
+            {
+                if (cookieBuilder.Length > 0) cookieBuilder.Append(" ");
+                cookieBuilder.Append($"{item.Key}={item.Value};");
+            }
+            return cookieBuilder.ToString();
         }
 
         public static string getDateTimeMillisecondStr()

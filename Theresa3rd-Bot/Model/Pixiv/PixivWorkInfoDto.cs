@@ -42,25 +42,34 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
         public PixivTagDto tags { get; set; }
 
+        public int xRestrict { get; set; }
+
+        public List<string> getTags()
+        {
+            return tags?.tags == null ? new List<string>() : tags.tags.Select(o => o.tag).Where(o => string.IsNullOrWhiteSpace(o) == false).ToList();
+        }
+
         public bool IsImproper()
         {
-            return tags?.tags == null ? false : tags.tags.Select(o => o.tag).ToList().IsImproper();
+            if (xRestrict > 1) return true;
+            if (getTags().IsImproper()) return true;
+            return false;
         }
 
         public bool isR18()
         {
-            return tags?.tags == null ? false : tags.tags.Select(o => o.tag).ToList().IsR18();
+            //xRestrict=1为R18,xRestrict=2为R18G
+            return xRestrict > 0 || getTags().IsR18();
         }
 
         public bool isGif()
         {
-            return tags?.tags == null ? false : tags.tags.Select(o => o.tag).ToList().IsGif();
+            return getTags().IsGif();
         }
 
         public bool hasBanTag()
         {
-            //return tags.tags.Where(o => Setting.Pixiv.BanTag.Contains(o.tag.ToUpper())).FirstOrDefault() != null;
-            return false;
+            return getTags().hasBanTags();
         }
 
     }
@@ -69,5 +78,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
     {
         public string original { get; set; }
         public string regular { get; set; }
+        public string small { get; set; }
+        public string thumb { get; set; }
     }
 }

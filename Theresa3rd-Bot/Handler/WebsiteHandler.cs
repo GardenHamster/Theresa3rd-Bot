@@ -30,10 +30,10 @@ namespace Theresa3rd_Bot.Handler
         /// <returns></returns>
         public async Task UpdatePixivCookieAsync(IMiraiHttpSession session, IFriendMessageEventArgs args, string message)
         {
-            string cookie = message.splitKeyWord(Command.PixivCookie);
+            string cookie = message.splitKeyWord(BotConfig.ManageConfig?.PixivCookieCommand);
             if (string.IsNullOrWhiteSpace(cookie))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用{BotConfig.GeneralConfig.Prefix}{Command.PixivCookie} + cookie形式发送"));
+                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用{BotConfig.GeneralConfig.Prefix}{BotConfig.ManageConfig.PixivCookieCommand} + cookie形式发送"));
                 return;
             }
 
@@ -67,7 +67,7 @@ namespace Theresa3rd_Bot.Handler
             cookie = cookieDic.joinCookie();
 
             string websiteCode = Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv);
-            WebsitePO website = websiteBusiness.updateWebsite(websiteCode, cookie, userId, BotConfig.SetuConfig.Pixiv.CookieExpire);
+            WebsitePO website = websiteBusiness.updateWebsite(websiteCode, cookie, userId, BotConfig.GeneralConfig.PixivCookieExpire);
             ConfigHelper.loadWebsite();
             string expireDate = website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss");
             await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($" cookie更新完毕,过期时间为{expireDate}"));
@@ -82,10 +82,10 @@ namespace Theresa3rd_Bot.Handler
         /// <returns></returns>
         public async Task UpdateSaucenaoCookieAsync(IMiraiHttpSession session, IFriendMessageEventArgs args, string message)
         {
-            string cookie = message.splitKeyWord(Command.SaucenaoCookie);
+            string cookie = message.splitKeyWord(BotConfig.ManageConfig?.SaucenaoCookieCommand);
             if (string.IsNullOrWhiteSpace(cookie))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用{BotConfig.GeneralConfig.Prefix}{Command.SaucenaoCookie} + cookie形式发送"));
+                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用{BotConfig.GeneralConfig.Prefix}{BotConfig.ManageConfig.SaucenaoCookieCommand} + cookie形式发送"));
                 return;
             }
 

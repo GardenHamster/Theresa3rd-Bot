@@ -21,6 +21,11 @@ namespace Theresa3rd_Bot.Common
         /// </summary>
         public static readonly string SaucenaoUrl = "https://saucenao.com/search.php";
 
+        /// <summary>
+        /// Ascii2d搜索地址
+        /// </summary>
+        public static readonly string Ascii2dUrl = "https://ascii2d.net/search/uri";
+
         /*---------------------------------------------------------------pixiv-----------------------------------------------------------------------*/
 
         /// <summary>
@@ -159,13 +164,25 @@ namespace Theresa3rd_Bot.Common
         /*---------------------------------------------------------------Lolicon-----------------------------------------------------------------------*/
 
         /// <summary>
-        /// 画师作品地址
+        /// Lolicon Api 地址
         /// </summary>
         /// <param name="userid"></param>
         /// <returns></returns>
         public static string getLoliconApiV2Url()
         {
             return "https://api.lolicon.app/setu/v2";
+        }
+
+        /*---------------------------------------------------------------Lolisuki-----------------------------------------------------------------------*/
+
+        /// <summary>
+        /// Lolisuki Api 地址
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        public static string getLolisukiApiUrl()
+        {
+            return "https://lolisuki.cc/api/setu/v1";
         }
 
         /*---------------------------------------------------------------米游社-----------------------------------------------------------------------*/

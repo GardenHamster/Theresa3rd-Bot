@@ -3,7 +3,7 @@
     public enum BanType
     {
         Other=0,
-        Setu=1,
-        Chat=2
+        SetuTag=1,
+        Member=2
     }
 }

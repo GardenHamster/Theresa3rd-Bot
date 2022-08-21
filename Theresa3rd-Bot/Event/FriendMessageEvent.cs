@@ -16,7 +16,7 @@ using Theresa3rd_Bot.Util;
 namespace Theresa3rd_Bot.Event
 {
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IFriendMessageEventArgs, FriendMessageEventArgs>))]
-    public class FriendMessageEvent : IMiraiHttpMessageHandler<IFriendMessageEventArgs>
+    public class FriendMessageEvent : BaseEvent, IMiraiHttpMessageHandler<IFriendMessageEventArgs>
     {
         public async Task HandleMessageAsync(IMiraiHttpSession session, IFriendMessageEventArgs args)
         {
@@ -35,28 +35,28 @@ namespace Theresa3rd_Bot.Event
                 instructions = instructions.Trim();
                 message = message.Trim();
 
-                bool isInstruct = instructions != null && prefix != null && prefix.Trim().Length > 0 && instructions.StartsWith(prefix);
+                bool isInstruct = string.IsNullOrWhiteSpace(instructions) == false && string.IsNullOrWhiteSpace(prefix) == false && instructions.StartsWith(prefix);
                 if (isInstruct) instructions = instructions.Remove(0, prefix.Length).Trim();
 
-                if (instructions.StartsWith(Command.PixivCookie))
+                if (instructions.StartWithCommand(BotConfig.ManageConfig?.PixivCookieCommand))
                 {
-                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await CheckSuperManagersAsync(session, args) == false) return;
                     await new WebsiteHandler().UpdatePixivCookieAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                     args.BlockRemainingHandlers = true;
                     return;
                 }
 
-                if (instructions.StartsWith(Command.SaucenaoCookie))
+                if (instructions.StartWithCommand(BotConfig.ManageConfig?.SaucenaoCookieCommand))
                 {
-                    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
+                    if (await CheckSuperManagersAsync(session, args) == false) return;
                     await new WebsiteHandler().UpdateSaucenaoCookieAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.SetCookie, message);
                     args.BlockRemainingHandlers = true;
                     return;
                 }
 
-                //if (instructions.StartsWith(Command.BiliCookie))
+                //if (instructions.StartsWith(BotConfig.ManageConfig?.BiliCookie))
                 //{
                 //    if (await BusinessHelper.CheckSuperManagersAsync(session, args) == false) return;
                 //    await new WebsiteHandler().UpdateBiliCookieAsync(session, args, message);

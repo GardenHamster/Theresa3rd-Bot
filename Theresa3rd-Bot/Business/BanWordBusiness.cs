@@ -15,39 +15,34 @@ namespace Theresa3rd_Bot.Business
             this.banWordDao = new BanWordDao();
         }
 
-        public Dictionary<long, List<BanWordPO>> getBanSetuMap()
+        public List<BanWordPO> getBanSetuTagList()
         {
-            Dictionary<long, List<BanWordPO>> banSetuMap = new Dictionary<long, List<BanWordPO>>();
-            List<BanWordPO> banList = banWordDao.getListByType(BanType.Setu);
-            if (banList.Count == 0) return banSetuMap;
-            foreach (var item in banList)
-            {
-                long groupId = item.GroupId;
-                if (banSetuMap.ContainsKey(groupId) == false) banSetuMap[groupId] = new List<BanWordPO>();
-                banSetuMap[groupId].Add(item);
-            }
-            return banSetuMap;
+            return banWordDao.getListByType(BanType.SetuTag);
         }
 
-        public BanWordPO insertBanWord(string keyword, BanType type, long groupId, bool isRegular)
+        public List<BanWordPO> getBanMemberList()
+        {
+            return banWordDao.getListByType(BanType.Member);
+        }
+
+        public BanWordPO insertBanWord(string keyword, BanType type, bool isRegular)
         {
             BanWordPO banWord = new BanWordPO();
             banWord.KeyWord = keyword;
             banWord.BanType = type;
-            banWord.GroupId = groupId;
             banWord.IsRegular = isRegular;
             banWord.CreateDate = DateTime.Now;
             return banWordDao.Insert(banWord);
         }
 
-        public BanWordPO getBanWord(BanType type, long groupId, string keyWord)
+        public BanWordPO getBanWord(BanType type, string keyWord)
         {
-            return banWordDao.getBanWord(type, groupId, keyWord);
+            return banWordDao.getBanWord(type, keyWord);
         }
 
-        public void delBanWord(BanType type, long groupId, string keyWord)
+        public void delBanWord(BanType type, string keyWord)
         {
-            banWordDao.delBanWord(type, groupId, keyWord);
+            banWordDao.delBanWord(type, keyWord);
         }
 
 

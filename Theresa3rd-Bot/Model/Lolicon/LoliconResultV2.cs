@@ -28,16 +28,18 @@ namespace Theresa3rd_Bot.Model.Lolicon
 
         public bool IsImproper()
         {
-            return tags == null ? false : tags.IsImproper();
+            return tags != null && tags.IsImproper();
         }
 
         public bool isR18()
         {
-            return tags == null ? false : tags.IsR18();
+            return tags != null && tags.IsR18();
         }
 
-
-
+        public bool hasBanTag()
+        {
+            return tags != null && tags.hasBanTags();
+        }
     }
 
     public class LoliconUrlsV2

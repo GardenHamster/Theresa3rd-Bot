@@ -19,7 +19,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Business
 {
-    public class PixivBusiness
+    public class PixivBusiness : SetuBusiness
     {
         private SubscribeDao subscribeDao;
         private SubscribeGroupDao subscribeGroupDao;
@@ -98,6 +98,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper()) continue;
+                    if (pixivUserWorkInfo.hasBanTag()) continue;
                     if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
@@ -147,6 +148,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper()) continue;
+                    if (pixivUserWorkInfo.hasBanTag()) continue;
                     if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
@@ -183,6 +185,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     PixivBookmarksWork randomWork = workList[new Random().Next(0, workList.Count)];
                     if (randomWork.IsImproper()) continue;
+                    if (randomWork.hasBanTag()) continue;
                     if (randomWork.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(randomWork.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
@@ -202,10 +205,10 @@ namespace Theresa3rd_Bot.Business
             int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / pixivPageSize);
             if (pageCount < 3) pageCount = 3;
 
-            string searchWord = formatSearchWord(tagNames);
+            string searchWord = toPixivSearchWord(tagNames);
             PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, includeR18);
             int total = pageOne.body.getIllust().total;
-            int maxPage = (int)Math.Ceiling(Convert.ToDecimal(total) / pixivPageSize);
+            int maxPage = MathHelper.getMaxPage(total, pixivPageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
             Thread.Sleep(1000);
 
@@ -275,6 +278,7 @@ namespace Theresa3rd_Bot.Business
                     PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivIllustList[i].id);
                     if (pixivWorkInfo.error) continue;
                     if (pixivWorkInfo.body.IsImproper()) continue;
+                    if (pixivWorkInfo.body.hasBanTag()) continue;
                     if (pixivWorkInfo.body.isR18() && includeR18 == false) continue;
                     if (checkRandomWorkIsOk(pixivWorkInfo) == false) continue;
                     lock (bookUpList) bookUpList.Add(pixivWorkInfo);
@@ -457,16 +461,14 @@ namespace Theresa3rd_Bot.Business
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(SubscribeTask subscribeTask)
+        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(SubscribeTask subscribeTask, int maxScan)
         {
             string tagNames = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
-            string searchWord = formatSearchWord(tagNames);
-            PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, true);
-            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            if (pageOne.error || pageOne?.body?.getIllust()?.data == null) return pixivSubscribeList;
+            string searchWord = toPixivSearchWord(tagNames);
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
-            List<PixivIllust> illutsList = pageOne.body.getIllust().data.OrderByDescending(o => o.createDate).ToList();
+            List<PixivIllust> illutsList = await getTagIllustListAsync(searchWord, maxScan, shelfLife);
+            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             foreach (PixivIllust item in illutsList)
             {
                 try
@@ -553,6 +555,31 @@ namespace Theresa3rd_Bot.Business
         }
 
         /// <summary>
+        /// 根据最大扫描数量,读取该数量的作品列表
+        /// </summary>
+        /// <param name="searchWord"></param>
+        /// <param name="maxScan"></param>
+        /// <returns></returns>
+        private async Task<List<PixivIllust>> getTagIllustListAsync(string searchWord, int maxScan, int shelfLife)
+        {
+            int maxPage = MathHelper.getMaxPage(maxScan, pixivPageSize);
+            List<PixivIllust> pixivIllustList = new List<PixivIllust>();
+
+            for (int i = 1; i <= maxPage; i++)
+            {
+                if (pixivIllustList.Count >= maxScan) break;
+                PixivSearchDto pixivSearch = await PixivHelper.GetPixivSearchAsync(searchWord, i, false, true);
+                if (pixivSearch.error) break;
+                List<PixivIllust> illusts = pixivSearch?.body?.getIllust()?.data;
+                if (illusts == null || illusts.Count == 0) break;
+                pixivIllustList.AddRange(illusts);
+                if (illusts.Count < pixivPageSize) break;
+                if (shelfLife > 0 && illusts.Last().createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
+            }
+            return pixivIllustList.OrderByDescending(o => o.createDate).Take(maxScan).ToList();
+        }
+
+        /// <summary>
         /// 创建或返回一个订阅
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
@@ -606,23 +633,23 @@ namespace Theresa3rd_Bot.Business
 
         /*-------------------------------------------------------------图片下载--------------------------------------------------------------------------*/
 
-        public async Task<FileInfo> downImgAsync(PixivWorkInfoDto pixivWorkInfo)
+        public async Task<FileInfo> downImgAsync(PixivWorkInfo pixivWorkInfo)
         {
             try
             {
-                if (pixivWorkInfo.body.isGif()) return await downAndComposeGifAsync(pixivWorkInfo);
-                string imgUrl = pixivWorkInfo.body.urls.original;
-                string fullFileName = $"{pixivWorkInfo.body.illustId}.jpg";
+                if (pixivWorkInfo.isGif()) return await downAndComposeGifAsync(pixivWorkInfo);
+                string imgUrl = getDownImgUrl(pixivWorkInfo.urls.original);
+                string fullFileName = $"{pixivWorkInfo.illustId}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
                 if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
                 {
-                    imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
+                    imgUrl = imgUrl.ToProxyUrl();
                     return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath);
                 }
                 else
                 {
                     Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                    headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
+                    headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.illustId));
                     headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
                     return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic);
                 }
@@ -634,18 +661,17 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
-
         /// <summary>
         /// 下载动图zip包并合成gif图片
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
         /// <returns></returns>
-        protected async Task<FileInfo> downAndComposeGifAsync(PixivWorkInfoDto pixivWorkInfo)
+        protected async Task<FileInfo> downAndComposeGifAsync(PixivWorkInfo pixivWorkInfo)
         {
-            string fullGifSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{pixivWorkInfo.body.illustId}.gif");
+            string fullGifSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{pixivWorkInfo.illustId}.gif");
             if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
-            PixivUgoiraMetaDto pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivWorkInfo.body.illustId);
+            PixivUgoiraMetaDto pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivWorkInfo.illustId);
             string fullZipSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{StringHelper.get16UUID()}.zip");
             string zipHttpUrl = pixivUgoiraMetaDto.body.src;
 
@@ -657,12 +683,12 @@ namespace Theresa3rd_Bot.Business
             else
             {
                 Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.body.illustId));
+                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivWorkInfo.illustId));
                 headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
                 await HttpHelper.DownFileAsync(zipHttpUrl, fullZipSavePath, headerDic);
             }
 
-            string unZipDirPath = Path.Combine(FilePath.getDownImgSavePath(), pixivWorkInfo.body.illustId);
+            string unZipDirPath = Path.Combine(FilePath.getDownImgSavePath(), pixivWorkInfo.illustId);
             ZipHelper.ZipToFile(fullZipSavePath, unZipDirPath);
             DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
             FileInfo[] files = directoryInfo.GetFiles();
@@ -684,18 +710,24 @@ namespace Theresa3rd_Bot.Business
 
         /*-------------------------------------------------------------作品信息--------------------------------------------------------------------------*/
 
-        public string getWorkInfoWithLeft(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime, long todayLeft, string template = "")
+        public string getSetuRemindMsg(string template, long todayLeft)
         {
-            template = getWorkInfo(pixivWorkInfo, fileInfo, startTime, template);
+            template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
+            template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
-            return template;
+            return template + "\r\n";
         }
 
-        public string getWorkInfoWithTag(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime, string tagName, string template = "")
+        public string getUserPushRemindMsg(string template, string userName)
         {
-            template = getWorkInfo(pixivWorkInfo, fileInfo, startTime, template);
+            template = template.Replace("{UserName}", userName);
+            return template + "\r\n";
+        }
+
+        public string getTagPushRemindMsg(string template, string tagName)
+        {
             template = template.Replace("{TagName}", tagName);
-            return template;
+            return template + "\r\n";
         }
 
         public string getWorkInfo(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime, string template = "")
@@ -706,6 +738,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{IllustTitle}", pixivWorkInfo.illustTitle);
+            template = template.Replace("{PixivId}", pixivWorkInfo.illustId);
             template = template.Replace("{UserName}", pixivWorkInfo.userName);
             template = template.Replace("{UserId}", pixivWorkInfo.userId.ToString());
             template = template.Replace("{SizeMB}", sizeMB.ToString());
@@ -716,8 +749,8 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{RelevantCount}", pixivWorkInfo.RelevantCount.ToString());
             template = template.Replace("{PageCount}", pixivWorkInfo.pageCount.ToString());
-            template = template.Replace("{Tags}", joinTagsStr(pixivWorkInfo.tags, pixivWorkInfo.isR18() ? 3 : 0));
-            template = template.Replace("{Urls}", joinWorkUrls(pixivWorkInfo));
+            template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(pixivWorkInfo.tags, BotConfig.GeneralConfig.PixivTagShowMaximum));
+            template = template.Replace("{Urls}", BusinessHelper.JoinPixivWorkUrls(pixivWorkInfo));
             return template;
         }
 
@@ -726,56 +759,21 @@ namespace Theresa3rd_Bot.Business
             StringBuilder workInfoStr = new StringBuilder();
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
             double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
-            workInfoStr.AppendLine($"标题：{pixivWorkInfo.illustTitle}，画师：{pixivWorkInfo.userName}，画师id：{pixivWorkInfo.userId}，大小：{sizeMB}MB，发布时间：{pixivWorkInfo.createDate.ToSimpleString()}，");
+            workInfoStr.AppendLine($"标题：{pixivWorkInfo.illustTitle}，PixivId：{pixivWorkInfo.illustId}，画师：{pixivWorkInfo.userName}，画师id：{pixivWorkInfo.userId}，大小：{sizeMB}MB，发布时间：{pixivWorkInfo.createDate.ToSimpleString()}，");
             workInfoStr.AppendLine($"收藏：{pixivWorkInfo.bookmarkCount}，赞：{pixivWorkInfo.likeCount}，浏览：{pixivWorkInfo.viewCount}，");
             workInfoStr.AppendLine($"耗时：{costSecond}s，标签图片：{pixivWorkInfo.RelevantCount}张，作品图片:{pixivWorkInfo.pageCount}张");
-            workInfoStr.AppendLine($"标签：{joinTagsStr(pixivWorkInfo.tags, pixivWorkInfo.isR18() ? 3 : 0)}");
-            workInfoStr.Append(joinWorkUrls(pixivWorkInfo));
+            workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(pixivWorkInfo.tags, BotConfig.GeneralConfig.PixivTagShowMaximum)}");
+            workInfoStr.Append(BusinessHelper.JoinPixivWorkUrls(pixivWorkInfo));
             return workInfoStr.ToString();
         }
 
-        protected string joinWorkUrls(PixivWorkInfo pixivWorkInfo, int maxShowCount = 3)
-        {
-            string proxy = BotConfig.GeneralConfig.PixivProxy;
-            if (string.IsNullOrWhiteSpace(proxy)) proxy = "https://i.pixiv.re";
-            StringBuilder LinkStr = new StringBuilder();
-            int endCount = pixivWorkInfo.pageCount > maxShowCount ? maxShowCount : pixivWorkInfo.pageCount;
-            for (int i = 0; i < endCount; i++)
-            {
-                string imgUrl = pixivWorkInfo.urls.original.Replace("https://i.pximg.net", proxy);
-                if (i > 0) imgUrl = imgUrl.Replace("_p0.", $"_p{i}.");
-                if (i < endCount - 1)
-                {
-                    LinkStr.AppendLine(imgUrl);
-                }
-                else
-                {
-                    LinkStr.Append(imgUrl);
-                }
-            }
-            return LinkStr.ToString();
-        }
-
-        protected string joinTagsStr(PixivTagDto tags, int maxShowCount = 0)
-        {
-            string tagstr = "";
-            if (tags?.tags == null) return String.Empty;
-            for (int i = 0; i < tags.tags.Count; i++)
-            {
-                if (maxShowCount > 0 && i >= maxShowCount) return $"{tagstr}...";
-                PixivTagModel tag = tags.tags[i];
-                if (tagstr.Length > 0) tagstr += "，";
-                tagstr += tag.tag;
-            }
-            return tagstr;
-        }
 
         /// <summary>
         /// 将用户输入的关键词转换为pixiv可搜索的word
         /// </summary>
         /// <param name="tagNames"></param>
         /// <returns></returns>
-        public string formatSearchWord(string tagNames)
+        public string toPixivSearchWord(string tagNames)
         {
             tagNames = tagNames.Trim().Replace("(", "（").Replace(")", "）");
             string[] andArr = tagNames.Split(new char[] { ' ', '+' }, StringSplitOptions.RemoveEmptyEntries);

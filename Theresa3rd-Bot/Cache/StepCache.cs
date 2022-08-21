@@ -22,7 +22,7 @@ namespace Theresa3rd_Bot.Cache
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static async Task<StepInfo> CreateStepAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static async Task<StepInfo> CreateStepAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, bool isRemindTimeout = true)
         {
             lock (StepInfoDic)
             {
@@ -32,14 +32,14 @@ namespace Theresa3rd_Bot.Cache
                 StepInfo stepInfo = StepInfoDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
                 if (stepInfo == null)
                 {
-                    stepInfo = new StepInfo(groupId, memberId);
+                    stepInfo = new StepInfo(groupId, memberId, isRemindTimeout);
                     StepInfoDic[groupId].Add(stepInfo);
                     return stepInfo;
                 }
                 if (stepInfo.IsActive == false)
                 {
                     StepInfoDic[groupId].Remove(stepInfo);
-                    stepInfo = new StepInfo(groupId, memberId);
+                    stepInfo = new StepInfo(groupId, memberId, isRemindTimeout);
                     StepInfoDic[groupId].Add(stepInfo);
                     return stepInfo;
                 }

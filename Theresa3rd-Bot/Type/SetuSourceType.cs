@@ -1,6 +1,6 @@
 ﻿namespace Theresa3rd_Bot.Type
 {
-    public enum SaucenaoSourceType
+    public enum SetuSourceType
     {
         Pixiv,
         FanBox,

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.Subscribe;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
@@ -52,6 +53,7 @@ namespace Theresa3rd_Bot.Timer
 
         private static async Task SubscribeMethodAsync(PixivBusiness pixivBusiness)
         {
+            int maxScan = BotConfig.SubscribeConfig.PixivTag.MaxScan;
             SubscribeType subscribeType = SubscribeType.P站标签;
             if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return;
             List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];
@@ -61,10 +63,9 @@ namespace Theresa3rd_Bot.Timer
                 try
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
-                    DateTime startTime = DateTime.Now;
-                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivTagSubscribeAsync(subscribeTask);
+                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivTagSubscribeAsync(subscribeTask, maxScan);
                     if (pixivSubscribeList == null || pixivSubscribeList.Count == 0) continue;
-                    await sendGroupSubscribeAsync(pixivBusiness, subscribeTask, pixivSubscribeList, startTime);
+                    await sendGroupSubscribeAsync(pixivBusiness, subscribeTask, pixivSubscribeList);
                 }
                 catch (Exception ex)
                 {
@@ -77,45 +78,56 @@ namespace Theresa3rd_Bot.Timer
             }
         }
 
-        private static async Task sendGroupSubscribeAsync(PixivBusiness pixivBusiness, SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList, DateTime startTime)
+        private static async Task sendGroupSubscribeAsync(PixivBusiness pixivBusiness, SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList)
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
-                if (pixivSubscribe.PixivWorkInfoDto.body.IsImproper()) continue;
-                if (subscribeTask.GroupIdList == null || subscribeTask.GroupIdList.Count == 0) continue;
+                DateTime startTime = DateTime.Now;
+                List<long> groupIds = subscribeTask.GroupIdList;
+                PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
+                if (pixivWorkInfo == null || pixivWorkInfo.IsImproper() || pixivWorkInfo.hasBanTag()) continue;
+                if (groupIds == null || groupIds.Count == 0) continue;
 
                 string tagName = subscribeTask.SubscribeName;
-                string template = BotConfig.SubscribeConfig.PixivTag.Template;
-                FileInfo fileInfo = await pixivBusiness.downImgAsync(pixivSubscribe.PixivWorkInfoDto);
+                bool isR18Img = pixivWorkInfo.isR18();
+                bool isDownImg = groupIds.IsDownImg(isR18Img);
+                string remindTemplate = BotConfig.SubscribeConfig.PixivTag.Template;
+                string pixivTemplate = BotConfig.GeneralConfig.PixivTemplate;
+                FileInfo fileInfo = isDownImg ? await pixivBusiness.downImgAsync(pixivWorkInfo) : null;
 
-                foreach (long groupId in subscribeTask.GroupIdList)
+                foreach (long groupId in groupIds)
                 {
                     try
                     {
-                        if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18Setu() == false) continue;
+                        if (isR18Img && groupId.IsShowR18Setu() == false) continue;
+                        bool isShowImg = groupId.IsShowSetuImg(isR18Img);
 
                         List<IChatMessage> chailList = new List<IChatMessage>();
-                        if (string.IsNullOrWhiteSpace(template))
+                        if (string.IsNullOrWhiteSpace(remindTemplate))
                         {
                             chailList.Add(new PlainMessage($"pixiv标签[{tagName}]发布了新作品："));
-                            chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime)));
                         }
                         else
                         {
-                            chailList.Add(new PlainMessage(pixivBusiness.getWorkInfoWithTag(pixivSubscribe.PixivWorkInfoDto.body, fileInfo, startTime, tagName, template)));
+                            chailList.Add(new PlainMessage(pixivBusiness.getTagPushRemindMsg(remindTemplate, tagName)));
                         }
 
-                        if (fileInfo == null)
+                        if (string.IsNullOrWhiteSpace(pixivTemplate))
                         {
-                            chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
+                            chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
                         }
-                        else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() == false)
+                        else
+                        {
+                            chailList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startTime, pixivTemplate)));
+                        }
+
+                        if (isShowImg && fileInfo != null)
                         {
                             chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                         }
-                        else if (pixivSubscribe.PixivWorkInfoDto.body.isR18() && groupId.IsShowR18SetuImg())
+                        else if (isShowImg && fileInfo == null)
                         {
-                            chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                            chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
                         }
 
                         await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());

@@ -44,7 +44,7 @@ namespace Theresa3rd_Bot.Handler
             {
                 string userId = null;
                 SubscribeGroupType? groupType = null;
-                string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.Mihoyo.AddCommand);
+                string[] paramArr = message.splitParams(BotConfig.SubscribeConfig.Mihoyo.AddCommand);
                 if (paramArr != null && paramArr.Length >= 2)
                 {
                     userId = paramArr.Length > 0 ? paramArr[0] : null;
@@ -61,7 +61,7 @@ namespace Theresa3rd_Bot.Handler
                     StepDetail groupStep = new StepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                     stepInfo.AddStep(uidStep);
                     stepInfo.AddStep(groupStep);
-                    if (await stepInfo.StartStep(session, args) == false) return;
+                    if (await stepInfo.HandleStep(session, args) == false) return;
                     userId = uidStep.Answer;
                     groupType = (SubscribeGroupType)Convert.ToInt32(groupStep.Answer);
                 }
@@ -112,20 +112,20 @@ namespace Theresa3rd_Bot.Handler
             try
             {
                 string userId = null;
-                string[] paramArr = message.splitParam(BotConfig.SubscribeConfig.Mihoyo.RmCommand);
-                if (paramArr != null && paramArr.Length >= 1)
-                {
-                    userId = paramArr.Length > 0 ? paramArr[0] : null;
-                    if (await CheckUserIdAsync(session, args, userId) == false) return;
-                }
-                else
+                string paramStr = message.splitParam(BotConfig.SubscribeConfig.Mihoyo.RmCommand);
+                if (string.IsNullOrWhiteSpace(paramStr))
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
                     if (stepInfo == null) return;
                     StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要退订用户的id", CheckUserIdAsync);
                     stepInfo.AddStep(uidStep);
-                    if (await stepInfo.StartStep(session, args) == false) return;
+                    if (await stepInfo.HandleStep(session, args) == false) return;
                     userId = uidStep.Answer;
+                }
+                else
+                {
+                    userId = paramStr.Trim();
+                    if (await CheckUserIdAsync(session, args, userId) == false) return;
                 }
 
                 List<SubscribePO> subscribeList = mysBusiness.getSubscribeList(userId);
@@ -140,7 +140,7 @@ namespace Theresa3rd_Bot.Handler
                     subscribeBusiness.delSubscribeGroup(item.Id);
                 }
 
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了id为{userId}的用户~"));
+                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了id为{userId}的米游社用户~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)

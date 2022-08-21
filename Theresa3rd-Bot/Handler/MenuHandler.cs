@@ -54,6 +54,7 @@ namespace Theresa3rd_Bot.Handler
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SetuConfig.Lolicon.Command}[标签]?】 从Lolicon中搜索一张涩图");
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SetuConfig.Lolisuki.Command}[标签]?】 从Lolisuki中搜索一张涩图");
             menuBuilder.AppendLine($"【{prefix}{BotConfig.SaucenaoConfig.Command}[图片]?】 尝试用Saucenao查找来源，并返回原图等信息");
+            menuBuilder.AppendLine($"使用实例请参考：https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md");
             return menuBuilder.ToString();
         }
 

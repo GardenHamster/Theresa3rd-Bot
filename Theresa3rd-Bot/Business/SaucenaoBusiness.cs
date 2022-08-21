@@ -197,7 +197,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SaucenaoConfig.RevokeInterval.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
-            return template;
+            return template + "\r\n";
         }
 
         /// <summary>

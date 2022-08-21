@@ -34,7 +34,7 @@ namespace Theresa3rd_Bot.Handler
             ascii2dBusiness = new Ascii2dBusiness();
         }
 
-        public async Task saucenaoSearch(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public async Task searchResult(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             try
             {
@@ -82,24 +82,24 @@ namespace Theresa3rd_Bot.Handler
                     if (isNotFound) notFoundList.Add(imgList[i]);
                 }
 
-                if (notFoundList.Count > 0 && await CheckContinueAscii2d(session, args, notFoundList))
-                {
-                    await Task.Delay(1000);
-                    await session.SendGroupMessageAsync(groupId, new PlainMessage("正在通过ascii2d尝试搜索原图..."));
-                    for (int i = 0; i < imgList.Count; i++) await searchWithAscii2d(session, args, imgList[i]);
-                }
-
-                CoolingCache.SetMemberSaucenaoCooling(groupId, memberId);
-
                 if (BotConfig.SaucenaoConfig.RevokeSearched)
                 {
                     await Task.Delay(1000);
                     await session.RevokeMessageAsync(imgArgs);
                 }
+
+                if (notFoundList.Count > 0 && await CheckContinueAscii2d(session, args, notFoundList))
+                {
+                    await Task.Delay(1000);
+                    await session.SendGroupMessageAsync(groupId, new PlainMessage(" 正在通过ascii2d尝试搜索原图..."));
+                    for (int i = 0; i < imgList.Count; i++) await searchWithAscii2d(session, args, imgList[i]);
+                }
+
+                CoolingCache.SetMemberSaucenaoCooling(groupId, memberId);
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "searchSource异常");
+                LogHelper.Error(ex, "searchResult异常");
                 await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, " 出了点小问题，任务结束~");
             }
             finally
@@ -185,13 +185,13 @@ namespace Theresa3rd_Bot.Handler
             }
             catch (BaseException ex)
             {
-                LogHelper.Error(ex, $"原图功能异常，url={imageMessage.Url}，{ex.Message}");
+                LogHelper.Error(ex, $"searchWithSaucenao异常，url={imageMessage.Url}，{ex.Message}");
                 await session.SendMessageWithAtAsync(args, new PlainMessage($" 查找第{index}张图片失败，{ex.Message}，再试一次吧~"));
                 return false;
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"原图功能异常，url={imageMessage.Url}");
+                LogHelper.Error(ex, $"searchWithSaucenao异常，url={imageMessage.Url}");
                 await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, $" 查找第{index}张图片失败，再试一次吧~");
                 return false;
             }
@@ -255,12 +255,12 @@ namespace Theresa3rd_Bot.Handler
             }
             catch (BaseException ex)
             {
-                LogHelper.Error(ex, $"原图功能异常，url={imageMessage.Url}，{ex.Message}");
+                LogHelper.Error(ex, $"searchWithAscii2d异常，url={imageMessage.Url}，{ex.Message}");
                 await session.SendMessageWithAtAsync(args, new PlainMessage($" 查找图片失败，{ex.Message}，再试一次吧~"));
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"原图功能异常，url={imageMessage.Url}");
+                LogHelper.Error(ex, $"searchWithAscii2d异常，url={imageMessage.Url}");
                 await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, $" 查找图片失败，再试一次吧~");
             }
         }

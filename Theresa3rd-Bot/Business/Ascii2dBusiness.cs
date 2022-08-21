@@ -3,11 +3,9 @@ using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Exceptions;
@@ -111,34 +109,13 @@ namespace Theresa3rd_Bot.Business
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "uri", imgHttpUrl } };
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.Ascii2dUrl, paramDic, headerDic);
-            if (response.StatusCode != HttpStatusCode.OK)
+            if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Redirect)
             {
                 string contentString = await response.GetContentStringAsync();
                 throw new BaseException($"ascii2d返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(500)}");
             }
             return response.RequestMessage.RequestUri.AbsoluteUri;
         }
-
-        /// <summary>
-        /// 请求saucenao,获取返回结果
-        /// </summary>
-        /// <param name="imgHttpUrl"></param>
-        /// <returns></returns>
-        /// <exception cref="BaseException"></exception>
-        private async static Task<string> SearchResultAsync(string imgHttpUrl)
-        {
-            Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "url", imgHttpUrl } };
-            Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.SaucenaoUrl, paramDic, headerDic);
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                string contentString = await response.GetContentStringAsync();
-                throw new BaseException($"ascii2d返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(500)}");
-            }
-            return await response.Content.ReadAsStringAsync();
-        }
-
-
 
     }
 }

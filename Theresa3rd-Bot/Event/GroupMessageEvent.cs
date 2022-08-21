@@ -237,7 +237,7 @@ namespace Theresa3rd_Bot.Event
                     if (await CheckMemberSaucenaoCoolingAsync(session, args)) return;
                     if (await CheckSaucenaoUseUpAsync(session, args)) return;
                     if (await CheckHandingAsync(session, args)) return;
-                    await new SaucenaoHandler().saucenaoSearch(session, args);
+                    await new SaucenaoHandler().searchResult(session, args);
                     new RequestRecordBusiness().addRecord(args, CommandType.Saucenao, message);
                     args.BlockRemainingHandlers = true;
                     return;

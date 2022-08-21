@@ -21,14 +21,14 @@
 
 ### 色图相关
 - [x] 接入 [Lolicon Api](https://api.lolicon.app/#/setu)
-- [ ] 接入 [Lolisuki Api](https://github.com/GardenHamster/LoliSuki)
+- [x] 接入 [Lolisuki Api](https://github.com/GardenHamster/LoliSuki)
 - [x] pixiv免代理 
 - [x] pixiv标签搜索功能(根据标签获取随机的收藏度较高的色图，可多标签搜索)
 - [x] pixiv随机色图功能(随机标签/随机关注画师的作品/随机收藏中的作品/随机订阅中的作品)
 - [x] pixivid搜索功能
 - [x] pixiv动图转gif功能
 - [x] saucenao搜图功能(如果图片来源于pixiv时，尝试下载并返回原图，并且优先返回来源于pixiv中的原图)
-- [ ] ascii2d搜图功能(当saucenao中找不到来源时，继续使用ascii2d搜索)
+- [x] ascii2d搜图功能(当saucenao中找不到来源时，继续使用ascii2d搜索)
 - [ ] 定时发送本地随机色图功能
 
 ### 订阅推送功能

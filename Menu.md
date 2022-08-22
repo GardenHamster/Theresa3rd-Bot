@@ -3,11 +3,13 @@
 ## 目录:
 + **[通过pixiv搜索色图](Menu.md#pixiv涩图)**
 + **[通过Lolicon搜索色图](Menu.md#Lolicon瑟图)**
++ **[通过Lolisuki搜索色图](Menu.md#Lolicon瑟图)**
 + **[通过saucenao搜索原图](Menu.md#Saucenao搜图)**
-+ **[禁止标签](Menu.md#禁止标签)**
 + **[订阅pixiv画师](Menu.md#订阅pixiv画师)**
 + **[订阅pixiv标签](Menu.md#订阅pixiv标签)**
 + **[订阅米游社作者](Menu.md#订阅米游社作者)**
++ **[禁止标签](Menu.md#禁止标签)**
++ **[禁止成员](Menu.md#禁止成员)**
 
 ## 通过pixiv搜索色图
 ### 说明
@@ -45,6 +47,15 @@
 - 发送 `#瑟图 [自定义标签]` 可以随机搜索一张该标签的瑟图，多标签可以使用逗号或者空格分割，可以进行多标签搜索
 ![image](https://user-images.githubusercontent.com/89188316/177755716-0bbbaa13-4b94-4d14-a4d4-a2d93789ff87.png)
 
+## 通过Lolisuki搜索色图
+### 说明
+- 根据配置文件，从 [lolisuki api]([https://api.lolicon.app](https://lolisuki.cc) 中获取色图，并发送到qq群中
+
+### 指令
+- 发送 `#setu` 可以随机获取一张Lolicon图床中的瑟图
+- 发送 `#setu [自定义标签]` 可以随机搜索一张该标签的瑟图，多标签可以使用逗号或者空格分割，可以进行多标签搜索
+![image](https://user-images.githubusercontent.com/89188316/185850275-c77de5b3-f1be-4008-9ceb-5c3518a305d4.png)
+
 ## Saucenao搜图
 ### 说明
 - 通过调用 [saucenao](https://saucenao.com) 尝试搜索原图，如果存在匹配度较高的结果时，尝试获取下载并返回原图以及信息
@@ -62,16 +73,6 @@
 - 发送 `#原图` 根据提示进行操作
 - 发送 `#原图`+`一张或多张需要搜索图片` 
 ![image](https://user-images.githubusercontent.com/89188316/177800178-4d6821c6-426c-4e19-8770-67222a3b0339.png)
-
-
-## 禁止标签
-### 说明
-- 将一个标签加入到禁止搜索列表中，防止群友整活，匹配方式为完全一致
-![image](https://user-images.githubusercontent.com/89188316/153175892-80e31abe-cbf7-4485-bfb1-bc7370f8c06d.png)
-
-### 指令
-- 发送 `#禁止标签 [关键词]` 禁止一个标签
-- 发送 `#解禁标签 [关键词]` 解除一个标签
 
 ## 订阅pixiv画师
 ### 说明
@@ -116,7 +117,25 @@
 - 发送 `#订阅版`主 根据提示分步订阅
 - 发送 `#退订版主` 根据提示分步退订
 
+## 禁止标签
+### 说明
+- 将一个标签加入到禁止搜索列表中，防止群友整活，匹配方式为完全一致
 
+![image](https://user-images.githubusercontent.com/89188316/153175892-80e31abe-cbf7-4485-bfb1-bc7370f8c06d.png)
+
+### 指令
+- 发送 `#禁止标签 [关键词]` 禁止一个标签
+- 发送 `#解禁标签 [关键词]` 解除一个标签
+
+## 禁止成员
+### 说明
+- 将一个群友加入黑名单中，忽略其发送的所有指令
+
+![image](https://user-images.githubusercontent.com/89188316/185851078-25151023-1359-405f-af53-c1371b39eb9d.png)
+
+### 指令
+- 发送 `#禁止成员 [qq号]` 拉黑一个成员
+- 发送 `#解禁成员 [qq号]` 解除一个成员
 
 
 

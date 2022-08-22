@@ -135,3 +135,15 @@ Unhandled exception. YamlDotNet.Core.YamlException: (Line: 18, Col: 30, Idx: 136
    at YamlDotNet.Serialization.ValueDeserializers.AliasValueDeserializer.DeserializeValue(IParser parser, Type expectedType, SerializerState state, IValueDeserializer nestedObjectDeserializer)
    at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.<>c__DisplayClass3_0.<DeserializeValue>b__0(IParser r, Type t)
 ```
+
+### bot没有回复或者只会回复ヾ(≧∇≦*)ゝ或者٩(๑òωó๑)۶表情
+**只有#pixivcookie等更新cookie的指令需要私发给机器人以外，其他指令都要发送到群里面**
+
+**有可能是你发送的不是一个指令，或者这个指令不存在，或者发送的指令前缀不一致，或者你修改了配置文件以后没有重启**
+
+私聊bot但是只会回复表情的情况：
+- 需要加bot为好友
+
+群聊bot但是没有回应的情况
+- 配置文件中AcceptGroups没有配置群号，或者群号填写错误
+- mcl中机器人有回应但是群里没有消息出来，那可能是你的bot账号是刚注册没多久的，或者内容太色了mht不让你发

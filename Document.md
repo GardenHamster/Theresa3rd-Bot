@@ -136,7 +136,7 @@ Unhandled exception. YamlDotNet.Core.YamlException: (Line: 18, Col: 30, Idx: 136
    at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.<>c__DisplayClass3_0.<DeserializeValue>b__0(IParser r, Type t)
 ```
 
-### bot没有回复或者只会回复ヾ(≧∇≦*)ゝ或者٩(๑òωó๑)۶表情
+### bot没有回复或者只回复表情
 **只有#pixivcookie等更新cookie的指令需要私发给机器人以外，其他指令都要发送到群里面**
 
 **有可能是你发送的不是一个指令，或者这个指令不存在，或者发送的指令前缀不一致，或者你修改了配置文件以后没有重启**

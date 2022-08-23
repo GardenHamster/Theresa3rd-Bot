@@ -1,9 +1,11 @@
 # 使用方法
 
+- 注：除了更新cookie指令需要私发给机器人，其他指令都要发送到群里
+
 ## 目录:
-+ **[通过pixiv搜索色图](Menu.md#pixiv涩图)**
-+ **[通过Lolicon搜索色图](Menu.md#Lolicon瑟图)**
-+ **[通过Lolisuki搜索色图](Menu.md#Lolicon瑟图)**
++ **[通过pixiv搜索色图](Menu.md#通过pixiv搜索色图)**
++ **[Lolicon随机色图](Menu.md#Lolicon随机色图)**
++ **[Lolisuki随机色图](Menu.md#Lolisuki随机色图)**
 + **[通过saucenao搜索原图](Menu.md#Saucenao搜图)**
 + **[订阅pixiv画师](Menu.md#订阅pixiv画师)**
 + **[订阅pixiv标签](Menu.md#订阅pixiv标签)**
@@ -38,7 +40,7 @@
 - `萝莉,少女 白丝,黑丝` 表示包含`萝莉`或者`少女`,并且包含`白丝`或者`黑丝` 的涩图
 ![image](https://user-images.githubusercontent.com/89188316/177752424-78319721-337c-41ff-ac6e-31b64b6a4cb8.png)
 
-## 通过Lolicon搜索色图
+## Lolicon随机色图
 ### 说明
 - 根据配置文件，从 [lolicon api](https://api.lolicon.app) 中获取色图，并发送到qq群中
 
@@ -47,9 +49,9 @@
 - 发送 `#瑟图 [自定义标签]` 可以随机搜索一张该标签的瑟图，多标签可以使用逗号或者空格分割，可以进行多标签搜索
 ![image](https://user-images.githubusercontent.com/89188316/177755716-0bbbaa13-4b94-4d14-a4d4-a2d93789ff87.png)
 
-## 通过Lolisuki搜索色图
+## Lolisuki随机色图
 ### 说明
-- 根据配置文件，从 [lolisuki api]([https://api.lolicon.app](https://lolisuki.cc) 中获取色图，并发送到qq群中
+- 根据配置文件，从 [lolisuki api](https://lolisuki.cc) 中获取色图，并发送到qq群中
 
 ### 指令
 - 发送 `#setu` 可以随机获取一张Lolicon图床中的瑟图
@@ -59,6 +61,7 @@
 ## Saucenao搜图
 ### 说明
 - 通过调用 [saucenao](https://saucenao.com) 尝试搜索原图，如果存在匹配度较高的结果时，尝试获取下载并返回原图以及信息
+- 如果saucenao中没有搜索到匹配结果是，可以选择是否使用ascii2d继续搜索，可以再配置文件中开启或关闭该功能
 
 ### Saucenao Cookie
 - 在未设置cookie的情况下，Saucenao搜索限制为每个ip每日搜索50次，每30秒搜索3次，在使用频率较高的情况下，建议设置cookie
@@ -89,7 +92,6 @@
 - 发送 `#退订画师 [画师id]` 一次性退订一个画师
 - 发送 `#同步画师` 根据提示将pixiv账号中关注的画师批量加入到订阅列表中
 ![image](https://user-images.githubusercontent.com/89188316/177914681-dc8069e2-accc-4359-9b6e-dfbf8fe7fa31.png)
-
 
 ## 订阅pixiv标签
 ### 说明
@@ -138,7 +140,3 @@
 ### 指令
 - 发送 `#禁止成员 [qq号]` 拉黑一个成员
 - 发送 `#解禁成员 [qq号]` 解除一个成员
-
-
-
-

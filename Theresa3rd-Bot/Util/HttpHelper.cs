@@ -138,7 +138,7 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         /// <param name="imgUrl"></param>
         /// <returns></returns>
-        public static async Task<FileInfo> DownImgAsync(string imgUrl, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        public static async Task<FileInfo> DownImgAsync(string imgUrl, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
             string suffix = StringHelper.getSuffixByUrl(imgUrl);
             if (string.IsNullOrEmpty(suffix)) suffix = "jpg";
@@ -154,7 +154,7 @@ namespace Theresa3rd_Bot.Util
         /// <param name="fullImageSavePath"></param>
         /// <param name="headerDic"></param>
         /// <returns></returns>
-        public static async Task<FileInfo> DownFileAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        public static async Task<FileInfo> DownFileAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
             if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
             HttpClient client = DefaultHttpClientFactory.CreateClient();

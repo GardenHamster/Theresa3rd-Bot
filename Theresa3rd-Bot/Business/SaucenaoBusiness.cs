@@ -208,8 +208,8 @@ namespace Theresa3rd_Bot.Business
         {
             if (itemList == null) return new List<SaucenaoItem>();
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();
-            sortList.AddRange(itemList.Where(o => o.SourceType == SetuSourceType.Pixiv && o.Similarity >= 80).ToList());
-            sortList.AddRange(itemList.Where(o => o.Similarity >= 70).OrderBy(o => o.SourceType).ToList());
+            sortList.AddRange(itemList.Where(o => o.SourceType == SetuSourceType.Pixiv && o.Similarity >= 75).ToList());
+            sortList.AddRange(itemList.Where(o => o.Similarity >= 60).OrderBy(o => o.SourceType).ToList());
             sortList.AddRange(itemList.OrderByDescending(o => o.Similarity).ThenBy(o => o.SourceType));
             return sortList.Distinct().ToList();
         }

@@ -121,7 +121,7 @@ namespace Theresa3rd_Bot.Util
         public static bool IsGif(this List<string> tags)
         {
             if (tags == null || tags.Count == 0) return false;
-            return tags.Where(o => o == "うごイラ" || o == "动图" || o.ToLower() == "ugoira").Any();
+            return tags.Where(o => o == "うごイラ" || o == "动图" || o == "動圖" || o.ToLower() == "ugoira").Any();
         }
 
         /// <summary>

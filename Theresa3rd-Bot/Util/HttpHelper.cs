@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Authentication;
@@ -12,6 +13,7 @@ namespace Theresa3rd_Bot.Util
 {
     public static class HttpHelper
     {
+        private static readonly IHttpClientFactory ProxyHttpClientFactory;
         private static readonly IHttpClientFactory DefaultHttpClientFactory;
 
         public static readonly string[] UserAgents = new string[] {
@@ -35,6 +37,14 @@ namespace Theresa3rd_Bot.Util
         static HttpHelper()
         {
             DefaultHttpClientFactory = new ServiceCollection().AddHttpClient().BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
+            ProxyHttpClientFactory = new ServiceCollection().AddHttpClient("ProxyClient").ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler()
+                {
+                    Proxy = new WebProxy(new Uri("http://43.138.150.235:7890"), BypassOnLocal: true),
+                    UseProxy = true,
+                };
+            }).Services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
         }
 
         /// <summary>
@@ -47,6 +57,25 @@ namespace Theresa3rd_Bot.Util
         public static async Task<string> GetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             HttpClient client = DefaultHttpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(url);
+            client.addHeaders(headerDic);
+            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
+            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            HttpResponseMessage response = await client.GetAsync(url);
+            //response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        /// <summary>
+        /// HttpGet
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="headerDic"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        public static async Task<string> GetWithProxyAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        {
+            HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
             client.BaseAddress = new Uri(url);
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
@@ -158,6 +187,26 @@ namespace Theresa3rd_Bot.Util
         {
             if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
             HttpClient client = DefaultHttpClientFactory.CreateClient();
+            client.addHeaders(headerDic);
+            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
+            byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
+            using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
+            fileStream.Write(urlContents, 0, urlContents.Length);
+            return new FileInfo(fullImageSavePath);
+        }
+
+        /// <summary>
+        /// 下载文件
+        /// </summary>
+        /// <param name="imgUrl"></param>
+        /// <param name="fullImageSavePath"></param>
+        /// <param name="headerDic"></param>
+        /// <returns></returns>
+        public static async Task<FileInfo> DownFileWithProxyAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
+        {
+            if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
+            HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
             client.addHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());

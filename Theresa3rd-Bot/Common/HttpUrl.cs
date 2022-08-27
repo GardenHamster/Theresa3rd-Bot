@@ -26,6 +26,11 @@ namespace Theresa3rd_Bot.Common
         /// </summary>
         public static readonly string Ascii2dUrl = "https://ascii2d.net/search/uri";
 
+        /// <summary>
+        /// pixiv.cat图片代理地址
+        /// </summary>
+        public static readonly string PixivCatUrl = "https://i.pixiv.re";
+
         /*---------------------------------------------------------------pixiv-----------------------------------------------------------------------*/
 
         /// <summary>

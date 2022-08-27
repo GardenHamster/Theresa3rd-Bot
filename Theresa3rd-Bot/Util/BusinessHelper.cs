@@ -201,13 +201,11 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static string JoinPixivWorkUrls(PixivWorkInfo pixivWorkInfo, int maxShowCount = 3)
         {
-            string proxy = BotConfig.GeneralConfig.PixivProxy;
-            if (string.IsNullOrWhiteSpace(proxy)) proxy = "https://i.pixiv.re";
             StringBuilder LinkStr = new StringBuilder();
             int endCount = pixivWorkInfo.pageCount > maxShowCount ? maxShowCount : pixivWorkInfo.pageCount;
             for (int i = 0; i < endCount; i++)
             {
-                string imgUrl = pixivWorkInfo.urls.original.Replace("https://i.pximg.net", proxy);
+                string imgUrl = pixivWorkInfo.urls.original.ToProxyUrl();
                 if (i > 0) imgUrl = imgUrl.Replace("_p0.", $"_p{i}.");
                 if (i < endCount - 1)
                 {

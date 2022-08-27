@@ -178,6 +178,10 @@ namespace Theresa3rd_Bot.Util
             {
                 return await PixivHelper.GetAsync(url, headerDic, timeout);
             }
+            else if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
+            {
+                return await HttpHelper.GetWithProxyAsync(url, headerDic, timeout);
+            }
             else
             {
                 return await HttpHelper.GetAsync(url, headerDic, timeout);
@@ -249,7 +253,6 @@ namespace Theresa3rd_Bot.Util
         {
             imgUrl = imgUrl.Replace("https://i.pixiv.cat", "https://i.pximg.net");
             imgUrl = imgUrl.Replace("https://i.pixiv.re", "https://i.pximg.net");
-            imgUrl = imgUrl.Replace(BotConfig.GeneralConfig.PixivProxy, "https://i.pximg.net");
             return imgUrl;
         }
 
@@ -260,8 +263,10 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static string ToProxyUrl(this string imgUrl)
         {
-            imgUrl = imgUrl.Replace("https://i.pximg.net", BotConfig.GeneralConfig.PixivProxy);
-            imgUrl = imgUrl.Replace("https://i.pixiv.cat", BotConfig.GeneralConfig.PixivProxy);
+            string proxyUrl = BotConfig.GeneralConfig.PixivImgProxy;
+            if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.PixivCatUrl;
+            imgUrl = imgUrl.Replace("https://i.pximg.net", proxyUrl);
+            imgUrl = imgUrl.Replace("https://i.pixiv.cat", proxyUrl);
             return imgUrl;
         }
 

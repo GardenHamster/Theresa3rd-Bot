@@ -58,18 +58,20 @@ namespace Theresa3rd_Bot.Business
                 string fullFileName = $"{loliconData.pid}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
                 string imgUrl = getDownImgUrl(loliconData.urls.original);
-                if (BotConfig.GeneralConfig.DownWithProxy || BotConfig.GeneralConfig.PixivFreeProxy)
+                if (BotConfig.GeneralConfig.PixivFreeProxy || string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivImgProxy) == false)
                 {
-                    imgUrl = imgUrl.ToProxyUrl();
-                    return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath);
+                    return await HttpHelper.DownFileAsync(imgUrl.ToProxyUrl(), fullImageSavePath);
+                }
+                Dictionary<string, string> headerDic = new Dictionary<string, string>();
+                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString()));
+                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+                if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
+                {
+                    return await HttpHelper.DownFileWithProxyAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
                 }
                 else
                 {
-                    imgUrl = imgUrl.ToPximgUrl();
-                    Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                    headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString()));
-                    headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                    return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic);
+                    return await HttpHelper.DownFileAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
                 }
             }
             catch (Exception ex)

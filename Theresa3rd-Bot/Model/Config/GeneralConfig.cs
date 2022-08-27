@@ -17,9 +17,9 @@ namespace Theresa3rd_Bot.Model.Config
 
         public string DownErrorImg { get; set; }
 
-        public string PixivProxy { get; set; }
+        public string PixivHttpProxy { get; set; }
 
-        public bool DownWithProxy { get; set; }
+        public string PixivImgProxy { get; set; }
 
         public bool PixivFreeProxy { get; set; }
 

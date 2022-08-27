@@ -6,13 +6,13 @@
                                 出了点小问题，稍后再试吧
                                 [image:C:\BotImg\face\emmm.jpg]
     DownErrorImg:               '[image:C:\BotImg\face\downError.png]'              #图片下载失败时的替代图片
-    PixivFreeProxy:             false                                                #开启pixiv免代理模式，在没有vpn的情况下可以设置为true，在梯子速度较快的情况下推荐设置为false
-    PixivHttpProxy:             'http://127.0.0.1:7890'                        #pixiv代理地址，值为空表示不使用代理，格式：http://127.0.0.1:7890
-    PixivImgProxy:              'https://i.pixiv.re'                                #图片代理地址，值为空表示不使用代理，格式：https://i.pixiv.re
+    PixivFreeProxy:             false                                               #开启pixiv免代理模式，在没有vpn的情况下可以设置为true，在有vpn且速度较快的情况下推荐设置为false
+    PixivHttpProxy:             'http://127.0.0.1:7890'                             #pixiv代理地址，值为空表示不使用代理，不为空时表示直连：http://127.0.0.1:7890
+    PixivImgProxy:              'https://i.pixiv.re'                                #图片代理地址，值为空表示不使用代理，不为空时优先使用代理下载图片，格式：https://i.pixiv.re
     PixivTagShowMaximum:        3                                                   #最多显示N个pixiv标签，0表示无限制，建议设置该参数降低触发风控的概率
     PixivImgSize:               'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb，推荐使用thumb或small降低触发风控的概率
     PixivCookieExpire:          5184000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每60天更新一次
-    PixivCookieExpireMsg:       'emmmm,cookie过期了,请艾特管理员更新cookie'           #cookie过期时返回的消息
+    PixivCookieExpireMsg:       'emmmm,cookie过期了,请艾特管理员更新cookie'         #cookie过期时返回的消息
     PixivTemplate:              |                                                   #pixiv模版，值为空时将使用默认模版
                                 标题：{IllustTitle}，PixivId：{PixivId}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
                                 收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，

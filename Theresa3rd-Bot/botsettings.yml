@@ -6,7 +6,7 @@
                                 出了点小问题，稍后再试吧
                                 [image:C:\BotImg\face\emmm.jpg]
     DownErrorImg:               '[image:C:\BotImg\face\downError.png]'              #图片下载失败时的替代图片
-    PixivFreeProxy:             false                                               #开启pixiv免代理模式，在没有vpn的情况下可以设置为true，在有vpn且速度较快的情况下推荐设置为false
+    PixivFreeProxy:             true                                               #开启pixiv免代理模式，在没有vpn的情况下可以设置为true，在有vpn且速度较快的情况下推荐设置为false
     PixivHttpProxy:             'http://127.0.0.1:7890'                             #pixiv代理地址，值为空表示不使用代理，不为空时表示直连：http://127.0.0.1:7890
     PixivImgProxy:              'https://i.pixiv.re'                                #图片代理地址，值为空表示不使用代理，不为空时优先使用代理下载图片，格式：https://i.pixiv.re
     PixivTagShowMaximum:        3                                                   #最多显示N个pixiv标签，0表示无限制，建议设置该参数降低触发风控的概率

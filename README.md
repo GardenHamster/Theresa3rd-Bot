@@ -4,15 +4,14 @@
 
 ## 简介
  - 某舰团长利用摸鱼时间写出来的自用的bot，准备移植到 [mirai](https://github.com/mamoe/mirai)。基于 .net core 6.0 和 mirai-api-http。
- - 部分功能还在摸鱼开发中，[windows下部署请点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md)，[食用教程点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md)
+ - 部分功能还在摸鱼开发中，[windows和linux下部署请点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md)，[使用示例和食用教程点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md)
  - 开始白嫖前，请在右上角点一下:star:Star
- - 因为还没在Linux上做过测试所以暂时不写Linux上部署的教程
- - ~~不要问bot的名字是什么，因为还没想到好的名字,所以暂时用舰团的名字命名~~
  - 关于bot没有回应或者只会回复ヾ(≧∇≦*)ゝ或٩(๑òωó๑)۶表情的情况[先点一下这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md#bot没有回复或者只回复表情)
+  - ~~不要问bot的名字是什么，因为还没想到好的名字,所以暂时用舰团的名字命名~~
 
 ## 声明
  - 本项目为个人自娱自乐写出来的项目，并没有任何收益，并不负责由于使用本项目所产生的任何问题，不得将项目用于任何商业用途
- - 有想法或问题请发issues
+ - 有任何想法问题或者bug请发Issues
 
 ## 功能和进度
 ### 基本

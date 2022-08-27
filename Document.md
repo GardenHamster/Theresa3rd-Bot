@@ -8,13 +8,13 @@
 - JDK版本：17
 
 ## 安装数据库
-- 数据库为mysql，需要自行安装([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MysqlInstall.md))
+- 数据库为mysql，需要自行安装([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MysqlInstall.md))，或者可以购买云数据库
 
 ## 安装mirai-console-loader
-- 参照[mirai-console-loader](https://github.com/iTXTech/mirai-console-loader)安装mcl，然后为mcl安装并配置[mirai-api-http](https://github.com/project-mirai/mirai-api-http)插件，([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MiraiInstall.md))
+- 参照 [mirai-console-loader](https://github.com/iTXTech/mirai-console-loader) 文档安装mcl，
+- 为mcl安装并配置 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 插件，([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MiraiInstall.md))
 - 最后在config/Console/AutoLogin.yml中配置bot账号密码并启动mcl，正常启动结果如下
 ```bash
-2022-02-13 18:09:37 I/WindowHelperJvm: Mirai is using desktop. Captcha will be thrown by window popup. You can add `mirai.no-desktop` to JVM properties (-Dmirai.no-desktop) to disable it.
 2022-02-13 18:09:37 I/main: Auto-login 123456789
 2022-02-13 18:09:38 I/Bot.123456789: Loaded account secrets from local cache.
 2022-02-13 18:09:38 I/Bot.123456789: Saved account secrets to local cache for fast login.
@@ -25,10 +25,10 @@
 ```
 
 ## 下载并修改配置文件
-- 从 [releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 处下载最新版本，注：各版本之间的`botsettings.yml`可能会有较大差异，升级版本后请注意对比并修改该文件
+- [点击这里下载最新版本](https://github.com/GardenHamster/Theresa3rd-Bot/releases)，注：各版本之间的`botsettings.yml`可能会有较大差异，升级版本后请注意对比并修改该文件
 - 根据自己的需要修改根目录下的配置文件`botsettings.yml`，修改完成后需要重新启动
 - [botsetting.yml的一些补充说明](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/botsetting.md)，实在没接触过yml语法的小白可以看一下[这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/ymlconfig.md)
-- 修改根目录下的配置文件appsettings.Production.json，~~注意是Production不是Development~~
+- 修改根目录下的配置文件appsettings.Production.json，使项目可以连接上mcl
 ```json5
 {
   "Mirai": {                        //mirai-api-http配置在mcl目录config/net.mamoe.mirai-api-http/setting.yml里面
@@ -66,7 +66,7 @@ sudo ln -s /usr/lib64/libgdiplus.so /usr/lib64/gdiplus.dll
 ```
 4、切换到Theresa3rd-Bot.dll所在目录下，运行Theresa3rd-Bot.dll
 ```bash
-nohup dotnet GenshinPray.dll --launch-profile Production --urls http://0.0.0.0:8088
+nohup dotnet Theresa3rd-Bot.dll --launch-profile Production --urls http://0.0.0.0:8088
 ```
 
 ## Windows下部署

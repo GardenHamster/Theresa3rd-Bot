@@ -49,13 +49,7 @@ namespace Theresa3rd_Bot.Util
                 Session = Services.GetRequiredService<IMiraiHttpSession>();
                 await Session.ConnectAsync(BotConfig.MiraiConfig.BotQQ);
                 LogHelper.Info("已成功连接到mirai-console...");
-                while (true)
-                {
-                    if (Console.ReadLine() == "exit")
-                    {
-                        break;
-                    }
-                }
+                while (true) { }
             }
             catch (Exception ex)
             {

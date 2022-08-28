@@ -68,6 +68,10 @@ sudo ln -s /usr/lib64/libgdiplus.so /usr/lib64/gdiplus.dll
 ```bash
 nohup dotnet Theresa3rd-Bot.dll --launch-profile Production --urls http://0.0.0.0:8088
 ```
+5、如果使用#瑟图命令时报错：The remote certificate is invalid because of errors in the certificate chain: NotTimeValid，需要升级一下ca证书
+```bash
+yum update ca-certificates -y
+```
 
 ## Windows下部署
 - 下载并安装 [ASP.NET Core Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)，推荐下载页面中的 [Hosting Bundle](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-6.0.8-windows-hosting-bundle-installer)
@@ -170,6 +174,12 @@ Unhandled exception. YamlDotNet.Core.YamlException: (Line: 18, Col: 30, Idx: 136
    at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.DeserializeValue(IParser parser, Type expectedType, SerializerState state, IValueDeserializer nestedObjectDeserializer)
    at YamlDotNet.Serialization.ValueDeserializers.AliasValueDeserializer.DeserializeValue(IParser parser, Type expectedType, SerializerState state, IValueDeserializer nestedObjectDeserializer)
    at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.<>c__DisplayClass3_0.<DeserializeValue>b__0(IParser r, Type t)
+```
+
+### linux下报错The remote certificate is invalid because of errors in the certificate chain: NotTimeValid
+- 更新一下ca证书
+```bash
+yum update ca-certificates -y
 ```
 
 ### bot没有回复或者只回复表情

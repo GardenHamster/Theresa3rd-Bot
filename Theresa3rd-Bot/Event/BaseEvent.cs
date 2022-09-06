@@ -154,6 +154,7 @@ namespace Theresa3rd_Bot.Event
         /// <returns></returns>
         public async Task<bool> CheckMemberSetuCoolingAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
+            if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(args.Sender.Id)) return false;
             if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
             int cdSecond = CoolingCache.GetMemberSetuCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
@@ -169,6 +170,7 @@ namespace Theresa3rd_Bot.Event
         /// <returns></returns>
         public async Task<bool> CheckGroupSetuCoolingAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
+            if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(args.Sender.Id)) return false;
             if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
             int cdSecond = CoolingCache.GetGroupSetuCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
@@ -184,6 +186,7 @@ namespace Theresa3rd_Bot.Event
         /// <returns></returns>
         public async Task<bool> CheckSetuUseUpAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
+            if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(args.Sender.Id)) return false;
             if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(args.Sender.Group.Id)) return false;
             if (BotConfig.SetuConfig.MaxDaily == 0) return false;
             int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);

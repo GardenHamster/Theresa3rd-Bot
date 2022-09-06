@@ -25,18 +25,17 @@
     SetuCustomDisableMsg:       '自定义功能已关闭'                                  #禁用自定义时返回的消息
 
 Permissions:                                                                        #权限设置
-    SuperManagers:              [12345,45678]                                       #超级管理员列表,可以使用管理指令
+    SuperManagers:              [12345678,23456789]                                 #超级管理员列表,可以使用管理指令
+    LimitlessMembers:           [12345678,23456789]                                 #功能冷却时间和每日次数无限制的成员
     AcceptGroups:               [284196392]                                         #白名单，只处理这些群的消息
     SetuGroups:                 [284196392]                                         #拥有涩图权限的群
     SetuShowImgGroups:          [284196392]                                         #允许发送图片的群，否则只发送图片链接
     SetuShowR18Groups:          []                                                  #允许出现r18内容的群，图片将使用链接代替
-    SetuShowR18ImgGroups:       []                                                  #允许直接发送r18图片的群，而不是发送链接地址
     SetuCustomGroups:           [284196392]                                         #允许查找自定义涩图的群
     SetuNoneCDGroups:           [284196392]                                         #涩图没有CD的群
-    SetuLimitlessGroups:        [284196392]                                         #涩图次数无限制的群
+    SetuLimitlessGroups:        [284196392]                                         #涩图每日次数无限制的群
     SaucenaoGroups:             [284196392]                                         #拥有以图搜图权限的群
     SaucenaoR18Groups:          [284196392]                                         #以图搜图允许发送r18结果的群，图片将使用链接代替
-    SaucenaoR18ImgGroups:       []                                                  #以图搜图允许直接发送r18图片的群，而不是发送链接地址
     SubscribeGroups:            [284196392]                                         #拥有订阅权限的群
 
 Manage:                                                                             #管理相关

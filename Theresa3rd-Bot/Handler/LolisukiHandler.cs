@@ -80,7 +80,6 @@ namespace Theresa3rd_Bot.Handler
                 List<IChatMessage> chatList = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(template))
                 {
-                    chatList.Add(new PlainMessage(lolisukiBusiness.getDefaultRemindMsg(groupId, todayLeftCount)));
                     chatList.Add(new PlainMessage(lolisukiBusiness.getDefaultWorkInfo(lolisukiData, fileInfo, startDateTime)));
                 }
                 else

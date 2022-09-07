@@ -77,7 +77,6 @@ namespace Theresa3rd_Bot.Handler
                 List<IChatMessage> chatList = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(template))
                 {
-                    chatList.Add(new PlainMessage(loliconBusiness.getDefaultRemindMsg(groupId, todayLeftCount)));
                     chatList.Add(new PlainMessage(loliconBusiness.getDefaultWorkInfo(loliconData, fileInfo, startDateTime)));
                 }
                 else

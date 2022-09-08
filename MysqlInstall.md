@@ -1,9 +1,7 @@
 # Mysql安装
 
 ## 下载
-- 点击这里下载 [MySQL Installer 8.0.28](https://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-8.0.28.0.msi)
-- 注：目前已知使用8.0.29版本会出现自动建表失败的问题，建议不要使用8.0.28以后的版本
-
+- 从 [mysql官网](https://dev.mysql.com/downloads/installer) 中下载最新版本，或者点击直接下载 [MySQL Installer 8.0.30](https://cdn.mysql.com//Downloads/MySQLInstaller/mysql-installer-community-8.0.30.0.msi)
 ## 安装
 
 ### 打开刚下载的安装包

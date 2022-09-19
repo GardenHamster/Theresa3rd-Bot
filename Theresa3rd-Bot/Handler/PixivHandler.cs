@@ -88,9 +88,16 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
-                if (pixivWorkInfoDto.body.IsImproper() || pixivWorkInfoDto.body.hasBanTag())
+                if (pixivWorkInfoDto.body.IsImproper())
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签，不显示相关内容"));
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
+                    return;
+                }
+
+                string banTagStr = pixivWorkInfoDto.body.hasBanTag();
+                if (banTagStr != null)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
                     return;
                 }
 
@@ -567,11 +574,20 @@ namespace Theresa3rd_Bot.Handler
                 PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
 
-                if (pixivWorkInfo.IsImproper() || pixivWorkInfo.hasBanTag())
+
+                if (pixivWorkInfo.IsImproper())
                 {
-                    await session.SendGroupMessageAsync(groupId, new PlainMessage($" 该作品含有被屏蔽的标签，不显示相关内容"));
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
                     return;
                 }
+
+                string banTagStr = pixivWorkInfo.hasBanTag();
+                if (banTagStr != null)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
+                    return;
+                }
+
                 if (pixivWorkInfo.isR18() && isShowR18 == false)
                 {
                     await session.SendGroupMessageAsync(groupId, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));

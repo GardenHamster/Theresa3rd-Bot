@@ -98,7 +98,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper()) continue;
-                    if (pixivUserWorkInfo.hasBanTag()) continue;
+                    if (pixivUserWorkInfo.hasBanTag() != null) continue;
                     if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
@@ -148,7 +148,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper()) continue;
-                    if (pixivUserWorkInfo.hasBanTag()) continue;
+                    if (pixivUserWorkInfo.hasBanTag() != null) continue;
                     if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
@@ -185,7 +185,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     PixivBookmarksWork randomWork = workList[new Random().Next(0, workList.Count)];
                     if (randomWork.IsImproper()) continue;
-                    if (randomWork.hasBanTag()) continue;
+                    if (randomWork.hasBanTag() != null) continue;
                     if (randomWork.isR18() && groupId.IsShowR18Setu() == false) continue;
                     PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(randomWork.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
@@ -278,7 +278,7 @@ namespace Theresa3rd_Bot.Business
                     PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivIllustList[i].id);
                     if (pixivWorkInfo.error) continue;
                     if (pixivWorkInfo.body.IsImproper()) continue;
-                    if (pixivWorkInfo.body.hasBanTag()) continue;
+                    if (pixivWorkInfo.body.hasBanTag() != null) continue;
                     if (pixivWorkInfo.body.isR18() && includeR18 == false) continue;
                     if (checkRandomWorkIsOk(pixivWorkInfo) == false) continue;
                     lock (bookUpList) bookUpList.Add(pixivWorkInfo);
@@ -303,7 +303,7 @@ namespace Theresa3rd_Bot.Business
         {
             if (pixivWorkInfo == null) return false;
             if (pixivWorkInfo.body == null) return false;
-            bool isNotBantTag = pixivWorkInfo.body.hasBanTag() == false;
+            bool isNotBantTag = pixivWorkInfo.body.hasBanTag() == null;
             bool isPopularity = pixivWorkInfo.body.bookmarkCount >= BotConfig.SetuConfig.Pixiv.MinBookmark;
             bool isBookProportional = Convert.ToDouble(pixivWorkInfo.body.bookmarkCount) / pixivWorkInfo.body.viewCount >= BotConfig.SetuConfig.Pixiv.MinBookRate;
             return isPopularity && isBookProportional && isNotBantTag;

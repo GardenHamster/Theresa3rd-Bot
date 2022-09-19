@@ -65,9 +65,16 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LolisukiData lolisukiData = lolisukiResult.data.First();
-                if (lolisukiData.IsImproper() || lolisukiData.hasBanTag())
+                if (lolisukiData.IsImproper())
                 {
-                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 该作品含有被屏蔽的标签，不显示相关内容");
+                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
+                    return;
+                }
+
+                string banTagStr = lolisukiData.hasBanTag();
+                if (banTagStr != null)
+                {
+                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
                     return;
                 }
 

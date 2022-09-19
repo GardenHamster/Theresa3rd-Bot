@@ -85,7 +85,7 @@ namespace Theresa3rd_Bot.Timer
                 DateTime startTime = DateTime.Now;
                 List<long> groupIds = subscribeTask.GroupIdList;
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
-                if (pixivWorkInfo == null || pixivWorkInfo.IsImproper() || pixivWorkInfo.hasBanTag()) continue;
+                if (pixivWorkInfo == null || pixivWorkInfo.IsImproper() || pixivWorkInfo.hasBanTag() != null) continue;
                 if (groupIds == null || groupIds.Count == 0) continue;
 
                 string tagName = subscribeTask.SubscribeName;

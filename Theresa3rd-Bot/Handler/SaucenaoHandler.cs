@@ -304,15 +304,22 @@ namespace Theresa3rd_Bot.Handler
             string template = BotConfig.GeneralConfig.PixivTemplate;
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
             List<IChatMessage> chatList = new List<IChatMessage>();
-            if (pixivWorkInfo.IsImproper() || pixivWorkInfo.hasBanTag())
+            if (pixivWorkInfo.IsImproper())
             {
-                chatList.Add(new PlainMessage($"该作品含有被屏蔽的标签，不显示相关内容"));
+                chatList.Add(new PlainMessage($" 该作品含有R18G等内容，不显示相关内容"));
+                return chatList;
+            }
+
+            string banTagStr = pixivWorkInfo.hasBanTag();
+            if (banTagStr != null)
+            {
+                chatList.Add(new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
                 return chatList;
             }
 
             if (pixivWorkInfo.isR18() && groupId.IsShowR18Saucenao() == false)
             {
-                chatList.Add(new PlainMessage($"该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
+                chatList.Add(new PlainMessage($" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                 return chatList;
             }
 

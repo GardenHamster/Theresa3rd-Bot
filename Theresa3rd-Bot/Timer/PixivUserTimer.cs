@@ -108,7 +108,7 @@ namespace Theresa3rd_Bot.Timer
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
-                if (pixivWorkInfo == null || pixivWorkInfo.IsImproper() || pixivWorkInfo.hasBanTag()) continue;
+                if (pixivWorkInfo == null || pixivWorkInfo.IsImproper() || pixivWorkInfo.hasBanTag() != null) continue;
                 if (groupIds == null || groupIds.Count == 0) continue;
 
                 bool isR18Img = pixivWorkInfo.isR18();

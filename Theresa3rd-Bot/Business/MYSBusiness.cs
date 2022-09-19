@@ -29,7 +29,6 @@ namespace Theresa3rd_Bot.Business
             subscribeRecordDao = new SubscribeRecordDao();
         }
 
-
         /// <summary>
         /// 获取某个群已订阅的列表
         /// </summary>
@@ -161,19 +160,27 @@ namespace Theresa3rd_Bot.Business
 
         public async Task<MysResult<MysPostDataDto>> getMysUserPostDtoAsync(string userId, int size)
         {
-            Dictionary<string, string> headerDic = new Dictionary<string, string>();
+            string referer = HttpUrl.getMysPostListRefer(userId);
+            Dictionary<string, string> headerDic = GetMysHeader(referer);
             string getUrl = HttpUrl.getMysPostListUrl(userId, size);
             string json = await HttpHelper.GetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysPostDataDto>>(json);
         }
 
-
         public async Task<MysResult<MysUserFullInfoDto>> geMysUserFullInfoDtoAsync(string userId)
         {
-            Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            string getUrl = HttpUrl.getMystUserFullInfo(userId);
+            string referer = HttpUrl.getMysUserInfoRefer(userId);
+            Dictionary<string, string> headerDic = GetMysHeader(referer);
+            string getUrl = HttpUrl.getMysUserInfoUrl(userId);
             string json = await HttpHelper.GetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysUserFullInfoDto>>(json);
+        }
+
+        private static Dictionary<string, string> GetMysHeader(string referer)
+        {
+            Dictionary<string, string> headerDic = new Dictionary<string, string>();
+            headerDic.Add("referer", referer);
+            return headerDic;
         }
 
 

@@ -21,5 +21,13 @@ namespace Theresa3rd_Bot.Model.Config
 
         public double MinBookRate { get; set; }
 
+        public PixivConfig()
+        {
+            this.RandomMode = PixivRandomMode.RandomTag;
+            this.MaxScreen = 60;
+            this.MinBookmark = 1500;
+            this.MinBookRate = 0.05;
+        }
+
     }
 }

@@ -10,5 +10,12 @@ namespace Theresa3rd_Bot.Model.Config
 
         public int ShelfLife { get; set; }
 
+        public PixivUserSubscribeConfig()
+        {
+            this.ScanMode = PixivScanMode.Default;
+            this.ShelfLife = 12 * 60 * 60;
+            this.ScanInterval = 60 * 60;
+        }
+
     }
 }

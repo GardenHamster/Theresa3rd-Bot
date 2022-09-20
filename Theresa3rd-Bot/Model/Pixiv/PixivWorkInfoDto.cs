@@ -44,7 +44,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
         public int xRestrict { get; set; }
 
-        public List<string> getTags() => tags?.tags == null ? new List<string>() : tags.tags.Select(o => o.tag).Where(o => string.IsNullOrWhiteSpace(o) == false).ToList();
+        public List<string> getTags() => tags?.getTags() ?? new List<string>();
 
         //xRestrict=1为R18,xRestrict=2为R18G
         public bool isR18() => xRestrict > 0 || getTags().IsR18();

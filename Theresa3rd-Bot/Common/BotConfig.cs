@@ -8,7 +8,7 @@ namespace Theresa3rd_Bot.Common
 {
     public static class BotConfig
     {
-        public const string BotVersion = "v0.7.1";
+        public const string BotVersion = "v0.7.2";
 
         public static DBConfig DBConfig = new DBConfig();
 

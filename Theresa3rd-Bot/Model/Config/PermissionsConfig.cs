@@ -11,14 +11,14 @@ namespace Theresa3rd_Bot.Model.Config
 
         public List<long> SuperManagers { get; set; }
 
+        public List<long> LimitlessMembers { get; set; }
+
         public List<long> SetuGroups { get; set; }
 
         public List<long> SetuShowImgGroups { get; set; }
 
         public List<long> SetuShowR18Groups { get; set; }
 
-        public List<long> SetuShowR18ImgGroups { get; set; }
-        
         public List<long> SetuCustomGroups { get; set; }
 
         public List<long> SetuNoneCDGroups { get; set; }
@@ -28,8 +28,6 @@ namespace Theresa3rd_Bot.Model.Config
         public List<long> SaucenaoGroups { get; set; }
 
         public List<long> SaucenaoR18Groups { get; set; }
-
-        public List<long> SaucenaoR18ImgGroups { get; set; }
 
         public List<long> SubscribeGroups { get; set; }
 

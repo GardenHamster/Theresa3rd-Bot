@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Model.Pixiv;
+using Theresa3rd_Bot.Model.PO;
 
 namespace Theresa3rd_Bot.Util
 {
@@ -99,18 +100,20 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
-        /// 判断标签中是否包含被禁止的标签
+        /// 判断标签中是否包含被禁止的标签，有则返回内容，否则返回null
         /// </summary>
         /// <param name="tags"></param>
         /// <returns></returns>
-        public static bool hasBanTags(this List<string> tags)
+        public static string hasBanTags(this List<string> tags)
         {
-            if (tags == null || tags.Count == 0) return false;
+            if (tags == null || tags.Count == 0) return null;
+            List<string> banTags = new List<string>();
             foreach (string tag in tags)
             {
-                if (BotConfig.BanSetuTagList.Where(o => tag.Trim().ToUpper().Contains(o.KeyWord.Trim().ToUpper())).Any()) return true;
+                List<BanWordPO> banList = BotConfig.BanSetuTagList.Where(o => tag.Trim().ToUpper().Contains(o.KeyWord.Trim().ToUpper())).ToList();
+                if (banList.Count > 0) banTags.AddRange(banList.Select(o => o.KeyWord).ToList());
             }
-            return false;
+            return banTags.Count > 0 ? String.Join('，', banTags) : null;
         }
 
         /// <summary>

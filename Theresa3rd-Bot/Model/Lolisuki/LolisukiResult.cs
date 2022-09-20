@@ -31,6 +31,9 @@ namespace Theresa3rd_Bot.Model.Lolisuki
         public LolisukiUrls urls { get; set; }
         public List<string> tags { get; set; }
         public List<string> extags { get; set; }
+
+        public string hasBanTag() => tags?.hasBanTags() ?? extags?.hasBanTags();
+
         public bool IsImproper()
         {
             if (tags != null && tags.IsImproper()) return true;
@@ -42,13 +45,6 @@ namespace Theresa3rd_Bot.Model.Lolisuki
             if (r18) return true;
             if (tags != null && tags.IsR18()) return true;
             if (extags != null && tags.IsR18()) return true;
-            return false;
-        }
-
-        public bool hasBanTag()
-        {
-            if (tags != null && tags.hasBanTags()) return true;
-            if (extags != null && tags.hasBanTags()) return true;
             return false;
         }
     }

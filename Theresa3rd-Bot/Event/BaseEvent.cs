@@ -204,6 +204,7 @@ namespace Theresa3rd_Bot.Event
         public async Task<bool> CheckSaucenaoUseUpAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.SaucenaoConfig.MaxDaily == 0) return false;
+            if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(args.Sender.Id)) return false;
             int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Saucenao);
             if (useCount < BotConfig.SaucenaoConfig.MaxDaily) return false;
             await session.SendMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));

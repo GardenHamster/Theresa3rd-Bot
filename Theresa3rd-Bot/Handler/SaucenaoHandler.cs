@@ -237,7 +237,7 @@ namespace Theresa3rd_Bot.Handler
                     if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
                     {
                         PixivWorkInfo workInfo = ascii2dItem.PixivWorkInfo.body;
-                        resultBuilder.AppendLine($"来源：Pixiv，标题：{workInfo.illustTitle}，pid：{workInfo.illustId}，链接：{workInfo.urls.original.ToProxyUrl()}");
+                        resultBuilder.AppendLine($"来源：Pixiv，标题：{workInfo.illustTitle}，pid：{workInfo.illustId}，链接：{workInfo.urls.original.ToOrginProxyUrl()}");
                     }
                     else if (ascii2dItem.SourceType == SetuSourceType.Twitter)
                     {

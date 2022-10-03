@@ -21,6 +21,8 @@ namespace Theresa3rd_Bot.Model.Config
 
         public string PixivImgProxy { get; set; }
 
+        public string PixivOriginUrlProxy { get; set; }
+
         public bool PixivFreeProxy { get; set; }
 
         public int PixivTagShowMaximum { get; set; }

@@ -28,7 +28,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{SizeMB}", sizeMB.ToString());
             template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(lolisukiData.tags, BotConfig.GeneralConfig.PixivTagShowMaximum));
-            template = template.Replace("{Urls}", lolisukiData.urls.original.ToProxyUrl());
+            template = template.Replace("{Urls}", lolisukiData.urls.original.ToOrginProxyUrl());
             return template;
         }
 
@@ -39,7 +39,7 @@ namespace Theresa3rd_Bot.Business
             double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
             workInfoStr.AppendLine($"标题：{lolisukiData.title}，画师：{lolisukiData.author}，画师id：{lolisukiData.uid}，Level：{lolisukiData.level}，大小：{sizeMB}MB，耗时：{costSecond}s");
             workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(lolisukiData.tags, BotConfig.GeneralConfig.PixivTagShowMaximum)}");
-            workInfoStr.Append(lolisukiData.urls.original.ToProxyUrl());
+            workInfoStr.Append(lolisukiData.urls.original.ToOrginProxyUrl());
             return workInfoStr.ToString();
         }
 

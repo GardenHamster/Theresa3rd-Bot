@@ -267,6 +267,22 @@ namespace Theresa3rd_Bot.Util
             if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.PixivCatUrl;
             imgUrl = imgUrl.Replace("https://i.pximg.net", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.cat", proxyUrl);
+            imgUrl = imgUrl.Replace("https://i.pixiv.re", proxyUrl);
+            return imgUrl;
+        }
+
+        /// <summary>
+        /// 转换为pixiv原地址
+        /// </summary>
+        /// <param name="imgUrl"></param>
+        /// <returns></returns>
+        public static string ToOrginProxyUrl(this string imgUrl)
+        {
+            string proxyUrl = BotConfig.GeneralConfig.PixivOriginUrlProxy;
+            if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.PixivCatUrl;
+            imgUrl = imgUrl.Replace("https://i.pximg.net", proxyUrl);
+            imgUrl = imgUrl.Replace("https://i.pixiv.cat", proxyUrl);
+            imgUrl = imgUrl.Replace("https://i.pixiv.re", proxyUrl);
             return imgUrl;
         }
 

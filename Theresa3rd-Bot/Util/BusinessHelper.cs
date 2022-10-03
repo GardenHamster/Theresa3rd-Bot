@@ -202,13 +202,13 @@ namespace Theresa3rd_Bot.Util
         /// <param name="pixivWorkInfo"></param>
         /// <param name="maxShowCount"></param>
         /// <returns></returns>
-        public static string JoinPixivWorkUrls(PixivWorkInfo pixivWorkInfo, int maxShowCount = 3)
+        public static string JoinPixivImgOrginUrls(PixivWorkInfo pixivWorkInfo, int maxShowCount = 3)
         {
             StringBuilder LinkStr = new StringBuilder();
             int endCount = pixivWorkInfo.pageCount > maxShowCount ? maxShowCount : pixivWorkInfo.pageCount;
             for (int i = 0; i < endCount; i++)
             {
-                string imgUrl = pixivWorkInfo.urls.original.ToProxyUrl();
+                string imgUrl = pixivWorkInfo.urls.original.ToOrginProxyUrl();
                 if (i > 0) imgUrl = imgUrl.Replace("_p0.", $"_p{i}.");
                 if (i < endCount - 1)
                 {

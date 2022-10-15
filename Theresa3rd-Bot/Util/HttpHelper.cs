@@ -193,7 +193,9 @@ namespace Theresa3rd_Bot.Util
             byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
             using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
             fileStream.Write(urlContents, 0, urlContents.Length);
-            return new FileInfo(fullImageSavePath);
+            FileInfo fileInfo = new FileInfo(fullImageSavePath);
+            if (fileInfo.Length == 0) throw new Exception("下载文件失败，保存文件大小为0kb");
+            return fileInfo;
         }
 
         /// <summary>
@@ -213,7 +215,9 @@ namespace Theresa3rd_Bot.Util
             byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
             using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
             fileStream.Write(urlContents, 0, urlContents.Length);
-            return new FileInfo(fullImageSavePath);
+            FileInfo fileInfo = new FileInfo(fullImageSavePath);
+            if (fileInfo.Length == 0) throw new Exception("下载文件失败，保存文件大小为0kb");
+            return fileInfo;
         }
 
         /// <summary>

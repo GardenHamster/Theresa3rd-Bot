@@ -112,7 +112,7 @@ namespace Theresa3rd_Bot.Business
             if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Redirect)
             {
                 string contentString = await response.GetContentStringAsync();
-                Exception innerException = new Exception($"ascii2d返回StatusCode：{(int)response.StatusCode}，Content：{contentString}");
+                Exception innerException = new Exception(contentString);
                 throw new BaseException(innerException, $"ascii2d返回StatusCode：{(int)response.StatusCode}");
             }
             return response.RequestMessage.RequestUri.AbsoluteUri;

@@ -143,7 +143,7 @@ namespace Theresa3rd_Bot.Handler
                 {
                     //等待撤回
                     await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
-                    await session.RevokeMessageAsync(groupMsgId);
+                    await session.RevokeMessageAsync(groupMsgId, groupId);
                 }
                 catch (Exception ex)
                 {

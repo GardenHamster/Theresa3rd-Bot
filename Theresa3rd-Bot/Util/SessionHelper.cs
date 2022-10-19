@@ -47,7 +47,7 @@ namespace Theresa3rd_Bot.Util
             try
             {
                 SourceMessage sourceMessage = (SourceMessage)args.Chain.First();
-                await session.RevokeMessageAsync(sourceMessage.Id);
+                await session.RevokeMessageAsync(sourceMessage.Id, args.Sender.Group.Id);
             }
             catch (Exception ex)
             {

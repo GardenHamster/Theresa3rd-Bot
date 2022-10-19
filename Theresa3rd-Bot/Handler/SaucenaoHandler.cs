@@ -362,7 +362,7 @@ namespace Theresa3rd_Bot.Handler
             if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
             {
                 await Task.Delay(BotConfig.SaucenaoConfig.RevokeInterval * 1000);
-                await session.RevokeMessageAsync(groupMsgId);
+                await session.RevokeMessageAsync(groupMsgId, groupId);
             }
         }
 
@@ -384,7 +384,7 @@ namespace Theresa3rd_Bot.Handler
             if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
             {
                 await Task.Delay(BotConfig.SaucenaoConfig.RevokeInterval * 1000);
-                await session.RevokeMessageAsync(groupMsgId);
+                await session.RevokeMessageAsync(groupMsgId, groupId);
             }
         }
 

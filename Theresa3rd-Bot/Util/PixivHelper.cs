@@ -253,6 +253,7 @@ namespace Theresa3rd_Bot.Util
         {
             imgUrl = imgUrl.Replace("https://i.pixiv.cat", "https://i.pximg.net");
             imgUrl = imgUrl.Replace("https://i.pixiv.re", "https://i.pximg.net");
+            imgUrl = imgUrl.Replace("https://i.pixiv.nl", "https://i.pximg.net");
             return imgUrl;
         }
 
@@ -268,6 +269,7 @@ namespace Theresa3rd_Bot.Util
             imgUrl = imgUrl.Replace("https://i.pximg.net", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.cat", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.re", proxyUrl);
+            imgUrl = imgUrl.Replace("https://i.pixiv.nl", proxyUrl);
             return imgUrl;
         }
 
@@ -283,6 +285,7 @@ namespace Theresa3rd_Bot.Util
             imgUrl = imgUrl.Replace("https://i.pximg.net", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.cat", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.re", proxyUrl);
+            imgUrl = imgUrl.Replace("https://i.pixiv.nl", proxyUrl);
             return imgUrl;
         }
 

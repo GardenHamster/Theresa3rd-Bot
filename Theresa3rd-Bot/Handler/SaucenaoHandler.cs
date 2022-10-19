@@ -162,8 +162,9 @@ namespace Theresa3rd_Bot.Handler
 
                 if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
-                    bool isShowImg = groupId.IsShowSaucenaoImg(saucenaoItem.PixivWorkInfo.body.isR18());
-                    FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(saucenaoItem.PixivWorkInfo.body) : null;
+                    PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
+                    bool isShowImg = groupId.IsShowSaucenaoImg(pixivWorkInfo.isR18());
+                    FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
                     List<IChatMessage> remindMsgs = getRemindMessage(saucenaoResult, saucenaoItem, groupId, memberId);
                     List<IChatMessage> groupMsgs = new List<IChatMessage>(remindMsgs);
                     List<IChatMessage> tempMsgs = new List<IChatMessage>(remindMsgs);

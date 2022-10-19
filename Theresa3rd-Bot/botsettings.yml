@@ -11,7 +11,7 @@
     PixivImgProxy:              'https://i.pixiv.re'                                #图片代理地址，值为空表示不使用代理，不为空时优先使用代理下载图片，格式：https://i.pixiv.re
     PixivTagShowMaximum:        3                                                   #最多显示N个pixiv标签，0表示无限制，建议设置该参数降低触发风控的概率
     PixivImgSize:               'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb，推荐使用thumb或small降低触发风控的概率
-    PixivOriginUrlProxy:        'https://i.pixiv.nl'                                #pixiv原图链接的代理地址，QQ中打开原图链接时如果显示已停止访问，可以修改该值到其他图片代理地址，默认：https://i.pixiv.re
+    PixivOriginUrlProxy:        'https://i.pixiv.re'                                #pixiv原图链接的代理地址，QQ中打开原图链接时如果显示已停止访问，可以修改该值到其他图片代理地址，默认：https://i.pixiv.re
     PixivCookieExpire:          5184000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每60天更新一次
     PixivCookieExpireMsg:       'emmmm,cookie过期了,请艾特管理员更新cookie'         #cookie过期时返回的消息
     PixivTemplate:              |                                                   #pixiv模版，值为空时将使用默认模版
@@ -119,7 +119,7 @@ Setu:                                                                           
         Level:                  '0-6'                                               #Level范围，数字越大表示越涩，最小为0，最大为6，5-6为R18
         Template:               |                                                   #消息模版，值为空时将使用默认模版
                                 本条数据来源于Lolisuki，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
-                                标题：{IllustTitle}，PixivId：{PixivId}，画师：{UserName}，画师id：{UserId}，Level：{Level}，大小：{SizeMB}MB，耗时：{CostSecond}s
+                                标题：{IllustTitle}，PixivId：{PixivId}，画师：{UserName}，画师id：{UserId}，Level：{Level}，分类：{Taste}，大小：{SizeMB}MB，耗时：{CostSecond}s
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
 

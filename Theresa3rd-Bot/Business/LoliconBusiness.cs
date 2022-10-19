@@ -51,35 +51,5 @@ namespace Theresa3rd_Bot.Business
             return JsonConvert.DeserializeObject<LoliconResultV2>(json);
         }
 
-        public async Task<FileInfo> downImgAsync(LoliconDataV2 loliconData)
-        {
-            try
-            {
-                string fullFileName = $"{loliconData.pid}.jpg";
-                string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                string imgUrl = getDownImgUrl(loliconData.urls.original);
-                if (BotConfig.GeneralConfig.PixivFreeProxy || string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivImgProxy) == false)
-                {
-                    return await HttpHelper.DownFileAsync(imgUrl.ToProxyUrl(), fullImageSavePath);
-                }
-                Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString()));
-                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
-                {
-                    return await HttpHelper.DownFileWithProxyAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
-                }
-                else
-                {
-                    return await HttpHelper.DownFileAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "LoliconBusiness.downImg下载图片失败");
-                return null;
-            }
-        }
-
     }
 }

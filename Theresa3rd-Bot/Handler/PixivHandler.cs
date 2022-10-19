@@ -88,29 +88,29 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
-                if (pixivWorkInfoDto.body.IsImproper())
+                PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
+                if (pixivWorkInfo.IsImproper())
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
                     return;
                 }
 
-                string banTagStr = pixivWorkInfoDto.body.hasBanTag();
+                string banTagStr = pixivWorkInfo.hasBanTag();
                 if (banTagStr != null)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
                     return;
                 }
 
-                if (pixivWorkInfoDto.body.isR18() && isShowR18 == false)
+                if (pixivWorkInfo.isR18() && isShowR18 == false)
                 {
                     await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                     return;
                 }
 
-                bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfoDto.body.isR18());
+                bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.isR18());
                 long todayLeft = GetSetuLeftToday(groupId, memberId);
-                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfoDto.body) : null;
-                PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
+                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
 
                 int groupMsgId = 0;
                 string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
@@ -595,7 +595,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.isR18());
-                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo) : null;
+                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
                 chatList.Add(new PlainMessage($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
                 chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
 

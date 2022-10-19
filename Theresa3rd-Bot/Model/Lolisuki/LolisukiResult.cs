@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Lolisuki
@@ -19,6 +20,7 @@ namespace Theresa3rd_Bot.Model.Lolisuki
         public string uid { get; set; }
         public string author { get; set; }
         public int level { get; set; }
+        public LolisukiTaste taste { get; set; }
         public string title { get; set; }
         public string description { get; set; }
         public bool r18 { get; set; }

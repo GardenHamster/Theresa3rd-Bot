@@ -251,6 +251,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static string ToPximgUrl(this string imgUrl)
         {
+            imgUrl = imgUrl.Replace("https://pixiv.lolisuki.cn", "https://i.pximg.net");
             imgUrl = imgUrl.Replace("https://i.pixiv.cat", "https://i.pximg.net");
             imgUrl = imgUrl.Replace("https://i.pixiv.re", "https://i.pximg.net");
             imgUrl = imgUrl.Replace("https://i.pixiv.nl", "https://i.pximg.net");
@@ -265,7 +266,8 @@ namespace Theresa3rd_Bot.Util
         public static string ToProxyUrl(this string imgUrl)
         {
             string proxyUrl = BotConfig.GeneralConfig.PixivImgProxy;
-            if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.PixivCatUrl;
+            if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.PixivImgProxyUrl;
+            imgUrl = imgUrl.Replace("https://pixiv.lolisuki.cn", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pximg.net", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.cat", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.re", proxyUrl);
@@ -281,7 +283,8 @@ namespace Theresa3rd_Bot.Util
         public static string ToOrginProxyUrl(this string imgUrl)
         {
             string proxyUrl = BotConfig.GeneralConfig.PixivOriginUrlProxy;
-            if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.PixivCatUrl;
+            if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.PixivImgProxyUrl;
+            imgUrl = imgUrl.Replace("https://pixiv.lolisuki.cn", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pximg.net", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.cat", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.re", proxyUrl);

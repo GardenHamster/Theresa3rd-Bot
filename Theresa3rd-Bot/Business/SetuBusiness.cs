@@ -41,14 +41,14 @@ namespace Theresa3rd_Bot.Business
                 string imgUrl = getDownImgUrl(originUrl);
                 string fullFileName = $"{pixivId}.jpg";
                 string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
+                Dictionary<string, string> headerDic = new Dictionary<string, string>();
+                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
+                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
                 if (BotConfig.GeneralConfig.PixivFreeProxy || string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivImgProxy) == false)
                 {
                     return await HttpHelper.DownFileAsync(imgUrl.ToProxyUrl(), fullImageSavePath);
                 }
-                Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
-                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
+                else if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
                 {
                     return await HttpHelper.DownFileWithProxyAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
                 }
@@ -78,22 +78,20 @@ namespace Theresa3rd_Bot.Business
             string fullZipSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{StringHelper.get16UUID()}.zip");
             string zipHttpUrl = pixivUgoiraMetaDto.body.src;
 
+            Dictionary<string, string> headerDic = new Dictionary<string, string>();
+            headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
+            headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+
             if (BotConfig.GeneralConfig.PixivFreeProxy || string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivImgProxy) == false)
             {
                 await HttpHelper.DownFileAsync(zipHttpUrl.ToProxyUrl(), fullZipSavePath);
             }
             else if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
             {
-                Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
-                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
                 await HttpHelper.DownFileWithProxyAsync(zipHttpUrl.ToPximgUrl(), fullZipSavePath, headerDic);
             }
             else
             {
-                Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
-                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
                 await HttpHelper.DownFileAsync(zipHttpUrl.ToPximgUrl(), fullZipSavePath, headerDic);
             }
 

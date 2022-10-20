@@ -35,23 +35,26 @@
 - [x] pixiv画师最新作品推送功能
 - [x] pixiv标签最新作品推送功能(收藏数较高且每小时新增一定收藏数的最新作品)
 - [x] 米游社用户最新贴子推送功能
-- [ ] Bili用户最新动态推送功能
-- [ ] Bili直播推送功能
 
-### 抽卡
+### 抽卡saucenao
 - [x] ~~原神模拟抽卡，在[GenshinGacha](https://github.com/GardenHamster/GenshinGacha)中实现了~~
 
 ### UI
 - [ ] 计划用vue写一个可在外网访问的bot管理页面，用于查询和管理订阅列表和黑名单数据等
 
-### 其他摆烂中的功能
+### 其他摆烂中的功能，~~反正也已经有dalao写好类似的插件了~~
 - [ ] 小游戏 - 狼人杀
 - [ ] 关键词自动回复/禁言/撤回功能
 - [ ] 词云功能 - 每日/周/月词云
+- [ ] Bili用户最新动态推送功能
+- [ ] Bili直播推送功能
 
 ## 致谢
-- 感谢[mamoe/mirai](https://github.com/mamoe/mirai)
-- 感谢[Executor-Cheng/mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)
+- [mamoe/mirai](https://github.com/mamoe/mirai)
+- [Executor-Cheng/mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)
+- [Lolicon Api](https://api.lolicon.app/)
+- [saucenao.com](https://saucenao.com)
+- [ascii2d.net](https://ascii2d.net/)
 
 ## 效果图
 ![image](https://user-images.githubusercontent.com/89188316/153139063-7ec31cd9-debe-475f-8ec3-b4660f552d21.png)

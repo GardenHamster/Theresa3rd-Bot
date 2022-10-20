@@ -3,6 +3,8 @@
 - 注：除了更新cookie指令需要私发给机器人，其他指令都要发送到群里
 
 ## 目录:
++ **[菜单](Menu.md#菜单)**
++ **[版本号](Menu.md#版本号)**
 + **[通过pixiv搜索色图](Menu.md#通过pixiv搜索色图)**
 + **[Lolicon随机色图](Menu.md#Lolicon随机色图)**
 + **[Lolisuki随机色图](Menu.md#Lolisuki随机色图)**
@@ -12,6 +14,14 @@
 + **[订阅米游社作者](Menu.md#订阅米游社作者)**
 + **[禁止标签](Menu.md#禁止标签)**
 + **[禁止成员](Menu.md#禁止成员)**
+
+## 菜单
+- 一个简陋的菜单功能，方便查询命令
+![image](https://user-images.githubusercontent.com/89188316/197014009-1f305cb4-3073-4027-a9d2-5e7c160e7887.png)
+
+## 版本号
+- 查询当前版本号
+![image](https://user-images.githubusercontent.com/89188316/197014327-a00e6af3-0a10-414f-92a5-68edb93aacb2.png)
 
 ## 通过pixiv搜索色图
 ### 说明

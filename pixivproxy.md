@@ -30,3 +30,10 @@
 ![image](https://user-images.githubusercontent.com/89188316/196931830-7c576758-120d-4fe5-bfda-20107d988f0e.png)
 
 ![image](https://user-images.githubusercontent.com/89188316/196932086-ecaa0e50-a510-4a37-b164-b3fdfeb00152.png)
+
+![image](https://user-images.githubusercontent.com/89188316/196932566-e0b31824-fa37-444c-87bc-f31ef565667f.png)
+
+### 选择https
+![image](https://user-images.githubusercontent.com/89188316/196932907-4e8d0fa2-923c-4eef-8d65-7d88966c2104.png)
+
+

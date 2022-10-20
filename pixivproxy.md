@@ -14,4 +14,19 @@
 
 ![image](https://user-images.githubusercontent.com/89188316/196925535-e16a82cb-3434-4483-b693-068754b3115b.png)
 
-![image](https://user-images.githubusercontent.com/89188316/196926238-66930e93-21e9-419b-b524-1efb6492d173.png)
+![image](https://user-images.githubusercontent.com/89188316/196927461-08de7d53-5457-468c-9434-9f36fb238529.png)
+
+![image](https://user-images.githubusercontent.com/89188316/196928234-9e264520-2098-4103-acbb-290f711c5f61.png)
+
+![image](https://user-images.githubusercontent.com/89188316/196928397-6f60081a-1c39-42b0-8e4b-5e093e05fa5d.png)
+
+### 修改域名的DNS
+![image](https://user-images.githubusercontent.com/89188316/196930014-ef283178-13a9-409c-9376-6ba8cd537c03.png)
+
+![image](https://user-images.githubusercontent.com/89188316/196930240-3f826c25-e093-4640-ad7c-11557ad5f84a.png)
+
+![image](https://user-images.githubusercontent.com/89188316/196931439-52751076-74ff-47b0-ac3d-6795482850c0.png)
+
+![image](https://user-images.githubusercontent.com/89188316/196931830-7c576758-120d-4fe5-bfda-20107d988f0e.png)
+
+![image](https://user-images.githubusercontent.com/89188316/196932086-ecaa0e50-a510-4a37-b164-b3fdfeb00152.png)

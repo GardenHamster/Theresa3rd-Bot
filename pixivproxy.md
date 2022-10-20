@@ -36,4 +36,37 @@
 ### 选择https
 ![image](https://user-images.githubusercontent.com/89188316/196932907-4e8d0fa2-923c-4eef-8d65-7d88966c2104.png)
 
+### 创建Worker
+![image](https://user-images.githubusercontent.com/89188316/197002724-b6e47bab-7419-4504-bcee-e5f258503e4e.png)
+
+![image](https://user-images.githubusercontent.com/89188316/197003418-4a1decc3-cf8b-48c6-8263-3303753b7d46.png)
+
+![image](https://user-images.githubusercontent.com/89188316/197003827-80f401c7-18ee-40c7-858c-2dd232828745.png)
+
+![image](https://user-images.githubusercontent.com/89188316/197004127-33500081-c969-4461-9df0-39c700cda81f.png)
+
+![image](https://user-images.githubusercontent.com/89188316/197004638-bdf7b4fa-41f1-4b6d-ba02-8a758accd4ad.png)
+
+```js
+addEventListener('fetch', event => {
+    let url = new URL(event.request.url);
+    url.hostname = 'i.pximg.net';   
+    let request = new Request(url, event.request);
+    event.respondWith(
+        fetch(request, {
+            headers:{
+                'Referer': 'https://www.pixiv.net', //需要代理访问的网站
+                'User-Agent':'Cloudflare Workers'   //代理服务器
+            }
+        })
+    );
+});
+```
+
+
+
+
+
+
+
 

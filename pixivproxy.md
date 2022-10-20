@@ -63,8 +63,14 @@ addEventListener('fetch', event => {
 });
 ```
 
+### 绑定域名
+![image](https://user-images.githubusercontent.com/89188316/197005332-6ee4dd74-c044-40a7-9d37-57fa79a9be9c.png)
 
+![image](https://user-images.githubusercontent.com/89188316/197005511-8409ff0a-b07d-4fab-aa4b-a2f13389b105.png)
 
+![image](https://user-images.githubusercontent.com/89188316/197006789-2de916db-6155-4e43-bc27-b479177915a0.png)
+
+![image](https://user-images.githubusercontent.com/89188316/197007874-ea036065-a833-4f97-b98b-29b8784132a7.png)
 
 
 

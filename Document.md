@@ -11,8 +11,7 @@
 - 数据库为mysql，需要自行安装([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MysqlInstall.md))，或者可以购买云数据库
 
 ## 安装mirai-console-loader
-- 参照 [mirai-console-loader](https://github.com/iTXTech/mirai-console-loader) 文档安装mcl，
-- 为mcl安装并配置 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 插件，([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MiraiInstall.md))
+- 参照 [mirai-console-loader](https://github.com/iTXTech/mirai-console-loader) 文档安装mcl，并为mcl安装并配置 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 插件，([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MiraiInstall.md))
 - 最后在config/Console/AutoLogin.yml中配置bot账号密码并启动mcl，正常启动结果如下
 ```bash
 2022-02-13 18:09:37 I/main: Auto-login 123456789
@@ -130,6 +129,9 @@ appsettings.Production.json
 ```
 - 检查一下botsettings.yml是否有更新，有则对比修改该文件，如果遇到修改比较多的情况可以对照旧文件重新修改一次
 - 重新启动脚本
+
+## pixiv图片方向代理
+- 如果在qq中打开原图连接时出现感叹号，或者打不开原图链接时，[可以参考这里配置一个自己的反向代理域名](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/pixivproxy.md)，然后修改相关配置
 
 ## 一些已知的错误
 ### 数据库自动建表失败

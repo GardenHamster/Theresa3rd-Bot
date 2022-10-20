@@ -73,6 +73,10 @@ addEventListener('fetch', event => {
 ![image](https://user-images.githubusercontent.com/89188316/197007874-ea036065-a833-4f97-b98b-29b8784132a7.png)
 
 
-
+### 测试
+* 这是pixiv上的一条原图链接https://i.pximg.net/img-original/img/2019/03/06/00/40/39/73532572_p0.jpg
+* 使用刚才配置的代理域名替换掉i.pximg.net得到链接https://pixiv.gardencavy.site/img-original/img/2019/03/06/00/40/39/73532572_p0.jpg
+* 关掉梯子然后打开链接测试图片是否能正常打开，并且发送到手机后再测试一下，如果不行就等一段时间后再测试，生效需要一段时间，可能需要几个小时
+![image](https://user-images.githubusercontent.com/89188316/197010554-f110f621-a20e-4955-a439-370efacc8edc.png)
 
 

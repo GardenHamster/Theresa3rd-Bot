@@ -130,7 +130,7 @@ appsettings.Production.json
 - 检查一下botsettings.yml是否有更新，有则对比修改该文件，如果遇到修改比较多的情况可以对照旧文件重新修改一次
 - 重新启动脚本
 
-## pixiv图片方向代理
+## pixiv图片反向代理
 - 如果在qq中打开原图连接时出现感叹号，或者打不开原图链接时，[可以参考这里配置一个自己的反向代理域名](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/pixivproxy.md)，然后修改相关配置
 
 ## 一些已知的错误

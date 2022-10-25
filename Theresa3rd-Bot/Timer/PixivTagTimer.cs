@@ -93,7 +93,7 @@ namespace Theresa3rd_Bot.Timer
                 bool isDownImg = groupIds.IsDownImg(isR18Img);
                 string remindTemplate = BotConfig.SubscribeConfig.PixivTag.Template;
                 string pixivTemplate = BotConfig.GeneralConfig.PixivTemplate;
-                FileInfo fileInfo = isDownImg ? await pixivBusiness.downImgAsync(pixivWorkInfo) : null;
+                FileInfo fileInfo = isDownImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
 
                 foreach (long groupId in groupIds)
                 {

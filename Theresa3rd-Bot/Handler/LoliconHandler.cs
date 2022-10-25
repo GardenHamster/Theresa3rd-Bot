@@ -77,7 +77,7 @@ namespace Theresa3rd_Bot.Handler
 
                 bool isShowImg = groupId.IsShowSetuImg(loliconData.isR18());
                 long todayLeftCount = GetSetuLeftToday(groupId, memberId);
-                FileInfo fileInfo = isShowImg ? await loliconBusiness.downImgAsync(loliconData) : null;
+                FileInfo fileInfo = isShowImg ? await loliconBusiness.downImgAsync(loliconData.pid.ToString(), loliconData.urls.original, false) : null;
 
                 int groupMsgId = 0;
                 string template = BotConfig.SetuConfig.Lolicon.Template;
@@ -143,7 +143,7 @@ namespace Theresa3rd_Bot.Handler
                 {
                     //等待撤回
                     await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
-                    await session.RevokeMessageAsync(groupMsgId);
+                    await session.RevokeMessageAsync(groupMsgId, groupId);
                 }
                 catch (Exception ex)
                 {

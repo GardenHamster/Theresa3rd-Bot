@@ -25,10 +25,11 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{UserName}", lolisukiData.author);
             template = template.Replace("{UserId}", lolisukiData.uid);
             template = template.Replace("{Level}", lolisukiData.level.ToString());
+            template = template.Replace("{Taste}", lolisukiData.taste.ToString());
             template = template.Replace("{SizeMB}", sizeMB.ToString());
             template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(lolisukiData.tags, BotConfig.GeneralConfig.PixivTagShowMaximum));
-            template = template.Replace("{Urls}", lolisukiData.urls.original.ToProxyUrl());
+            template = template.Replace("{Urls}", lolisukiData.urls.original.ToOrginProxyUrl());
             return template;
         }
 
@@ -37,9 +38,9 @@ namespace Theresa3rd_Bot.Business
             StringBuilder workInfoStr = new StringBuilder();
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
             double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
-            workInfoStr.AppendLine($"标题：{lolisukiData.title}，画师：{lolisukiData.author}，画师id：{lolisukiData.uid}，Level：{lolisukiData.level}，大小：{sizeMB}MB，耗时：{costSecond}s");
+            workInfoStr.AppendLine($"标题：{lolisukiData.title}，画师：{lolisukiData.author}，画师id：{lolisukiData.uid}，Level：{lolisukiData.level}，分类：{lolisukiData.taste}，大小：{sizeMB}MB，耗时：{costSecond}s");
             workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(lolisukiData.tags, BotConfig.GeneralConfig.PixivTagShowMaximum)}");
-            workInfoStr.Append(lolisukiData.urls.original.ToProxyUrl());
+            workInfoStr.Append(lolisukiData.urls.original.ToOrginProxyUrl());
             return workInfoStr.ToString();
         }
 
@@ -53,37 +54,6 @@ namespace Theresa3rd_Bot.Business
             return JsonConvert.DeserializeObject<LolisukiResult>(json);
         }
 
-        
-
-        public async Task<FileInfo> downImgAsync(LolisukiData lolisukiData)
-        {
-            try
-            {
-                string fullFileName = $"{lolisukiData.pid}.jpg";
-                string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                string imgUrl = getDownImgUrl(lolisukiData.urls.original);
-                if (BotConfig.GeneralConfig.PixivFreeProxy || string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivImgProxy) == false)
-                {
-                    return await HttpHelper.DownFileAsync(imgUrl.ToProxyUrl(), fullImageSavePath);
-                }
-                Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(lolisukiData.pid.ToString()));
-                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
-                {
-                    return await HttpHelper.DownFileWithProxyAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
-                }
-                else
-                {
-                    return await HttpHelper.DownFileAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "LolisukiBusiness.downImg下载图片失败");
-                return null;
-            }
-        }
 
     }
 }

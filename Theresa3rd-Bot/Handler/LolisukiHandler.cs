@@ -80,7 +80,7 @@ namespace Theresa3rd_Bot.Handler
 
                 bool isShowImg = groupId.IsShowSetuImg(lolisukiData.isR18());
                 long todayLeftCount = GetSetuLeftToday(groupId, memberId);
-                FileInfo fileInfo = isShowImg ? await lolisukiBusiness.downImgAsync(lolisukiData) : null;
+                FileInfo fileInfo = isShowImg ? await lolisukiBusiness.downImgAsync(lolisukiData.pid.ToString(), lolisukiData.urls.original, lolisukiData.gif) : null;
 
                 int groupMsgId = 0;
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
@@ -146,7 +146,7 @@ namespace Theresa3rd_Bot.Handler
                 {
                     //等待撤回
                     await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
-                    await session.RevokeMessageAsync(groupMsgId);
+                    await session.RevokeMessageAsync(groupMsgId, groupId);
                 }
                 catch (Exception ex)
                 {

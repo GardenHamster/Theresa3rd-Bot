@@ -27,7 +27,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{SizeMB}", sizeMB.ToString());
             template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(loliconData.tags, BotConfig.GeneralConfig.PixivTagShowMaximum));
-            template = template.Replace("{Urls}", loliconData.urls.original.ToProxyUrl());
+            template = template.Replace("{Urls}", loliconData.urls.original.ToOrginProxyUrl());
             return template;
         }
 
@@ -38,7 +38,7 @@ namespace Theresa3rd_Bot.Business
             double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
             workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}，大小：{sizeMB}MB，耗时：{costSecond}s");
             workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(loliconData.tags, BotConfig.GeneralConfig.PixivTagShowMaximum)}");
-            workInfoStr.Append(loliconData.urls.original.ToProxyUrl());
+            workInfoStr.Append(loliconData.urls.original.ToOrginProxyUrl());
             return workInfoStr.ToString();
         }
 
@@ -49,36 +49,6 @@ namespace Theresa3rd_Bot.Business
             string postJson = JsonConvert.SerializeObject(param);
             string json = await HttpHelper.PostJsonAsync(httpUrl, postJson);
             return JsonConvert.DeserializeObject<LoliconResultV2>(json);
-        }
-
-        public async Task<FileInfo> downImgAsync(LoliconDataV2 loliconData)
-        {
-            try
-            {
-                string fullFileName = $"{loliconData.pid}.jpg";
-                string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                string imgUrl = getDownImgUrl(loliconData.urls.original);
-                if (BotConfig.GeneralConfig.PixivFreeProxy || string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivImgProxy) == false)
-                {
-                    return await HttpHelper.DownFileAsync(imgUrl.ToProxyUrl(), fullImageSavePath);
-                }
-                Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(loliconData.pid.ToString()));
-                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
-                {
-                    return await HttpHelper.DownFileWithProxyAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
-                }
-                else
-                {
-                    return await HttpHelper.DownFileAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "LoliconBusiness.downImg下载图片失败");
-                return null;
-            }
         }
 
     }

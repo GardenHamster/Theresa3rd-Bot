@@ -162,8 +162,9 @@ namespace Theresa3rd_Bot.Handler
 
                 if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
-                    bool isShowImg = groupId.IsShowSaucenaoImg(saucenaoItem.PixivWorkInfo.body.isR18());
-                    FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(saucenaoItem.PixivWorkInfo.body) : null;
+                    PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
+                    bool isShowImg = groupId.IsShowSaucenaoImg(pixivWorkInfo.isR18());
+                    FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
                     List<IChatMessage> remindMsgs = getRemindMessage(saucenaoResult, saucenaoItem, groupId, memberId);
                     List<IChatMessage> groupMsgs = new List<IChatMessage>(remindMsgs);
                     List<IChatMessage> tempMsgs = new List<IChatMessage>(remindMsgs);
@@ -237,7 +238,7 @@ namespace Theresa3rd_Bot.Handler
                     if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
                     {
                         PixivWorkInfo workInfo = ascii2dItem.PixivWorkInfo.body;
-                        resultBuilder.AppendLine($"来源：Pixiv，标题：{workInfo.illustTitle}，pid：{workInfo.illustId}，链接：{workInfo.urls.original.ToProxyUrl()}");
+                        resultBuilder.AppendLine($"来源：Pixiv，标题：{workInfo.illustTitle}，pid：{workInfo.illustId}，链接：{workInfo.urls.original.ToOrginProxyUrl()}");
                     }
                     else if (ascii2dItem.SourceType == SetuSourceType.Twitter)
                     {
@@ -362,7 +363,7 @@ namespace Theresa3rd_Bot.Handler
             if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
             {
                 await Task.Delay(BotConfig.SaucenaoConfig.RevokeInterval * 1000);
-                await session.RevokeMessageAsync(groupMsgId);
+                await session.RevokeMessageAsync(groupMsgId, groupId);
             }
         }
 
@@ -384,7 +385,7 @@ namespace Theresa3rd_Bot.Handler
             if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
             {
                 await Task.Delay(BotConfig.SaucenaoConfig.RevokeInterval * 1000);
-                await session.RevokeMessageAsync(groupMsgId);
+                await session.RevokeMessageAsync(groupMsgId, groupId);
             }
         }
 

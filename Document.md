@@ -25,7 +25,7 @@
 
 ## 下载并修改配置文件
 - [点击这里下载最新版本](https://github.com/GardenHamster/Theresa3rd-Bot/releases)，注：各版本之间的`botsettings.yml`可能会有较大差异，升级版本后请注意对比并修改该文件
-- 根据自己的需要修改根目录下的配置文件`botsettings.yml`，修改完成后需要重新启动
+- 根据自己的需要修改根目录下的配置文件`botsettings.yml`，修改完成后需要重新启动，**注：参数值为空时需要用一对单引号代替，不能直接删掉什么也不加，不然会报错**
 - [botsetting.yml的一些补充说明](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/botsetting.md)，实在没接触过yml语法的小白可以看一下[这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/ymlconfig.md)
 - 修改根目录下的配置文件appsettings.Production.json，使项目可以连接上mcl
 ```json5

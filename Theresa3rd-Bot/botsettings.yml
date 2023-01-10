@@ -42,7 +42,6 @@ Permissions:                                                                    
 Manage:                                                                             #管理相关
     PixivCookieCommand:         'pixivcookie'                                       #更新pixiv cookie 指令，需要私聊使用
     SaucenaoCookieCommand:      'saucenaocookie'                                    #更新saucenao cookie 指令，需要私聊使用
-    BiliCookieCommand:          'bilicookie'                                        #更新bili cookie 指令，需要私聊使用
     DisableTagCommand:          '禁止标签'                                          #禁止一个涩图关键词，禁止后不允许被搜索
     EnableTagCommand:           '解禁标签'                                          #解禁一个涩图关键词
     DisableMemberCommand:       '禁止成员'                                          #将一个群成员拉入黑名单，所有群生效
@@ -163,19 +162,6 @@ Subscribe:                                                                      
         MinBookmark:            300                                                 #最低收藏数，用于判断涩图是否合格
         MinBookPerHour:         60                                                  #距离作品发布每小时至少新增收藏数量，用于判断涩图是否合格
         MaxScan:                300                                                 #最多扫描前N个作品
-    BiliUp:                                                                         #订阅B站up主
-        Enable:                 true                                                #是否启用
-        AddCommand:             '订阅up'                                            #订阅命令,需要管理员执行
-        RmCommand:              '退订up'                                            #退订命令,需要管理员执行
-        Template:               ''
-        ScanInterval:           60                                                  #扫描间隔(秒)
-        ShelfLife:              43200                                               #保质期(秒),超过保质期将不会推送,0表示永不过期
-    BiliLive:                                                                       #b站直播
-        Enable:                 true                                                #是否启用
-        AddCommand:             '订阅直播'                                          #订阅命令,需要管理员执行
-        RmCommand:              '退订直播'                                          #退订命令,需要管理员执行
-        Template:               ''                                                  #消息模版，值为空时将使用默认模版
-        ScanInterval:           60                                                  #扫描间隔(秒)
     Mihoyo:                                                                         #订阅米游社版主
         Enable:                 true                                                #是否启用
         AddCommand:             '订阅版主'                                          #订阅命令,需要管理员执行
@@ -187,3 +173,15 @@ Subscribe:                                                                      
                                 {Urls}
         ScanInterval:           60                                                  #扫描间隔(秒)
         ShelfLife:              43200                                               #保质期(秒),超过保质期将不会推送,0表示永不过期
+
+TimingSetu:
+    Enable:                     true                                                #是否启用
+    Timers:                                                                         #定时列表
+        - Cron:                 '0 0 15 * * ?'                                      #cron表达式，可以百度cron格式，或者在线生成
+          Name:                 '下午茶涩图'                                         #定时器名称
+          Source:               2                                                   #图源，0：本地，1：Lolicon，2：Lolisuki
+          Tags:                 ['萝莉,少女 白丝,黑丝']                              #涩图标签，不填表示随机
+          Quantity:             5                                                   #发送涩图数量  
+          Groups:               [284196392]                                         #发送到群
+          AtAll:                false                                               #是否艾特群体
+          Template:             '下午茶时间，来点 {Tags} 涩图'                        #消息模版

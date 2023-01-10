@@ -4,8 +4,6 @@
     {
         public string PixivCookieCommand { get; set; }
 
-        public string BiliCookieCommand { get; set; }
-
         public string SaucenaoCookieCommand { get; set; }
 
         public string DisableTagCommand { get; set; }

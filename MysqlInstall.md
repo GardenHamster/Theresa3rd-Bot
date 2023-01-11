@@ -1,7 +1,7 @@
 # Mysql安装
 
 ## 下载
-- 从 [mysql官网](https://dev.mysql.com/downloads/installer) 中下载最新版本，或者点击直接下载 [MySQL Installer 8.0.30](https://cdn.mysql.com//Downloads/MySQLInstaller/mysql-installer-community-8.0.30.0.msi)
+- 从 [mysql官网](https://dev.mysql.com/downloads/installer) 中下载最新版本，或者点击直接下载 [MySQL Installer 8.0.31](https://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-8.0.31.0.msi)
 ## 安装
 
 ### 打开刚下载的安装包

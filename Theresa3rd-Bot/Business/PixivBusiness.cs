@@ -672,7 +672,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{RelevantCount}", pixivWorkInfo.RelevantCount.ToString());
             template = template.Replace("{PageCount}", pixivWorkInfo.pageCount.ToString());
-            template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(pixivWorkInfo.tags, BotConfig.GeneralConfig.PixivTagShowMaximum));
+            template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(pixivWorkInfo.tags, BotConfig.PixivConfig.TagShowMaximum));
             template = template.Replace("{Urls}", BusinessHelper.JoinPixivImgOrginUrls(pixivWorkInfo));
             return template;
         }
@@ -685,7 +685,7 @@ namespace Theresa3rd_Bot.Business
             workInfoStr.AppendLine($"标题：{pixivWorkInfo.illustTitle}，PixivId：{pixivWorkInfo.illustId}，画师：{pixivWorkInfo.userName}，画师id：{pixivWorkInfo.userId}，大小：{sizeMB}MB，发布时间：{pixivWorkInfo.createDate.ToSimpleString()}，");
             workInfoStr.AppendLine($"收藏：{pixivWorkInfo.bookmarkCount}，赞：{pixivWorkInfo.likeCount}，浏览：{pixivWorkInfo.viewCount}，");
             workInfoStr.AppendLine($"耗时：{costSecond}s，标签图片：{pixivWorkInfo.RelevantCount}张，作品图片:{pixivWorkInfo.pageCount}张");
-            workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(pixivWorkInfo.tags, BotConfig.GeneralConfig.PixivTagShowMaximum)}");
+            workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(pixivWorkInfo.tags, BotConfig.PixivConfig.TagShowMaximum)}");
             workInfoStr.Append(BusinessHelper.JoinPixivImgOrginUrls(pixivWorkInfo));
             return workInfoStr.ToString();
         }

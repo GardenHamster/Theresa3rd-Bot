@@ -9,6 +9,8 @@ namespace Theresa3rd_Bot.Model.Config
     {
         public GeneralConfig General { get; set; }
 
+        public PixivConfig Pixiv { get; set; }
+
         public PermissionsConfig Permissions { get; set; }
 
         public ManageConfig Manage { get; set; }
@@ -26,6 +28,7 @@ namespace Theresa3rd_Bot.Model.Config
         public SaucenaoConfig Saucenao { get; set; }
 
         public SubscribeConfig Subscribe { get; set; }
+
     }
 
 }

@@ -41,7 +41,7 @@ namespace Theresa3rd_Bot.Event
             }
             if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate)
             {
-                await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.PixivCookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
+                await session.SendTemplateWithAtAsync(args, BotConfig.PixivConfig.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
                 return false;
             }
             if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0)

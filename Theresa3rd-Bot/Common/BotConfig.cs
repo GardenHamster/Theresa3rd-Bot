@@ -16,6 +16,8 @@ namespace Theresa3rd_Bot.Common
 
         public static GeneralConfig GeneralConfig = new GeneralConfig();
 
+        public static PixivConfig PixivConfig = new PixivConfig();
+
         public static PermissionsConfig PermissionsConfig = new PermissionsConfig();
 
         public static ManageConfig ManageConfig = new ManageConfig();

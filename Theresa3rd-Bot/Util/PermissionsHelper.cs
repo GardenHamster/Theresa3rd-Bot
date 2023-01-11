@@ -14,6 +14,12 @@ namespace Theresa3rd_Bot.Util
             return false;
         }
 
+        public static bool IsShowAISetu(this long groupId)
+        {
+            if (BotConfig.PermissionsConfig?.SetuShowAIGroups == null) return true;
+            return BotConfig.PermissionsConfig.SetuShowAIGroups.Contains(groupId);
+        }
+
         public static bool IsShowSetuImg(this long groupId, bool isR18Img)
         {
             List<long> SetuShowImgGroups = BotConfig.PermissionsConfig?.SetuShowImgGroups;

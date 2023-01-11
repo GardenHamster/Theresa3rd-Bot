@@ -17,6 +17,8 @@ namespace Theresa3rd_Bot.Model.Config
 
         public List<long> SetuShowImgGroups { get; set; }
 
+        public List<long> SetuShowAIGroups { get; set; }
+
         public List<long> SetuShowR18Groups { get; set; }
 
         public List<long> SetuCustomGroups { get; set; }

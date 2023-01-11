@@ -174,11 +174,11 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<string> GetPixivAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            if (BotConfig.GeneralConfig.PixivFreeProxy)
+            if (BotConfig.PixivConfig.FreeProxy)
             {
                 return await PixivHelper.GetAsync(url, headerDic, timeout);
             }
-            else if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
+            else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
             {
                 return await HttpHelper.GetWithProxyAsync(url, headerDic, timeout);
             }
@@ -214,7 +214,7 @@ namespace Theresa3rd_Bot.Util
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", HttpHelper.GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            if (BotConfig.GeneralConfig.PixivFreeProxy) url = url.ToHttpUrl();
+            if (BotConfig.PixivConfig.FreeProxy) url = url.ToHttpUrl();
             HttpResponseMessage response = await client.GetAsync(url);
             //response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
@@ -265,7 +265,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static string ToProxyUrl(this string imgUrl)
         {
-            string proxyUrl = BotConfig.GeneralConfig.PixivImgProxy;
+            string proxyUrl = BotConfig.PixivConfig.ImgProxy;
             if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.PixivImgProxyUrl;
             imgUrl = imgUrl.Replace("https://pixiv.lolisuki.cn", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pximg.net", proxyUrl);
@@ -282,7 +282,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static string ToOrginProxyUrl(this string imgUrl)
         {
-            string proxyUrl = BotConfig.GeneralConfig.PixivOriginUrlProxy;
+            string proxyUrl = BotConfig.PixivConfig.OriginUrlProxy;
             if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.PixivImgProxyUrl;
             imgUrl = imgUrl.Replace("https://pixiv.lolisuki.cn", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pximg.net", proxyUrl);

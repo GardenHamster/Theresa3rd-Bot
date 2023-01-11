@@ -114,7 +114,7 @@ namespace Theresa3rd_Bot.Handler
 
                 int groupMsgId = 0;
                 string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
-                string pixivTemplate = BotConfig.GeneralConfig.PixivTemplate;
+                string pixivTemplate = BotConfig.PixivConfig.Template;
                 List<IChatMessage> chatList = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(remindTemplate) == false)
                 {

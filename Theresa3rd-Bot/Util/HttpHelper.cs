@@ -41,7 +41,7 @@ namespace Theresa3rd_Bot.Util
             {
                 return new HttpClientHandler()
                 {
-                    Proxy = new WebProxy(new Uri(BotConfig.GeneralConfig.PixivHttpProxy), BypassOnLocal: true),
+                    Proxy = new WebProxy(new Uri(BotConfig.PixivConfig.HttpProxy), BypassOnLocal: true),
                     UseProxy = true,
                 };
             }).Services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();

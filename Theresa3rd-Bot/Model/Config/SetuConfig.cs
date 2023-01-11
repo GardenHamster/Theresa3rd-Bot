@@ -28,7 +28,7 @@ namespace Theresa3rd_Bot.Model.Config
 
         public LolisukiConfig Lolisuki { get; set; }
 
-        public PixivConfig Pixiv { get; set; }
+        public SetuPixivConfig Pixiv { get; set; }
 
     }
 

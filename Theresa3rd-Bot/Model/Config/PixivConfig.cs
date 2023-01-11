@@ -1,33 +1,32 @@
-﻿using System.Collections.Generic;
-using Theresa3rd_Bot.Type;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Model.Config
 {
     public class PixivConfig
     {
-        public bool Enable { get; set; }
+        public bool FreeProxy { get; set; }
 
-        public string Command { get; set; }
+        public string HttpProxy { get; set; }
 
-        public PixivRandomMode RandomMode { get; set; }
+        public string ImgProxy { get; set; }
 
-        public List<string> RandomTags { get; set; }
+        public int TagShowMaximum { get; set; }
+
+        public string ImgSize { get; set; }
+
+        public string OriginUrlProxy { get; set; }
+
+        public int ImgRetryTimes { get; set; }
+
+        public int ErrRetryTimes { get; set; }
+
+        public int CookieExpire { get; set; }
+
+        public string CookieExpireMsg { get; set; }
 
         public string Template { get; set; }
-
-        public int MaxScreen { get; set; }
-
-        public double MinBookmark { get; set; }
-
-        public double MinBookRate { get; set; }
-
-        public PixivConfig()
-        {
-            this.RandomMode = PixivRandomMode.RandomTag;
-            this.MaxScreen = 60;
-            this.MinBookmark = 1500;
-            this.MinBookRate = 0.05;
-        }
-
     }
 }

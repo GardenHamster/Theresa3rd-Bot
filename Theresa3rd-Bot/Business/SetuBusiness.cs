@@ -20,7 +20,7 @@ namespace Theresa3rd_Bot.Business
         /// <returns></returns>
         public string getDownImgUrl(string originalUrl)
         {
-            string imgSize = BotConfig.GeneralConfig.PixivImgSize?.ToLower();
+            string imgSize = BotConfig.PixivConfig.ImgSize?.ToLower();
             if (imgSize == "original") return originalUrl;
             if (imgSize == "regular") return originalUrl.ToRegularUrl();
             if (imgSize == "small") return originalUrl.ToSmallUrl();
@@ -44,11 +44,11 @@ namespace Theresa3rd_Bot.Business
                 Dictionary<string, string> headerDic = new Dictionary<string, string>();
                 headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
                 headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                if (BotConfig.GeneralConfig.PixivFreeProxy || string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivImgProxy) == false)
+                if (BotConfig.PixivConfig.FreeProxy || string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
                 {
                     return await HttpHelper.DownFileAsync(imgUrl.ToProxyUrl(), fullImageSavePath);
                 }
-                else if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
+                else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
                 {
                     return await HttpHelper.DownFileWithProxyAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
                 }
@@ -82,11 +82,11 @@ namespace Theresa3rd_Bot.Business
             headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
             headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
 
-            if (BotConfig.GeneralConfig.PixivFreeProxy || string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivImgProxy) == false)
+            if (BotConfig.PixivConfig.FreeProxy || string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
             {
                 await HttpHelper.DownFileAsync(zipHttpUrl.ToProxyUrl(), fullZipSavePath);
             }
-            else if (string.IsNullOrWhiteSpace(BotConfig.GeneralConfig.PixivHttpProxy) == false)
+            else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
             {
                 await HttpHelper.DownFileWithProxyAsync(zipHttpUrl.ToPximgUrl(), fullZipSavePath, headerDic);
             }

@@ -302,7 +302,7 @@ namespace Theresa3rd_Bot.Handler
         public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoItem saucenaoItem, UploadTarget target, DateTime startTime, FileInfo fileInfo, bool isShowImg)
         {
             long groupId = args.Sender.Group.Id;
-            string template = BotConfig.GeneralConfig.PixivTemplate;
+            string template = BotConfig.PixivConfig.Template;
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
             List<IChatMessage> chatList = new List<IChatMessage>();
             if (pixivWorkInfo.IsImproper())

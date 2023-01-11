@@ -6,24 +6,28 @@
                                 出了点小问题，稍后再试吧
                                 [image:C:\BotImg\face\emmm.jpg]
     DownErrorImg:               '[image:C:\BotImg\face\downError.png]'              #图片下载失败时的替代图片
-    PixivFreeProxy:             true                                                #开启pixiv免代理模式，在没有vpn的情况下可以设置为true，在有vpn或者服务器可以直接连接P站情况下可以设置为false
-    PixivHttpProxy:             'http://127.0.0.1:7890'                             #pixiv代理地址，值为空表示直连，不为空时表示使用代理，格式：http://127.0.0.1:7890
-    PixivImgProxy:              'https://pixiv.lolisuki.cn'                         #图片代理地址，值为空表示不使用代理，不为空时使用代理下载图片，格式：https://i.pixiv.re
-    PixivTagShowMaximum:        3                                                   #最多显示N个pixiv标签，0表示无限制，建议设置该参数降低触发风控的概率
-    PixivImgSize:               'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb，推荐使用thumb或small降低触发风控的概率
-    PixivOriginUrlProxy:        'https://i.pixiv.re'                                #pixiv原图链接的代理地址，如果QQ中打开原图链接时如果显示已停止访问，可以修改该值到其他图片代理地址，默认：https://i.pixiv.re，也可以参照https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/pixivproxy.md搭建自己的反向代理
-    PixivCookieExpire:          5184000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每60天更新一次
-    PixivCookieExpireMsg:       'emmmm,cookie过期了,请艾特管理员更新cookie'         #cookie过期时返回的消息
-    PixivTemplate:              |                                                   #pixiv模版，值为空时将使用默认模版
+    DisableMsg:                 '该功能未开启'                                      #功能未启用时返回的消息
+    NoPermissionsMsg:           '该功能未授权'                                      #功能未授权时返回的消息
+    ManagersRequiredMsg:        '该功能需要管理员执行'                              #需要管理员权限时返回的消息
+    SetuCustomDisableMsg:       '自定义功能已关闭'                                  #禁用自定义时返回的消息
+
+Pixiv:
+    FreeProxy:                  true                                                #开启pixiv免代理模式，在没有vpn的情况下可以设置为true，在有vpn或者服务器可以直接连接P站情况下可以设置为false
+    HttpProxy:                  'http://127.0.0.1:7890'                             #pixiv代理地址，值为空表示直连，不为空时表示使用代理，格式：http://127.0.0.1:7890
+    ImgProxy:                   ''                                                  #图片代理地址，值为空表示不使用代理，不为空时使用代理下载图片，格式：https://i.pixiv.re
+    TagShowMaximum:             3                                                   #最多显示N个pixiv标签，0表示无限制，建议设置该参数降低触发风控的概率
+    ImgSize:                    'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb，推荐使用thumb或small降低触发风控的概率
+    OriginUrlProxy:             'https://i.pixiv.re'                                #pixiv原图链接的代理地址，如果QQ中打开原图链接时如果显示已停止访问，可以修改该值到其他图片代理地址，默认：https://i.pixiv.re，也可以参照https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/pixivproxy.md搭建自己的反向代理
+    ImgRetryTimes:              3                                                   #图片下载失败后重试次数
+    ErrRetryTimes:              2                                                   #读取作品失败后的重试次数
+    CookieExpire:               5184000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每60天更新一次
+    CookieExpireMsg:            'emmmm,cookie过期了,请艾特管理员更新cookie'           #cookie过期时返回的消息
+    Template:                   |                                                   #pixiv模版，值为空时将使用默认模版
                                 标题：{IllustTitle}，PixivId：{PixivId}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
                                 收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，
                                 耗时：{CostSecond}s，标签图片：{RelevantCount}张，作品图片:{PageCount}张
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
-    DisableMsg:                 '该功能未开启'                                      #功能未启用时返回的消息
-    NoPermissionsMsg:           '该功能未授权'                                      #功能未授权时返回的消息
-    ManagersRequiredMsg:        '该功能需要管理员执行'                              #需要管理员权限时返回的消息
-    SetuCustomDisableMsg:       '自定义功能已关闭'                                  #禁用自定义时返回的消息
 
 Permissions:                                                                        #权限设置
     SuperManagers:              [123456789]                                         #超级管理员列表,可以使用管理指令
@@ -31,6 +35,7 @@ Permissions:                                                                    
     AcceptGroups:               [284196392,123456789]                               #白名单，只处理这些群的消息
     SetuGroups:                 [284196392]                                         #拥有涩图权限的群
     SetuShowImgGroups:          [284196392]                                         #允许发送图片的群，否则只发送图片链接
+    SetuShowAIGroups:           [284196392]                                         #允许发送AI图片的群
     SetuShowR18Groups:          []                                                  #允许出现r18内容的群，图片将使用链接代替
     SetuCustomGroups:           [284196392]                                         #允许查找自定义涩图的群
     SetuNoneCDGroups:           [284196392]                                         #涩图没有CD的群
@@ -178,10 +183,12 @@ TimingSetu:
     Enable:                     true                                                #是否启用
     Timers:                                                                         #定时列表
         - Cron:                 '0 0 15 * * ?'                                      #cron表达式，可以百度cron格式，或者在线生成
-          Name:                 '下午茶涩图'                                         #定时器名称
+          Name:                 '下午茶'                                             #定时器名称
           Source:               2                                                   #图源，0：本地，1：Lolicon，2：Lolisuki
-          Tags:                 ['萝莉,少女 白丝,黑丝']                              #涩图标签，不填表示随机
-          Quantity:             5                                                   #发送涩图数量  
+          LocalPath:            'C:\local'                                          #本地图片路径，source为0时可用
+          Tags:                 ['萝莉,少女 白丝,黑丝']                              #涩图标签，不填表示随机，source为1和2时可用
+          Level:                '0-3'                                               #Lolisuki的Level，source为2时可用
+          Quantity:             5                                                   #发送涩图数量，范围1~20
           Groups:               [284196392]                                         #发送到群
-          AtAll:                false                                               #是否艾特群体
-          Template:             '下午茶时间，来点 {Tags} 涩图'                        #消息模版
+          AtAll:                false                                               #是否艾特全体
+          Template:             '下午茶时间，来点{Tags}涩图'                          #消息模版

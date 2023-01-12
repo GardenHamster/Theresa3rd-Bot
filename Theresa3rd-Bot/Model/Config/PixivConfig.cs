@@ -15,6 +15,8 @@ namespace Theresa3rd_Bot.Model.Config
 
         public int TagShowMaximum { get; set; }
 
+        public int UrlShowMaximum { get; set; }
+
         public string ImgSize { get; set; }
 
         public string OriginUrlProxy { get; set; }
@@ -28,5 +30,11 @@ namespace Theresa3rd_Bot.Model.Config
         public string CookieExpireMsg { get; set; }
 
         public string Template { get; set; }
+
+        public PixivConfig()
+        {
+            this.TagShowMaximum = 3;
+            this.UrlShowMaximum = 3;
+        }
     }
 }

@@ -100,7 +100,7 @@ namespace Theresa3rd_Bot
             BotConfig.MiraiConfig.AuthKey = Configuration["Mirai:authKey"];
             BotConfig.MiraiConfig.BotQQ = Convert.ToInt64(Configuration["Mirai:botQQ"]);
 
-            Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             using FileStream fileStream = new FileStream("botsettings.yml", FileMode.Open, FileAccess.Read);
             using TextReader reader = new StreamReader(fileStream, Encoding.GetEncoding("gb2312"));
             Deserializer deserializer = new Deserializer();
@@ -116,6 +116,7 @@ namespace Theresa3rd_Bot
             BotConfig.SetuConfig = botConfig.Setu;
             BotConfig.SaucenaoConfig = botConfig.Saucenao;
             BotConfig.SubscribeConfig = botConfig.Subscribe;
+            BotConfig.TimingSetuConfig = botConfig.TimingSetu;
         }
 
 

@@ -1,8 +1,6 @@
 ﻿using Quartz;
 using Quartz.Impl;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Util;
@@ -13,24 +11,40 @@ namespace Theresa3rd_Bot.Timer
     {
         public static void init()
         {
-            initCustomJob();//初始化配置列表中的定时器
+            initReminderJob();//初始化定时提醒任务
+            initTimingSetuJob();//初始化定时色图任务
             initSubscribeTimers();//初始化订阅任务
             initClearJobAsync();//初始化清理任务
             initCookieJobAsync();//初始化cookie检查任务
         }
 
-        private static void initCustomJob()
+        private static void initReminderJob()
         {
             try
             {
                 ReminderConfig reminderConfig = BotConfig.ReminderConfig;
                 if (reminderConfig == null) return;
                 if (reminderConfig.Enable == false) return;
-                foreach (var item in reminderConfig.Timers) createCustomJob(item);
+                foreach (var item in reminderConfig.Timers) createReminderJob(item);
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"定时功能异常");
+                LogHelper.Error(ex, $"定时提醒任务初始化失败");
+            }
+        }
+
+        private static void initTimingSetuJob()
+        {
+            try
+            {
+                TimingSetuConfig timingSetuConfig = BotConfig.TimingSetuConfig;
+                if (timingSetuConfig == null) return;
+                if (timingSetuConfig.Enable == false) return;
+                foreach (var item in timingSetuConfig.Timers) createTimingSetuJob(item);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"定时涩图任务初始化失败");
             }
         }
 
@@ -44,11 +58,11 @@ namespace Theresa3rd_Bot.Timer
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
                 await scheduler.ScheduleJob(jobDetail, trigger);
                 await scheduler.Start();
-                LogHelper.Info($"清理定时器启动完毕...");
+                LogHelper.Info($"定时清理任务初始化完毕...");
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"清理定时器启动失败");
+                LogHelper.Error(ex, $"清定时清理任务初始化失败");
             }
         }
 
@@ -92,21 +106,39 @@ namespace Theresa3rd_Bot.Timer
         }
 
 
-        private static async void createCustomJob(ReminderTimer reminderTimer)
+        private static async void createReminderJob(ReminderTimer reminderTimer)
         {
             try
             {
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(reminderTimer.Cron).Build();
-                IJobDetail jobDetail = JobBuilder.Create<CustomJob>().WithIdentity(reminderTimer.GetHashCode().ToString(), "CustomJob").Build();//创建作业
+                IJobDetail jobDetail = JobBuilder.Create<ReminderJob>().WithIdentity(reminderTimer.GetHashCode().ToString(), "ReminderJob").Build();
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
                 jobDetail.JobDataMap.Put("ReminderTimer", reminderTimer);
                 await scheduler.ScheduleJob(jobDetail, trigger);
                 await scheduler.Start();
-                LogHelper.Info($"定时器[{reminderTimer.Name}]启动完毕...");
+                LogHelper.Info($"定时提醒任务[{reminderTimer.Name}]启动完毕...");
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"定时器[{reminderTimer.Name}]启动失败");
+                LogHelper.Error(ex, $"定时提醒任务[{reminderTimer.Name}]启动失败");
+            }
+        }
+
+        private static async void createTimingSetuJob(TimingSetuTimer timingSetuTimer)
+        {
+            try
+            {
+                ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(timingSetuTimer.Cron).Build();
+                IJobDetail jobDetail = JobBuilder.Create<TimingSetuJob>().WithIdentity(timingSetuTimer.GetHashCode().ToString(), "TimingSetuJob").Build();
+                IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+                jobDetail.JobDataMap.Put("TimingSetuTimer", timingSetuTimer);
+                await scheduler.ScheduleJob(jobDetail, trigger);
+                await scheduler.Start();
+                LogHelper.Info($"定时涩图任务[{timingSetuTimer.Name}]启动完毕...");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"定时涩图任务[{timingSetuTimer.Name}]启动失败");
             }
         }
 

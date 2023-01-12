@@ -8,7 +8,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Timer
 {
-    public class CustomJob : IJob
+    public class ReminderJob : IJob
     {
         public async Task Execute(IJobExecutionContext context)
         {
@@ -34,7 +34,7 @@ namespace Theresa3rd_Bot.Timer
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "CustomJob异常");
+                LogHelper.Error(ex, "ReminderJob异常");
             }
         }
     }

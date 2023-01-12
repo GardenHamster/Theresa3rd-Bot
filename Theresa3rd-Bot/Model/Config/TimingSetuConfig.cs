@@ -5,10 +5,10 @@ namespace Theresa3rd_Bot.Model.Config
     public class TimingSetuConfig
     {
         public bool Enable { get; set; }
-        public List<TimingSetuTimers> Timers { get; set; }
+        public List<TimingSetuTimer> Timers { get; set; }
     }
 
-    public class TimingSetuTimers
+    public class TimingSetuTimer
     {
         public string Cron { get; set; }
         public string Name { get; set; }

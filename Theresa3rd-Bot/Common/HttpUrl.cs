@@ -29,7 +29,7 @@ namespace Theresa3rd_Bot.Common
         /// <summary>
         /// 默认pixiv图片代理地址
         /// </summary>
-        public static readonly string PixivImgProxyUrl = "https://pixiv.lolisuki.cn";
+        public static readonly string PixivImgProxyUrl = "https://i.pixiv.re";
 
         /*---------------------------------------------------------------pixiv-----------------------------------------------------------------------*/
 

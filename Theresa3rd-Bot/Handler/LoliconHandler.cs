@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Model.Lolicon;
 using Theresa3rd_Bot.Util;
 
@@ -162,7 +163,10 @@ namespace Theresa3rd_Bot.Handler
             }
         }
 
+        public async Task sendTimingSetu(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, long groupId)
+        {
 
+        }
 
 
 

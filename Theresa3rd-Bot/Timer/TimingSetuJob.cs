@@ -3,7 +3,10 @@ using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Business;
+using Theresa3rd_Bot.Handler;
 using Theresa3rd_Bot.Model.Config;
+using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Timer
@@ -14,28 +17,45 @@ namespace Theresa3rd_Bot.Timer
         {
             try
             {
-                //JobDataMap dataMap = context.MergedJobDataMap;
-                //ReminderTimer reminderTimer = (ReminderTimer)dataMap["ReminderTimer"];
-                //if (reminderTimer == null) return;
-                //if (reminderTimer.Groups == null || reminderTimer.Groups.Count == 0) return;
-                //List<IChatMessage> chainList = new List<IChatMessage>();
-                //if (reminderTimer.AtAll == true) chainList.Add(new Mirai.CSharp.HttpApi.Models.ChatMessages.AtAllMessage());
-                //if (reminderTimer.AtMembers != null && reminderTimer.AtMembers.Count > 0)
-                //{
-                //    foreach (var memberId in reminderTimer.AtMembers) chainList.Add(new Mirai.CSharp.HttpApi.Models.ChatMessages.AtMessage(memberId));
-                //}
-                //chainList.AddRange(BusinessHelper.SplitToChainAsync(MiraiHelper.Session, reminderTimer.Template).Result);
-                //foreach (var groupId in reminderTimer.Groups)
-                //{
-                //    if (!BusinessHelper.IsHandleMessage(groupId)) continue;
-                //    await MiraiHelper.Session.SendGroupMessageAsync(groupId, chainList.ToArray());
-                //    await Task.Delay(1000);
-                //}
+                JobDataMap dataMap = context.MergedJobDataMap;
+                TimingSetuTimer timingSetuTimer = (TimingSetuTimer)dataMap["TimingSetuTimer"];
+                if (timingSetuTimer == null) return;
+                if (timingSetuTimer.Groups == null || timingSetuTimer.Groups.Count == 0) return;
+                foreach (long groupId in timingSetuTimer.Groups)
+                {
+                    await HandleTiming(timingSetuTimer, groupId);
+                    await Task.Delay(1000);
+                }
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "TimingSetuJob异常");
             }
         }
+
+        public async Task HandleTiming(TimingSetuTimer timingSetuTimer, long groupId)
+        {
+            try
+            {
+                TimingSetuSourceType sourceType = timingSetuTimer.Source;
+                if (sourceType == TimingSetuSourceType.Lolicon)
+                {
+                    await new LoliconHandler().sendTimingSetu(MiraiHelper.Session, timingSetuTimer, groupId);
+                }
+                else if (sourceType == TimingSetuSourceType.Lolisuki)
+                {
+                    await new LolisukiHandler().sendTimingSetu(MiraiHelper.Session, timingSetuTimer, groupId);
+                }
+                else
+                {
+                    await new LocalSetuHandler().sendTimingSetu(MiraiHelper.Session, timingSetuTimer, groupId);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"{timingSetuTimer.Name}定时任务异常");
+            }
+        }
+
     }
 }

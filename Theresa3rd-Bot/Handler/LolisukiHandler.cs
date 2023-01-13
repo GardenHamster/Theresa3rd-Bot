@@ -47,7 +47,7 @@ namespace Theresa3rd_Bot.Handler
                 bool isShowR18 = groupId.IsShowR18Setu();
                 int r18Mode = isShowR18 ? 2 : 0;
                 string levelStr = getLevelStr(isShowR18);
-                
+
                 if (string.IsNullOrEmpty(tagStr))
                 {
                     lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr);
@@ -56,7 +56,7 @@ namespace Theresa3rd_Bot.Handler
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
                     string[] tagArr = toLoliconTagArr(tagStr);
-                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr, tagArr);
+                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr, 1, tagArr);
                 }
 
                 if (lolisukiResult == null || lolisukiResult.data.Count == 0)
@@ -168,7 +168,56 @@ namespace Theresa3rd_Bot.Handler
 
         public async Task sendTimingSetu(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, long groupId)
         {
+            int eachPage = 5;
+            bool isShowR18 = groupId.IsShowR18Setu();
+            int r18Mode = isShowR18 ? 2 : 0;
+            int count = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
+            string levelStr = getLevelStr(isShowR18);
+            string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
+            string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? null : toLoliconTagArr(tagStr);
+            await sendTimingSetuMessage(session, timingSetuTimer, tagStr, groupId);
+            await Task.Delay(2000);
+            while (count > 0)
+            {
+                int num = count >= eachPage ? eachPage : count;
+                LolisukiResult lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr, num, tagArr);
+                count -= num;
+                if (lolisukiResult.data.Count == 0) continue;
+                foreach (var setuInfo in lolisukiResult.data)
+                {
+                    await sendSetuInfoAsync(session, setuInfo, groupId);
+                    await Task.Delay(1000);
+                }
+            }
+        }
 
+        private async Task sendSetuInfoAsync(IMiraiHttpSession session, LolisukiData setuInfo, long groupId)
+        {
+            try
+            {
+                bool isR18Img = setuInfo.isR18();
+                bool isShowImg = groupId.IsShowSetuImg(isR18Img);
+                DateTime startTime = DateTime.Now;
+                List<IChatMessage> chainList = new List<IChatMessage>();
+
+                FileInfo fileInfo = isShowImg ? await lolisukiBusiness.downImgAsync(setuInfo.pid.ToString(), setuInfo.urls.original, setuInfo.isGif()) : null;
+                chainList.Add(new PlainMessage(lolisukiBusiness.getDefaultWorkInfo(setuInfo, fileInfo, startTime)));
+
+                if (isShowImg && fileInfo != null)
+                {
+                    chainList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                }
+                else if (isShowImg && fileInfo == null)
+                {
+                    chainList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
+                }
+
+                await session.SendGroupMessageAsync(groupId, chainList.ToArray());
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
         }
 
 
@@ -194,8 +243,6 @@ namespace Theresa3rd_Bot.Handler
                 return $"{(int)LolisukiLevel.Level0}-{(int)(isShowR18 ? LolisukiLevel.Level6 : LolisukiLevel.Level3)}";
             }
         }
-
-
 
 
 

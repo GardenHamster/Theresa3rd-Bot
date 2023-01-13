@@ -34,6 +34,8 @@ namespace Theresa3rd_Bot.Model.Lolisuki
         public List<string> tags { get; set; }
         public List<string> extags { get; set; }
 
+        public bool isGif() => gif;
+
         public string hasBanTag() => tags?.hasBanTags() ?? extags?.hasBanTags();
 
         public bool IsImproper()
@@ -42,6 +44,7 @@ namespace Theresa3rd_Bot.Model.Lolisuki
             if (extags != null && tags.IsImproper()) return true;
             return false;
         }
+
         public bool isR18()
         {
             if (r18) return true;
@@ -49,6 +52,7 @@ namespace Theresa3rd_Bot.Model.Lolisuki
             if (extags != null && tags.IsR18()) return true;
             return false;
         }
+        
     }
 
     public class LolisukiUrls

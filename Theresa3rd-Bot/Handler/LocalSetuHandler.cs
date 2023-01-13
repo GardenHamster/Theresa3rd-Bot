@@ -24,12 +24,11 @@ namespace Theresa3rd_Bot.Handler
         public async Task sendTimingSetu(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, long groupId)
         {
             string localPath = timingSetuTimer.LocalPath;
-            int quantity = timingSetuTimer.Quantity;
-            if (quantity <= 0) throw new Exception("Quantity必须大于0");
             if (string.IsNullOrWhiteSpace(localPath)) throw new Exception("未配置LocalPath");
             List<LocalSetuInfo> setuInfos = localSetuBusiness.loadRandom(localPath, timingSetuTimer.Quantity, timingSetuTimer.FromOneDir);
             if (setuInfos == null || setuInfos.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
-            await sendTimingMessage(session, timingSetuTimer, setuInfos, groupId);
+            string tags = timingSetuTimer.FromOneDir ? setuInfos[0].DirInfo.Name : "";
+            await sendTimingSetuMessage(session, timingSetuTimer, tags, groupId);
             await Task.Delay(2000);
             foreach (LocalSetuInfo setuInfo in setuInfos)
             {
@@ -46,29 +45,6 @@ namespace Theresa3rd_Bot.Handler
                 string template = getSetuInfo(setuInfo, timingSetuTimer.LocalTemplate);
                 if (string.IsNullOrWhiteSpace(template) == false) chainList.Add(new PlainMessage(template));
                 chainList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, setuInfo.FileInfo.FullName));
-                await session.SendGroupMessageAsync(groupId, chainList.ToArray());
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex);
-            }
-        }
-
-        private async Task sendTimingMessage(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, List<LocalSetuInfo> setuInfos, long groupId)
-        {
-            try
-            {
-                List<IChatMessage> chainList = new List<IChatMessage>();
-                if (timingSetuTimer.AtAll) chainList.Add(new AtAllMessage());
-                string template = timingSetuTimer.TimingMsg;
-                if (string.IsNullOrWhiteSpace(template))
-                {
-                    if (chainList.Count == 0) return;
-                    await session.SendGroupMessageAsync(groupId, chainList.ToArray());
-                    return;
-                }
-                template = template.Replace("{Tags}", timingSetuTimer.FromOneDir ? setuInfos[0].DirInfo.Name : "");
-                chainList.AddRange(BusinessHelper.SplitToChainAsync(session, template).Result);
                 await session.SendGroupMessageAsync(groupId, chainList.ToArray());
             }
             catch (Exception ex)

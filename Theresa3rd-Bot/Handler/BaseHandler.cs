@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
@@ -54,6 +55,37 @@ namespace Theresa3rd_Bot.Handler
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// 发送定时涩图Message
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="timingSetuTimer"></param>
+        /// <param name="tags"></param>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        protected async Task sendTimingSetuMessage(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, string tags, long groupId)
+        {
+            try
+            {
+                List<IChatMessage> chainList = new List<IChatMessage>();
+                if (timingSetuTimer.AtAll) chainList.Add(new AtAllMessage());
+                string template = timingSetuTimer.TimingMsg;
+                if (string.IsNullOrWhiteSpace(template))
+                {
+                    if (chainList.Count == 0) return;
+                    await session.SendGroupMessageAsync(groupId, chainList.ToArray());
+                    return;
+                }
+                template = template.Replace("{Tags}", tags);
+                chainList.AddRange(BusinessHelper.SplitToChainAsync(session, template).Result);
+                await session.SendGroupMessageAsync(groupId, chainList.ToArray());
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
         }
 
         /// <summary>

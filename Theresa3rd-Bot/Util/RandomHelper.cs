@@ -32,6 +32,16 @@ namespace Theresa3rd_Bot.Util
             return new Random(seed);
         }
 
+        /// <summary>
+        /// 获取随机内容
+        /// </summary>
+        /// <returns></returns>
+        public static T getRandomItem<T>(List<T> list)
+        {
+            if (list == null || list.Count == 0) return default;
+            int randomIndex = new Random().Next(0, list.Count);
+            return list[randomIndex];
+        }
 
     }
 }

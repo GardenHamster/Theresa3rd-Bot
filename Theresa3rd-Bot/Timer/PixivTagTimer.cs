@@ -102,35 +102,35 @@ namespace Theresa3rd_Bot.Timer
                         if (isR18Img && groupId.IsShowR18Setu() == false) continue;
                         bool isShowImg = groupId.IsShowSetuImg(isR18Img);
 
-                        List<IChatMessage> chailList = new List<IChatMessage>();
+                        List<IChatMessage> chainList = new List<IChatMessage>();
                         if (string.IsNullOrWhiteSpace(remindTemplate))
                         {
-                            chailList.Add(new PlainMessage($"pixiv标签[{tagName}]发布了新作品："));
+                            chainList.Add(new PlainMessage($"pixiv标签[{tagName}]发布了新作品："));
                         }
                         else
                         {
-                            chailList.Add(new PlainMessage(pixivBusiness.getTagPushRemindMsg(remindTemplate, tagName)));
+                            chainList.Add(new PlainMessage(pixivBusiness.getTagPushRemindMsg(remindTemplate, tagName)));
                         }
 
                         if (string.IsNullOrWhiteSpace(pixivTemplate))
                         {
-                            chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
+                            chainList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
                         }
                         else
                         {
-                            chailList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startTime, pixivTemplate)));
+                            chainList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startTime, pixivTemplate)));
                         }
 
                         if (isShowImg && fileInfo != null)
                         {
-                            chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                            chainList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
                         }
                         else if (isShowImg && fileInfo == null)
                         {
-                            chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
+                            chainList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
                         }
 
-                        await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
+                        await MiraiHelper.Session.SendGroupMessageAsync(groupId, chainList.ToArray());
                     }
                     catch (Exception ex)
                     {

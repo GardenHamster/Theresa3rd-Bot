@@ -5,6 +5,11 @@ namespace Theresa3rd_Bot.Util
 {
     public static class PermissionsHelper
     {
+        public static bool IsDownImg(this long groupId, bool isR18Img)
+        {
+            return groupId.IsShowSetuImg(isR18Img);
+        }
+
         public static bool IsDownImg(this List<long> groupIds, bool isR18Img)
         {
             foreach (long groupId in groupIds)

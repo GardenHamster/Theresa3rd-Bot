@@ -1,9 +1,6 @@
-﻿using Mirai.CSharp.Models.ChatMessages;
-using Quartz;
+﻿using Quartz;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Handler;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Type;
@@ -21,6 +18,7 @@ namespace Theresa3rd_Bot.Timer
                 TimingSetuTimer timingSetuTimer = (TimingSetuTimer)dataMap["TimingSetuTimer"];
                 if (timingSetuTimer == null) return;
                 if (timingSetuTimer.Groups == null || timingSetuTimer.Groups.Count == 0) return;
+                if (timingSetuTimer.Quantity <= 0) throw new Exception("Quantity必须大于0");
                 foreach (long groupId in timingSetuTimer.Groups)
                 {
                     await HandleTiming(timingSetuTimer, groupId);

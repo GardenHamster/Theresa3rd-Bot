@@ -26,10 +26,10 @@ namespace Theresa3rd_Bot.Model.Lolicon
         public long uploadDate { get; set; }
         public LoliconUrlsV2 urls { get; set; }
 
-        public bool IsImproper() => tags != null && tags.IsImproper();
-
+        //xRestrict=1为R18,xRestrict=2为R18G
         public bool isR18() => tags != null && tags.IsR18();
-
+        public bool IsImproper() => tags != null && tags.IsImproper();
+        public bool isGif() => tags != null && tags.IsGif();
         public string hasBanTag() => tags?.hasBanTags();
     }
 

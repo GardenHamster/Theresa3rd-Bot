@@ -57,7 +57,7 @@ namespace Theresa3rd_Bot.Handler
         {
             if (string.IsNullOrWhiteSpace(template)) return string.Empty;
             template = template.Replace("{FileName}", setuInfo.FileInfo.Name);
-            template = template.Replace("{FilePath}", $"{setuInfo.DirInfo.Name}/${setuInfo.FileInfo.Name}");
+            template = template.Replace("{FilePath}", $"{setuInfo.DirInfo.Name}/{setuInfo.FileInfo.Name}");
             template = template.Replace("{SizeMB}", MathHelper.getMbWithByte(setuInfo.FileInfo.Length).ToString());
             return template;
         }

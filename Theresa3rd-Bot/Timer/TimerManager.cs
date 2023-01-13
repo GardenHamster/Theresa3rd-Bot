@@ -1,6 +1,8 @@
 ﻿using Quartz;
 using Quartz.Impl;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Util;
@@ -40,7 +42,10 @@ namespace Theresa3rd_Bot.Timer
                 TimingSetuConfig timingSetuConfig = BotConfig.TimingSetuConfig;
                 if (timingSetuConfig == null) return;
                 if (timingSetuConfig.Enable == false) return;
-                foreach (var item in timingSetuConfig.Timers) createTimingSetuJob(item);
+                if (timingSetuConfig.Timers == null) return;
+                if (timingSetuConfig.Timers.Count == 0) return;
+                List<TimingSetuTimer> timers = timingSetuConfig.Timers.Take(10).ToList();
+                foreach (var item in timers) createTimingSetuJob(item);
             }
             catch (Exception ex)
             {

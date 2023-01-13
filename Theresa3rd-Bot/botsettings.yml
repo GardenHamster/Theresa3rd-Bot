@@ -188,7 +188,7 @@ TimingSetu:
           Source:               2                                                   #图源，0：本地，1：Lolicon，2：Lolisuki
           LocalPath:            'C:\Setu'                                           #本地图片文件夹路径，图片需要分类放在子目录下，Source为0时可用
           FromOneDir:           false                                               #true：从一个随机目录读取涩图，false：从不同的随机目录读取涩图，Source为0时可用
-          Tags:                 ['萝莉,少女 白丝,黑丝']                              #涩图标签，不填表示随机，Source为1和2时可用
+          Tags:                 []                                                  #涩图标签，不填表示随机，Source为1和2时可用
           Level:                '0-3'                                               #Lolisuki的Level，Source为2时可用
           Quantity:             5                                                   #发送涩图数量，Source为1和2时取值范围为1~20
           Groups:               [284196392]                                         #发送到群

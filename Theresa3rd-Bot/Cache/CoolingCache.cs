@@ -9,6 +9,11 @@ namespace Theresa3rd_Bot.Cache
     public static class CoolingCache
     {
         /// <summary>
+        /// 定时涩图任务冷却信息
+        /// </summary>
+        public static TimingCoolingInfo SetuTimingCoolingInfo = new TimingCoolingInfo();
+
+        /// <summary>
         /// 群员功能冷却字典
         /// </summary>
         public static Dictionary<long, List<MemberCoolingInfo>> MemberCoolingDic = new Dictionary<long, List<MemberCoolingInfo>>();
@@ -17,6 +22,27 @@ namespace Theresa3rd_Bot.Cache
         /// 群功能冷却共享字典
         /// </summary>
         public static Dictionary<long, GroupCoolingInfo> GroupCoolingDic = new Dictionary<long, GroupCoolingInfo>();
+
+        /// <summary>
+        /// 记录定时涩图功能最后触发时间，进入CD状态
+        /// </summary>
+        public static void SetSetuTimingCooling()
+        {
+            lock (SetuTimingCoolingInfo) SetuTimingCoolingInfo.LastRunTime = DateTime.Now;
+        }
+
+        /// <summary>
+        /// 判断是否可以触发下一个定时涩图任务
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsSetuTimingCooling(int coolingMinutes)
+        {
+            lock (SetuTimingCoolingInfo)
+            {
+                if (SetuTimingCoolingInfo.LastRunTime == null) return false;
+                return DateTime.Now < SetuTimingCoolingInfo.LastRunTime.Value.AddMinutes(coolingMinutes);
+            }
+        }
 
         /// <summary>
         /// 记录瑟图功能最后使用时间,进入CD状态

@@ -1,10 +1,16 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
+using Mirai.CSharp.Models;
+using MySqlX.XDevAPI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Common;
 
 namespace Theresa3rd_Bot.Util
 {
@@ -38,11 +44,19 @@ namespace Theresa3rd_Bot.Util
             return await session.SendGroupMessageAsync(args.Sender.Group.Id, msgList.ToArray());
         }
 
-        public static async Task<int> SendMessageWithAtAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> chainlList)
+        public static async Task<int> SendMessageWithAtAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> chainList)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             msgList.Add(new AtMessage(args.Sender.Id));
-            msgList.AddRange(chainlList);
+            msgList.AddRange(chainList);
+            return await session.SendGroupMessageAsync(args.Sender.Group.Id, msgList.ToArray());
+        }
+
+        public static async Task<int> SendMessageWithAtAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, params List<IChatMessage>[] chainListArr)
+        {
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new AtMessage(args.Sender.Id));
+            foreach (var chainList in chainListArr) msgList.AddRange(chainList);
             return await session.SendGroupMessageAsync(args.Sender.Group.Id, msgList.ToArray());
         }
 
@@ -72,6 +86,88 @@ namespace Theresa3rd_Bot.Util
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "群消息撤回失败");
+            }
+        }
+
+        public static async Task RevokeMessageAsync(this IMiraiHttpSession session, List<int> messageIds, long groupId)
+        {
+            foreach (int messageId in messageIds)
+            {
+                if (messageId <= 0) continue;
+                await session.RevokeMessageAsync(messageId, groupId);
+                await Task.Delay(500);
+            }
+        }
+
+        public static async Task SendGroupSetuAndRevokeAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> workMsgs, FileInfo fileInfo, bool isShowImg)
+        {
+            try
+            {
+                List<int> msgIds = new List<int>();
+                List<IChatMessage> imgMsgs = new List<IChatMessage>();
+                if (isShowImg && fileInfo != null)
+                {
+                    imgMsgs.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                }
+                else if (isShowImg && fileInfo == null)
+                {
+                    imgMsgs.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
+                }
+
+                if (BotConfig.PixivConfig.SendImgBehind)
+                {
+                    msgIds.Add(await session.SendMessageWithAtAsync(args, workMsgs));
+                    await Task.Delay(500);
+                    msgIds.Add(await session.SendGroupMessageAsync(args.Sender.Group.Id, imgMsgs.ToArray()));
+                }
+                else
+                {
+                    msgIds.Add(await session.SendMessageWithAtAsync(args, workMsgs, imgMsgs));
+                }
+
+                if (BotConfig.SetuConfig.RevokeInterval > 0)
+                {
+                    await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
+                    await session.RevokeMessageAsync(msgIds, args.Sender.Group.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "SendGroupSetuAndRevokeAsync异常");
+            }
+        }
+
+        public static async Task SendTempSetuAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> workMsgs, FileInfo fileInfo, bool isShowImg)
+        {
+            try
+            {
+                List<IChatMessage> imgMsgs = new List<IChatMessage>();
+                if (isShowImg && fileInfo != null)
+                {
+                    imgMsgs.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
+                }
+                else if (isShowImg && fileInfo == null)
+                {
+                    imgMsgs.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Temp));
+                }
+
+                if (BotConfig.PixivConfig.SendImgBehind)
+                {
+                    await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, workMsgs.ToArray());
+                    await Task.Delay(500);
+                    await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, imgMsgs.ToArray());
+                }
+                else
+                {
+                    List<IChatMessage> msgList = new List<IChatMessage>();
+                    msgList.AddRange(workMsgs);
+                    msgList.AddRange(imgMsgs);
+                    await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, msgList.ToArray());
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "SendTempSetuAsync异常");
             }
         }
 

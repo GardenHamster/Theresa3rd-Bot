@@ -112,83 +112,31 @@ namespace Theresa3rd_Bot.Handler
                 long todayLeft = GetSetuLeftToday(groupId, memberId);
                 FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
 
-                int groupMsgId = 0;
                 string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
-                List<IChatMessage> chatList = new List<IChatMessage>();
+                List<IChatMessage> workMsgs = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(remindTemplate) == false)
                 {
-                    chatList.Add(new PlainMessage(pixivBusiness.getSetuRemindMsg(remindTemplate, todayLeft)));
+                    workMsgs.Add(new PlainMessage(pixivBusiness.getSetuRemindMsg(remindTemplate, todayLeft)));
                 }
                 if (string.IsNullOrWhiteSpace(pixivTemplate))
                 {
-                    chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startDateTime)));
+                    workMsgs.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startDateTime)));
                 }
                 else
                 {
-                    chatList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startDateTime, pixivTemplate)));
+                    workMsgs.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startDateTime, pixivTemplate)));
                 }
 
-                try
-                {
-                    //发送群消息
-                    List<IChatMessage> groupList = new List<IChatMessage>(chatList);
-                    if (isShowImg && fileInfo != null)
-                    {
-                        groupList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                    }
-                    else if (isShowImg && fileInfo == null)
-                    {
-                        groupList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg,UploadTarget.Group));
-                    }
-                    groupMsgId = await session.SendMessageWithAtAsync(args, groupList);
-                    await Task.Delay(1000);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex, "sendGeneralPixivImageAsync群消息发送失败");
-                    throw;
-                }
-
+                Task sendGroupTask = session.SendGroupSetuAndRevokeAsync(args, workMsgs, fileInfo, isShowImg);
+                await Task.Delay(1000);
 
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
-                    try
-                    {
-                        //发送临时会话
-                        List<IChatMessage> memberList = new List<IChatMessage>(chatList);
-                        if (isShowImg && fileInfo != null)
-                        {
-                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
-                        }
-                        else if (isShowImg && fileInfo == null)
-                        {
-                            memberList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Temp));
-                        }
-                        await session.SendTempMessageAsync(memberId, args.Sender.Group.Id, memberList.ToArray());
-                        await Task.Delay(1000);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogHelper.Error(ex, "临时消息发送失败");
-                    }
+                    Task sendTempTask = session.SendTempSetuAsync(args, workMsgs, fileInfo, isShowImg);
                 }
 
-                //进入CD状态
-                CoolingCache.SetMemberSetuCooling(args.Sender.Group.Id, memberId);
-                if (groupMsgId == 0 || BotConfig.SetuConfig.RevokeInterval == 0) return;
-
-                try
-                {
-                    //等待撤回
-                    await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
-                    await session.RevokeMessageAsync(groupMsgId, groupId);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex, "sendGeneralPixivImageAsync消息撤回失败");
-                }
-
+                CoolingCache.SetMemberSetuCooling(args.Sender.Group.Id, memberId);//进入CD状态
             }
             catch (Exception ex)
             {

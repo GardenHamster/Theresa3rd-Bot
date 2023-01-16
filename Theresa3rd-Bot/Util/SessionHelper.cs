@@ -16,26 +16,6 @@ namespace Theresa3rd_Bot.Util
 {
     public static class SessionHelper
     {
-        /// <summary>
-        /// 判断消息来源是否为bot自己
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static async Task<bool> FromOneselfAsync(this IMiraiHttpSession session, IFriendMessageEventArgs args)
-        {
-            try
-            {
-                long[] botList = await session.GetBotListAsync();
-                if (botList == null) return false;
-                return botList.Contains(args.Sender.Id);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
         public static async Task<int> SendMessageWithAtAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, params IChatMessage[] chainArr)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();

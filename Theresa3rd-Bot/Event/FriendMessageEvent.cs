@@ -24,7 +24,7 @@ namespace Theresa3rd_Bot.Event
             try
             {
                 long memberId = args.Sender.Id;
-                if (await session.FromOneselfAsync(args)) return;
+                if (memberId == BotConfig.MiraiConfig.BotQQ) return;
                 string prefix = BotConfig.GeneralConfig.Prefix;
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();

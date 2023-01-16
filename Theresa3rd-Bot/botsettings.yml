@@ -12,20 +12,20 @@
     SetuCustomDisableMsg:       '自定义功能已关闭'                                  #禁用自定义时返回的消息
 
 Pixiv:
-    FreeProxy:                  true                                                #开启pixiv免代理模式，推荐有vpn的情况下禁用，启用后将使用{ImgProxy}下载图片
+    FreeProxy:                  false                                               #开启pixiv免代理模式，推荐有vpn的情况下禁用，启用后将使用{ImgProxy}下载图片
     HttpProxy:                  ''                                                  #pixiv代理地址，值为空表示直连，FreeProxy启用后失效，格式：http://127.0.0.1:7890
     ImgProxy:                   ''                                                  #图片代理地址，值为空表示不使用代理，FreeProxy启用后使用该值下载图片，默认：https://i.pixiv.re
     TagShowMaximum:             3                                                   #最多显示N个pixiv标签，0表示无限制，建议设置该参数降低触发风控的概率
     UrlShowMaximum:             3                                                   #最多显示N条pixiv原图链接，0表示无限制
     ImgSize:                    'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb，推荐使用thumb或small降低触发风控的概率
     OriginUrlProxy:             'https://i.pixiv.re'                                #pixiv原图链接的代理地址，如果QQ中打开原图链接时如果显示已停止访问，可以修改该值到其他图片代理地址，默认：https://i.pixiv.re(有频率限制)，也可以参照 https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/pixivproxy.md 搭建自己的代理地址
-    SendImgBehind:              true                                                #先发送作品信息，后发送图片
+    SendImgBehind:              false                                               #将涩图信息和图片分开发送，先发送作品信息，后发送图片，可以开启此项避免消息被吞
     ImgRetryTimes:              3                                                   #图片下载失败后重试次数
     ErrRetryTimes:              2                                                   #读取作品失败后的重试次数
     CookieExpire:               5184000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每60天更新一次
     CookieExpireMsg:            'emmmm,cookie过期了,请艾特管理员更新cookie'         #cookie过期时返回的消息
     Template:                   |                                                   #pixiv模版，值为空时将使用默认模版
-                                标题：{IllustTitle}，PixivId：{PixivId}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
+                                PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，
                                 收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，
                                 耗时：{CostSecond}s，标签图片：{RelevantCount}张，作品图片:{PageCount}张
                                 标签：{Tags}，点击下方链接可以查看原图
@@ -106,7 +106,7 @@ Setu:                                                                           
         Command:                '瑟图'                                              #命令，用法：#瑟图合法萝莉
         Template:               |                                                   #消息模版，值为空时将使用默认模版
                                 本条数据来源于Lolicon，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
-                                标题：{IllustTitle}，PixivId：{PixivId}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，耗时：{CostSecond}s
+                                PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，大小：{SizeMB}MB，耗时：{CostSecond}s
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
     Pixiv:                                                                          #Pixiv图床https://www.pixiv.net
@@ -125,7 +125,7 @@ Setu:                                                                           
         Level:                  '0-6'                                               #Level范围，数字越大表示越涩，最小为0，最大为6，5-6为R18
         Template:               |                                                   #消息模版，值为空时将使用默认模版
                                 本条数据来源于Lolisuki，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
-                                标题：{IllustTitle}，PixivId：{PixivId}，画师：{UserName}，画师id：{UserId}，Level：{Level}，分类：{Taste}，大小：{SizeMB}MB，耗时：{CostSecond}s
+                                PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，Level：{Level}，分类：{Taste}，大小：{SizeMB}MB，耗时：{CostSecond}s
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
 

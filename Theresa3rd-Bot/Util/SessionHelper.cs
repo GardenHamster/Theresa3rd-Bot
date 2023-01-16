@@ -32,14 +32,6 @@ namespace Theresa3rd_Bot.Util
             return await session.SendGroupMessageAsync(args.Sender.Group.Id, msgList.ToArray());
         }
 
-        public static async Task<int> SendMessageWithAtAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, params List<IChatMessage>[] chainListArr)
-        {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            msgList.Add(new AtMessage(args.Sender.Id));
-            foreach (var chainList in chainListArr) msgList.AddRange(chainList);
-            return await session.SendGroupMessageAsync(args.Sender.Group.Id, msgList.ToArray());
-        }
-
         public static async Task<int> SendTemplateWithAtAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, string template, string defaultmsg)
         {
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
@@ -79,7 +71,7 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
-        public static async Task SendGroupSetuAndRevokeAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> workMsgs, FileInfo fileInfo, bool isShowImg)
+        public static async Task SendGroupSetuAndRevokeWithAtAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> workMsgs, FileInfo fileInfo, bool isShowImg)
         {
             try
             {
@@ -94,15 +86,20 @@ namespace Theresa3rd_Bot.Util
                     imgMsgs.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
                 }
 
-                if (BotConfig.PixivConfig.SendImgBehind)
+                if (BotConfig.PixivConfig.SendImgBehind && imgMsgs.Count > 0)
                 {
-                    msgIds.Add(await session.SendMessageWithAtAsync(args, workMsgs));
+                    int workMsgId = await session.SendMessageWithAtAsync(args, workMsgs);
                     await Task.Delay(500);
-                    msgIds.Add(await session.SendGroupMessageAsync(args.Sender.Group.Id, imgMsgs.ToArray()));
+                    int imgMsgId = await session.SendGroupMessageAsync(args.Sender.Group.Id, imgMsgs.ToArray(), workMsgId);
+                    msgIds.Add(workMsgId);
+                    msgIds.Add(imgMsgId);
                 }
                 else
                 {
-                    msgIds.Add(await session.SendMessageWithAtAsync(args, workMsgs, imgMsgs));
+                    List<IChatMessage> msgList = new List<IChatMessage>();
+                    msgList.AddRange(workMsgs);
+                    msgList.AddRange(imgMsgs);
+                    msgIds.Add(await session.SendMessageWithAtAsync(args, msgList));
                 }
 
                 if (BotConfig.SetuConfig.RevokeInterval > 0)
@@ -113,7 +110,7 @@ namespace Theresa3rd_Bot.Util
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "SendGroupSetuAndRevokeAsync异常");
+                LogHelper.Error(ex, "SendGroupSetuAndRevokeWithAtAsync异常");
             }
         }
 
@@ -131,7 +128,7 @@ namespace Theresa3rd_Bot.Util
                     imgMsgs.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Temp));
                 }
 
-                if (BotConfig.PixivConfig.SendImgBehind)
+                if (BotConfig.PixivConfig.SendImgBehind && imgMsgs.Count > 0)
                 {
                     await session.SendTempMessageAsync(args.Sender.Id, args.Sender.Group.Id, workMsgs.ToArray());
                     await Task.Delay(500);

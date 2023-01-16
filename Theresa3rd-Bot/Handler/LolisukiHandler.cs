@@ -85,20 +85,20 @@ namespace Theresa3rd_Bot.Handler
 
                 int groupMsgId = 0;
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
-                List<IChatMessage> chatList = new List<IChatMessage>();
+                List<IChatMessage> workMsgs = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(template))
                 {
-                    chatList.Add(new PlainMessage(lolisukiBusiness.getDefaultWorkInfo(lolisukiData, fileInfo, startDateTime)));
+                    workMsgs.Add(new PlainMessage(lolisukiBusiness.getDefaultWorkInfo(lolisukiData, fileInfo, startDateTime)));
                 }
                 else
                 {
-                    chatList.Add(new PlainMessage(lolisukiBusiness.getWorkInfo(lolisukiData, fileInfo, startDateTime, todayLeftCount, template)));
+                    workMsgs.Add(new PlainMessage(lolisukiBusiness.getWorkInfo(lolisukiData, fileInfo, startDateTime, todayLeftCount, template)));
                 }
 
                 try
                 {
                     //发送群消息
-                    List<IChatMessage> groupMsgList = new List<IChatMessage>(chatList);
+                    List<IChatMessage> groupMsgList = new List<IChatMessage>(workMsgs);
                     if (isShowImg && fileInfo != null)
                     {
                         groupMsgList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
@@ -121,7 +121,7 @@ namespace Theresa3rd_Bot.Handler
                     try
                     {
                         //发送临时会话
-                        List<IChatMessage> memberList = new List<IChatMessage>(chatList);
+                        List<IChatMessage> memberList = new List<IChatMessage>(workMsgs);
                         if (isShowImg && fileInfo != null)
                         {
                             memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));

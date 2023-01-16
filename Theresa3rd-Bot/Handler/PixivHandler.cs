@@ -128,7 +128,7 @@ namespace Theresa3rd_Bot.Handler
                     workMsgs.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startDateTime, pixivTemplate)));
                 }
 
-                Task sendGroupTask = session.SendGroupSetuAndRevokeAsync(args, workMsgs, fileInfo, isShowImg);
+                Task sendGroupTask = session.SendGroupSetuAndRevokeWithAtAsync(args, workMsgs, fileInfo, isShowImg);
                 await Task.Delay(1000);
 
                 if (BotConfig.SetuConfig.SendPrivate)

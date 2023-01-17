@@ -28,7 +28,7 @@ namespace Theresa3rd_Bot.Model.Lolicon
         public LoliconUrlsV2 urls { get; set; }
 
         //xRestrict=1为R18,xRestrict=2为R18G
-        public override bool isR18() => tags != null && tags.IsR18();
+        public override bool isR18() => r18;
         public override bool IsImproper() => tags != null && tags.IsImproper();
         public override bool isGif() => tags != null && tags.IsGif();
         public override string hasBanTag() => tags?.hasBanTags();

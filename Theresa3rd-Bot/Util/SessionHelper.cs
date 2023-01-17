@@ -75,7 +75,6 @@ namespace Theresa3rd_Bot.Util
         {
             try
             {
-                List<int> msgIds = new List<int>();
                 List<IChatMessage> imgMsgs = new List<IChatMessage>();
                 if (isShowImg && fileInfo != null)
                 {
@@ -90,16 +89,14 @@ namespace Theresa3rd_Bot.Util
                 {
                     int workMsgId = await session.SendGroupMessageAsync(groupId, workMsgs.ToArray());
                     await Task.Delay(500);
-                    int imgMsgId = await session.SendGroupMessageAsync(groupId, imgMsgs.ToArray(), workMsgId);
-                    msgIds.Add(workMsgId);
-                    msgIds.Add(imgMsgId);
+                    await session.SendGroupMessageAsync(groupId, imgMsgs.ToArray(), workMsgId);
                 }
                 else
                 {
                     List<IChatMessage> msgList = new List<IChatMessage>();
                     msgList.AddRange(workMsgs);
                     msgList.AddRange(imgMsgs);
-                    msgIds.Add(await session.SendGroupMessageAsync(groupId, msgList.ToArray()));
+                    await session.SendGroupMessageAsync(groupId, msgList.ToArray());
                 }
             }
             catch (Exception ex)

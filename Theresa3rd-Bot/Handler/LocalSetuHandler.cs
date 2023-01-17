@@ -41,11 +41,10 @@ namespace Theresa3rd_Bot.Handler
         {
             try
             {
-                List<IChatMessage> chainList = new List<IChatMessage>();
+                List<IChatMessage> workMsgs = new List<IChatMessage>();
                 string template = getSetuInfo(setuInfo, timingSetuTimer.LocalTemplate);
-                if (string.IsNullOrWhiteSpace(template) == false) chainList.Add(new PlainMessage(template));
-                chainList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, setuInfo.FileInfo.FullName));
-                await session.SendGroupMessageAsync(groupId, chainList.ToArray());
+                if (string.IsNullOrWhiteSpace(template) == false) workMsgs.Add(new PlainMessage(template));
+                await session.SendGroupSetuAsync(workMsgs, setuInfo.FileInfo, groupId, true);
             }
             catch (Exception ex)
             {

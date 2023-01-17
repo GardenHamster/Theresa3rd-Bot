@@ -147,21 +147,10 @@ namespace Theresa3rd_Bot.Handler
                 bool isR18Img = setuInfo.isR18();
                 bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                 DateTime startTime = DateTime.Now;
-                List<IChatMessage> chainList = new List<IChatMessage>();
-
+                List<IChatMessage> workMsgs = new List<IChatMessage>();
                 FileInfo fileInfo = isShowImg ? await lolisukiBusiness.downImgAsync(setuInfo.pid.ToString(), setuInfo.urls.original, setuInfo.isGif()) : null;
-                chainList.Add(new PlainMessage(lolisukiBusiness.getDefaultWorkInfo(setuInfo, fileInfo, startTime)));
-
-                if (isShowImg && fileInfo != null)
-                {
-                    chainList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                }
-                else if (isShowImg && fileInfo == null)
-                {
-                    chainList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
-                }
-
-                await session.SendGroupMessageAsync(groupId, chainList.ToArray());
+                workMsgs.Add(new PlainMessage(lolisukiBusiness.getDefaultWorkInfo(setuInfo, fileInfo, startTime)));
+                await session.SendGroupSetuAsync(workMsgs, fileInfo, groupId, isShowImg);
             }
             catch (Exception ex)
             {

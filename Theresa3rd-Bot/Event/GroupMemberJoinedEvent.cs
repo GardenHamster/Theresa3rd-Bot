@@ -21,6 +21,7 @@ namespace Theresa3rd_Bot.Event
             long memberId = message.Member.Id;
             long groupId = message.Member.Group.Id;
             if (!BusinessHelper.IsHandleMessage(groupId)) return;
+            if (memberId == BotConfig.MiraiConfig.BotQQ) return;
 
             WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
             if (welcomeConfig == null || welcomeConfig.Enable == false) return;

@@ -218,6 +218,7 @@ namespace Theresa3rd_Bot.Business
             foreach (int page in pageArr)
             {
                 PixivSearchDto pixivSearchDto = await PixivHelper.GetPixivSearchAsync(searchWord, page, false, includeR18);
+                if (pixivSearchDto?.body?.getIllust()?.data == null) continue;
                 tempIllustList.AddRange(pixivSearchDto.body.getIllust().data);
                 Thread.Sleep(1000);
             }

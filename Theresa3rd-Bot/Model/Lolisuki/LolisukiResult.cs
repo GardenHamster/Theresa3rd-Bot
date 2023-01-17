@@ -33,7 +33,7 @@ namespace Theresa3rd_Bot.Model.Lolisuki
         public string ext { get; set; }
         public long uploadDate { get; set; }
         public LolisukiUrls urls { get; set; }
-        public LoliconUrlsV2 fullUrls { get; set; }
+        public List<LolisukiUrls> fullUrls { get; set; }
         public List<string> tags { get; set; }
         public List<string> extags { get; set; }
 

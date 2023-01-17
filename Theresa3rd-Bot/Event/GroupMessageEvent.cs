@@ -28,6 +28,7 @@ namespace Theresa3rd_Bot.Event
                 long groupId = args.Sender.Group.Id;
                 long botId = session.QQNumber ?? 0;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
+                if (memberId == BotConfig.MiraiConfig.BotQQ) return;
                 if (CheckBanMemberAsync(session, args)) return;//黑名单成员
 
                 string prefix = BotConfig.GeneralConfig.Prefix;

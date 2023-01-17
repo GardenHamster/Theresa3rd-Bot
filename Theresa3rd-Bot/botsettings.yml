@@ -15,8 +15,9 @@ Pixiv:
     FreeProxy:                  false                                               #开启pixiv免代理模式，推荐有vpn的情况下禁用，启用后将使用{ImgProxy}下载图片
     HttpProxy:                  ''                                                  #pixiv代理地址，值为空表示直连，FreeProxy启用后失效，格式：http://127.0.0.1:7890
     ImgProxy:                   ''                                                  #图片代理地址，值为空表示不使用代理，FreeProxy启用后使用该值下载图片，默认：https://i.pixiv.re
-    TagShowMaximum:             3                                                   #最多显示N个pixiv标签，0表示无限制，建议设置该参数降低触发风控的概率
-    UrlShowMaximum:             3                                                   #最多显示N条pixiv原图链接，0表示无限制
+    ImgShowMaximum:             1                                                   #同一个作品最多显示N张图片，0表示无限制
+    TagShowMaximum:             3                                                   #同一个作品最多显示N个标签，0表示无限制
+    UrlShowMaximum:             3                                                   #同一个作品最多显示N条原图链接，0表示无限制
     ImgSize:                    'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb，推荐使用thumb或small降低触发风控的概率
     OriginUrlProxy:             'https://i.pixiv.re'                                #pixiv原图链接的代理地址，如果QQ中打开原图链接时如果显示已停止访问，可以修改该值到其他图片代理地址，默认：https://i.pixiv.re(有频率限制)，也可以参照 https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/pixivproxy.md 搭建自己的代理地址
     SendImgBehind:              false                                               #将涩图信息和图片分开发送，先发送作品信息，后发送图片，可以开启此项避免消息被吞
@@ -99,7 +100,7 @@ Setu:                                                                           
     ProcessingMsg:              '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息，值为空时不发送
     MaxDaily:                   20                                                  #每人每日最大使用次数，0表示无限制
     RevokeInterval:             0                                                   #N秒后撤回,0表示不撤回
-    SendPrivate:                true                                                #私聊发送，需要用户主动发送任意消息给机器人开启临时会话
+    SendPrivate:                true                                                #同时私聊发送
     
     Lolicon:                                                                        #Lolicon图床https://api.lolicon.app/#/setu
         Enable:                 true                                                #是否启用
@@ -144,6 +145,7 @@ Saucenao:                                                                       
     MaxReceive:                 10                                                  #每次最多接收并查询多少张图片，0表示无限制
     MinSimilarity:              60.00                                               #最低相似度(百分比)
     PullOrigin:                 true                                                #尝试从源网站中获取原图
+    SendPrivate:                true                                                #同时私聊发送结果
     RevokeInterval:             0                                                   #N秒后撤回，0表示不撤回
     RevokeSearched:             false                                               #是否撤回要查找的图片
     ContinueAscii2d:            2                                                   #Saucenao没有匹配结果时是否继续使用Ascii2d搜索，0：否，1：是，2：询问

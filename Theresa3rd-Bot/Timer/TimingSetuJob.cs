@@ -48,15 +48,15 @@ namespace Theresa3rd_Bot.Timer
                 TimingSetuSourceType sourceType = timingSetuTimer.Source;
                 if (sourceType == TimingSetuSourceType.Lolicon)
                 {
-                    await new LoliconHandler().sendTimingSetu(MiraiHelper.Session, timingSetuTimer, groupId);
+                    await new LoliconHandler().sendTimingSetuAsync(MiraiHelper.Session, timingSetuTimer, groupId);
                 }
                 else if (sourceType == TimingSetuSourceType.Lolisuki)
                 {
-                    await new LolisukiHandler().sendTimingSetu(MiraiHelper.Session, timingSetuTimer, groupId);
+                    await new LolisukiHandler().sendTimingSetuAsync(MiraiHelper.Session, timingSetuTimer, groupId);
                 }
                 else
                 {
-                    await new LocalSetuHandler().sendTimingSetu(MiraiHelper.Session, timingSetuTimer, groupId);
+                    await new LocalSetuHandler().sendTimingSetuAsync(MiraiHelper.Session, timingSetuTimer, groupId);
                 }
             }
             catch (Exception ex)

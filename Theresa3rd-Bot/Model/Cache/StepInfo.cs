@@ -54,7 +54,7 @@ namespace Theresa3rd_Bot.Model.Cache
                             if (string.IsNullOrEmpty(stepDetail.Question)) return false;
                         }
 
-                        await session.SendMessageWithAtAsync(args, new PlainMessage(stepDetail.Question));
+                        await session.SendGroupMessageWithAtAsync(args, new PlainMessage(stepDetail.Question));
 
                         while (true)
                         {
@@ -62,7 +62,7 @@ namespace Theresa3rd_Bot.Model.Cache
                             int secondDiff = DateTimeHelper.GetSecondDiff(stepDetail.StartTime.Value, DateTime.Now);
                             if (secondDiff < 0 || secondDiff >= stepDetail.WaitSecond)
                             {
-                                if(IsRemindTimeout) await session.SendMessageWithAtAsync(args, new PlainMessage(" 操作超时了，请重新发送指令开始操作"));
+                                if(IsRemindTimeout) await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 操作超时了，请重新发送指令开始操作"));
                                 return false;
                             }
                             await Task.Delay(500);

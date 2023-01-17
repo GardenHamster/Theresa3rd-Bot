@@ -28,9 +28,40 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
+        public static void deleteFile(string fullFilePath)
+        {
+            try
+            {
+                File.Delete(fullFilePath);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
+        }
+
         public static void deleteFile(FileInfo fileInfo)
         {
-            try { fileInfo.Delete(); } catch (Exception ex) { LogHelper.Error(ex); }
+            try
+            {
+                fileInfo.Delete();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
+        }
+
+        public static void deleteDirectory(string directoryPath)
+        {
+            try
+            {
+                Directory.Delete(directoryPath, true);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
         }
 
         /// <summary>

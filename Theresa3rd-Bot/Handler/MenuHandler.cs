@@ -25,7 +25,7 @@ namespace Theresa3rd_Bot.Handler
                 if (string.IsNullOrWhiteSpace(BotConfig.MenuConfig?.Template) == false)
                 {
                     List<IChatMessage> templateList = session.SplitToChainAsync(BotConfig.MenuConfig.Template).Result;
-                    await session.SendMessageWithAtAsync(args, templateList);
+                    await session.SendGroupMessageWithAtAsync(args, templateList);
                     return;
                 }
 

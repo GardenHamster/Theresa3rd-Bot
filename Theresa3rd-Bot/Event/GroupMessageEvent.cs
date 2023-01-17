@@ -246,7 +246,7 @@ namespace Theresa3rd_Bot.Event
                 //version
                 if (instructions.StartWithCommand("version") || instructions.StartWithCommand("版本"))
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($"Theresa3rd-Bot：Version：{BotConfig.BotVersion}"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($"Theresa3rd-Bot：Version：{BotConfig.BotVersion}"));
                     return;
                 }
             }

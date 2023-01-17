@@ -89,28 +89,28 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
-                if (pixivWorkInfo.IsImproper())
+                if (pixivWorkInfo.IsImproper)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
                     return;
                 }
 
                 string banTagStr = pixivWorkInfo.hasBanTag();
                 if (banTagStr != null)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
                     return;
                 }
 
-                if (pixivWorkInfo.isR18() && isShowR18 == false)
+                if (pixivWorkInfo.IsR18 && isShowR18 == false)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                     return;
                 }
 
                 long todayLeft = GetSetuLeftToday(groupId, memberId);
-                bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.isR18());
-                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
+                bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.IsR18);
+                List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgAsync(pixivWorkInfo) : null;
 
                 string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
@@ -119,21 +119,21 @@ namespace Theresa3rd_Bot.Handler
                 {
                     workMsgs.Add(new PlainMessage(pixivBusiness.getSetuRemindMsg(remindTemplate, todayLeft)));
                 }
+
                 if (string.IsNullOrWhiteSpace(pixivTemplate))
                 {
-                    workMsgs.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startDateTime)));
+                    workMsgs.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, startDateTime)));
                 }
                 else
                 {
-                    workMsgs.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startDateTime, pixivTemplate)));
+                    workMsgs.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, startDateTime, pixivTemplate)));
                 }
 
-                Task sendGroupTask = session.SendGroupSetuAndRevokeWithAtAsync(args, workMsgs, fileInfo, isShowImg);
-                
+                Task sendGroupTask = session.SendGroupSetuAndRevokeAsync(args, workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = session.SendTempSetuAsync(args, workMsgs, fileInfo, isShowImg);
+                    Task sendTempTask = session.SendTempSetuAsync(args, workMsgs, setuFiles);
                 }
 
                 CoolingCache.SetMemberSetuCooling(args.Sender.Group.Id, memberId);//进入CD状态
@@ -193,7 +193,7 @@ namespace Theresa3rd_Bot.Handler
                 string[] pixivUserIdArr = pixivUserIds.splitParams();
                 if (pixivUserIdArr.Length > 1)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 检测到多个id，开始批量订阅~"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 检测到多个id，开始批量订阅~"));
                     await Task.Delay(1000);
                 }
 
@@ -214,12 +214,12 @@ namespace Theresa3rd_Bot.Handler
                         if (subscribeBusiness.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
                         {
                             //关联订阅
-                            await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师id[{pixivUserId}]已经被订阅了~"));
+                            await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 画师id[{pixivUserId}]已经被订阅了~"));
                             continue;
                         }
 
                         SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
-                        await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~"));
+                        await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~"));
 
                         await Task.Delay(1000);
                         await sendPixivUserNewestWorkAsync(session, args, dbSubscribe, groupId.IsShowR18Setu());
@@ -227,7 +227,7 @@ namespace Theresa3rd_Bot.Handler
                     catch (Exception ex)
                     {
                         LogHelper.Error(ex, $" pixiv画师[{pixivUserId}]订阅异常");
-                        await session.SendMessageWithAtAsync(args, new PlainMessage($" 画师id[{pixivUserId}]订阅失败~"));
+                        await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 画师id[{pixivUserId}]订阅失败~"));
                     }
                     finally
                     {
@@ -236,7 +236,7 @@ namespace Theresa3rd_Bot.Handler
                 }
                 if (pixivUserIdArr.Length > 1)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 所有画师订阅完毕"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 所有画师订阅完毕"));
                 }
                 ConfigHelper.loadSubscribeTask();
             }
@@ -274,17 +274,17 @@ namespace Theresa3rd_Bot.Handler
                 PixivSyncModeType syncMode = (PixivSyncModeType)Convert.ToInt32(modeStep.Answer);
                 SubscribeGroupType syncGroup = (SubscribeGroupType)Convert.ToInt32(groupStep.Answer);
 
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 正在获取pixiv账号中已关注的画师列表..."));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 正在获取pixiv账号中已关注的画师列表..."));
                 await Task.Delay(1000);
 
                 List<PixivFollowUser> followUserList = await pixivBusiness.getFollowUserList();
                 if (followUserList == null || followUserList.Count == 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" pixiv账号还没有关注任何画师"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" pixiv账号还没有关注任何画师"));
                     return;
                 }
 
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已获取{followUserList.Count}个画师，正在录入数据..."));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 已获取{followUserList.Count}个画师，正在录入数据..."));
                 await Task.Delay(1000);
 
                 //插入Subscribe数据
@@ -316,7 +316,7 @@ namespace Theresa3rd_Bot.Handler
                 }
                 DbScoped.SugarScope.CommitTran();//提交事务
 
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 关注画师订阅完毕"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 关注画师订阅完毕"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
@@ -365,13 +365,13 @@ namespace Theresa3rd_Bot.Handler
                     SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivUserId, SubscribeType.P站画师);
                     if (dbSubscribe == null)
                     {
-                        await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订失败，这个订阅不存在"));
+                        await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 退订失败，这个订阅不存在"));
                         return;
                     }
                     subscribeBusiness.delSubscribeGroup(dbSubscribe.Id);
                 }
 
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了pixiv用户[{pixivUserIds}]~"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了pixiv用户[{pixivUserIds}]~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
@@ -423,7 +423,7 @@ namespace Theresa3rd_Bot.Handler
                 PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, groupId.IsShowR18Setu());
                 if (pageOne == null || pageOne.body.getIllust().data.Count == 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该标签中没有任何作品，订阅失败"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该标签中没有任何作品，订阅失败"));
                     return;
                 }
 
@@ -434,12 +434,12 @@ namespace Theresa3rd_Bot.Handler
                 if (subscribeBusiness.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
                 {
                     //关联订阅
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 这个标签已经被订阅了~"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 这个标签已经被订阅了~"));
                     return;
                 }
 
                 SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 标签[{pixivTags}]订阅成功,该标签总作品数为:{pageOne.body.illust.total}"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 标签[{pixivTags}]订阅成功,该标签总作品数为:{pageOne.body.illust.total}"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
@@ -483,12 +483,12 @@ namespace Theresa3rd_Bot.Handler
                 SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivTag, SubscribeType.P站标签);
                 if (dbSubscribe == null)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 退订失败，这个订阅不存在"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 退订失败，这个订阅不存在"));
                     return;
                 }
 
                 subscribeBusiness.delSubscribeGroup(dbSubscribe.Id);
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了pixiv标签[{pixivTag}]~"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了pixiv标签[{pixivTag}]~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
@@ -511,7 +511,6 @@ namespace Theresa3rd_Bot.Handler
             {
                 DateTime startTime = DateTime.Now;
                 long groupId = args.Sender.Group.Id;
-                List<IChatMessage> chatList = new List<IChatMessage>();
                 List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, 1);
                 if (pixivSubscribeList == null || pixivSubscribeList.Count == 0)
                 {
@@ -523,40 +522,31 @@ namespace Theresa3rd_Bot.Handler
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
 
 
-                if (pixivWorkInfo.IsImproper())
+                if (pixivWorkInfo.IsImproper)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
                     return;
                 }
 
                 string banTagStr = pixivWorkInfo.hasBanTag();
                 if (banTagStr != null)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
                     return;
                 }
 
-                if (pixivWorkInfo.isR18() && isShowR18 == false)
+                if (pixivWorkInfo.IsR18 && isShowR18 == false)
                 {
                     await session.SendGroupMessageAsync(groupId, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                     return;
                 }
 
-                bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.isR18());
-                FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
-                chatList.Add(new PlainMessage($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
-                chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
-
-                if (isShowImg && fileInfo != null)
-                {
-                    chatList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                }
-                else if (isShowImg && fileInfo == null)
-                {
-                    chatList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
-                }
-
-                await session.SendMessageWithAtAsync(args, chatList);
+                List<IChatMessage> workMsgs = new List<IChatMessage>();
+                bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.IsR18);
+                List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgAsync(pixivWorkInfo) : null;
+                workMsgs.Add(new PlainMessage($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
+                workMsgs.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, startTime)));
+                await session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, isShowImg);
             }
             catch (Exception ex)
             {
@@ -569,7 +559,7 @@ namespace Theresa3rd_Bot.Handler
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 标签不可以为空"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 标签不可以为空"));
                 return false;
             }
             return true;
@@ -579,14 +569,14 @@ namespace Theresa3rd_Bot.Handler
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 用户id不可以为空"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 用户id不可以为空"));
                 return false;
             }
 
             string[] pixivUserIdArr = value.splitParams();
             if (pixivUserIdArr.Length == 0)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到用户id"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 没有检测到用户id"));
                 return false;
             }
 
@@ -595,12 +585,12 @@ namespace Theresa3rd_Bot.Handler
                 long userId = 0;
                 if (long.TryParse(userIdStr, out userId) == false)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 用户id{userIdStr}必须为数字"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 用户id{userIdStr}必须为数字"));
                     return false;
                 }
                 if (userId <= 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 用户id{userIdStr}无效"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 用户id{userIdStr}无效"));
                     return false;
                 }
             }
@@ -613,12 +603,12 @@ namespace Theresa3rd_Bot.Handler
             int modeId = 0;
             if (int.TryParse(value, out modeId) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 模式必须为数字"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 模式必须为数字"));
                 return false;
             }
             if (Enum.IsDefined(typeof(PixivSyncModeType), modeId) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 模式不在范围内"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 模式不在范围内"));
                 return false;
             }
             return true;
@@ -629,12 +619,12 @@ namespace Theresa3rd_Bot.Handler
             int typeId = 0;
             if (int.TryParse(value, out typeId) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 目标必须为数字"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 目标必须为数字"));
                 return false;
             }
             if (Enum.IsDefined(typeof(SubscribeGroupType), typeId) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 目标不在范围内"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 目标不在范围内"));
                 return false;
             }
             return true;

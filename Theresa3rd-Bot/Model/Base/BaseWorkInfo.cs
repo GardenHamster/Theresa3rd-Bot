@@ -1,12 +1,15 @@
-﻿namespace Theresa3rd_Bot.Model.Base
+﻿using System.Collections.Generic;
+
+namespace Theresa3rd_Bot.Model.Base
 {
     public abstract class BaseWorkInfo
     {
-        public abstract bool isR18();
-        public abstract bool isGif();
+        public abstract bool IsR18 { get; }
+        public abstract bool IsGif { get; }
+        public abstract bool IsImproper { get; }
+        public abstract string PixivId { get; }
         public abstract string hasBanTag();
-        public abstract bool IsImproper();
-
-
+        public abstract List<string> getTags();
+        public abstract List<string> getOriginalUrls();
     }
 }

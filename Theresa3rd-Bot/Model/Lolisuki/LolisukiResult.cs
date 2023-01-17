@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Theresa3rd_Bot.Model.Base;
+using Theresa3rd_Bot.Model.Lolicon;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
@@ -32,28 +33,60 @@ namespace Theresa3rd_Bot.Model.Lolisuki
         public string ext { get; set; }
         public long uploadDate { get; set; }
         public LolisukiUrls urls { get; set; }
+        public LoliconUrlsV2 fullUrls { get; set; }
         public List<string> tags { get; set; }
         public List<string> extags { get; set; }
 
-        public override bool isGif() => gif;
-
-        public override string hasBanTag() => tags?.hasBanTags() ?? extags?.hasBanTags();
-
-        public override bool IsImproper()
+        public override bool IsGif
         {
-            if (tags != null && tags.IsImproper()) return true;
-            if (extags != null && tags.IsImproper()) return true;
-            return false;
-        }
-
-        public override bool isR18()
-        {
-            if (r18) return true;
-            if (tags != null && tags.IsR18()) return true;
-            if (extags != null && tags.IsR18()) return true;
-            return false;
+            get { return gif; }
         }
         
+        public override string PixivId
+        {
+            get { return pid.ToString(); }
+        }
+
+        public override bool IsR18
+        {
+            get
+            {
+                //xRestrict=1为R18,xRestrict=2为R18G
+                if (r18) return true;
+                if (tags != null && tags.IsR18()) return true;
+                if (extags != null && tags.IsR18()) return true;
+                return false;
+            }
+        }
+
+        public override bool IsImproper
+        {
+            get
+            {
+                if (tags != null && tags.IsImproper()) return true;
+                if (extags != null && tags.IsImproper()) return true;
+                return false;
+            }
+        }
+
+        public override List<string> getTags()
+        {
+            List<string> tagList = new List<string>();
+            tagList.AddRange(tags);
+            tagList.AddRange(extags);
+            return tagList;
+        }
+
+        public override string hasBanTag()
+        {
+            return tags?.hasBanTags() ?? extags?.hasBanTags();
+        }
+
+        public override List<string> getOriginalUrls()
+        {
+            if (urls == null) return new List<string>();
+            return new List<string>() { urls.original };
+        }
     }
 
     public class LolisukiUrls

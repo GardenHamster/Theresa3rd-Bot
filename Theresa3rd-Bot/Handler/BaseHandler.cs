@@ -43,7 +43,7 @@ namespace Theresa3rd_Bot.Handler
             if (string.IsNullOrWhiteSpace(tagName)) return true;
             if (tagName.IsR18() && groupId.IsShowR18Setu() == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage("本群未设置R18权限，禁止搜索R18相关标签"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage("本群未设置R18权限，禁止搜索R18相关标签"));
                 return false;
             }
 

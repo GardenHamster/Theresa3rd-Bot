@@ -31,13 +31,39 @@ namespace Theresa3rd_Bot.Model.Pixiv
         public int pageCount { get; set; }
         public PixivTagDto tags { get; set; }
         public int xRestrict { get; set; }
-        public List<string> getTags() => tags?.getTags() ?? new List<string>();
 
-        //xRestrict=1为R18,xRestrict=2为R18G
-        public override bool isR18() => xRestrict > 0 || getTags().IsR18();
-        public override bool isGif() => getTags().IsGif();
+        public override bool IsR18
+        {
+            //xRestrict=1为R18,xRestrict=2为R18G
+            get { return xRestrict > 0 || getTags().IsR18(); }
+        }
+        public override bool IsGif
+        {
+            get { return getTags().IsGif(); }
+        }
+        public override bool IsImproper
+        {
+            get { return xRestrict > 1 || getTags().IsImproper(); }
+        }
+        public override string PixivId
+        {
+            get { return illustId; }
+        }
+
+        public override List<string> getTags() => tags?.getTags() ?? new List<string>();
+
         public override string hasBanTag() => getTags()?.hasBanTags();
-        public override bool IsImproper() => xRestrict > 1 || getTags().IsImproper();
+
+        public override List<string> getOriginalUrls()
+        {
+            if (urls == null) return new List<string>();
+            List<string> urlList = new List<string>();
+            for (int i = 0; i < pageCount; i++)
+            {
+                urlList.Add(urls.original.Replace("_p0.", $"_p{i}."));
+            }
+            return urlList;
+        }
     }
 
     public class PixivUrls

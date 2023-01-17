@@ -12,7 +12,6 @@ namespace Theresa3rd_Bot.Util
 {
     public static class StringHelper
     {
-        private readonly static Regex EmojiRegex = new Regex(@"\[emoji[^\u4E00-\u9FA5]*\]", RegexOptions.IgnoreCase);
 
         /// <summary>
         /// 获取32长度的UUID
@@ -154,6 +153,26 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 从一个http url中提取文件名
+        /// </summary>
+        /// <param name="httpUrl"></param>
+        /// <returns></returns>
+        public static string getHttpFileName(this string httpUrl)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(httpUrl)) return null;
+                string splitStr = httpUrl.Split('?')[0].Trim();
+                string[] splitArr = splitStr.Split('/');
+                return splitArr.Last().Trim();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// 将键值对重新连接为cookie
         /// </summary>
         /// <param name="cookie"></param>
@@ -169,10 +188,6 @@ namespace Theresa3rd_Bot.Util
             return cookieBuilder.ToString();
         }
 
-        public static string getDateTimeMillisecondStr()
-        {
-            return DateTime.Now.ToString("yyyyMMddHHmmssffff");
-        }
 
         public static string isContainsWord(this string str, List<string> containWords)
         {
@@ -217,13 +232,6 @@ namespace Theresa3rd_Bot.Util
             int questionMarkIndex = url.IndexOf("?");
             if (questionMarkIndex < 0) return url;
             return url.Substring(0, questionMarkIndex);
-        }
-
-        public static string getFullFileNameByUrl(this string url)
-        {
-            if (string.IsNullOrEmpty(url)) return null;
-            string[] splitArr = url.Split(new char[] { '/' });
-            return splitArr[splitArr.Length - 1];
         }
 
         public static string getSuffixByUrl(this string url)

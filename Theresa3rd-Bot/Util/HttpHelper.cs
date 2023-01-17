@@ -194,7 +194,7 @@ namespace Theresa3rd_Bot.Util
             using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
             fileStream.Write(urlContents, 0, urlContents.Length);
             FileInfo fileInfo = new FileInfo(fullImageSavePath);
-            if (fileInfo.Length == 0) throw new Exception("下载文件失败，保存文件大小为0kb");
+            if (fileInfo.Length == 0) throw new Exception("文件下载失败，保存文件大小为0kb");
             return fileInfo;
         }
 
@@ -216,7 +216,7 @@ namespace Theresa3rd_Bot.Util
             using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
             fileStream.Write(urlContents, 0, urlContents.Length);
             FileInfo fileInfo = new FileInfo(fullImageSavePath);
-            if (fileInfo.Length == 0) throw new Exception("下载文件失败，保存文件大小为0kb");
+            if (fileInfo.Length == 0) new Exception("文件下载失败，保存文件大小为0kb");
             return fileInfo;
         }
 

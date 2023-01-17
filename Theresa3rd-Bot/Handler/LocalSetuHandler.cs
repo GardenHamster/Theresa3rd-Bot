@@ -21,7 +21,7 @@ namespace Theresa3rd_Bot.Handler
             localSetuBusiness = new LocalSetuBusiness();
         }
 
-        public async Task sendTimingSetu(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, long groupId)
+        public async Task sendTimingSetuAsync(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, long groupId)
         {
             string localPath = timingSetuTimer.LocalPath;
             if (string.IsNullOrWhiteSpace(localPath)) throw new Exception("未配置LocalPath");
@@ -44,7 +44,8 @@ namespace Theresa3rd_Bot.Handler
                 List<IChatMessage> workMsgs = new List<IChatMessage>();
                 string template = getSetuInfo(setuInfo, timingSetuTimer.LocalTemplate);
                 if (string.IsNullOrWhiteSpace(template) == false) workMsgs.Add(new PlainMessage(template));
-                await session.SendGroupSetuAsync(workMsgs, setuInfo.FileInfo, groupId, true);
+                List<FileInfo> setuFiles = new List<FileInfo>() { setuInfo.FileInfo };
+                await session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, true);
             }
             catch (Exception ex)
             {

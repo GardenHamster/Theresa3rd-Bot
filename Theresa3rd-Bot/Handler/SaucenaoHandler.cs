@@ -58,7 +58,7 @@ namespace Theresa3rd_Bot.Handler
 
                 if (imgList == null || imgList.Count == 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 没有接收到图片，请重新发送指令开始操作"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 没有接收到图片，请重新发送指令开始操作"));
                     return;
                 }
 
@@ -71,7 +71,7 @@ namespace Theresa3rd_Bot.Handler
                 if (BotConfig.SaucenaoConfig.MaxReceive > 0 && imgList.Count > BotConfig.SaucenaoConfig.MaxReceive)
                 {
                     imgList = imgList.Take(BotConfig.SaucenaoConfig.MaxReceive).ToList();
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~"));
                     await Task.Delay(1000);
                 }
 
@@ -145,11 +145,10 @@ namespace Theresa3rd_Bot.Handler
                 if (BotConfig.SaucenaoConfig.PullOrigin == false)
                 {
                     SaucenaoItem firstItem = saucenaoResult.Items[0];
-                    List<IChatMessage> chatList = new List<IChatMessage>();
-                    chatList.AddRange(getRemindMessage(saucenaoResult, firstItem, groupId, memberId));
-                    chatList.AddRange(getSimpleMessage(firstItem));
-                    SaucenaoMessage saucenaoMessage = new SaucenaoMessage(firstItem, chatList, chatList);
-                    Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
+                    List<IChatMessage> workMsgs = new List<IChatMessage>();
+                    workMsgs.AddRange(getRemindMessage(saucenaoResult, firstItem, groupId, memberId));
+                    workMsgs.AddRange(getSimpleMessage(firstItem));
+                    Task sendTask = sendAndRevokeMessage(session, args, workMsgs);
                     return false;
                 }
 
@@ -163,31 +162,27 @@ namespace Theresa3rd_Bot.Handler
                 if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
                     PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
-                    bool isShowImg = groupId.IsShowSaucenaoImg(pixivWorkInfo.isR18());
-                    FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
-                    List<IChatMessage> remindMsgs = getRemindMessage(saucenaoResult, saucenaoItem, groupId, memberId);
-                    List<IChatMessage> groupMsgs = new List<IChatMessage>(remindMsgs);
-                    List<IChatMessage> tempMsgs = new List<IChatMessage>(remindMsgs);
-                    groupMsgs.AddRange(await getPixivMessageAsync(session, args, saucenaoItem, UploadTarget.Group, startTime, fileInfo, isShowImg));
-                    tempMsgs.AddRange(await getPixivMessageAsync(session, args, saucenaoItem, UploadTarget.Temp, startTime, fileInfo, isShowImg));
-                    SaucenaoMessage saucenaoMessage = new SaucenaoMessage(saucenaoItem, groupMsgs, tempMsgs);
-                    Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
+                    bool isShowImg = groupId.IsShowSaucenaoImg(pixivWorkInfo.IsR18);
+                    List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgAsync(pixivWorkInfo) : null;
+                    List<IChatMessage> workMsgs = new List<IChatMessage>();
+                    workMsgs.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, groupId, memberId));
+                    workMsgs.AddRange(getPixivMessageAsync(session, args, saucenaoItem, startTime));
+                    Task sendTask = sendAndRevokeMessage(session, args, workMsgs, setuFiles);
                     return false;
                 }
                 else
                 {
-                    List<IChatMessage> chatList = new List<IChatMessage>();
-                    chatList.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, groupId, memberId));
-                    chatList.AddRange(getSimpleMessage(saucenaoItem));
-                    SaucenaoMessage saucenaoMessage = new SaucenaoMessage(saucenaoItem, chatList, chatList);
-                    Task sendTask = sendAndRevokeMessage(session, args, saucenaoMessage);
+                    List<IChatMessage> workMsgs = new List<IChatMessage>();
+                    workMsgs.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, groupId, memberId));
+                    workMsgs.AddRange(getSimpleMessage(saucenaoItem));
+                    Task sendTask = sendAndRevokeMessage(session, args, workMsgs);
                     return false;
                 }
             }
             catch (BaseException ex)
             {
                 LogHelper.Error(ex, $"searchWithSaucenao异常，url={imageMessage.Url}，{ex.Message}");
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 查找第{index}张图片失败，{ex.Message}，再试一次吧~"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 查找第{index}张图片失败，{ex.Message}，再试一次吧~"));
                 return false;
             }
             catch (Exception ex)
@@ -208,7 +203,7 @@ namespace Theresa3rd_Bot.Handler
                 Ascii2dResult ascii2dResult = await ascii2dBusiness.getAscii2dResultAsync(imageMessage.Url);
                 if (ascii2dResult == null || ascii2dResult.Items.Count == 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" ascii2d中找不到相似的图片"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" ascii2d中找不到相似的图片"));
                     return;
                 }
 
@@ -217,17 +212,17 @@ namespace Theresa3rd_Bot.Handler
 
                 if (BotConfig.SaucenaoConfig.PullOrigin == false)
                 {
-                    List<IChatMessage> chatList = new List<IChatMessage>();
-                    chatList.Add(new PlainMessage($" ascii2d中搜索到的前{readCount}条结果如下：\r\n"));
-                    chatList.AddRange(getSimpleMessage(ascii2dItems));
-                    Task sendSimpleTask = sendAndRevokeMessage(session, args, chatList);
+                    List<IChatMessage> simpleList = new List<IChatMessage>();
+                    simpleList.Add(new PlainMessage($" ascii2d中搜索到的前{readCount}条结果如下：\r\n"));
+                    simpleList.AddRange(getSimpleMessage(ascii2dItems));
+                    Task sendSimpleTask = sendAndRevokeMessage(session, args, simpleList);
                     return;
                 }
 
                 List<Ascii2dItem> matchList = await ascii2dBusiness.getBestMatchAsync(ascii2dItems);
                 if (matchList == null || matchList.Count == 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" ascii2d中找不到相似的图片"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" ascii2d中找不到相似的图片"));
                     return;
                 }
 
@@ -250,14 +245,14 @@ namespace Theresa3rd_Bot.Handler
                     }
                 }
 
-                Task sendDetailTask = sendAndRevokeMessage(session, args, new List<IChatMessage>() {
-                    new PlainMessage(resultBuilder.ToString())
-                });
+                List<IChatMessage> workMsgs = new List<IChatMessage>();
+                workMsgs.Add(new PlainMessage(resultBuilder.ToString()));
+                Task sendTask = sendAndRevokeMessage(session, args, workMsgs);
             }
             catch (BaseException ex)
             {
                 LogHelper.Error(ex, $"searchWithAscii2d异常，url={imageMessage.Url}，{ex.Message}");
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 查找图片失败，{ex.Message}，再试一次吧~"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 查找图片失败，{ex.Message}，再试一次吧~"));
             }
             catch (Exception ex)
             {
@@ -268,81 +263,72 @@ namespace Theresa3rd_Bot.Handler
 
         public List<IChatMessage> getRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, long groupId, long memberId)
         {
-            List<IChatMessage> chatList = new List<IChatMessage>();
+            List<IChatMessage> msgList = new List<IChatMessage>();
             string remindTemplate = BotConfig.SaucenaoConfig.Template;
             long todayLeft = GetSaucenaoLeftToday(groupId, memberId);
             if (string.IsNullOrWhiteSpace(remindTemplate))
             {
-                chatList.Add(new PlainMessage(saucenaoBusiness.getDefaultRemindMessage(saucenaoResult, saucenaoItem, todayLeft)));
+                msgList.Add(new PlainMessage(saucenaoBusiness.getDefaultRemindMessage(saucenaoResult, saucenaoItem, todayLeft)));
             }
             else
             {
-                chatList.Add(new PlainMessage(saucenaoBusiness.getSaucenaoRemindMessage(saucenaoResult, saucenaoItem, remindTemplate, todayLeft)));
+                msgList.Add(new PlainMessage(saucenaoBusiness.getSaucenaoRemindMessage(saucenaoResult, saucenaoItem, remindTemplate, todayLeft)));
             }
-            return chatList;
+            return msgList;
         }
 
         public List<IChatMessage> getSimpleMessage(SaucenaoItem saucenaoItem)
         {
-            List<IChatMessage> chatList = new List<IChatMessage>();
-            chatList.Add(new PlainMessage($"链接：{saucenaoItem.SourceUrl}"));
-            return chatList;
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new PlainMessage($"链接：{saucenaoItem.SourceUrl}"));
+            return msgList;
         }
 
         public List<IChatMessage> getSimpleMessage(List<Ascii2dItem> saucenaoItems)
         {
-            List<IChatMessage> chatList = new List<IChatMessage>();
+            List<IChatMessage> msgList = new List<IChatMessage>();
             foreach (var saucenaoItem in saucenaoItems)
             {
-                chatList.Add(new PlainMessage($"来源:{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}，链接：{saucenaoItem.SourceUrl}"));
+                msgList.Add(new PlainMessage($"来源:{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}，链接：{saucenaoItem.SourceUrl}"));
             }
-            return chatList;
+            return msgList;
         }
 
-        public async Task<List<IChatMessage>> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoItem saucenaoItem, UploadTarget target, DateTime startTime, FileInfo fileInfo, bool isShowImg)
+        public List<IChatMessage> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoItem saucenaoItem, DateTime startTime)
         {
             long groupId = args.Sender.Group.Id;
             string template = BotConfig.PixivConfig.Template;
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
-            List<IChatMessage> chatList = new List<IChatMessage>();
-            if (pixivWorkInfo.IsImproper())
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            if (pixivWorkInfo.IsImproper)
             {
-                chatList.Add(new PlainMessage($" 该作品含有R18G等内容，不显示相关内容"));
-                return chatList;
+                msgList.Add(new PlainMessage($" 该作品含有R18G等内容，不显示相关内容"));
+                return msgList;
             }
 
             string banTagStr = pixivWorkInfo.hasBanTag();
             if (banTagStr != null)
             {
-                chatList.Add(new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
-                return chatList;
+                msgList.Add(new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
+                return msgList;
             }
 
-            if (pixivWorkInfo.isR18() && groupId.IsShowR18Saucenao() == false)
+            if (pixivWorkInfo.IsR18 && groupId.IsShowR18Saucenao() == false)
             {
-                chatList.Add(new PlainMessage($" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
-                return chatList;
+                msgList.Add(new PlainMessage($" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
+                return msgList;
             }
 
             if (string.IsNullOrWhiteSpace(template))
             {
-                chatList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
+                msgList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, startTime)));
             }
             else
             {
-                chatList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startTime, template)));
+                msgList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, template)));
             }
 
-            if (isShowImg && fileInfo != null)
-            {
-                chatList.Add((IChatMessage)await session.UploadPictureAsync(target, fileInfo.FullName));
-            }
-            else if (isShowImg && fileInfo == null)
-            {
-                chatList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, target));
-            }
-
-            return chatList;
+            return msgList;
         }
 
         /// <summary>
@@ -352,40 +338,13 @@ namespace Theresa3rd_Bot.Handler
         /// <param name="args"></param>
         /// <param name="saucenaoMessage"></param>
         /// <returns></returns>
-        private async Task sendAndRevokeMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoMessage saucenaoMessage)
+        private async Task sendAndRevokeMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> workMsgs, List<FileInfo> setuFiles = null)
         {
-            long groupId = args.Sender.Group.Id;
-            long memberId = args.Sender.Id;
-            int groupMsgId = await session.SendMessageWithAtAsync(args, saucenaoMessage.GroupMsgs);
-            await Task.Delay(1000);
-            await session.SendTempMessageAsync(memberId, groupId, saucenaoMessage.TempMsgs.ToArray());
-            await Task.Delay(1000);
-            if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
+            Task sendGroupTask = session.SendGroupSetuAndRevokeAsync(args, workMsgs, setuFiles, BotConfig.SaucenaoConfig.RevokeInterval, true);
+            if (BotConfig.SaucenaoConfig.SendPrivate)
             {
-                await Task.Delay(BotConfig.SaucenaoConfig.RevokeInterval * 1000);
-                await session.RevokeMessageAsync(groupMsgId, groupId);
-            }
-        }
-
-        /// <summary>
-        /// 发送并撤回消息
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="saucenaoMessage"></param>
-        /// <returns></returns>
-        private async Task sendAndRevokeMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> chatList)
-        {
-            long groupId = args.Sender.Group.Id;
-            long memberId = args.Sender.Id;
-            int groupMsgId = await session.SendMessageWithAtAsync(args, chatList);
-            await Task.Delay(1000);
-            await session.SendTempMessageAsync(memberId, groupId, chatList.ToArray());
-            await Task.Delay(1000);
-            if (BotConfig.SaucenaoConfig.RevokeInterval > 0)
-            {
-                await Task.Delay(BotConfig.SaucenaoConfig.RevokeInterval * 1000);
-                await session.RevokeMessageAsync(groupMsgId, groupId);
+                await Task.Delay(1000);
+                Task sendTempTask = session.SendTempSetuAsync(args, workMsgs);
             }
         }
 

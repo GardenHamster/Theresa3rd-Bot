@@ -277,9 +277,9 @@ namespace Theresa3rd_Bot.Business
                     if (bookUpList.Count > 0) return;
                     PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivIllustList[i].id);
                     if (pixivWorkInfo.error) continue;
-                    if (pixivWorkInfo.body.IsImproper()) continue;
+                    if (pixivWorkInfo.body.IsImproper) continue;
                     if (pixivWorkInfo.body.hasBanTag() != null) continue;
-                    if (pixivWorkInfo.body.isR18() && includeR18 == false) continue;
+                    if (pixivWorkInfo.body.IsR18 && includeR18 == false) continue;
                     if (checkRandomWorkIsOk(pixivWorkInfo) == false) continue;
                     lock (bookUpList) bookUpList.Add(pixivWorkInfo);
                 }
@@ -653,18 +653,17 @@ namespace Theresa3rd_Bot.Business
             return template + "\r\n";
         }
 
-        public string getWorkInfo(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime, string template = "")
+        public string getWorkInfo(PixivWorkInfo pixivWorkInfo, DateTime startTime, string template = "")
         {
-            if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime);
+            if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(pixivWorkInfo, startTime);
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
-            double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{IllustTitle}", pixivWorkInfo.illustTitle);
             template = template.Replace("{PixivId}", pixivWorkInfo.illustId);
             template = template.Replace("{UserName}", pixivWorkInfo.userName);
             template = template.Replace("{UserId}", pixivWorkInfo.userId.ToString());
-            template = template.Replace("{SizeMB}", sizeMB.ToString());
+            template = template.Replace("{SizeMB}", "??");
             template = template.Replace("{CreateTime}", pixivWorkInfo.createDate.ToSimpleString());
             template = template.Replace("{BookmarkCount}", pixivWorkInfo.bookmarkCount.ToString());
             template = template.Replace("{LikeCount}", pixivWorkInfo.likeCount.ToString());
@@ -677,12 +676,11 @@ namespace Theresa3rd_Bot.Business
             return template;
         }
 
-        public string getDefaultWorkInfo(PixivWorkInfo pixivWorkInfo, FileInfo fileInfo, DateTime startTime)
+        public string getDefaultWorkInfo(PixivWorkInfo pixivWorkInfo, DateTime startTime)
         {
             StringBuilder workInfoStr = new StringBuilder();
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
-            double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
-            workInfoStr.AppendLine($"标题：{pixivWorkInfo.illustTitle}，PixivId：{pixivWorkInfo.illustId}，画师：{pixivWorkInfo.userName}，画师id：{pixivWorkInfo.userId}，大小：{sizeMB}MB，发布时间：{pixivWorkInfo.createDate.ToSimpleString()}，");
+            workInfoStr.AppendLine($"标题：{pixivWorkInfo.illustTitle}，PixivId：{pixivWorkInfo.illustId}，画师：{pixivWorkInfo.userName}，画师id：{pixivWorkInfo.userId}，发布时间：{pixivWorkInfo.createDate.ToSimpleString()}，");
             workInfoStr.AppendLine($"收藏：{pixivWorkInfo.bookmarkCount}，赞：{pixivWorkInfo.likeCount}，浏览：{pixivWorkInfo.viewCount}，");
             workInfoStr.AppendLine($"耗时：{costSecond}s，标签图片：{pixivWorkInfo.RelevantCount}张，作品图片:{pixivWorkInfo.pageCount}张");
             workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(pixivWorkInfo.tags, BotConfig.PixivConfig.TagShowMaximum)}");

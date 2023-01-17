@@ -12,11 +12,10 @@ namespace Theresa3rd_Bot.Business
 {
     public class LoliconBusiness : SetuBusiness
     {
-        public string getWorkInfo(LoliconDataV2 loliconData, FileInfo fileInfo, DateTime startTime, long todayLeft, string template = "")
+        public string getWorkInfo(LoliconDataV2 loliconData, DateTime startTime, long todayLeft, string template = "")
         {
-            if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(loliconData, fileInfo, startTime);
+            if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(loliconData, startTime);
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
-            double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
@@ -24,19 +23,18 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{PixivId}", loliconData.pid.ToString());
             template = template.Replace("{UserName}", loliconData.author);
             template = template.Replace("{UserId}", loliconData.uid);
-            template = template.Replace("{SizeMB}", sizeMB.ToString());
+            template = template.Replace("{SizeMB}", "??");
             template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(loliconData.tags, BotConfig.PixivConfig.TagShowMaximum));
             template = template.Replace("{Urls}", loliconData.urls.original.ToOrginProxyUrl());
             return template;
         }
 
-        public string getDefaultWorkInfo(LoliconDataV2 loliconData, FileInfo fileInfo, DateTime startTime)
+        public string getDefaultWorkInfo(LoliconDataV2 loliconData, DateTime startTime)
         {
             StringBuilder workInfoStr = new StringBuilder();
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
-            double sizeMB = fileInfo == null ? 0 : MathHelper.getMbWithByte(fileInfo.Length);
-            workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}，大小：{sizeMB}MB，耗时：{costSecond}s");
+            workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}，耗时：{costSecond}s");
             workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(loliconData.tags, BotConfig.PixivConfig.TagShowMaximum)}");
             workInfoStr.Append(loliconData.urls.original.ToOrginProxyUrl());
             return workInfoStr.ToString();

@@ -1,6 +1,8 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
@@ -71,13 +73,23 @@ namespace Theresa3rd_Bot.Timer
         {
             foreach (MysSubscribe mysSubscribe in mysSubscribeList)
             {
+                FileInfo fileInfo = null;
+                string coverUrl = mysSubscribe.SubscribeRecord.CoverUrl;
                 if (subscribeTask.GroupIdList == null || subscribeTask.GroupIdList.Count == 0) continue;
-                List<IChatMessage> chailList = await mysBusiness.getSubscribeInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Mihoyo.Template);
+                List<IChatMessage> msgList = mysBusiness.getPostInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Mihoyo.Template);
+                if (string.IsNullOrEmpty(coverUrl) == false)
+                {
+                    fileInfo = await HttpHelper.DownImgAsync(mysSubscribe.SubscribeRecord.CoverUrl);
+                }
+                if (fileInfo != null)
+                {
+                    msgList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
+                }
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {
                     try
                     {
-                        await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
+                        await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
                     }
                     catch (Exception ex)
                     {

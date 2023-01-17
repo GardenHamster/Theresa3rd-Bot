@@ -36,7 +36,7 @@ namespace Theresa3rd_Bot.Event
         {
             if (string.IsNullOrWhiteSpace(BotConfig.WebsiteConfig.Pixiv.Cookie))
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage("缺少pixiv cookie，请设置cookie"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage("缺少pixiv cookie，请设置cookie"));
                 return false;
             }
             if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate)
@@ -46,7 +46,7 @@ namespace Theresa3rd_Bot.Event
             }
             if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage("缺少userId，请更新cookie"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage("缺少userId，请更新cookie"));
                 return false;
             }
             return true;
@@ -158,7 +158,7 @@ namespace Theresa3rd_Bot.Event
             if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
             int cdSecond = CoolingCache.GetMemberSetuCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage($" 功能冷却中，{cdSecond}秒后再来哦~"));
+            await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 功能冷却中，{cdSecond}秒后再来哦~"));
             return true;
         }
 
@@ -174,7 +174,7 @@ namespace Theresa3rd_Bot.Event
             if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
             int cdSecond = CoolingCache.GetGroupSetuCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage($" 群功能冷却中，{cdSecond}秒后再来哦~"));
+            await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 群功能冷却中，{cdSecond}秒后再来哦~"));
             return true;
         }
 
@@ -191,7 +191,7 @@ namespace Theresa3rd_Bot.Event
             if (BotConfig.SetuConfig.MaxDaily == 0) return false;
             int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Setu);
             if (useCount < BotConfig.SetuConfig.MaxDaily) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));
+            await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));
             return true;
         }
 
@@ -207,7 +207,7 @@ namespace Theresa3rd_Bot.Event
             if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(args.Sender.Id)) return false;
             int useCount = new RequestRecordBusiness().getUsedCountToday(args.Sender.Group.Id, args.Sender.Id, CommandType.Saucenao);
             if (useCount < BotConfig.SaucenaoConfig.MaxDaily) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));
+            await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 你今天的使用次数已经达到上限了，明天再来吧"));
             return true;
         }
 
@@ -220,7 +220,7 @@ namespace Theresa3rd_Bot.Event
         public async Task<bool> CheckHandingAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (CoolingCache.IsHanding(args.Sender.Group.Id, args.Sender.Id) == false) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage(" 你的一个请求正在处理中，稍后再来吧"));
+            await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 你的一个请求正在处理中，稍后再来吧"));
             return true;
         }
 
@@ -235,7 +235,7 @@ namespace Theresa3rd_Bot.Event
             if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(args.Sender.Group.Id)) return false;
             int cdSecond = CoolingCache.GetMemberSaucenaoCooling(args.Sender.Group.Id, args.Sender.Id);
             if (cdSecond <= 0) return false;
-            await session.SendMessageWithAtAsync(args, new PlainMessage($" 功能冷却中，{cdSecond}秒后再来哦~"));
+            await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 功能冷却中，{cdSecond}秒后再来哦~"));
             return true;
         }
 

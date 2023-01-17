@@ -205,8 +205,8 @@ namespace Theresa3rd_Bot.Util
         public static string JoinPixivImgOrginUrls(PixivWorkInfo pixivWorkInfo)
         {
             StringBuilder LinkBuilder = new StringBuilder();
-            int endIndex = BotConfig.PixivConfig.UrlShowMaximum > 0 ? BotConfig.PixivConfig.UrlShowMaximum : pixivWorkInfo.pageCount;
-            for (int i = 0; i < endIndex && i < pixivWorkInfo.pageCount; i++)
+            int maxCount = BotConfig.PixivConfig.UrlShowMaximum > 0 ? BotConfig.PixivConfig.UrlShowMaximum : pixivWorkInfo.pageCount;
+            for (int i = 0; i < maxCount && i < pixivWorkInfo.pageCount; i++)
             {
                 string imgUrl = pixivWorkInfo.urls.original.ToOrginProxyUrl();
                 if (i > 0) imgUrl = imgUrl.Replace("_p0.", $"_p{i}.");

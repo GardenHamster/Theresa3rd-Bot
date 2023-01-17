@@ -26,12 +26,32 @@ namespace Theresa3rd_Bot.Model.Lolicon
         public string ext { get; set; }
         public long uploadDate { get; set; }
         public LoliconUrlsV2 urls { get; set; }
+        public override bool IsR18
+        {
+            get { return r18; }
+        }
+        public override bool IsGif
+        {
+            get { return tags != null && tags.IsGif(); }
+        }
+        public override bool IsImproper
+        {
+            get { return tags != null && tags.IsImproper(); }
+        }
+        public override string PixivId
+        {
+            get { return pid.ToString(); }
+        }
 
-        //xRestrict=1为R18,xRestrict=2为R18G
-        public override bool isR18() => r18;
-        public override bool IsImproper() => tags != null && tags.IsImproper();
-        public override bool isGif() => tags != null && tags.IsGif();
+        public override List<string> getTags() => tags ?? new List<string>();
+
         public override string hasBanTag() => tags?.hasBanTags();
+
+        public override List<string> getOriginalUrls()
+        {
+            if (urls == null) return new List<string>();
+            return new List<string>() { urls.original };
+        }
     }
 
     public class LoliconUrlsV2

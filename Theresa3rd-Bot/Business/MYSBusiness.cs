@@ -121,40 +121,25 @@ namespace Theresa3rd_Bot.Business
         }
 
 
-        public async Task<List<IChatMessage>> getSubscribeInfoAsync(MysSubscribe mysSubscribe, string template = "")
+        public List<IChatMessage> getPostInfoAsync(MysSubscribe mysSubscribe, string template = "")
         {
-            if (string.IsNullOrWhiteSpace(template)) return await getDefaultSubscribeInfoAsync(mysSubscribe);
+            if (string.IsNullOrWhiteSpace(template)) return getDefaultPostInfoAsync(mysSubscribe);
             template = template.Replace("{UserName}", mysSubscribe.MysUserPostDto.user.nickname);
             template = template.Replace("{CreateTime}", mysSubscribe.CreateTime.ToSimpleString());
             template = template.Replace("{Title}", mysSubscribe.SubscribeRecord.Title);
             template = template.Replace("{Content}", mysSubscribe.SubscribeRecord.Content);
             template = template.Replace("{Urls}", mysSubscribe.SubscribeRecord.LinkUrl);
-            List<IChatMessage> chailList = new List<IChatMessage>();
-            chailList.Add(new PlainMessage(template));
-            FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : await HttpHelper.DownImgAsync(mysSubscribe.SubscribeRecord.CoverUrl);
-            if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-            return chailList;
+            return new List<IChatMessage>() { new PlainMessage(template) };
         }
 
-        public async Task<List<IChatMessage>> getDefaultSubscribeInfoAsync(MysSubscribe mysSubscribe)
+        private List<IChatMessage> getDefaultPostInfoAsync(MysSubscribe mysSubscribe)
         {
-            List<IChatMessage> chailList = new List<IChatMessage>();
-            chailList.AddRange(await getDefaultPostInfoAsync(mysSubscribe));
-            return chailList;
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Title}\r\n"));
+            msgList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Content.cutString(300)}\r\n"));
+            msgList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.LinkUrl}"));
+            return msgList;
         }
-
-
-        public async Task<List<IChatMessage>> getDefaultPostInfoAsync(MysSubscribe mysSubscribe)
-        {
-            List<IChatMessage> chailList = new List<IChatMessage>();
-            chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Title}\r\n"));
-            chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Content.cutString(200)}\r\n"));
-            FileInfo fileInfo = string.IsNullOrEmpty(mysSubscribe.SubscribeRecord.CoverUrl) ? null : await HttpHelper.DownImgAsync(mysSubscribe.SubscribeRecord.CoverUrl);
-            if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-            chailList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.LinkUrl}"));
-            return chailList;
-        }
-
 
         /*-------------------------------------------------------------接口相关--------------------------------------------------------------------------*/
 

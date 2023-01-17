@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Base;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Util;
 
@@ -33,28 +34,51 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
         /// <returns></returns>
-        public async Task<FileInfo> downImgAsync(string pixivId, string originUrl, bool isGif)
+        public async Task<List<FileInfo>> downPixivImgAsync(BaseWorkInfo pixivWorkInfo)
         {
             try
             {
-                if (isGif) return await downAndComposeGifAsync(pixivId);
-                string imgUrl = getDownImgUrl(originUrl);
-                string fullFileName = $"{pixivId}.jpg";
-                string fullImageSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
+                if (pixivWorkInfo.IsGif)
+                {
+                    return new List<FileInfo>() { await downAndComposeGifAsync(pixivWorkInfo.PixivId) };
+                }
+                List<FileInfo> imgList = new List<FileInfo>();
+                List<string> originUrls = pixivWorkInfo.getOriginalUrls();
+                int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
+                for (int i = 0; i < maxCount && i < originUrls.Count; i++)
+                {
+                    imgList.Add(await downPixivImgAsync(pixivWorkInfo.PixivId, originUrls[i]));
+                }
+                return imgList;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "PixivBusiness.downImg下载图片失败");
+                return null;
+            }
+        }
+
+        public async Task<FileInfo> downPixivImgAsync(string pixivId, string originUrl, string fullFileName = null)
+        {
+            try
+            {
+                string downloadUrl = getDownImgUrl(originUrl);
+                if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = originUrl.getHttpFileName();
+                string fullImgSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
                 Dictionary<string, string> headerDic = new Dictionary<string, string>();
                 headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
                 headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
                 if (BotConfig.PixivConfig.FreeProxy || string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
                 {
-                    return await HttpHelper.DownFileAsync(imgUrl.ToProxyUrl(), fullImageSavePath);
+                    return await HttpHelper.DownFileAsync(downloadUrl.ToProxyUrl(), fullImgSavePath);
                 }
                 else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
                 {
-                    return await HttpHelper.DownFileWithProxyAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
+                    return await HttpHelper.DownFileWithProxyAsync(downloadUrl.ToPximgUrl(), fullImgSavePath, headerDic);
                 }
                 else
                 {
-                    return await HttpHelper.DownFileAsync(imgUrl.ToPximgUrl(), fullImageSavePath, headerDic);
+                    return await HttpHelper.DownFileAsync(downloadUrl.ToPximgUrl(), fullImgSavePath, headerDic);
                 }
             }
             catch (Exception ex)
@@ -64,6 +88,7 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
+
         /// <summary>
         /// 下载动图zip包并合成gif图片
         /// </summary>
@@ -71,56 +96,55 @@ namespace Theresa3rd_Bot.Business
         /// <returns></returns>
         protected async Task<FileInfo> downAndComposeGifAsync(string pixivId)
         {
-            string fullGifSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{pixivId}.gif");
-            if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
-
-            PixivUgoiraMetaDto pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId);
-            string fullZipSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{StringHelper.get16UUID()}.zip");
-            string zipHttpUrl = pixivUgoiraMetaDto.body.src;
-
-            Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
-            headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-
-            if (BotConfig.PixivConfig.FreeProxy || string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
-            {
-                await HttpHelper.DownFileAsync(zipHttpUrl.ToProxyUrl(), fullZipSavePath);
-            }
-            else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
-            {
-                await HttpHelper.DownFileWithProxyAsync(zipHttpUrl.ToPximgUrl(), fullZipSavePath, headerDic);
-            }
-            else
-            {
-                await HttpHelper.DownFileAsync(zipHttpUrl.ToPximgUrl(), fullZipSavePath, headerDic);
-            }
-
-            string unZipDirPath = Path.Combine(FilePath.getDownImgSavePath(), pixivId);
-            ZipHelper.ZipToFile(fullZipSavePath, unZipDirPath);
-            DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
-            FileInfo[] files = directoryInfo.GetFiles();
-            List<PixivUgoiraMetaFrames> frames = pixivUgoiraMetaDto.body.frames;
-            using AnimatedGifCreator gif = AnimatedGif.AnimatedGif.Create(fullGifSavePath, 0);
-            foreach (FileInfo file in files)
-            {
-                PixivUgoiraMetaFrames frame = frames.Where(o => o.file.Trim() == file.Name).FirstOrDefault();
-                int delay = frame == null ? 60 : frame.delay;
-                using Image img = Image.FromFile(file.FullName);
-                gif.AddFrame(img, delay, GifQuality.Bit8);
-                await Task.Delay(1000);
-            }
-
             try
             {
-                File.Delete(fullZipSavePath);
-                Directory.Delete(unZipDirPath, true);
+                string fullGifSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{pixivId}.gif");
+                if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
+
+                PixivUgoiraMetaDto pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId);
+                string fullZipSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{StringHelper.get16UUID()}.zip");
+                string zipHttpUrl = pixivUgoiraMetaDto.body.src;
+
+                Dictionary<string, string> headerDic = new Dictionary<string, string>();
+                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
+                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+
+                if (BotConfig.PixivConfig.FreeProxy || string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
+                {
+                    await HttpHelper.DownFileAsync(zipHttpUrl.ToProxyUrl(), fullZipSavePath);
+                }
+                else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
+                {
+                    await HttpHelper.DownFileWithProxyAsync(zipHttpUrl.ToPximgUrl(), fullZipSavePath, headerDic);
+                }
+                else
+                {
+                    await HttpHelper.DownFileAsync(zipHttpUrl.ToPximgUrl(), fullZipSavePath, headerDic);
+                }
+
+                string unZipDirPath = Path.Combine(FilePath.getDownImgSavePath(), pixivId);
+                ZipHelper.ZipToFile(fullZipSavePath, unZipDirPath);
+                DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
+                FileInfo[] files = directoryInfo.GetFiles();
+                List<PixivUgoiraMetaFrames> frames = pixivUgoiraMetaDto.body.frames;
+                using AnimatedGifCreator gif = AnimatedGif.AnimatedGif.Create(fullGifSavePath, 0);
+                foreach (FileInfo file in files)
+                {
+                    PixivUgoiraMetaFrames frame = frames.Where(o => o.file.Trim() == file.Name).FirstOrDefault();
+                    int delay = frame == null ? 60 : frame.delay;
+                    using Image img = Image.FromFile(file.FullName);
+                    gif.AddFrame(img, delay, GifQuality.Bit8);
+                    await Task.Delay(1000);
+                }
+                FileHelper.deleteFile(fullZipSavePath);
+                FileHelper.deleteDirectory(unZipDirPath);
+                return new FileInfo(fullGifSavePath);
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "gif临时文件删除失败");
+                LogHelper.Error(ex, "gif合成失败");
+                return null;
             }
-
-            return new FileInfo(fullGifSavePath);
         }
 
 

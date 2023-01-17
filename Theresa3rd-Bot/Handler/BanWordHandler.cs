@@ -28,20 +28,20 @@ namespace Theresa3rd_Bot.Handler
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要禁止的关键词，请确保指令格式正确"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 没有检测到要禁止的关键词，请确保指令格式正确"));
                     return;
                 }
 
                 BanWordPO dbBanWord = banWordBusiness.getBanWord(BanType.SetuTag, tagStr);
                 if (dbBanWord != null)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该关键词已有记录了"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该关键词已有记录了"));
                     return;
                 }
 
                 banWordBusiness.insertBanWord(tagStr, BanType.SetuTag, false);
                 ConfigHelper.loadBanTag();
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 记录成功"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 记录成功"));
             }
             catch (Exception ex)
             {
@@ -58,20 +58,20 @@ namespace Theresa3rd_Bot.Handler
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要解除的关键词，请确保指令格式正确"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 没有检测到要解除的关键词，请确保指令格式正确"));
                     return;
                 }
 
                 BanWordPO dbBanWord = banWordBusiness.getBanWord(BanType.SetuTag, tagStr);
                 if (dbBanWord == null)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该关键词未有记录"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该关键词未有记录"));
                     return;
                 }
 
                 banWordBusiness.delBanWord(BanType.SetuTag, tagStr);
                 ConfigHelper.loadBanTag();
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 解除成功"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 解除成功"));
             }
             catch (Exception ex)
             {
@@ -88,26 +88,26 @@ namespace Theresa3rd_Bot.Handler
                 
                 if (string.IsNullOrEmpty(memberCode))
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要禁止的qq号，请确保指令格式正确"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 没有检测到要禁止的qq号，请确保指令格式正确"));
                     return;
                 }
 
                 if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(Convert.ToInt64(memberCode)))
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 无法拉黑超级管理员"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 无法拉黑超级管理员"));
                     return;
                 }
 
                 BanWordPO dbBanWord = banWordBusiness.getBanWord(BanType.Member, memberCode);
                 if (dbBanWord != null)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该qq号已有记录了"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该qq号已有记录了"));
                     return;
                 }
 
                 banWordBusiness.insertBanWord(memberCode, BanType.Member, false);
                 ConfigHelper.loadBanMember();
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 记录成功"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 记录成功"));
             }
             catch (Exception ex)
             {
@@ -125,20 +125,20 @@ namespace Theresa3rd_Bot.Handler
 
                 if (string.IsNullOrEmpty(memberCode))
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 没有检测到要解除的qq号，请确保指令格式正确"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 没有检测到要解除的qq号，请确保指令格式正确"));
                     return;
                 }
 
                 BanWordPO dbBanWord = banWordBusiness.getBanWord(BanType.Member, memberCode);
                 if (dbBanWord == null)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该关键词未有记录"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该关键词未有记录"));
                     return;
                 }
 
                 banWordBusiness.delBanWord(BanType.Member, memberCode);
                 ConfigHelper.loadBanMember();
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 解除成功"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 解除成功"));
             }
             catch (Exception ex)
             {

@@ -65,46 +65,46 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LoliconDataV2 loliconData = loliconResult.data.First();
-                if (loliconData.IsImproper())
+                if (loliconData.IsImproper)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
                     return;
                 }
 
                 string banTagStr = loliconData.hasBanTag();
                 if (banTagStr != null)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
                     return;
                 }
 
-                if (loliconData.isR18() && isShowR18 == false)
+                if (loliconData.IsR18 && isShowR18 == false)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                     return;
                 }
 
                 long todayLeftCount = GetSetuLeftToday(groupId, memberId);
-                bool isShowImg = groupId.IsShowSetuImg(loliconData.isR18());
-                FileInfo fileInfo = isShowImg ? await loliconBusiness.downImgAsync(loliconData.pid.ToString(), loliconData.urls.original, false) : null;
+                bool isShowImg = groupId.IsShowSetuImg(loliconData.IsR18);
+                List<FileInfo> setuFiles = isShowImg ? await loliconBusiness.downPixivImgAsync(loliconData) : null;
 
                 string template = BotConfig.SetuConfig.Lolicon.Template;
                 List<IChatMessage> workMsgs = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(template))
                 {
-                    workMsgs.Add(new PlainMessage(loliconBusiness.getDefaultWorkInfo(loliconData, fileInfo, startDateTime)));
+                    workMsgs.Add(new PlainMessage(loliconBusiness.getDefaultWorkInfo(loliconData, startDateTime)));
                 }
                 else
                 {
-                    workMsgs.Add(new PlainMessage(loliconBusiness.getWorkInfo(loliconData, fileInfo, startDateTime, todayLeftCount, template)));
+                    workMsgs.Add(new PlainMessage(loliconBusiness.getWorkInfo(loliconData, startDateTime, todayLeftCount, template)));
                 }
 
-                Task sendGroupTask = session.SendGroupSetuAndRevokeWithAtAsync(args, workMsgs, fileInfo, isShowImg);
-                
+                Task sendGroupTask = session.SendGroupSetuAndRevokeAsync(args, workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
+
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = session.SendTempSetuAsync(args, workMsgs, fileInfo, isShowImg);
+                    Task sendTempTask = session.SendTempSetuAsync(args, workMsgs, setuFiles);
                 }
 
                 CoolingCache.SetMemberSetuCooling(groupId, memberId);
@@ -120,7 +120,7 @@ namespace Theresa3rd_Bot.Handler
             }
         }
 
-        public async Task sendTimingSetu(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, long groupId)
+        public async Task sendTimingSetuAsync(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, long groupId)
         {
             int eachPage = 5;
             int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
@@ -147,13 +147,13 @@ namespace Theresa3rd_Bot.Handler
         {
             try
             {
-                bool isR18Img = setuInfo.isR18();
+                bool isR18Img = setuInfo.IsR18;
                 bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                 DateTime startTime = DateTime.Now;
                 List<IChatMessage> workMsgs = new List<IChatMessage>();
-                FileInfo fileInfo = isShowImg ? await loliconBusiness.downImgAsync(setuInfo.pid.ToString(), setuInfo.urls.original, setuInfo.isGif()) : null;
-                workMsgs.Add(new PlainMessage(loliconBusiness.getDefaultWorkInfo(setuInfo, fileInfo, startTime)));
-                await session.SendGroupSetuAsync(workMsgs, fileInfo, groupId, isShowImg);
+                List<FileInfo> setuFiles = isShowImg ? await loliconBusiness.downPixivImgAsync(setuInfo) : null;
+                workMsgs.Add(new PlainMessage(loliconBusiness.getDefaultWorkInfo(setuInfo, startTime)));
+                await session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, isShowImg);
             }
             catch (Exception ex)
             {

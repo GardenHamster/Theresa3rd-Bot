@@ -69,7 +69,7 @@ namespace Theresa3rd_Bot.Handler
                 MysResult<MysUserFullInfoDto> userInfoDto = await mysBusiness.geMysUserFullInfoDtoAsync(userId);
                 if (userInfoDto == null || userInfoDto.retcode != 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 订阅失败，目标用户不存在"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 订阅失败，目标用户不存在"));
                     return;
                 }
 
@@ -78,7 +78,7 @@ namespace Theresa3rd_Bot.Handler
                 if (dbSubscribe == null) dbSubscribe = subscribeBusiness.insertSurscribe(userInfoDto.data.user_info, userId);
                 if (subscribeBusiness.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage($" 已订阅了该用户~"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 已订阅了该用户~"));
                     return;
                 }
                 subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
@@ -90,7 +90,7 @@ namespace Theresa3rd_Bot.Handler
                 chailList.Add(new PlainMessage($"签名：{dbSubscribe.SubscribeDescription}\r\n"));
                 FileInfo fileInfo = string.IsNullOrEmpty(userInfoDto.data.user_info.avatar_url) ? null : await HttpHelper.DownImgAsync(userInfoDto.data.user_info.avatar_url);
                 if (fileInfo != null) chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                await session.SendMessageWithAtAsync(args, chailList);
+                await session.SendGroupMessageWithAtAsync(args, chailList);
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
@@ -131,7 +131,7 @@ namespace Theresa3rd_Bot.Handler
                 List<SubscribePO> subscribeList = mysBusiness.getSubscribeList(userId);
                 if (subscribeList == null || subscribeList.Count == 0)
                 {
-                    await session.SendMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个用户哦~"));
+                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 并没有订阅这个用户哦~"));
                     return;
                 }
 
@@ -140,7 +140,7 @@ namespace Theresa3rd_Bot.Handler
                     subscribeBusiness.delSubscribeGroup(item.Id);
                 }
 
-                await session.SendMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了id为{userId}的米游社用户~"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 已为所有群退订了id为{userId}的米游社用户~"));
                 ConfigHelper.loadSubscribeTask();
             }
             catch (Exception ex)
@@ -155,17 +155,17 @@ namespace Theresa3rd_Bot.Handler
             long userId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 用户id不可以为空"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 用户id不可以为空"));
                 return false;
             }
             if (long.TryParse(value, out userId) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 用户id必须为数字"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 用户id必须为数字"));
                 return false;
             }
             if (userId <= 0)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 用户id无效"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 用户id无效"));
                 return false;
             }
             return true;
@@ -176,17 +176,17 @@ namespace Theresa3rd_Bot.Handler
             int typeId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 未指定目标群"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 未指定目标群"));
                 return false;
             }
             if (int.TryParse(value, out typeId) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 目标必须为数字"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 目标必须为数字"));
                 return false;
             }
             if (Enum.IsDefined(typeof(SubscribeGroupType), typeId) == false)
             {
-                await session.SendMessageWithAtAsync(args, new PlainMessage(" 目标不在范围内"));
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 目标不在范围内"));
                 return false;
             }
             return true;

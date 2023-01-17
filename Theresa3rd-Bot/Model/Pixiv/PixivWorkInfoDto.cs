@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.Model.Base;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Pixiv
@@ -14,7 +15,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
         public PixivWorkInfo body { get; set; }
     }
 
-    public class PixivWorkInfo
+    public class PixivWorkInfo : BaseWorkInfo
     {
         public int RelevantCount { get; set; }
         public int bookmarkCount { get; set; }
@@ -33,10 +34,10 @@ namespace Theresa3rd_Bot.Model.Pixiv
         public List<string> getTags() => tags?.getTags() ?? new List<string>();
 
         //xRestrict=1为R18,xRestrict=2为R18G
-        public bool isR18() => xRestrict > 0 || getTags().IsR18();
-        public bool isGif() => getTags().IsGif();
-        public string hasBanTag() => getTags()?.hasBanTags();
-        public bool IsImproper() => xRestrict > 1 || getTags().IsImproper();
+        public override bool isR18() => xRestrict > 0 || getTags().IsR18();
+        public override bool isGif() => getTags().IsGif();
+        public override string hasBanTag() => getTags()?.hasBanTags();
+        public override bool IsImproper() => xRestrict > 1 || getTags().IsImproper();
     }
 
     public class PixivUrls

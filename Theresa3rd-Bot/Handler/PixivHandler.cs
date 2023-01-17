@@ -108,8 +108,8 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
-                bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.isR18());
                 long todayLeft = GetSetuLeftToday(groupId, memberId);
+                bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.isR18());
                 FileInfo fileInfo = isShowImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
 
                 string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
@@ -129,10 +129,10 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 Task sendGroupTask = session.SendGroupSetuAndRevokeWithAtAsync(args, workMsgs, fileInfo, isShowImg);
-                await Task.Delay(1000);
-
+                
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
+                    await Task.Delay(1000);
                     Task sendTempTask = session.SendTempSetuAsync(args, workMsgs, fileInfo, isShowImg);
                 }
 

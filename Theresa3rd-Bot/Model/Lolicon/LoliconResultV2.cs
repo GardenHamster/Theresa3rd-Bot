@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Theresa3rd_Bot.Model.Base;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Lolicon
@@ -11,7 +12,7 @@ namespace Theresa3rd_Bot.Model.Lolicon
         public List<LoliconDataV2> data { get; set; }
     }
 
-    public class LoliconDataV2
+    public class LoliconDataV2 : BaseWorkInfo
     {
         public long pid { get; set; }
         public int p { get; set; }
@@ -27,10 +28,10 @@ namespace Theresa3rd_Bot.Model.Lolicon
         public LoliconUrlsV2 urls { get; set; }
 
         //xRestrict=1为R18,xRestrict=2为R18G
-        public bool isR18() => tags != null && tags.IsR18();
-        public bool IsImproper() => tags != null && tags.IsImproper();
-        public bool isGif() => tags != null && tags.IsGif();
-        public string hasBanTag() => tags?.hasBanTags();
+        public override bool isR18() => tags != null && tags.IsR18();
+        public override bool IsImproper() => tags != null && tags.IsImproper();
+        public override bool isGif() => tags != null && tags.IsGif();
+        public override string hasBanTag() => tags?.hasBanTags();
     }
 
     public class LoliconUrlsV2

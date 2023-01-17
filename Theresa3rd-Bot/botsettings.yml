@@ -194,5 +194,5 @@ TimingSetu:
           Level:                '0-3'                                               #Lolisuki的Level，Source为2时可用
           Quantity:             5                                                   #发送涩图数量，Source为1和2时取值范围为1~20
           AtAll:                false                                               #是否艾特全体
-          TimingMsg:            '下午茶时间，来点{Tags}涩图'                          #提示消息
+          TimingMsg:            '下午茶时间，来点{Tags}涩图，图片来源：{SourceName}'   #提示消息
           LocalTemplate:        '文件名：{FileName}，目录：{FilePath}，大小：{SizeMB}MB'   #本地涩图消息模版

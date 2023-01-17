@@ -1,5 +1,6 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.Models;
+using MySqlX.XDevAPI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -117,42 +118,32 @@ namespace Theresa3rd_Bot.Timer
                 string pixivTemplate = BotConfig.PixivConfig.Template;
                 FileInfo fileInfo = isDownImg ? await pixivBusiness.downImgAsync(pixivWorkInfo.illustId, pixivWorkInfo.urls.original, pixivWorkInfo.isGif()) : null;
 
+                List<IChatMessage> workMsgs = new List<IChatMessage>();
+                if (string.IsNullOrWhiteSpace(remindTemplate))
+                {
+                    workMsgs.Add(new PlainMessage($"pixiv画师[{pixivWorkInfo.userName}]发布了新作品："));
+                }
+                else
+                {
+                    workMsgs.Add(new PlainMessage(pixivBusiness.getUserPushRemindMsg(remindTemplate, pixivWorkInfo.userName)));
+                }
+
+                if (string.IsNullOrWhiteSpace(pixivTemplate))
+                {
+                    workMsgs.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
+                }
+                else
+                {
+                    workMsgs.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startTime, pixivTemplate)));
+                }
+
                 foreach (long groupId in groupIds)
                 {
                     try
                     {
                         if (isR18Img && groupId.IsShowR18Setu() == false) continue;
                         bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-                        
-                        List<IChatMessage> chailList = new List<IChatMessage>();
-                        if (string.IsNullOrWhiteSpace(remindTemplate))
-                        {
-                            chailList.Add(new PlainMessage($"pixiv画师[{pixivWorkInfo.userName}]发布了新作品："));
-                        }
-                        else
-                        {
-                            chailList.Add(new PlainMessage(pixivBusiness.getUserPushRemindMsg(remindTemplate, pixivWorkInfo.userName)));
-                        }
-
-                        if (string.IsNullOrWhiteSpace(pixivTemplate))
-                        {
-                            chailList.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, fileInfo, startTime)));
-                        }
-                        else
-                        {
-                            chailList.Add(new PlainMessage(pixivBusiness.getWorkInfo(pixivWorkInfo, fileInfo, startTime, pixivTemplate)));
-                        }
-
-                        if (isShowImg && fileInfo != null)
-                        {
-                            chailList.Add((IChatMessage)await MiraiHelper.Session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                        }
-                        else if (isShowImg && fileInfo == null)
-                        {
-                            chailList.AddRange(await MiraiHelper.Session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Group));
-                        }
-
-                        await MiraiHelper.Session.SendGroupMessageAsync(groupId, chailList.ToArray());
+                        await MiraiHelper.Session.SendGroupSetuAsync(workMsgs, fileInfo, groupId, isShowImg);
                     }
                     catch (Exception ex)
                     {

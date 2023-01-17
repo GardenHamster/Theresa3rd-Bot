@@ -673,7 +673,7 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{RelevantCount}", pixivWorkInfo.RelevantCount.ToString());
             template = template.Replace("{PageCount}", pixivWorkInfo.pageCount.ToString());
             template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(pixivWorkInfo.tags, BotConfig.PixivConfig.TagShowMaximum));
-            template = template.Replace("{Urls}", BusinessHelper.JoinPixivImgOrginUrls(pixivWorkInfo, BotConfig.PixivConfig.UrlShowMaximum));
+            template = template.Replace("{Urls}", BusinessHelper.JoinPixivImgOrginUrls(pixivWorkInfo));
             return template;
         }
 

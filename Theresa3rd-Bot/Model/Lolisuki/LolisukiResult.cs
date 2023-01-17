@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Theresa3rd_Bot.Model.Base;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
@@ -12,7 +13,7 @@ namespace Theresa3rd_Bot.Model.Lolisuki
         public List<LolisukiData> data { get; set; }
     }
 
-    public class LolisukiData
+    public class LolisukiData : BaseWorkInfo
     {
         public long pid { get; set; }
         public int p { get; set; }
@@ -34,18 +35,18 @@ namespace Theresa3rd_Bot.Model.Lolisuki
         public List<string> tags { get; set; }
         public List<string> extags { get; set; }
 
-        public bool isGif() => gif;
+        public override bool isGif() => gif;
 
-        public string hasBanTag() => tags?.hasBanTags() ?? extags?.hasBanTags();
+        public override string hasBanTag() => tags?.hasBanTags() ?? extags?.hasBanTags();
 
-        public bool IsImproper()
+        public override bool IsImproper()
         {
             if (tags != null && tags.IsImproper()) return true;
             if (extags != null && tags.IsImproper()) return true;
             return false;
         }
 
-        public bool isR18()
+        public override bool isR18()
         {
             if (r18) return true;
             if (tags != null && tags.IsR18()) return true;

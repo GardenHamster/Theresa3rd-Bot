@@ -79,6 +79,7 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
                 template = template.Replace("{Tags}", tags);
+                template = template.Replace("{SourceName}", timingSetuTimer.Source.GetTypeName());
                 chainList.AddRange(BusinessHelper.SplitToChainAsync(session, template).Result);
                 await session.SendGroupMessageAsync(groupId, chainList.ToArray());
             }

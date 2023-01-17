@@ -34,8 +34,9 @@ namespace Theresa3rd_Bot.Handler
                 long groupId = args.Sender.Group.Id;
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
-                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolisuki.Command) ?? "";
 
+                bool isShowR18 = groupId.IsShowR18Setu();
+                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolisuki.Command) ?? "";
                 if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
                 {
@@ -44,7 +45,6 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LolisukiResult lolisukiResult = null;
-                bool isShowR18 = groupId.IsShowR18Setu();
                 int r18Mode = isShowR18 ? 2 : 0;
                 string levelStr = getLevelStr(isShowR18);
 
@@ -83,7 +83,6 @@ namespace Theresa3rd_Bot.Handler
                 long todayLeftCount = GetSetuLeftToday(groupId, memberId);
                 FileInfo fileInfo = isShowImg ? await lolisukiBusiness.downImgAsync(lolisukiData.pid.ToString(), lolisukiData.urls.original, lolisukiData.gif) : null;
 
-                int groupMsgId = 0;
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
                 List<IChatMessage> workMsgs = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(template))
@@ -95,65 +94,15 @@ namespace Theresa3rd_Bot.Handler
                     workMsgs.Add(new PlainMessage(lolisukiBusiness.getWorkInfo(lolisukiData, fileInfo, startDateTime, todayLeftCount, template)));
                 }
 
-                try
-                {
-                    //发送群消息
-                    List<IChatMessage> groupMsgList = new List<IChatMessage>(workMsgs);
-                    if (isShowImg && fileInfo != null)
-                    {
-                        groupMsgList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Group, fileInfo.FullName));
-                    }
-                    else if (isShowImg && fileInfo == null)
-                    {
-                        groupMsgList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg));
-                    }
-                    groupMsgId = await session.SendMessageWithAtAsync(args, groupMsgList);
-                    await Task.Delay(1000);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex, "sendGeneralLolisukiImageAsync群消息发送失败");
-                    throw;
-                }
+                Task sendGroupTask = session.SendGroupSetuAndRevokeWithAtAsync(args, workMsgs, fileInfo, isShowImg);
 
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
-                    try
-                    {
-                        //发送临时会话
-                        List<IChatMessage> memberList = new List<IChatMessage>(workMsgs);
-                        if (isShowImg && fileInfo != null)
-                        {
-                            memberList.Add((IChatMessage)await session.UploadPictureAsync(UploadTarget.Temp, fileInfo.FullName));
-                        }
-                        else if (isShowImg && fileInfo == null)
-                        {
-                            memberList.AddRange(await session.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, UploadTarget.Temp));
-                        }
-                        await session.SendTempMessageAsync(memberId, groupId, memberList.ToArray());
-                        await Task.Delay(1000);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogHelper.Error(ex, "临时消息发送失败");
-                    }
+                    await Task.Delay(1000);
+                    Task sendTempTask = session.SendTempSetuAsync(args, workMsgs, fileInfo, isShowImg);
                 }
 
-                //进入CD状态
                 CoolingCache.SetMemberSetuCooling(groupId, memberId);
-                if (groupMsgId == 0 || BotConfig.SetuConfig.RevokeInterval == 0) return;
-
-                try
-                {
-                    //等待撤回
-                    await Task.Delay(BotConfig.SetuConfig.RevokeInterval * 1000);
-                    await session.RevokeMessageAsync(groupMsgId, groupId);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex, "sendGeneralLolisukiImageAsync消息撤回失败");
-                }
-
             }
             catch (Exception ex)
             {

@@ -84,13 +84,9 @@ namespace Theresa3rd_Bot.Business
                         return await HttpHelper.DownFileAsync(downloadUrl.ToPximgUrl(), fullImgSavePath, headerDic);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    if (--retryTimes >= 0) continue;
-                    LogHelper.Error(ex, "PixivBusiness.downImg下载图片失败");
-                }
-                finally
-                {
+                    if (--retryTimes < 0) throw;
                     await Task.Delay(3000);
                 }
             }

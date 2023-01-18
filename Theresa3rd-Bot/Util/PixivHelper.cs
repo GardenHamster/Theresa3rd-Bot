@@ -192,17 +192,13 @@ namespace Theresa3rd_Bot.Util
                         return await HttpHelper.GetAsync(url, headerDic, timeout);
                     }
                 }
-                catch
+                catch (Exception)
                 {
-                    if (--retryTimes >= 0) continue;
-                    throw;
-                }
-                finally
-                {
+                    if (--retryTimes < 0) throw;
                     await Task.Delay(2000);
                 }
             }
-            return default;
+            return null;
         }
 
         private static Dictionary<string, string> GetPixivHeader(string referer)

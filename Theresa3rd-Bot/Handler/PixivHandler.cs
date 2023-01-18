@@ -46,8 +46,8 @@ namespace Theresa3rd_Bot.Handler
 
                 bool isShowR18 = groupId.IsShowR18Setu();
                 PixivWorkInfoDto pixivWorkInfoDto = null;
-                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
-                if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
+                string keyword = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
+                if (await CheckSetuTagEnableAsync(session, args, keyword) == false) return;
 
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
                 {
@@ -55,31 +55,31 @@ namespace Theresa3rd_Bot.Handler
                     await Task.Delay(1000);
                 }
 
-                if (StringHelper.isPureNumber(tagStr))
+                if (StringHelper.isPureNumber(keyword))
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
-                    pixivWorkInfoDto = await pixivBusiness.getPixivWorkInfoAsync(tagStr);//根据作品id获取作品
+                    pixivWorkInfoDto = await pixivBusiness.getPixivWorkInfoAsync(keyword);//根据作品id获取作品
                 }
-                else if (string.IsNullOrEmpty(tagStr) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomSubscribe)
+                else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomSubscribe)
                 {
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkInSubscribeAsync(groupId);//获取随机一个订阅中的画师的作品
                 }
-                else if (string.IsNullOrEmpty(tagStr) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomFollow)
+                else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomFollow)
                 {
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkInFollowAsync(groupId);//获取随机一个关注中的画师的作品
                 }
-                else if (string.IsNullOrEmpty(tagStr) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomBookmark)
+                else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomBookmark)
                 {
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkInBookmarkAsync(groupId);//获取随机一个收藏中的作品
                 }
-                else if (string.IsNullOrEmpty(tagStr))
+                else if (string.IsNullOrEmpty(keyword))
                 {
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkInTagsAsync(isShowR18);//获取随机一个标签中的作品
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(tagStr, isShowR18);//获取随机一个作品
+                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(keyword, isShowR18);//获取随机一个作品
                 }
 
                 if (pixivWorkInfoDto == null || pixivWorkInfoDto.body == null)
@@ -89,7 +89,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
-                if (await CheckSetuSendable(session, args, pixivWorkInfo, isShowR18)) return;
+                if (await CheckSetuSendable(session, args, pixivWorkInfo, isShowR18) == false) return;
 
                 long todayLeft = GetSetuLeftToday(groupId, memberId);
                 bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.IsR18);
@@ -503,7 +503,7 @@ namespace Theresa3rd_Bot.Handler
 
                 PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
-                if (await CheckSetuSendable(session, args, pixivWorkInfo, isShowR18)) return;
+                if (await CheckSetuSendable(session, args, pixivWorkInfo, isShowR18) == false) return;
 
                 List<IChatMessage> workMsgs = new List<IChatMessage>();
                 bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.IsR18);

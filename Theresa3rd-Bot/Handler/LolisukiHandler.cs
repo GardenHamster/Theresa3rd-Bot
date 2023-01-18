@@ -67,7 +67,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LolisukiData lolisukiData = lolisukiResult.data.First();
-                if (await CheckSetuSendable(session, args, lolisukiData, isShowR18)) return;
+                if (await CheckSetuSendable(session, args, lolisukiData, isShowR18) == false) return;
 
                 bool isShowImg = groupId.IsShowSetuImg(lolisukiData.IsR18);
                 long todayLeftCount = GetSetuLeftToday(groupId, memberId);

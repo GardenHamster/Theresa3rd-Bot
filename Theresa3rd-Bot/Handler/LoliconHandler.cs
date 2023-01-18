@@ -65,7 +65,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LoliconDataV2 loliconData = loliconResult.data.First();
-                if (await CheckSetuSendable(session, args, loliconData, isShowR18)) return;
+                if (await CheckSetuSendable(session, args, loliconData, isShowR18) == false) return;
 
                 long todayLeftCount = GetSetuLeftToday(groupId, memberId);
                 bool isShowImg = groupId.IsShowSetuImg(loliconData.IsR18);

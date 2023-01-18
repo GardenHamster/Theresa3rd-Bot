@@ -116,7 +116,7 @@ namespace Theresa3rd_Bot.Timer
                 bool isDownImg = groupIds.IsDownImg(isR18Img);
                 string remindTemplate = BotConfig.SubscribeConfig.PixivUser.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
-                List<FileInfo> setuFiles = isDownImg ? await pixivBusiness.downPixivImgAsync(pixivWorkInfo) : null;
+                List<FileInfo> setuFiles = isDownImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : null;
 
                 List<IChatMessage> workMsgs = new List<IChatMessage>();
                 if (string.IsNullOrWhiteSpace(remindTemplate))

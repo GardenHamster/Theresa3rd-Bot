@@ -34,7 +34,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
         /// <returns></returns>
-        public async Task<List<FileInfo>> downPixivImgAsync(BaseWorkInfo pixivWorkInfo)
+        public async Task<List<FileInfo>> downPixivImgsAsync(BaseWorkInfo pixivWorkInfo)
         {
             try
             {
@@ -44,10 +44,11 @@ namespace Theresa3rd_Bot.Business
                 }
                 List<FileInfo> imgList = new List<FileInfo>();
                 List<string> originUrls = pixivWorkInfo.getOriginalUrls();
+                int downRetryTimes = BotConfig.PixivConfig.ImgRetryTimes < 0 ? 0 : BotConfig.PixivConfig.ImgRetryTimes;
                 int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
                 for (int i = 0; i < maxCount && i < originUrls.Count; i++)
                 {
-                    imgList.Add(await downPixivImgAsync(pixivWorkInfo.PixivId, originUrls[i]));
+                    imgList.Add(await downPixivImgAsync(pixivWorkInfo.PixivId, originUrls[i], downRetryTimes));
                 }
                 return imgList;
             }
@@ -58,36 +59,43 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
-        public async Task<FileInfo> downPixivImgAsync(string pixivId, string originUrl, string fullFileName = null)
+        private async Task<FileInfo> downPixivImgAsync(string pixivId, string originUrl, int downRetryTimes, string fullFileName = null)
         {
-            try
+            while (downRetryTimes >= 0)
             {
-                string downloadUrl = getDownImgUrl(originUrl);
-                if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = originUrl.getHttpFileName();
-                string fullImgSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
-                Dictionary<string, string> headerDic = new Dictionary<string, string>();
-                headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
-                headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
-                if (BotConfig.PixivConfig.FreeProxy || string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
+                try
                 {
-                    return await HttpHelper.DownFileAsync(downloadUrl.ToProxyUrl(), fullImgSavePath);
+                    string downloadUrl = getDownImgUrl(originUrl);
+                    if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = originUrl.getHttpFileName();
+                    string fullImgSavePath = Path.Combine(FilePath.getDownImgSavePath(), fullFileName);
+                    Dictionary<string, string> headerDic = new Dictionary<string, string>();
+                    headerDic.Add("Referer", HttpUrl.getPixivArtworksReferer(pixivId));
+                    headerDic.Add("Cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+                    if (BotConfig.PixivConfig.FreeProxy || string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
+                    {
+                        return await HttpHelper.DownFileAsync(downloadUrl.ToProxyUrl(), fullImgSavePath);
+                    }
+                    else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
+                    {
+                        return await HttpHelper.DownFileWithProxyAsync(downloadUrl.ToPximgUrl(), fullImgSavePath, headerDic);
+                    }
+                    else
+                    {
+                        return await HttpHelper.DownFileAsync(downloadUrl.ToPximgUrl(), fullImgSavePath, headerDic);
+                    }
                 }
-                else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
+                catch (Exception ex)
                 {
-                    return await HttpHelper.DownFileWithProxyAsync(downloadUrl.ToPximgUrl(), fullImgSavePath, headerDic);
+                    if (--downRetryTimes >= 0) continue;
+                    LogHelper.Error(ex, "PixivBusiness.downImg下载图片失败");
                 }
-                else
+                finally
                 {
-                    return await HttpHelper.DownFileAsync(downloadUrl.ToPximgUrl(), fullImgSavePath, headerDic);
+                    await Task.Delay(3000);
                 }
             }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "PixivBusiness.downImg下载图片失败");
-                return null;
-            }
+            return null;
         }
-
 
         /// <summary>
         /// 下载动图zip包并合成gif图片

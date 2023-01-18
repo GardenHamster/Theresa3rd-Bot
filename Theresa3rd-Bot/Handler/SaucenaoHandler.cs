@@ -163,7 +163,7 @@ namespace Theresa3rd_Bot.Handler
                 {
                     PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
                     bool isShowImg = groupId.IsShowSaucenaoImg(pixivWorkInfo.IsR18);
-                    List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgAsync(pixivWorkInfo) : null;
+                    List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : null;
                     List<IChatMessage> workMsgs = new List<IChatMessage>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, groupId, memberId));
                     workMsgs.AddRange(getPixivMessageAsync(session, args, saucenaoItem, startTime));
@@ -300,6 +300,7 @@ namespace Theresa3rd_Bot.Handler
             string template = BotConfig.PixivConfig.Template;
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
             List<IChatMessage> msgList = new List<IChatMessage>();
+
             if (pixivWorkInfo.IsImproper)
             {
                 msgList.Add(new PlainMessage($" 该作品含有R18G等内容，不显示相关内容"));

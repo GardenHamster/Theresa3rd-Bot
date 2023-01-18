@@ -12,6 +12,7 @@ using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Model.Lolisuki;
+using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
@@ -59,29 +60,18 @@ namespace Theresa3rd_Bot.Handler
                     lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr, 1, tagArr);
                 }
 
-                if (lolisukiResult == null || lolisukiResult.data.Count == 0)
+                if (lolisukiResult == null || lolisukiResult.data == null || lolisukiResult.data.Count == 0)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
                 LolisukiData lolisukiData = lolisukiResult.data.First();
-                if (lolisukiData.IsImproper)
-                {
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
-                    return;
-                }
-
-                string banTagStr = lolisukiData.hasBanTag();
-                if (banTagStr != null)
-                {
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
-                    return;
-                }
+                if (await CheckSetuSendable(session, args, lolisukiData, isShowR18)) return;
 
                 bool isShowImg = groupId.IsShowSetuImg(lolisukiData.IsR18);
                 long todayLeftCount = GetSetuLeftToday(groupId, memberId);
-                List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgAsync(lolisukiData) : null;
+                List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgsAsync(lolisukiData) : null;
 
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
                 List<IChatMessage> workMsgs = new List<IChatMessage>();
@@ -148,7 +138,7 @@ namespace Theresa3rd_Bot.Handler
                 bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                 DateTime startTime = DateTime.Now;
                 List<IChatMessage> workMsgs = new List<IChatMessage>();
-                List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgAsync(setuInfo) : null;
+                List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgsAsync(setuInfo) : null;
                 workMsgs.Add(new PlainMessage(lolisukiBusiness.getDefaultWorkInfo(setuInfo, startTime)));
                 await session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, isShowImg);
             }

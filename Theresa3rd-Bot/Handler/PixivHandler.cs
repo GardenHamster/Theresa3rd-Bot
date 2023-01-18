@@ -82,35 +82,18 @@ namespace Theresa3rd_Bot.Handler
                     pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(tagStr, isShowR18);//获取随机一个作品
                 }
 
-                if (pixivWorkInfoDto == null)
+                if (pixivWorkInfoDto == null || pixivWorkInfoDto.body == null)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片或者收藏比过低，换个标签试试吧~");
                     return;
                 }
 
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
-                if (pixivWorkInfo.IsImproper)
-                {
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
-                    return;
-                }
-
-                string banTagStr = pixivWorkInfo.hasBanTag();
-                if (banTagStr != null)
-                {
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
-                    return;
-                }
-
-                if (pixivWorkInfo.IsR18 && isShowR18 == false)
-                {
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
-                    return;
-                }
+                if (await CheckSetuSendable(session, args, pixivWorkInfo, isShowR18)) return;
 
                 long todayLeft = GetSetuLeftToday(groupId, memberId);
                 bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.IsR18);
-                List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgAsync(pixivWorkInfo) : null;
+                List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : null;
 
                 string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
@@ -520,30 +503,11 @@ namespace Theresa3rd_Bot.Handler
 
                 PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
-
-
-                if (pixivWorkInfo.IsImproper)
-                {
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
-                    return;
-                }
-
-                string banTagStr = pixivWorkInfo.hasBanTag();
-                if (banTagStr != null)
-                {
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
-                    return;
-                }
-
-                if (pixivWorkInfo.IsR18 && isShowR18 == false)
-                {
-                    await session.SendGroupMessageAsync(groupId, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
-                    return;
-                }
+                if (await CheckSetuSendable(session, args, pixivWorkInfo, isShowR18)) return;
 
                 List<IChatMessage> workMsgs = new List<IChatMessage>();
                 bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.IsR18);
-                List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgAsync(pixivWorkInfo) : null;
+                List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : null;
                 workMsgs.Add(new PlainMessage($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
                 workMsgs.Add(new PlainMessage(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, startTime)));
                 await session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, isShowImg);

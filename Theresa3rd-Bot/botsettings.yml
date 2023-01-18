@@ -21,7 +21,7 @@ Pixiv:
     ImgSize:                    'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb，推荐使用thumb或small降低触发风控的概率
     OriginUrlProxy:             'https://i.pixiv.re'                                #pixiv原图链接的代理地址，如果QQ中打开原图链接时如果显示已停止访问，可以修改该值到其他图片代理地址，默认：https://i.pixiv.re(有频率限制)，也可以参照 https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/pixivproxy.md 搭建自己的代理地址
     SendImgBehind:              false                                               #将涩图信息和图片分开发送，先发送作品信息，后发送图片，可以开启此项避免消息被吞
-    ImgRetryTimes:              3                                                   #图片下载失败后重试次数
+    ImgRetryTimes:              0                                                   #图片下载失败后重试次数，0表示下载失败后不重试
     ErrRetryTimes:              2                                                   #读取作品失败后的重试次数
     CookieExpire:               5184000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每60天更新一次
     CookieExpireMsg:            'emmmm,cookie过期了,请艾特管理员更新cookie'         #cookie过期时返回的消息

@@ -3,11 +3,14 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Base;
 using Theresa3rd_Bot.Model.Config;
+using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
@@ -53,7 +56,37 @@ namespace Theresa3rd_Bot.Handler
                 await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
                 return false;
             }
+            return true;
+        }
 
+        /// <summary>
+        /// 检查一张涩图是否可以发送，并且发送提示消息
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <param name="setuInfo"></param>
+        /// <param name="isShowR18"></param>
+        /// <returns></returns>
+        public async Task<bool> CheckSetuSendable(IMiraiHttpSession session, IGroupMessageEventArgs args, BaseWorkInfo setuInfo, bool isShowR18)
+        {
+            if (setuInfo.IsImproper)
+            {
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
+                return false;
+            }
+
+            string banTagStr = setuInfo.hasBanTag();
+            if (banTagStr != null)
+            {
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
+                return false;
+            }
+
+            if (setuInfo.IsR18 && isShowR18 == false)
+            {
+                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
+                return false;
+            }
             return true;
         }
 

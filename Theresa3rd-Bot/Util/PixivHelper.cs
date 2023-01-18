@@ -172,20 +172,37 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
-        public static async Task<string> GetPixivAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        private static async Task<string> GetPixivAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            if (BotConfig.PixivConfig.FreeProxy)
+            int retryTimes = BotConfig.PixivConfig.ErrRetryTimes < 0 ? 0 : BotConfig.PixivConfig.ErrRetryTimes;
+            while (retryTimes >= 0)
             {
-                return await PixivHelper.GetAsync(url, headerDic, timeout);
+                try
+                {
+                    if (BotConfig.PixivConfig.FreeProxy)
+                    {
+                        return await PixivHelper.GetAsync(url, headerDic, timeout);
+                    }
+                    else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
+                    {
+                        return await HttpHelper.GetWithProxyAsync(url, headerDic, timeout);
+                    }
+                    else
+                    {
+                        return await HttpHelper.GetAsync(url, headerDic, timeout);
+                    }
+                }
+                catch
+                {
+                    if (--retryTimes >= 0) continue;
+                    throw;
+                }
+                finally
+                {
+                    await Task.Delay(2000);
+                }
             }
-            else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
-            {
-                return await HttpHelper.GetWithProxyAsync(url, headerDic, timeout);
-            }
-            else
-            {
-                return await HttpHelper.GetAsync(url, headerDic, timeout);
-            }
+            return default;
         }
 
         private static Dictionary<string, string> GetPixivHeader(string referer)

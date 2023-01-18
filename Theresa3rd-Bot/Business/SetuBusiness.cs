@@ -44,11 +44,10 @@ namespace Theresa3rd_Bot.Business
                 }
                 List<FileInfo> imgList = new List<FileInfo>();
                 List<string> originUrls = pixivWorkInfo.getOriginalUrls();
-                int downRetryTimes = BotConfig.PixivConfig.ImgRetryTimes < 0 ? 0 : BotConfig.PixivConfig.ImgRetryTimes;
                 int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
                 for (int i = 0; i < maxCount && i < originUrls.Count; i++)
                 {
-                    imgList.Add(await downPixivImgAsync(pixivWorkInfo.PixivId, originUrls[i], downRetryTimes));
+                    imgList.Add(await downPixivImgAsync(pixivWorkInfo.PixivId, originUrls[i]));
                 }
                 return imgList;
             }
@@ -59,9 +58,10 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
-        private async Task<FileInfo> downPixivImgAsync(string pixivId, string originUrl, int downRetryTimes, string fullFileName = null)
+        private async Task<FileInfo> downPixivImgAsync(string pixivId, string originUrl, string fullFileName = null)
         {
-            while (downRetryTimes >= 0)
+            int retryTimes = BotConfig.PixivConfig.ImgRetryTimes < 0 ? 0 : BotConfig.PixivConfig.ImgRetryTimes;
+            while (retryTimes >= 0)
             {
                 try
                 {
@@ -86,7 +86,7 @@ namespace Theresa3rd_Bot.Business
                 }
                 catch (Exception ex)
                 {
-                    if (--downRetryTimes >= 0) continue;
+                    if (--retryTimes >= 0) continue;
                     LogHelper.Error(ex, "PixivBusiness.downImg下载图片失败");
                 }
                 finally

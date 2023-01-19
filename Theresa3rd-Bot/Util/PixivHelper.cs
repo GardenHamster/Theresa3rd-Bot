@@ -54,7 +54,7 @@ namespace Theresa3rd_Bot.Util
                 string referer = HttpUrl.getPixivSearchReferer();
                 Dictionary<string, string> headerDic = GetPixivHeader(referer);
                 string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll, includeR18);
-                string json = await GetPixivAsync(postUrl, headerDic);
+                string json = await GetPixivAsync(postUrl, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
                 json = json.Replace("[]", "null");
                 return JsonConvert.DeserializeObject<PixivSearchDto>(json);
             }
@@ -64,15 +64,15 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
-        public static async Task<PixivWorkInfoDto> GetPixivWorkInfoAsync(string workId)
+        public static async Task<PixivWorkInfoDto> GetPixivWorkInfoAsync(string workId, int? retryTimes = null)
         {
             try
             {
-                await Task.Delay(1000);
+                if (retryTimes == null) retryTimes = BotConfig.PixivConfig.ErrRetryTimes;
                 string referer = HttpUrl.getPixivArtworksReferer(workId);
                 Dictionary<string, string> headerDic = GetPixivHeader(referer);
                 string postUrl = HttpUrl.getPixivWorkInfoUrl(workId);
-                string json = await GetPixivAsync(postUrl, headerDic);
+                string json = await GetPixivAsync(postUrl, headerDic, retryTimes.Value);
                 json = json.Replace("[]", "null");
                 return JsonConvert.DeserializeObject<PixivWorkInfoDto>(json);
             }
@@ -90,7 +90,7 @@ namespace Theresa3rd_Bot.Util
                 string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
                 Dictionary<string, string> headerDic = GetPixivHeader(referer);
                 string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
-                string json = await GetPixivAsync(postUrl, headerDic);
+                string json = await GetPixivAsync(postUrl, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
                 json = json.Replace("[]", "null");
                 return JsonConvert.DeserializeObject<PixivUserInfoDto>(json);
             }
@@ -108,7 +108,7 @@ namespace Theresa3rd_Bot.Util
                 string referer = HttpUrl.getPixivArtworksReferer(workId);
                 Dictionary<string, string> headerDic = GetPixivHeader(referer);
                 string postUrl = HttpUrl.getPixivUgoiraMetaUrl(workId);
-                string json = await GetPixivAsync(postUrl, headerDic);
+                string json = await GetPixivAsync(postUrl, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
                 json = json.Replace("[]", "null");
                 return JsonConvert.DeserializeObject<PixivUgoiraMetaDto>(json);
             }
@@ -126,7 +126,7 @@ namespace Theresa3rd_Bot.Util
                 string referer = HttpUrl.getPixivFollowReferer(loginId);
                 Dictionary<string, string> headerDic = GetPixivHeader(referer);
                 string postUrl = HttpUrl.getPixivFollowUrl(loginId, offset, limit);
-                string json = await GetPixivAsync(postUrl, headerDic);
+                string json = await GetPixivAsync(postUrl, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
                 json = json.Replace("[]", "null");
                 return JsonConvert.DeserializeObject<PixivFollowDto>(json);
             }
@@ -144,7 +144,7 @@ namespace Theresa3rd_Bot.Util
                 string referer = HttpUrl.getPixivBookmarkReferer(loginId);
                 Dictionary<string, string> headerDic = GetPixivHeader(referer);
                 string postUrl = HttpUrl.getPixivBookmarkUrl(loginId, offset, limit);
-                string json = await GetPixivAsync(postUrl, headerDic);
+                string json = await GetPixivAsync(postUrl, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
                 json = json.Replace("[]", "null");
                 return JsonConvert.DeserializeObject<PixivBookmarksDto>(json);
             }
@@ -162,7 +162,7 @@ namespace Theresa3rd_Bot.Util
                 string referer = HttpUrl.getPixivFollowLatestReferer();
                 Dictionary<string, string> headerDic = GetPixivHeader(referer);
                 string postUrl = HttpUrl.getPixivFollowLatestUrl(page);
-                string json = await GetPixivAsync(postUrl, headerDic);
+                string json = await GetPixivAsync(postUrl, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
                 json = json.Replace("[]", "null");
                 return JsonConvert.DeserializeObject<PixivFollowLatestDto>(json);
             }
@@ -172,9 +172,9 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
-        private static async Task<string> GetPixivAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        private static async Task<string> GetPixivAsync(string url,  Dictionary<string, string> headerDic = null, int retryTimes = 0, int timeout = 60000)
         {
-            int retryTimes = BotConfig.PixivConfig.ErrRetryTimes < 0 ? 0 : BotConfig.PixivConfig.ErrRetryTimes;
+            if (retryTimes < 0) retryTimes = 0;
             while (retryTimes >= 0)
             {
                 try

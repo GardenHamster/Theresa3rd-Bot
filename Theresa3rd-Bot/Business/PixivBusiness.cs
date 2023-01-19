@@ -54,9 +54,9 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="workId"></param>
         /// <returns></returns>
-        public async Task<PixivWorkInfoDto> getPixivWorkInfoAsync(string workId)
+        public async Task<PixivWorkInfoDto> getPixivWorkInfoAsync(string workId, int? retryTimes = null)
         {
-            return await PixivHelper.GetPixivWorkInfoAsync(workId);
+            return await PixivHelper.GetPixivWorkInfoAsync(workId, retryTimes);
         }
 
         /// <summary>
@@ -276,7 +276,7 @@ namespace Theresa3rd_Bot.Business
                 try
                 {
                     if (bookUpList.Count > 0) return;
-                    PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivIllustList[i].id);
+                    PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivIllustList[i].id, 0);
                     if (pixivWorkInfo.error) continue;
                     if (pixivWorkInfo.body.IsImproper) continue;
                     if (pixivWorkInfo.body.hasBanTag() != null) continue;
@@ -429,7 +429,7 @@ namespace Theresa3rd_Bot.Business
                     if (workInfo == null || string.IsNullOrWhiteSpace(workInfo.id)) continue;
                     if (shelfLife > 0 && workInfo.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, workInfo.id)) continue;
-                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id);
+                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id, 0);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
                     subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
@@ -477,7 +477,7 @@ namespace Theresa3rd_Bot.Business
                     if (item == null || string.IsNullOrWhiteSpace(item.id)) continue;
                     if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, item.id)) continue;
-                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(item.id);
+                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(item.id, 0);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
                     SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
@@ -526,7 +526,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     if (workId <= 0) continue;
                     if (subscribeRecordDao.checkExists(SubscribeType.P站画师, workId.ToString())) continue;
-                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString());
+                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString(), 0);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     SubscribePO dbSubscribe = getOrInsertUserSubscribe(pixivWorkInfoDto);

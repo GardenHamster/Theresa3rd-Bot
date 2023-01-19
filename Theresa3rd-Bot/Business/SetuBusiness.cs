@@ -47,7 +47,7 @@ namespace Theresa3rd_Bot.Business
                 int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
                 for (int i = 0; i < maxCount && i < originUrls.Count; i++)
                 {
-                    imgList.Add(await downPixivImgAsync(pixivWorkInfo.PixivId, originUrls[i]));
+                    imgList.Add(await downPixivImgAsync(pixivWorkInfo.PixivId, originUrls[i], BotConfig.PixivConfig.ImgRetryTimes));
                 }
                 return imgList;
             }
@@ -58,9 +58,9 @@ namespace Theresa3rd_Bot.Business
             }
         }
 
-        private async Task<FileInfo> downPixivImgAsync(string pixivId, string originUrl, string fullFileName = null)
+        private async Task<FileInfo> downPixivImgAsync(string pixivId, string originUrl, int retryTimes, string fullFileName = null)
         {
-            int retryTimes = BotConfig.PixivConfig.ImgRetryTimes < 0 ? 0 : BotConfig.PixivConfig.ImgRetryTimes;
+            if (retryTimes < 0) retryTimes = 0;
             while (retryTimes >= 0)
             {
                 try

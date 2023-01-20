@@ -72,13 +72,24 @@ namespace Theresa3rd_Bot.Util
         /// <summary>
         /// 记录FATAL级别的日志
         /// </summary>
+        /// <param name="message"></param>
+        public static void FATAL(string message)
+        {
+            FileLog.Info(message);
+            ConsoleLog.Fatal(message);
+            RollingLog.Fatal(message);
+        }
+
+        /// <summary>
+        /// 记录FATAL级别的日志
+        /// </summary>
         /// <param name="ex"></param>
         /// <param name="message"></param>
         public static void FATAL(Exception ex, string message)
         {
             FileLog.Info(message);
-            ConsoleLog.Error(message, ex);
-            RollingLog.Error(message, ex);
+            ConsoleLog.Fatal(message, ex);
+            RollingLog.Fatal(message, ex);
         }
 
     }

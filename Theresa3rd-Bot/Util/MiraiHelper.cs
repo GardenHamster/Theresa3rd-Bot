@@ -34,6 +34,7 @@ namespace Theresa3rd_Bot.Util
                                                                .AddHandler<GroupMessageEvent>()
                                                                .AddHandler<NewFriendApplyEvent>()
                                                                .AddHandler<GroupMemberJoinedEvent>()
+                                                               .AddHandler<DisconnectedEvent>()
                                                                .AddClient<MiraiHttpSession>()
                                                                .Services
                                                                .Configure<MiraiHttpSessionOptions>(options =>

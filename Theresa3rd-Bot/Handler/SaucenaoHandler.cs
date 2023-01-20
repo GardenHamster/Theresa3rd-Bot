@@ -21,7 +21,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class SaucenaoHandler : BaseHandler
+    public class SaucenaoHandler : SetuHandler
     {
         private PixivBusiness pixivBusiness;
         private SaucenaoBusiness saucenaoBusiness;
@@ -58,7 +58,7 @@ namespace Theresa3rd_Bot.Handler
 
                 if (imgList == null || imgList.Count == 0)
                 {
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 没有接收到图片，请重新发送指令开始操作"));
+                    await session.SendGroupMessageWithAtAsync(args, $"没有接收到图片，请重新发送指令开始操作");
                     return;
                 }
 
@@ -71,7 +71,7 @@ namespace Theresa3rd_Bot.Handler
                 if (BotConfig.SaucenaoConfig.MaxReceive > 0 && imgList.Count > BotConfig.SaucenaoConfig.MaxReceive)
                 {
                     imgList = imgList.Take(BotConfig.SaucenaoConfig.MaxReceive).ToList();
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~"));
+                    await session.SendGroupMessageWithAtAsync(args, $"总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~");
                     await Task.Delay(1000);
                 }
 
@@ -91,7 +91,7 @@ namespace Theresa3rd_Bot.Handler
                 if (notFoundList.Count > 0 && await CheckContinueAscii2d(session, args, notFoundList))
                 {
                     await Task.Delay(1000);
-                    await session.SendGroupMessageAsync(groupId, new PlainMessage(" 正在通过ascii2d尝试搜索原图..."));
+                    await session.SendGroupMessageAsync(args, "正在通过ascii2d尝试搜索原图...");
                     for (int i = 0; i < imgList.Count; i++) await searchWithAscii2d(session, args, imgList[i]);
                 }
 
@@ -199,7 +199,7 @@ namespace Theresa3rd_Bot.Handler
                 Ascii2dResult ascii2dResult = await ascii2dBusiness.getAscii2dResultAsync(imageMessage.Url);
                 if (ascii2dResult == null || ascii2dResult.Items.Count == 0)
                 {
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" ascii2d中找不到相似的图片"));
+                    await session.SendGroupMessageWithAtAsync(args, "ascii2d中找不到相似的图片");
                     return;
                 }
 
@@ -218,7 +218,7 @@ namespace Theresa3rd_Bot.Handler
                 List<Ascii2dItem> matchList = await ascii2dBusiness.getBestMatchAsync(ascii2dItems);
                 if (matchList == null || matchList.Count == 0)
                 {
-                    await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" ascii2d中找不到相似的图片"));
+                    await session.SendGroupMessageWithAtAsync(args, "ascii2d中找不到相似的图片");
                     return;
                 }
 

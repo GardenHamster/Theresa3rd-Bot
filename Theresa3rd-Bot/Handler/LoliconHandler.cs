@@ -17,7 +17,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class LoliconHandler : BaseHandler
+    public class LoliconHandler : SetuHandler
     {
         private LoliconBusiness loliconBusiness;
 

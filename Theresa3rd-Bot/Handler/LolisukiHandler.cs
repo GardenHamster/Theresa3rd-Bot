@@ -18,7 +18,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class LolisukiHandler : BaseHandler
+    public class LolisukiHandler : SetuHandler
     {
         private LolisukiBusiness lolisukiBusiness;
 

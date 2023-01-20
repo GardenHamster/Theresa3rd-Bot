@@ -23,7 +23,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class PixivHandler : BaseHandler
+    public class PixivHandler : SetuHandler
     {
         private PixivBusiness pixivBusiness;
         private SubscribeBusiness subscribeBusiness;

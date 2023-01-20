@@ -29,12 +29,12 @@ namespace Theresa3rd_Bot.Handler
                     return;
                 }
 
-                await session.SendGroupMessageAsync(groupId, new PlainMessage(getMemberMenu()));
+                await session.SendGroupMessageAsync(args, getMemberMenu());
                 
                 if (memberId.IsSuperManager())
                 {
                     await Task.Delay(1000);
-                    await session.SendGroupMessageAsync(groupId, new PlainMessage(getManagerMenu()));
+                    await session.SendGroupMessageAsync(args, getManagerMenu());
                 }
                
             }

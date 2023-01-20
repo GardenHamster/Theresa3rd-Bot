@@ -12,7 +12,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class LocalSetuHandler : BaseHandler
+    public class LocalSetuHandler : SetuHandler
     {
         private LocalSetuBusiness localSetuBusiness;
 

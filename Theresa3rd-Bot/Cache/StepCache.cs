@@ -44,7 +44,7 @@ namespace Theresa3rd_Bot.Cache
                     return stepInfo;
                 }
             }
-            await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 你的一个指令正在执行中"));
+            await session.SendGroupMessageWithAtAsync(args, "你的一个指令正在执行中");
             return null;
         }
 

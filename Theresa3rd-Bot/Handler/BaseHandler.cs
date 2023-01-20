@@ -3,21 +3,19 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Base;
 using Theresa3rd_Bot.Model.Config;
-using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public abstract class BaseHandler
+    public abstract class SetuHandler
     {
         /// <summary>
         /// 检查是否拥有自定义涩图权限
@@ -28,7 +26,7 @@ namespace Theresa3rd_Bot.Handler
         public async Task<bool> CheckSetuCustomEnableAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(args.Sender.Group.Id)) return true;
-            await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.SetuCustomDisableMsg, " 自定义功能已关闭");
+            await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.SetuCustomDisableMsg, "自定义功能已关闭");
             return false;
         }
 
@@ -46,7 +44,7 @@ namespace Theresa3rd_Bot.Handler
             if (string.IsNullOrWhiteSpace(tagName)) return true;
             if (tagName.IsR18() && groupId.IsShowR18Setu() == false)
             {
-                await session.SendGroupMessageWithAtAsync(args, new PlainMessage("本群未设置R18权限，禁止搜索R18相关标签"));
+                await session.SendGroupMessageWithAtAsync(args, "本群未设置R18权限，禁止搜索R18相关标签");
                 return false;
             }
 
@@ -71,20 +69,20 @@ namespace Theresa3rd_Bot.Handler
         {
             if (setuInfo.IsImproper)
             {
-                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品含有R18G等内容，不显示相关内容"));
+                await session.SendGroupMessageWithAtAsync(args, "该作品含有R18G等内容，不显示相关内容");
                 return false;
             }
 
             string banTagStr = setuInfo.hasBanTag();
             if (banTagStr != null)
             {
-                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
+                await session.SendGroupMessageWithAtAsync(args, $"该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容");
                 return false;
             }
 
             if (setuInfo.IsR18 && isShowR18 == false)
             {
-                await session.SendGroupMessageWithAtAsync(args, new PlainMessage(" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
+                await session.SendGroupMessageWithAtAsync(args, "该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限");
                 return false;
             }
             return true;

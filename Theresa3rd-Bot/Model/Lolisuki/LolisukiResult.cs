@@ -27,6 +27,7 @@ namespace Theresa3rd_Bot.Model.Lolisuki
         public string description { get; set; }
         public bool r18 { get; set; }
         public bool gif { get; set; }
+        public int aiType { get; set; }
         public bool original { get; set; }
         public int width { get; set; }
         public int height { get; set; }
@@ -41,7 +42,12 @@ namespace Theresa3rd_Bot.Model.Lolisuki
         {
             get { return gif; }
         }
-        
+
+        public override bool IsAI
+        {
+            get { return aiType > 1; }
+        }
+
         public override string PixivId
         {
             get { return pid.ToString(); }

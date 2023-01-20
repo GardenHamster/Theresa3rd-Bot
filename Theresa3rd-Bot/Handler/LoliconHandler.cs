@@ -35,6 +35,7 @@ namespace Theresa3rd_Bot.Handler
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
 
+                bool isShowAI = groupId.IsShowAISetu();
                 bool isShowR18 = groupId.IsShowR18Setu();
                 string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolicon.Command) ?? "";
                 if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
@@ -45,17 +46,18 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LoliconResultV2 loliconResult = null;
-                int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
+                int r18Mode = isShowR18 ? 2 : 0;
+                bool excludeAI = isShowAI == false;
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode);
+                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, excludeAI);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
                     string[] tagArr = toLoliconTagArr(tagStr);
-                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, 1, tagArr);
+                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, excludeAI, 1, tagArr);
                 }
 
                 if (loliconResult == null || loliconResult.data == null || loliconResult.data.Count == 0)
@@ -65,7 +67,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LoliconDataV2 loliconData = loliconResult.data.First();
-                if (await CheckSetuSendable(session, args, loliconData, isShowR18) == false) return;
+                if (await CheckSetuSendable(session, args, loliconData, isShowR18, isShowAI) == false) return;
 
                 long todayLeftCount = GetSetuLeftToday(groupId, memberId);
                 bool isShowImg = groupId.IsShowSetuImg(loliconData.IsR18);
@@ -106,6 +108,7 @@ namespace Theresa3rd_Bot.Handler
         public async Task sendTimingSetuAsync(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, long groupId)
         {
             int eachPage = 5;
+            bool excludeAI = groupId.IsShowAISetu() == false;
             int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
             int count = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
             string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
@@ -115,7 +118,7 @@ namespace Theresa3rd_Bot.Handler
             while (count > 0)
             {
                 int num = count >= eachPage ? eachPage : count;
-                LoliconResultV2 loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, num, tagArr);
+                LoliconResultV2 loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, excludeAI, num, tagArr);
                 count -= num;
                 if (loliconResult.data.Count == 0) continue;
                 foreach (var setuInfo in loliconResult.data)

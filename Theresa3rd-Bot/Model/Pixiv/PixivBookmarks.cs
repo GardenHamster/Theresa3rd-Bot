@@ -19,10 +19,13 @@ namespace Theresa3rd_Bot.Model.Pixiv
         public string userId { get; set; }
         public string userName { get; set; }
         public int xRestrict { get; set; }
+        public int aiType { get; set; }
 
         public bool IsImproper() => xRestrict > 1 || (tags != null && tags.IsImproper());
 
         public bool isR18() => xRestrict > 0 || (tags != null && tags.IsR18());
+
+        public bool isAI() => aiType > 1 || (tags != null && tags.IsAI());
 
         public string hasBanTag() => tags?.hasBanTags();
 

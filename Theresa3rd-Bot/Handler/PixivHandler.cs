@@ -43,6 +43,7 @@ namespace Theresa3rd_Bot.Handler
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
 
+                bool isShowAI = groupId.IsShowAISetu();
                 bool isShowR18 = groupId.IsShowR18Setu();
                 PixivResult<PixivWorkInfo> pixivWorkInfoDto = null;
                 string keyword = message.splitKeyWord(BotConfig.SetuConfig.Pixiv.Command) ?? "";
@@ -61,24 +62,24 @@ namespace Theresa3rd_Bot.Handler
                 }
                 else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomSubscribe)
                 {
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInSubscribeAsync(groupId);//获取随机一个订阅中的画师的作品
+                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInSubscribeAsync(groupId, isShowR18, isShowAI);//获取随机一个订阅中的画师的作品
                 }
                 else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomFollow)
                 {
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInFollowAsync(groupId);//获取随机一个关注中的画师的作品
+                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInFollowAsync(isShowR18, isShowAI);//获取随机一个关注中的画师的作品
                 }
                 else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomBookmark)
                 {
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInBookmarkAsync(groupId);//获取随机一个收藏中的作品
+                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInBookmarkAsync(isShowR18, isShowAI);//获取随机一个收藏中的作品
                 }
                 else if (string.IsNullOrEmpty(keyword))
                 {
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInTagsAsync(isShowR18);//获取随机一个标签中的作品
+                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInTagsAsync(isShowR18, isShowAI);//获取随机一个标签中的作品
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(keyword, isShowR18);//获取随机一个作品
+                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(keyword, isShowR18, isShowAI);//获取随机一个作品
                 }
 
                 if (pixivWorkInfoDto == null || pixivWorkInfoDto.body == null)
@@ -88,7 +89,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
-                if (await CheckSetuSendable(session, args, pixivWorkInfo, isShowR18) == false) return;
+                if (await CheckSetuSendable(session, args, pixivWorkInfo, isShowR18, isShowAI) == false) return;
 
                 long todayLeft = GetSetuLeftToday(groupId, memberId);
                 bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.IsR18);
@@ -203,7 +204,7 @@ namespace Theresa3rd_Bot.Handler
                         await session.SendGroupMessageWithAtAsync(args, $"画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~");
 
                         await Task.Delay(1000);
-                        await sendPixivUserNewestWorkAsync(session, args, dbSubscribe, groupId.IsShowR18Setu());
+                        await sendPixivUserNewestWorkAsync(session, args, dbSubscribe, groupId.IsShowR18Setu(), groupId.IsShowAISetu());
                     }
                     catch (Exception ex)
                     {
@@ -497,7 +498,7 @@ namespace Theresa3rd_Bot.Handler
         /// <param name="userId"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        private async Task sendPixivUserNewestWorkAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, SubscribePO dbSubscribe, bool isShowR18)
+        private async Task sendPixivUserNewestWorkAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, SubscribePO dbSubscribe, bool isShowR18, bool isShowAI)
         {
             try
             {
@@ -512,7 +513,7 @@ namespace Theresa3rd_Bot.Handler
 
                 PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfo;
-                if (await CheckSetuSendable(session, args, pixivWorkInfo, isShowR18) == false) return;
+                if (await CheckSetuSendable(session, args, pixivWorkInfo, isShowR18, isShowAI) == false) return;
 
                 List<IChatMessage> workMsgs = new List<IChatMessage>();
                 bool isShowImg = groupId.IsShowSetuImg(pixivWorkInfo.IsR18);

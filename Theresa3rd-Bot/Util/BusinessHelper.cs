@@ -72,8 +72,8 @@ namespace Theresa3rd_Bot.Util
         public static bool IsR18(this string tagStr)
         {
             if (string.IsNullOrWhiteSpace(tagStr)) return false;
-            string tagUpperStr = tagStr.ToUpper();
-            return tagUpperStr.Contains("R-18") || tagUpperStr.Contains("R18") || tagUpperStr.Contains("R18G");
+            string tagUp = tagStr.ToUpper();
+            return tagUp.Contains("R-18") || tagUp.Contains("R18") || tagUp.Contains("R18G");
         }
 
         /// <summary>
@@ -85,6 +85,29 @@ namespace Theresa3rd_Bot.Util
         {
             if (tags == null || tags.Count == 0) return false;
             return tags.Where(o => o.IsR18()).Any();
+        }
+
+        /// <summary>
+        /// 判断标签中是否包含AI生成标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static bool IsAI(this string tagStr)
+        {
+            if (string.IsNullOrWhiteSpace(tagStr)) return false;
+            string tagUp = tagStr.ToUpper();
+            return tagUp == "AI" || tagUp.StartsWith("AIART") || tagUp.Contains("NOVELAI") || tagUp.Contains("AI生成") || tagUp.Contains("AI绘图") || tagUp.Contains("AIイラスト");
+        }
+
+        /// <summary>
+        /// 判断标签中是否包含AI生成标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static bool IsAI(this List<string> tags)
+        {
+            if (tags == null || tags.Count == 0) return false;
+            return tags.Where(o => o.IsAI()).Any();
         }
 
         /// <summary>
@@ -241,7 +264,7 @@ namespace Theresa3rd_Bot.Util
             if (tags == null || tags.Count == 0) return String.Empty;
             for (int i = 0; i < tags.Count; i++)
             {
-                if (maxShowCount > 0 && i >= maxShowCount) return $"{tagstr}...";
+                if (maxShowCount > 0 && i >= maxShowCount) return $"{tagstr}，...";
                 if (tagstr.Length > 0) tagstr += "，";
                 tagstr += tags[i];
             }

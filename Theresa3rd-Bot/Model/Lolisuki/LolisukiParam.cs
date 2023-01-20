@@ -14,9 +14,12 @@
 
         public int full { get; set; }
 
-        public LolisukiParam(int r18, int num, string proxy, string[] tag, string level, int full)
+        public int ai { get; set; }
+
+        public LolisukiParam(int r18, int ai, int num, string proxy, string[] tag, string level, int full)
         {
             this.r18 = r18;
+            this.ai = ai;
             this.num = num;
             this.proxy = proxy;
             this.tag = tag;

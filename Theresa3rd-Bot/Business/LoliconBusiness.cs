@@ -40,9 +40,9 @@ namespace Theresa3rd_Bot.Business
             return workInfoStr.ToString();
         }
 
-        public async Task<LoliconResultV2> getLoliconResultAsync(int r18Mode, int num = 1, string[] tags = null)
+        public async Task<LoliconResultV2> getLoliconResultAsync(int r18Mode, bool excludeAI, int num = 1, string[] tags = null)
         {
-            LoliconParamV2 param = new LoliconParamV2(r18Mode, num, "i.pixiv.re", tags == null || tags.Length == 0 ? null : tags);
+            LoliconParamV2 param = new LoliconParamV2(r18Mode, excludeAI, num, "i.pixiv.re", tags == null || tags.Length == 0 ? null : tags);
             string httpUrl = HttpUrl.getLoliconApiV2Url();
             string postJson = JsonConvert.SerializeObject(param);
             string json = await HttpHelper.PostJsonAsync(httpUrl, postJson);

@@ -87,10 +87,12 @@ namespace Theresa3rd_Bot.Timer
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfo;
                 if (pixivWorkInfo == null || pixivWorkInfo.IsImproper || pixivWorkInfo.hasBanTag() != null) continue;
                 if (groupIds == null || groupIds.Count == 0) continue;
+                if (pixivWorkInfo.IsAI && groupIds.IsShowAISetu() == false) continue;
 
-                string tagName = subscribeTask.SubscribeName;
+                bool isAISetu = pixivWorkInfo.IsAI;
                 bool isR18Img = pixivWorkInfo.IsR18;
-                bool isDownImg = groupIds.IsDownImg(isR18Img);
+                bool isDownImg = groupIds.IsDownSetuImg(isR18Img);
+                string tagName = subscribeTask.SubscribeName;
                 string remindTemplate = BotConfig.SubscribeConfig.PixivTag.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
                 List<FileInfo> setuFiles = isDownImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : null;
@@ -119,6 +121,7 @@ namespace Theresa3rd_Bot.Timer
                     try
                     {
                         if (isR18Img && groupId.IsShowR18Setu() == false) continue;
+                        if (isAISetu && groupId.IsShowAISetu() == false) continue;
                         bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                         await MiraiHelper.Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, isShowImg);
                     }

@@ -24,6 +24,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
         public int pageCount { get; set; }
         public PixivTags tags { get; set; }
         public int xRestrict { get; set; }
+        public int aiType { get; set; }
 
         public override bool IsR18
         {
@@ -33,6 +34,10 @@ namespace Theresa3rd_Bot.Model.Pixiv
         public override bool IsGif
         {
             get { return getTags().IsGif(); }
+        }
+        public override bool IsAI
+        {
+            get { return aiType > 1 || getTags().IsAI(); }
         }
         public override bool IsImproper
         {

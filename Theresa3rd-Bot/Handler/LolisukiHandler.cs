@@ -36,6 +36,7 @@ namespace Theresa3rd_Bot.Handler
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
 
+                bool isShowAI = groupId.IsShowAISetu();
                 bool isShowR18 = groupId.IsShowR18Setu();
                 string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolisuki.Command) ?? "";
                 if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
@@ -47,17 +48,18 @@ namespace Theresa3rd_Bot.Handler
 
                 LolisukiResult lolisukiResult = null;
                 int r18Mode = isShowR18 ? 2 : 0;
+                int aiMode = isShowAI ? 2 : 0;
                 string levelStr = getLevelStr(isShowR18);
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr);
+                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, aiMode, levelStr);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(session, args) == false) return;
                     string[] tagArr = toLoliconTagArr(tagStr);
-                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr, 1, tagArr);
+                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, aiMode, levelStr, 1, tagArr);
                 }
 
                 if (lolisukiResult == null || lolisukiResult.data == null || lolisukiResult.data.Count == 0)
@@ -67,7 +69,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 LolisukiData lolisukiData = lolisukiResult.data.First();
-                if (await CheckSetuSendable(session, args, lolisukiData, isShowR18) == false) return;
+                if (await CheckSetuSendable(session, args, lolisukiData, isShowR18, isShowAI) == false) return;
 
                 bool isShowImg = groupId.IsShowSetuImg(lolisukiData.IsR18);
                 long todayLeftCount = GetSetuLeftToday(groupId, memberId);
@@ -108,8 +110,10 @@ namespace Theresa3rd_Bot.Handler
         public async Task sendTimingSetuAsync(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, long groupId)
         {
             int eachPage = 5;
+            bool isShowAI = groupId.IsShowAISetu();
             bool isShowR18 = groupId.IsShowR18Setu();
             int r18Mode = isShowR18 ? 2 : 0;
+            int aiMode = isShowAI ? 2 : 0;
             int count = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
             string levelStr = getLevelStr(isShowR18);
             string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
@@ -119,7 +123,7 @@ namespace Theresa3rd_Bot.Handler
             while (count > 0)
             {
                 int num = count >= eachPage ? eachPage : count;
-                LolisukiResult lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, levelStr, num, tagArr);
+                LolisukiResult lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, aiMode, levelStr, num, tagArr);
                 count -= num;
                 if (lolisukiResult.data.Count == 0) continue;
                 foreach (var setuInfo in lolisukiResult.data)

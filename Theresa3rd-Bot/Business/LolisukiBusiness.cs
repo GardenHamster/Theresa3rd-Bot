@@ -42,10 +42,10 @@ namespace Theresa3rd_Bot.Business
             return workInfoStr.ToString();
         }
 
-        public async Task<LolisukiResult> getLolisukiResultAsync(int r18Mode, string level, int num = 1, string[] tags = null)
+        public async Task<LolisukiResult> getLolisukiResultAsync(int r18Mode, int aiMode, string level, int num = 1, string[] tags = null)
         {
             string[] postTags = tags == null || tags.Length == 0 ? new string[0] : tags;
-            LolisukiParam param = new LolisukiParam(r18Mode, num, "i.pixiv.re", postTags, level, 0);
+            LolisukiParam param = new LolisukiParam(r18Mode, aiMode, num, "i.pixiv.re", postTags, level, 0);
             string httpUrl = HttpUrl.getLolisukiApiUrl();
             string postJson = JsonConvert.SerializeObject(param);
             string json = await HttpHelper.PostJsonAsync(httpUrl, postJson);

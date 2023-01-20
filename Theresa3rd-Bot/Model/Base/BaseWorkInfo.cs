@@ -6,6 +6,7 @@ namespace Theresa3rd_Bot.Model.Base
     {
         public abstract bool IsR18 { get; }
         public abstract bool IsGif { get; }
+        public abstract bool IsAI { get; }
         public abstract bool IsImproper { get; }
         public abstract string PixivId { get; }
         public abstract string hasBanTag();

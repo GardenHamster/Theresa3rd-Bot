@@ -65,7 +65,7 @@ namespace Theresa3rd_Bot.Handler
         /// <param name="setuInfo"></param>
         /// <param name="isShowR18"></param>
         /// <returns></returns>
-        public async Task<bool> CheckSetuSendable(IMiraiHttpSession session, IGroupMessageEventArgs args, BaseWorkInfo setuInfo, bool isShowR18)
+        public async Task<bool> CheckSetuSendable(IMiraiHttpSession session, IGroupMessageEventArgs args, BaseWorkInfo setuInfo, bool isShowR18, bool isShowAI)
         {
             if (setuInfo.IsImproper)
             {
@@ -83,6 +83,12 @@ namespace Theresa3rd_Bot.Handler
             if (setuInfo.IsR18 && isShowR18 == false)
             {
                 await session.SendGroupMessageWithAtAsync(args, "该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限");
+                return false;
+            }
+
+            if (setuInfo.IsAI && isShowAI == false)
+            {
+                await session.SendGroupMessageWithAtAsync(args, "该作品为AI生成作品，不显示相关内容，如需显示请在配置文件中修改权限");
                 return false;
             }
             return true;

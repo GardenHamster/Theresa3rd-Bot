@@ -64,12 +64,12 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInTagsAsync(bool includeR18)
+        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInTagsAsync(bool includeR18, bool includeAI)
         {
             List<string> tagList = BotConfig.SetuConfig.Pixiv.RandomTags;
             if (tagList == null || tagList.Count == 0) return null;
             string tagName = tagList[new Random().Next(0, tagList.Count)];
-            return await getRandomWorkAsync(tagName, includeR18);
+            return await getRandomWorkAsync(tagName, includeR18, includeAI);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInSubscribeAsync(long groupId)
+        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInSubscribeAsync(long groupId, bool includeR18, bool includeAI)
         {
             int loopUserTimes = 3;
             int loopWorkTimes = 5;
@@ -99,7 +99,8 @@ namespace Theresa3rd_Bot.Business
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper()) continue;
                     if (pixivUserWorkInfo.hasBanTag() != null) continue;
-                    if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
+                    if (pixivUserWorkInfo.isR18() && includeR18 == false) continue;
+                    if (pixivUserWorkInfo.isAI() && includeAI == false) continue;
                     PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (pixivWorkInfoDto.body.bookmarkCount < 100) continue;
@@ -114,7 +115,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInFollowAsync(long groupId)
+        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInFollowAsync(bool includeR18, bool includeAI)
         {
             int eachPage = 24;
             int loopUserTimes = 3;
@@ -149,7 +150,8 @@ namespace Theresa3rd_Bot.Business
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper()) continue;
                     if (pixivUserWorkInfo.hasBanTag() != null) continue;
-                    if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
+                    if (pixivUserWorkInfo.isR18() && includeR18 == false) continue;
+                    if (pixivUserWorkInfo.isAI() && includeAI == false) continue;
                     PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (pixivWorkInfoDto.body.bookmarkCount < 100) continue;
@@ -164,7 +166,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInBookmarkAsync(long groupId)
+        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInBookmarkAsync(bool includeR18, bool includeAI)
         {
             int eachPage = 48;
             int loopPageTimes = 3;
@@ -186,7 +188,8 @@ namespace Theresa3rd_Bot.Business
                     PixivBookmarksWork randomWork = workList[new Random().Next(0, workList.Count)];
                     if (randomWork.IsImproper()) continue;
                     if (randomWork.hasBanTag() != null) continue;
-                    if (randomWork.isR18() && groupId.IsShowR18Setu() == false) continue;
+                    if (randomWork.isR18() && includeR18 == false) continue;
+                    if (randomWork.isAI() && includeAI == false) continue;
                     PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(randomWork.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     return pixivWorkInfoDto;
@@ -200,7 +203,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivicSearchDto"></param>
         /// <returns></returns>
-        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkAsync(string tagNames, bool includeR18)
+        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkAsync(string tagNames, bool includeR18, bool includeAI)
         {
             int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / pixivPageSize);
             if (pageCount < 3) pageCount = 3;
@@ -253,7 +256,7 @@ namespace Theresa3rd_Bot.Business
             Task[] tasks = new Task[threadCount];
             for (int i = 0; i < taskList.Length; i++)
             {
-                tasks[i] = getPixivWorkInfoMethodAsync(taskList[i], includeR18);
+                tasks[i] = getPixivWorkInfoMethodAsync(taskList[i], includeR18, includeAI);
                 await Task.Delay(1000);//将每条线程的间隔错开
             }
             Task.WaitAll(tasks);
@@ -269,7 +272,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivIllustList"></param>
         /// <param name="isScreen"></param>
-        public async Task getPixivWorkInfoMethodAsync(List<PixivIllust> pixivIllustList, bool includeR18)
+        public async Task getPixivWorkInfoMethodAsync(List<PixivIllust> pixivIllustList, bool includeR18, bool includeAI)
         {
             for (int i = 0; i < pixivIllustList.Count; i++)
             {
@@ -281,13 +284,12 @@ namespace Theresa3rd_Bot.Business
                     if (pixivWorkInfo.body.IsImproper) continue;
                     if (pixivWorkInfo.body.hasBanTag() != null) continue;
                     if (pixivWorkInfo.body.IsR18 && includeR18 == false) continue;
+                    if (pixivWorkInfo.body.IsAI && includeAI == false) continue;
                     if (checkRandomWorkIsOk(pixivWorkInfo) == false) continue;
                     lock (bookUpList) bookUpList.Add(pixivWorkInfo);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    LogHelper.Error(ex);
-                    ReportHelper.SendError(ex);
                 }
                 finally
                 {

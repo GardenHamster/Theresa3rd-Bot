@@ -20,6 +20,7 @@ namespace Theresa3rd_Bot.Model.Lolicon
         public string title { get; set; }
         public string author { get; set; }
         public bool r18 { get; set; }
+        public int aiType { get; set; }
         public int width { get; set; }
         public int height { get; set; }
         public List<string> tags { get; set; }
@@ -33,6 +34,10 @@ namespace Theresa3rd_Bot.Model.Lolicon
         public override bool IsGif
         {
             get { return tags != null && tags.IsGif(); }
+        }
+        public override bool IsAI
+        {
+            get { return aiType > 1; }
         }
         public override bool IsImproper
         {

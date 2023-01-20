@@ -6,14 +6,7 @@ using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Model.Pixiv
 {
-    public class PixivUgoiraMetaDto
-    {
-        public bool error { get; set; }
-        public string message { get; set; }
-        public PixivUgoiraMetaInfo body { get; set; }
-    }
-
-    public class PixivUgoiraMetaInfo
+    public class PixivUgoiraMeta
     {
         public string mime_type { get; set; }
 

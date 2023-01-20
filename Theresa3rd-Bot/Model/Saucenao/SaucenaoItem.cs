@@ -13,7 +13,7 @@ namespace Theresa3rd_Bot.Model.Saucenao
 
         public decimal Similarity { get; set; }
 
-        public PixivWorkInfoDto PixivWorkInfo { get; set; }
+        public PixivWorkInfo PixivWorkInfo { get; set; }
 
         public SaucenaoItem(SetuSourceType sourceType, string sourceUrl, string sourceId, decimal similarity)
         {

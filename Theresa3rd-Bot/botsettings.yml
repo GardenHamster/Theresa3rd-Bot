@@ -176,7 +176,7 @@ Subscribe:                                                                      
         AddCommand:             '订阅版主'                                          #订阅命令,需要管理员执行
         RmCommand:              '退订版主'                                          #退订命令,需要管理员执行
         Template:               |                                                   #消息模版，值为空时将使用默认模版
-                                米游社[{UserName}]发布了新帖子，发布时间：{CreateTime}：
+                                米游社[{UserName}]发布了新帖子，发布时间：{CreateTime}
                                 {Title}
                                 {Content}
                                 {Urls}

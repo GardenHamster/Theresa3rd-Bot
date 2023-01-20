@@ -81,9 +81,9 @@ namespace Theresa3rd_Bot.Business
                     Ascii2dItem ascii2dItem = itemList[i];
                     if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
                     {
-                        PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(ascii2dItem.SourceId);
+                        PixivResult<PixivWorkInfo> pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(ascii2dItem.SourceId);
                         if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
-                        ascii2dItem.PixivWorkInfo = pixivWorkInfo;
+                        ascii2dItem.PixivWorkInfo = pixivWorkInfo.body;
                     }
                     if (ascii2dItem.SourceType == SetuSourceType.Twitter)
                     {
@@ -103,7 +103,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="imgHttpUrl"></param>
         /// <returns></returns>
-        /// <exception cref="BaseException"></exception>
+        /// <exception cref="PixivException"></exception>
         private async static Task<string> GetColorUrlAsync(string imgHttpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "uri", imgHttpUrl } };
@@ -113,7 +113,7 @@ namespace Theresa3rd_Bot.Business
             {
                 string contentString = await response.GetContentStringAsync();
                 Exception innerException = new Exception(contentString);
-                throw new BaseException(innerException, $"ascii2d返回StatusCode：{(int)response.StatusCode}");
+                throw new PixivException(innerException, $"ascii2d返回StatusCode：{(int)response.StatusCode}");
             }
             return response.RequestMessage.RequestUri.AbsoluteUri;
         }

@@ -1,4 +1,5 @@
-﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+﻿using Mirai.CSharp.Framework.Models.General;
+using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.Models;
 using MySqlX.XDevAPI;
 using System;
@@ -52,7 +53,9 @@ namespace Theresa3rd_Bot.Timer
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "PixivUserTimer.HandlerMethod方法异常");
+                string message = $"PixivUserTimer.HandlerMethod方法异常";
+                LogHelper.Error(ex, message);
+                ReportHelper.SendError(ex, message);
             }
             finally
             {
@@ -78,7 +81,9 @@ namespace Theresa3rd_Bot.Timer
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error(ex, $"推送pixiv用户[{subscribeTask.SubscribeCode}]订阅时异常");
+                    string message = $"推送pixiv用户[{subscribeTask.SubscribeCode}]订阅时异常";
+                    LogHelper.Error(ex, message);
+                    ReportHelper.SendError(ex, message);
                 }
                 finally
                 {
@@ -99,7 +104,9 @@ namespace Theresa3rd_Bot.Timer
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"推送pixiv关注用户最新作品时异常");
+                string message = $"推送pixiv关注用户最新作品时异常";
+                LogHelper.Error(ex, message);
+                ReportHelper.SendError(ex, message);
             }
         }
 
@@ -108,7 +115,7 @@ namespace Theresa3rd_Bot.Timer
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
-                PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfoDto.body;
+                PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfo;
                 if (pixivWorkInfo == null || pixivWorkInfo.IsImproper || pixivWorkInfo.hasBanTag() != null) continue;
                 if (groupIds == null || groupIds.Count == 0) continue;
 

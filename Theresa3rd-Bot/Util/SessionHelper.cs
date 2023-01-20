@@ -2,13 +2,10 @@
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
-using MySqlX.XDevAPI;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 
@@ -16,11 +13,26 @@ namespace Theresa3rd_Bot.Util
 {
     public static class SessionHelper
     {
+        public static async Task<int> SendGroupMessageAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, string plainMsg)
+        {
+            List<IChatMessage> msgList = new List<IChatMessage>() { new PlainMessage(plainMsg) };
+            return await session.SendGroupMessageAsync(args.Sender.Group.Id, msgList.ToArray());
+        }
+
         public static async Task<int> SendGroupMessageAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> chainList, bool isAt = false)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             if(isAt) msgList.Add(new AtMessage(args.Sender.Id));
             msgList.AddRange(chainList);
+            return await session.SendGroupMessageAsync(args.Sender.Group.Id, msgList.ToArray());
+        }
+
+        public static async Task<int> SendGroupMessageWithAtAsync(this IMiraiHttpSession session, IGroupMessageEventArgs args, string plainMsg)
+        {
+            if (plainMsg.StartsWith(" ") == false) plainMsg = " " + plainMsg;
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new AtMessage(args.Sender.Id));
+            msgList.Add(new PlainMessage(plainMsg));
             return await session.SendGroupMessageAsync(args.Sender.Group.Id, msgList.ToArray());
         }
 
@@ -44,6 +56,7 @@ namespace Theresa3rd_Bot.Util
         {
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
             if (string.IsNullOrWhiteSpace(template)) return 0;
+            if (template.StartsWith(" ") == false) template = " " + template;
             List<IChatMessage> chatList = session.SplitToChainAsync(template).Result;
             return await session.SendGroupMessageWithAtAsync(args, chatList);
         }

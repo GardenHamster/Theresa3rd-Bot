@@ -141,9 +141,9 @@ namespace Theresa3rd_Bot.Business
                 SaucenaoItem saucenaoItem = sortList[i];
                 if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
-                    PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
+                    PixivResult < PixivWorkInfo> pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
                     if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
-                    saucenaoItem.PixivWorkInfo = pixivWorkInfo;
+                    saucenaoItem.PixivWorkInfo = pixivWorkInfo.body;
                     return saucenaoItem;
                 }
                 if (saucenaoItem.SourceType == SetuSourceType.Twitter)
@@ -220,7 +220,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="imgHttpUrl"></param>
         /// <returns></returns>
-        /// <exception cref="BaseException"></exception>
+        /// <exception cref="PixivException"></exception>
         private async static Task<string> SearchResultAsync(string imgHttpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "url", imgHttpUrl } };
@@ -229,7 +229,7 @@ namespace Theresa3rd_Bot.Business
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 string contentString = await response.GetContentStringAsync();
-                throw new BaseException($"saucenao返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(500)}");
+                throw new PixivException($"saucenao返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(500)}");
             }
             return await response.Content.ReadAsStringAsync();
         }

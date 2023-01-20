@@ -94,7 +94,7 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
 
-                //同步pixiv画师
+                //订阅pixiv关注画师列表
                 if (instructions.StartWithCommand(BotConfig.SubscribeConfig?.PixivUser?.SyncCommand))
                 {
                     if (await CheckSuperManagersAsync(session, args) == false) return;
@@ -224,7 +224,7 @@ namespace Theresa3rd_Bot.Event
                     if (await CheckSetuUseUpAsync(session, args)) return;
                     if (await CheckHandingAsync(session, args)) return;
                     CoolingCache.SetGroupSetuCooling(groupId, memberId);
-                    await new PixivHandler().sendGeneralPixivImageAsync(session, args, message);
+                    await new PixivHandler().pixivSearchAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
                     args.BlockRemainingHandlers = true;
                     return;

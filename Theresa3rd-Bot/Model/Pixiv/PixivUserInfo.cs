@@ -7,13 +7,6 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Pixiv
 {
-    public class PixivUserInfoDto
-    {
-        public bool error { get; set; }
-        public string message { get; set; }
-        public PixivUserInfo body { get; set; }
-    }
-
     public class PixivUserInfo
     {
         public Dictionary<string, PixivUserWorkInfo> illusts { get; set; }

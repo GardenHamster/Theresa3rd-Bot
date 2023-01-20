@@ -8,13 +8,6 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Pixiv
 {
-    public class PixivWorkInfoDto
-    {
-        public bool error { get; set; }
-        public string message { get; set; }
-        public PixivWorkInfo body { get; set; }
-    }
-
     public class PixivWorkInfo : BaseWorkInfo
     {
         public int RelevantCount { get; set; }
@@ -29,7 +22,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
         public DateTime createDate { get; set; }
         public PixivUrls urls { get; set; }
         public int pageCount { get; set; }
-        public PixivTagDto tags { get; set; }
+        public PixivTags tags { get; set; }
         public int xRestrict { get; set; }
 
         public override bool IsR18

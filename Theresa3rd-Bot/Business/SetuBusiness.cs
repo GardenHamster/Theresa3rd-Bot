@@ -105,7 +105,7 @@ namespace Theresa3rd_Bot.Business
                 string fullGifSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{pixivId}.gif");
                 if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
-                PixivUgoiraMetaDto pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId);
+                PixivResult<PixivUgoiraMeta> pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId);
                 string fullZipSavePath = Path.Combine(FilePath.getDownImgSavePath(), $"{StringHelper.get16UUID()}.zip");
                 string zipHttpUrl = pixivUgoiraMetaDto.body.src;
 
@@ -146,7 +146,9 @@ namespace Theresa3rd_Bot.Business
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "gif合成失败");
+                string errMsg = "gif合成失败";
+                LogHelper.Error(ex, errMsg);
+                ReportHelper.SendError(ex, errMsg);
                 return null;
             }
         }

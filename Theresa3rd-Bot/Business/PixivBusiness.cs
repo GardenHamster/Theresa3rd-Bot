@@ -38,11 +38,11 @@ namespace Theresa3rd_Bot.Business
         /// <summary>
         /// 收藏数超过0的作品集
         /// </summary>
-        private List<PixivWorkInfoDto> bookUpList;
+        private List<PixivResult<PixivWorkInfo>> bookUpList;
 
         public PixivBusiness()
         {
-            bookUpList = new List<PixivWorkInfoDto>();
+            bookUpList = new List<PixivResult<PixivWorkInfo>>();
             subscribeDao = new SubscribeDao();
             subscribeGroupDao = new SubscribeGroupDao();
             subscribeRecordDao = new SubscribeRecordDao();
@@ -54,7 +54,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="workId"></param>
         /// <returns></returns>
-        public async Task<PixivWorkInfoDto> getPixivWorkInfoAsync(string workId, int? retryTimes = null)
+        public async Task<PixivResult<PixivWorkInfo>> getPixivWorkInfoAsync(string workId, int? retryTimes = null)
         {
             return await PixivHelper.GetPixivWorkInfoAsync(workId, retryTimes);
         }
@@ -64,7 +64,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public async Task<PixivWorkInfoDto> getRandomWorkInTagsAsync(bool includeR18)
+        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInTagsAsync(bool includeR18)
         {
             List<string> tagList = BotConfig.SetuConfig.Pixiv.RandomTags;
             if (tagList == null || tagList.Count == 0) return null;
@@ -77,7 +77,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public async Task<PixivWorkInfoDto> getRandomWorkInSubscribeAsync(long groupId)
+        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInSubscribeAsync(long groupId)
         {
             int loopUserTimes = 3;
             int loopWorkTimes = 5;
@@ -89,7 +89,7 @@ namespace Theresa3rd_Bot.Business
             {
                 int randomUserIndex = RandomHelper.getRandomBetween(0, subscribeTaskList.Count - 1);
                 SubscribeTask subscribeTask = subscribeTaskList[randomUserIndex];
-                PixivUserInfoDto pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(subscribeTask.SubscribeCode);
+                PixivResult<PixivUserInfo> pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(subscribeTask.SubscribeCode);
                 if (pixivUserInfo == null || pixivUserInfo.error) continue;
                 Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo.body.illusts;
                 if (illusts == null || illusts.Count == 0) continue;
@@ -100,7 +100,7 @@ namespace Theresa3rd_Bot.Business
                     if (pixivUserWorkInfo.IsImproper()) continue;
                     if (pixivUserWorkInfo.hasBanTag() != null) continue;
                     if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
-                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
+                    PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (pixivWorkInfoDto.body.bookmarkCount < 100) continue;
                     return pixivWorkInfoDto;
@@ -114,18 +114,18 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public async Task<PixivWorkInfoDto> getRandomWorkInFollowAsync(long groupId)
+        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInFollowAsync(long groupId)
         {
             int eachPage = 24;
             int loopUserTimes = 3;
             int loopWorkTimes = 5;
             long userId = BotConfig.WebsiteConfig.Pixiv.UserId;
-            PixivFollowDto firstFollowDto = await PixivHelper.GetPixivFollowAsync(userId, 0, eachPage);
+            PixivResult<PixivFollow> firstFollowDto = await PixivHelper.GetPixivFollowAsync(userId, 0, eachPage);
             int total = firstFollowDto.body.total;
             int page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
 
             int randomPage = new Random().Next(page);
-            PixivFollowDto randomFollow = randomPage == 0 ? firstFollowDto : await PixivHelper.GetPixivFollowAsync(userId, randomPage * eachPage, eachPage);
+            PixivResult<PixivFollow> randomFollow = randomPage == 0 ? firstFollowDto : await PixivHelper.GetPixivFollowAsync(userId, randomPage * eachPage, eachPage);
             if (randomFollow.error || randomFollow.body.users == null || randomFollow.body.users.Count == 0) return null;
             List<PixivFollowUser> followUserList = randomFollow.body.users;
             List<PixivFollowUser> randomUserList = new List<PixivFollowUser>();
@@ -139,7 +139,7 @@ namespace Theresa3rd_Bot.Business
 
             foreach (PixivFollowUser user in randomUserList)
             {
-                PixivUserInfoDto pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(user.userId);
+                PixivResult<PixivUserInfo> pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(user.userId);
                 if (pixivUserInfo == null || pixivUserInfo.error) continue;
                 Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo.body.illusts;
                 if (illusts == null || illusts.Count == 0) continue;
@@ -150,7 +150,7 @@ namespace Theresa3rd_Bot.Business
                     if (pixivUserWorkInfo.IsImproper()) continue;
                     if (pixivUserWorkInfo.hasBanTag() != null) continue;
                     if (pixivUserWorkInfo.isR18() && groupId.IsShowR18Setu() == false) continue;
-                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
+                    PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (pixivWorkInfoDto.body.bookmarkCount < 100) continue;
                     return pixivWorkInfoDto;
@@ -164,21 +164,21 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public async Task<PixivWorkInfoDto> getRandomWorkInBookmarkAsync(long groupId)
+        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkInBookmarkAsync(long groupId)
         {
             int eachPage = 48;
             int loopPageTimes = 3;
             int loopWorkTimes = 5;
             long userId = BotConfig.WebsiteConfig.Pixiv.UserId;
 
-            PixivBookmarksDto firstBookmarksDto = await PixivHelper.GetPixivBookmarkAsync(userId, 0, eachPage);
+            PixivResult<PixivBookmarks> firstBookmarksDto = await PixivHelper.GetPixivBookmarkAsync(userId, 0, eachPage);
             int total = firstBookmarksDto.body.total;
             int page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
 
             for (int i = 0; i < loopPageTimes; i++)
             {
                 int randomPage = RandomHelper.getRandomBetween(0, page - 1);
-                PixivBookmarksDto randomBookmarks = randomPage == 0 ? firstBookmarksDto : await PixivHelper.GetPixivBookmarkAsync(userId, randomPage * eachPage, eachPage);
+                PixivResult<PixivBookmarks> randomBookmarks = randomPage == 0 ? firstBookmarksDto : await PixivHelper.GetPixivBookmarkAsync(userId, randomPage * eachPage, eachPage);
                 if (randomBookmarks.error || randomBookmarks.body.works == null || randomBookmarks.body.works.Count == 0) continue;
                 List<PixivBookmarksWork> workList = randomBookmarks.body.works;
                 for (int j = 0; j < loopWorkTimes; j++)
@@ -187,7 +187,7 @@ namespace Theresa3rd_Bot.Business
                     if (randomWork.IsImproper()) continue;
                     if (randomWork.hasBanTag() != null) continue;
                     if (randomWork.isR18() && groupId.IsShowR18Setu() == false) continue;
-                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(randomWork.id);
+                    PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(randomWork.id);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     return pixivWorkInfoDto;
                 }
@@ -200,13 +200,13 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivicSearchDto"></param>
         /// <returns></returns>
-        public async Task<PixivWorkInfoDto> getRandomWorkAsync(string tagNames, bool includeR18)
+        public async Task<PixivResult<PixivWorkInfo>> getRandomWorkAsync(string tagNames, bool includeR18)
         {
             int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / pixivPageSize);
             if (pageCount < 3) pageCount = 3;
 
             string searchWord = toPixivSearchWord(tagNames);
-            PixivSearchDto pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, includeR18);
+            PixivResult<PixivSearch> pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, includeR18);
             int total = pageOne.body.getIllust().total;
             int maxPage = MathHelper.getMaxPage(total, pixivPageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
@@ -217,7 +217,7 @@ namespace Theresa3rd_Bot.Business
             List<PixivIllust> tempIllustList = new List<PixivIllust>();
             foreach (int page in pageArr)
             {
-                PixivSearchDto pixivSearchDto = await PixivHelper.GetPixivSearchAsync(searchWord, page, false, includeR18);
+                PixivResult<PixivSearch> pixivSearchDto = await PixivHelper.GetPixivSearchAsync(searchWord, page, false, includeR18);
                 if (pixivSearchDto?.body?.getIllust()?.data == null) continue;
                 tempIllustList.AddRange(pixivSearchDto.body.getIllust().data);
                 Thread.Sleep(1000);
@@ -258,7 +258,7 @@ namespace Theresa3rd_Bot.Business
             }
             Task.WaitAll(tasks);
 
-            PixivWorkInfoDto randomWork = bookUpList.OrderByDescending(o => o.body.bookmarkCount).FirstOrDefault();
+            PixivResult<PixivWorkInfo> randomWork = bookUpList.OrderByDescending(o => o.body.bookmarkCount).FirstOrDefault();
             if (randomWork == null) return null;
             randomWork.body.RelevantCount = total;
             return randomWork;
@@ -276,7 +276,7 @@ namespace Theresa3rd_Bot.Business
                 try
                 {
                     if (bookUpList.Count > 0) return;
-                    PixivWorkInfoDto pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivIllustList[i].id, 0);
+                    PixivResult<PixivWorkInfo> pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivIllustList[i].id, 0);
                     if (pixivWorkInfo.error) continue;
                     if (pixivWorkInfo.body.IsImproper) continue;
                     if (pixivWorkInfo.body.hasBanTag() != null) continue;
@@ -284,13 +284,14 @@ namespace Theresa3rd_Bot.Business
                     if (checkRandomWorkIsOk(pixivWorkInfo) == false) continue;
                     lock (bookUpList) bookUpList.Add(pixivWorkInfo);
                 }
-                catch (BaseException ex)
+                catch (Exception ex)
                 {
                     LogHelper.Error(ex);
+                    ReportHelper.SendError(ex);
                 }
                 finally
                 {
-                    Thread.Sleep(1000);//防止请求过快被检测
+                    Thread.Sleep(1000);
                 }
             }
         }
@@ -300,7 +301,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
         /// <returns></returns>
-        public bool checkRandomWorkIsOk(PixivWorkInfoDto pixivWorkInfo)
+        public bool checkRandomWorkIsOk(PixivResult<PixivWorkInfo> pixivWorkInfo)
         {
             if (pixivWorkInfo == null) return false;
             if (pixivWorkInfo.body == null) return false;
@@ -315,7 +316,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
         /// <returns></returns>
-        public bool checkTagWorkIsOk(PixivWorkInfoDto pixivWorkInfo)
+        public bool checkTagWorkIsOk(PixivResult<PixivWorkInfo> pixivWorkInfo)
         {
             if (pixivWorkInfo == null) return false;
             if (pixivWorkInfo.body == null) return false;
@@ -376,7 +377,7 @@ namespace Theresa3rd_Bot.Business
         public async Task<List<PixivSubscribe>> getPixivUserNewestAsync(string userId, int subscribeId, int getCount = 1)
         {
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            PixivUserInfoDto pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(userId);
+            PixivResult<PixivUserInfo> pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(userId);
             if (pixivUserInfo == null) return pixivSubscribeList;
             Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo.body.illusts;
             if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
@@ -385,7 +386,7 @@ namespace Theresa3rd_Bot.Business
             {
                 if (pixivSubscribeList.Count >= getCount) break;
                 if (workInfo == null) continue;
-                PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id);
+                PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id);
                 if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                 SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
                 subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
@@ -396,7 +397,7 @@ namespace Theresa3rd_Bot.Business
                 subscribeRecord.DynamicType = SubscribeDynamicType.插画;
                 PixivSubscribe pixivSubscribe = new PixivSubscribe();
                 pixivSubscribe.SubscribeRecord = subscribeRecord;
-                pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                pixivSubscribe.PixivWorkInfo = pixivWorkInfoDto.body;
                 pixivSubscribeList.Add(pixivSubscribe);
             }
             return pixivSubscribeList;
@@ -415,7 +416,7 @@ namespace Theresa3rd_Bot.Business
             string userId = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            PixivUserInfoDto pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(userId);
+            PixivResult<PixivUserInfo> pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(userId);
             if (pixivUserInfo.error || pixivUserInfo == null) return pixivSubscribeList;
             Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo?.body?.illusts;
             if (illusts == null || illusts.Count == 0) return pixivSubscribeList;
@@ -429,7 +430,7 @@ namespace Theresa3rd_Bot.Business
                     if (workInfo == null || string.IsNullOrWhiteSpace(workInfo.id)) continue;
                     if (shelfLife > 0 && workInfo.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, workInfo.id)) continue;
-                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id, 0);
+                    PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id, 0);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
                     subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.body.illustTitle);
@@ -441,12 +442,13 @@ namespace Theresa3rd_Bot.Business
                     subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
                     PixivSubscribe pixivSubscribe = new PixivSubscribe();
                     pixivSubscribe.SubscribeRecord = subscribeRecord;
-                    pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                    pixivSubscribe.PixivWorkInfo = pixivWorkInfoDto.body;
                     pixivSubscribeList.Add(pixivSubscribe);
                 }
-                catch (BaseException ex)
+                catch (Exception ex)
                 {
                     LogHelper.Error(ex);
+                    ReportHelper.SendError(ex);
                 }
                 finally
                 {
@@ -477,7 +479,7 @@ namespace Theresa3rd_Bot.Business
                     if (item == null || string.IsNullOrWhiteSpace(item.id)) continue;
                     if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, item.id)) continue;
-                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(item.id, 0);
+                    PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(item.id, 0);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
                     SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
@@ -490,12 +492,13 @@ namespace Theresa3rd_Bot.Business
                     subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
                     PixivSubscribe pixivSubscribe = new PixivSubscribe();
                     pixivSubscribe.SubscribeRecord = subscribeRecord;
-                    pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                    pixivSubscribe.PixivWorkInfo = pixivWorkInfoDto.body;
                     pixivSubscribeList.Add(pixivSubscribe);
                 }
-                catch (BaseException ex)
+                catch (Exception ex)
                 {
                     LogHelper.Error(ex);
+                    ReportHelper.SendError(ex);
                 }
                 finally
                 {
@@ -515,7 +518,7 @@ namespace Theresa3rd_Bot.Business
         public async Task<List<PixivSubscribe>> getPixivFollowLatestAsync()
         {
             int pageIndex = 1;
-            PixivFollowLatestDto pageOne = await PixivHelper.GetPixivFollowLatestAsync(pageIndex);
+            PixivResult<PixivFollowLatest> pageOne = await PixivHelper.GetPixivFollowLatestAsync(pageIndex);
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             if (pageOne.error || pageOne?.body?.page?.ids == null) return pixivSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
@@ -526,7 +529,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     if (workId <= 0) continue;
                     if (subscribeRecordDao.checkExists(SubscribeType.P站画师, workId.ToString())) continue;
-                    PixivWorkInfoDto pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString(), 0);
+                    PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString(), 0);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     SubscribePO dbSubscribe = getOrInsertUserSubscribe(pixivWorkInfoDto);
@@ -540,12 +543,13 @@ namespace Theresa3rd_Bot.Business
                     subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
                     PixivSubscribe pixivSubscribe = new PixivSubscribe();
                     pixivSubscribe.SubscribeRecord = subscribeRecord;
-                    pixivSubscribe.PixivWorkInfoDto = pixivWorkInfoDto;
+                    pixivSubscribe.PixivWorkInfo = pixivWorkInfoDto.body;
                     pixivSubscribeList.Add(pixivSubscribe);
                 }
-                catch (BaseException ex)
+                catch (Exception ex)
                 {
                     LogHelper.Error(ex);
+                    ReportHelper.SendError(ex);
                 }
                 finally
                 {
@@ -569,7 +573,7 @@ namespace Theresa3rd_Bot.Business
             for (int i = 1; i <= maxPage; i++)
             {
                 if (pixivIllustList.Count >= maxScan) break;
-                PixivSearchDto pixivSearch = await PixivHelper.GetPixivSearchAsync(searchWord, i, false, true);
+                PixivResult<PixivSearch> pixivSearch = await PixivHelper.GetPixivSearchAsync(searchWord, i, false, true);
                 if (pixivSearch.error) break;
                 List<PixivIllust> illusts = pixivSearch?.body?.getIllust()?.data;
                 if (illusts == null || illusts.Count == 0) break;
@@ -585,7 +589,7 @@ namespace Theresa3rd_Bot.Business
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
         /// <returns></returns>
-        private SubscribePO getOrInsertUserSubscribe(PixivWorkInfoDto pixivWorkInfo)
+        private SubscribePO getOrInsertUserSubscribe(PixivResult<PixivWorkInfo> pixivWorkInfo)
         {
             string userId = pixivWorkInfo.body.userId.ToString();
             string userName = StringHelper.filterEmoji(pixivWorkInfo.body.userName)?.filterEmoji().cutString(50);
@@ -615,12 +619,12 @@ namespace Theresa3rd_Bot.Business
             int eachPage = 24;
             long userId = BotConfig.WebsiteConfig.Pixiv.UserId;
             List<PixivFollowUser> followUserList = new List<PixivFollowUser>();
-            PixivFollowDto firstFollowDto = await PixivHelper.GetPixivFollowAsync(userId, 0, eachPage);
+            PixivResult<PixivFollow> firstFollowDto = await PixivHelper.GetPixivFollowAsync(userId, 0, eachPage);
             int total = firstFollowDto.body.total;
             int page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
             for (int i = 0; i < page; i++)
             {
-                PixivFollowDto pixivFollowDto = await PixivHelper.GetPixivFollowAsync(userId, offset, eachPage);
+                PixivResult<PixivFollow> pixivFollowDto = await PixivHelper.GetPixivFollowAsync(userId, offset, eachPage);
                 foreach (var item in pixivFollowDto.body.users)
                 {
                     if (item == null) continue;

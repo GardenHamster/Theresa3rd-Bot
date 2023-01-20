@@ -11,7 +11,7 @@ namespace Theresa3rd_Bot.Model.Saucenao
 
         public string SourceId { get; set; }
 
-        public PixivWorkInfoDto PixivWorkInfo { get; set; }
+        public PixivWorkInfo PixivWorkInfo { get; set; }
 
         public Ascii2dItem(SetuSourceType sourceType, string sourceUrl, string sourceId)
         {

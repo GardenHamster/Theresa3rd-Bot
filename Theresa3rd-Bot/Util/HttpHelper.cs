@@ -255,7 +255,7 @@ namespace Theresa3rd_Bot.Util
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "GetContentString异常", false);
+                LogHelper.Error(ex, "GetContentString异常");
                 return string.Empty;
             }
         }

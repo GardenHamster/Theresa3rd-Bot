@@ -54,7 +54,7 @@ namespace Theresa3rd_Bot.Model.Cache
                             if (string.IsNullOrEmpty(stepDetail.Question)) return false;
                         }
 
-                        await session.SendGroupMessageWithAtAsync(args, new PlainMessage(stepDetail.Question));
+                        await session.SendGroupMessageWithAtAsync(args, stepDetail.Question);
 
                         while (true)
                         {

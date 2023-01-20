@@ -3,14 +3,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Pixiv
 {
-    public class PixivBookmarksDto
-    {
-        public bool error { get; set; }
-        public string message { get; set; }
-        public PixivBookmarksBody body { get; set; }
-    }
-
-    public class PixivBookmarksBody
+    public class PixivBookmarks
     {
         public int total { get; set; }
         public List<PixivBookmarksWork> works { get; set; }

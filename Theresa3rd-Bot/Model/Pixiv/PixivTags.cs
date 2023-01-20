@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Model.Pixiv
 {
-    public class PixivTagDto
+    public class PixivTags
     {
         public List<PixivTagModel> tags { get; set; }
 

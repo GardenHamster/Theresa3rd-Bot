@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Model.Pixiv
 {
-    public class PixivSearchDto
-    {
-        public bool error { get; set; }
-        public PixivSearchBody body { get; set; }
-    }
-
-    public class PixivSearchBody
+    public class PixivSearch
     {
         public PixivSearchIllustManga illust { get; set; }
 

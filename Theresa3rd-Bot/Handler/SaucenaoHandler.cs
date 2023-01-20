@@ -161,7 +161,7 @@ namespace Theresa3rd_Bot.Handler
 
                 if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
-                    PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
+                    PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
                     bool isShowImg = groupId.IsShowSaucenaoImg(pixivWorkInfo.IsR18);
                     List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : null;
                     List<IChatMessage> workMsgs = new List<IChatMessage>();
@@ -179,16 +179,12 @@ namespace Theresa3rd_Bot.Handler
                     return false;
                 }
             }
-            catch (BaseException ex)
-            {
-                LogHelper.Error(ex, $"searchWithSaucenao异常，url={imageMessage.Url}，{ex.Message}");
-                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 查找第{index}张图片失败，{ex.Message}，再试一次吧~"));
-                return false;
-            }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"searchWithSaucenao异常，url={imageMessage.Url}");
-                await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, $" 查找第{index}张图片失败，再试一次吧~");
+                string errMsg = $"searchWithSaucenao异常，url={imageMessage.Url}";
+                LogHelper.Error(ex, errMsg);
+                await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, $"查找第{index}张图片失败，再试一次吧~");
+                ReportHelper.SendError(ex, errMsg);
                 return false;
             }
         }
@@ -232,7 +228,7 @@ namespace Theresa3rd_Bot.Handler
                 {
                     if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
                     {
-                        PixivWorkInfo workInfo = ascii2dItem.PixivWorkInfo.body;
+                        PixivWorkInfo workInfo = ascii2dItem.PixivWorkInfo;
                         resultBuilder.AppendLine($"来源：Pixiv，标题：{workInfo.illustTitle}，pid：{workInfo.illustId}，链接：{workInfo.urls.original.ToOrginProxyUrl()}");
                     }
                     else if (ascii2dItem.SourceType == SetuSourceType.Twitter)
@@ -249,15 +245,12 @@ namespace Theresa3rd_Bot.Handler
                 workMsgs.Add(new PlainMessage(resultBuilder.ToString()));
                 Task sendTask = sendAndRevokeMessage(session, args, workMsgs);
             }
-            catch (BaseException ex)
-            {
-                LogHelper.Error(ex, $"searchWithAscii2d异常，url={imageMessage.Url}，{ex.Message}");
-                await session.SendGroupMessageWithAtAsync(args, new PlainMessage($" 查找图片失败，{ex.Message}，再试一次吧~"));
-            }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"searchWithAscii2d异常，url={imageMessage.Url}");
-                await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, $" 查找图片失败，再试一次吧~");
+                string errMsg = $"searchWithAscii2d异常，url={imageMessage.Url}";
+                LogHelper.Error(ex, errMsg);
+                await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, $"查找图片失败，再试一次吧~");
+                ReportHelper.SendError(ex, errMsg);
             }
         }
 
@@ -298,7 +291,7 @@ namespace Theresa3rd_Bot.Handler
         {
             long groupId = args.Sender.Group.Id;
             string template = BotConfig.PixivConfig.Template;
-            PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo.body;
+            PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
             List<IChatMessage> msgList = new List<IChatMessage>();
 
             if (pixivWorkInfo.IsImproper)

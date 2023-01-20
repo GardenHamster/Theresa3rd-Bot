@@ -222,7 +222,7 @@ namespace Theresa3rd_Bot.Util
         /// <param name="pixivTag"></param>
         /// <param name="maxShowCount"></param>
         /// <returns></returns>
-        public static string JoinPixivTagsStr(PixivTagDto pixivTag, int maxShowCount = 0)
+        public static string JoinPixivTagsStr(PixivTags pixivTag, int maxShowCount = 0)
         {
             if (pixivTag?.tags == null) return String.Empty;
             List<string> tags = pixivTag.tags.Select(o => o.tag).ToList();

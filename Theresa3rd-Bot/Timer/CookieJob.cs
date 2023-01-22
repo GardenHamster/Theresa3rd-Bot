@@ -8,6 +8,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Timer
 {
+    [DisallowConcurrentExecution]
     public class CookieJob : IJob
     {
         public async Task Execute(IJobExecutionContext context)

@@ -11,6 +11,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Timer
 {
+    [DisallowConcurrentExecution]
     public class TimingSetuJob : IJob
     {
         public async Task Execute(IJobExecutionContext context)

@@ -9,8 +9,8 @@ namespace Theresa3rd_Bot.Model.Lolisuki
 {
     public class LolisukiResult
     {
+        public int code { get; set; }
         public string error { get; set; }
-
         public List<LolisukiData> data { get; set; }
     }
 

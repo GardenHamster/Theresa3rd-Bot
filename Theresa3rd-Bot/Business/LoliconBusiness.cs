@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Lolicon;
 using Theresa3rd_Bot.Util;
 
@@ -46,7 +47,9 @@ namespace Theresa3rd_Bot.Business
             string httpUrl = HttpUrl.getLoliconApiV2Url();
             string postJson = JsonConvert.SerializeObject(param);
             string json = await HttpHelper.PostJsonAsync(httpUrl, postJson);
-            return JsonConvert.DeserializeObject<LoliconResultV2>(json);
+            LoliconResultV2 result = JsonConvert.DeserializeObject<LoliconResultV2>(json);
+            if (string.IsNullOrWhiteSpace(result.error) == false) throw new ApiException($"lolicon api error,message = {result.error}");
+            return result;
         }
 
     }

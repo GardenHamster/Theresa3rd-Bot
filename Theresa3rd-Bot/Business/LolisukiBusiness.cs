@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Lolisuki;
 using Theresa3rd_Bot.Util;
 
@@ -49,7 +50,9 @@ namespace Theresa3rd_Bot.Business
             string httpUrl = HttpUrl.getLolisukiApiUrl();
             string postJson = JsonConvert.SerializeObject(param);
             string json = await HttpHelper.PostJsonAsync(httpUrl, postJson);
-            return JsonConvert.DeserializeObject<LolisukiResult>(json);
+            LolisukiResult result = JsonConvert.DeserializeObject<LolisukiResult>(json);
+            if (result.code != 0) throw new ApiException($"lolisuki api error,message = {result.error}");
+            return result;
         }
 
 

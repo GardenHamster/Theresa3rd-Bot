@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Model.Lolisuki;
 using Theresa3rd_Bot.Model.Pixiv;
@@ -53,7 +54,7 @@ namespace Theresa3rd_Bot.Handler
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, aiMode, levelStr);
+                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, aiMode, levelStr, 1);
                 }
                 else
                 {
@@ -95,6 +96,13 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 CoolingCache.SetMemberSetuCooling(groupId, memberId);
+            }
+            catch (ApiException ex)
+            {
+                string errMsg = $"lolisukiSearchAsync异常";
+                LogHelper.Error(ex, errMsg);
+                await session.SendGroupMessageWithAtAsync(args, $"获取涩图出错了，{ex.Message}");
+                ReportHelper.SendError(ex, errMsg);
             }
             catch (Exception ex)
             {

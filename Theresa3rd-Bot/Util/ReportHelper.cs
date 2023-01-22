@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
-using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Error;
 
 namespace Theresa3rd_Bot.Util
@@ -13,7 +12,6 @@ namespace Theresa3rd_Bot.Util
     {
         private const int childSendTimes = 3;
         private const int exceptionSendTimes = 10;
-        private const int maxSizeRollBackups = 100;
         private static int LastSendHour = DateTime.Now.Hour;
         private static Dictionary<System.Type, List<ErrorRecord>> SendDic = new Dictionary<System.Type, List<ErrorRecord>>();
 

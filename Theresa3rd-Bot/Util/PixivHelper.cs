@@ -171,11 +171,6 @@ namespace Theresa3rd_Bot.Util
                     if (jsonDto.error) throw new ApiException($"pixiv api error,api message = {jsonDto.message}");
                     return jsonDto;
                 }
-                catch (HttpRequestException)
-                {
-                    if (--retryTimes < 0) throw;
-                    await Task.Delay(2000);
-                }
                 catch (ApiException)
                 {
                     if (--retryTimes < 0) throw;

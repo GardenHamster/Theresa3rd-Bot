@@ -27,7 +27,7 @@ namespace Theresa3rd_Bot.Handler
             lolisukiBusiness = new LolisukiBusiness();
         }
 
-        public async Task sendGeneralLolisukiImageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        public async Task lolisukiSearchAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
         {
             try
             {
@@ -98,8 +98,10 @@ namespace Theresa3rd_Bot.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "sendGeneralLolisukiImageAsync异常");
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.ErrorMsg, " 获取图片出错了，再试一次吧~");
+                string errMsg = "lolisukiSearchAsync异常";
+                LogHelper.Error(ex, errMsg);
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
+                ReportHelper.SendError(ex, errMsg);
             }
             finally
             {
@@ -148,7 +150,8 @@ namespace Theresa3rd_Bot.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex);
+                LogHelper.Error(ex, "定时涩图发送失败");
+                ReportHelper.SendError(ex, "定时涩图发送失败");
             }
         }
 

@@ -45,8 +45,8 @@ namespace Theresa3rd_Bot.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "disableSetuAsync异常");
-                throw;
+                LogHelper.Error(ex, "disableSetuTagAsync异常");
+                ReportHelper.SendError(ex, "disableSetuTagAsync异常");
             }
         }
 
@@ -76,7 +76,7 @@ namespace Theresa3rd_Bot.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "enableSetuAsync异常");
-                throw;
+                ReportHelper.SendError(ex, "enableSetuAsync异常");
             }
         }
 
@@ -112,7 +112,7 @@ namespace Theresa3rd_Bot.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "disableMemberAsync异常");
-                throw;
+                ReportHelper.SendError(ex, "disableMemberAsync异常");
             }
         }
 
@@ -143,7 +143,7 @@ namespace Theresa3rd_Bot.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "enableMemberAsync异常");
-                throw;
+                ReportHelper.SendError(ex, "enableMemberAsync异常");
             }
         }
 

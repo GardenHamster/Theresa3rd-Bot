@@ -101,6 +101,7 @@ namespace Theresa3rd_Bot.Handler
             {
                 LogHelper.Error(ex, "searchResult异常");
                 await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.ErrorMsg, " 出了点小问题，任务结束~");
+                ReportHelper.SendError(ex, "searchResult异常");
             }
             finally
             {

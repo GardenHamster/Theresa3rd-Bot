@@ -40,8 +40,8 @@ namespace Theresa3rd_Bot.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "sendMenuAsync异常");
-                throw;
+                LogHelper.Error(ex, "菜单发送失败");
+                ReportHelper.SendError(ex, "菜单发送失败");
             }
         }
 

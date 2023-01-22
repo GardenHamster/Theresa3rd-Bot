@@ -11,12 +11,10 @@ namespace Theresa3rd_Bot.Util
 {
     public class ReportHelper
     {
-        private const int childSendTimes = 5;
+        private const int childSendTimes = 3;
         private const int exceptionSendTimes = 10;
         private const int maxSizeRollBackups = 100;
-
         private static int LastSendHour = DateTime.Now.Hour;
-        private static List<ErrorRecord> ErrorRecordList = new List<ErrorRecord>();
         private static Dictionary<System.Type, List<ErrorRecord>> SendDic = new Dictionary<System.Type, List<ErrorRecord>>();
 
         /// <summary>
@@ -47,14 +45,14 @@ namespace Theresa3rd_Bot.Util
                 messageBuilder.Append("详细请查看Log日志");
                 foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups)
                 {
-                    sendErrorToGroup(groupId, messageBuilder.ToString());
+                    sendReport(groupId, messageBuilder.ToString());
                     Task.Delay(1000).Wait();
                 }
                 AddSendRecord(exception);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
+                LogHelper.Error(ex);
             }
         }
 
@@ -69,13 +67,11 @@ namespace Theresa3rd_Bot.Util
             {
                 if (BotConfig.GeneralConfig?.ErrorGroups == null) return;
                 string sendMessage = $"{message}\r\n{exception.Message}\r\n{exception.StackTrace}";
-                foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups)
-                {
-                    sendErrorToGroup(groupId, sendMessage);
-                }
+                foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups) sendReport(groupId, sendMessage);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogHelper.Error(ex);
             }
         }
 
@@ -86,11 +82,11 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         private static bool IsSendError(Exception ex)
         {
-            lock (ErrorRecordList)
+            lock (SendDic)
             {
                 if (ex == null) return false;
                 if (LastSendHour != DateTime.Now.Hour) return true;
-                System.Type exType = getExType(ex);
+                System.Type exType = ex.GetType();
                 if (!SendDic.ContainsKey(exType)) return true;
                 List<ErrorRecord> recordList = SendDic[exType];
                 if (recordList == null || recordList.Count == 0) return true;
@@ -99,22 +95,15 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
-        public static System.Type getExType(Exception ex)
-        {
-            if (ex is ApiException) return typeof(ApiException);
-            if (ex is PixivException) return typeof(PixivException);
-            return ex.GetType();
-        }
-
         /// <summary>
         /// 添加发送记录
         /// </summary>
         /// <param name="exception"></param>
         private static void AddSendRecord(Exception exception)
         {
-            lock (ErrorRecordList)
+            lock (SendDic)
             {
-                System.Type exType = getExType(exception);
+                System.Type exType = exception.GetType();
                 if (LastSendHour != DateTime.Now.Hour)
                 {
                     SendDic = new Dictionary<System.Type, List<ErrorRecord>>();
@@ -124,24 +113,24 @@ namespace Theresa3rd_Bot.Util
                 {
                     SendDic[exType] = new List<ErrorRecord>();
                 }
-                ErrorRecord errorRecord = new ErrorRecord(exception);
-                SendDic[exType].Add(errorRecord);
-                ErrorRecordList.Add(errorRecord);
-                if (ErrorRecordList.Count > maxSizeRollBackups)
-                {
-                    ErrorRecordList.RemoveRange(0, ErrorRecordList.Count - maxSizeRollBackups);
-                }
+                SendDic[exType].Add(new ErrorRecord(exception));
             }
         }
 
-        private static void sendErrorToGroup(long groupId, string message)
+        /// <summary>
+        /// 发送错误记录
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="message"></param>
+        private static void sendReport(long groupId, string message)
         {
             try
             {
                 MiraiHelper.Session.SendGroupMessageAsync(groupId, new PlainMessage(message)).Wait();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogHelper.Error(ex);
             }
         }
 

@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Cache;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.PO;
@@ -121,11 +122,18 @@ namespace Theresa3rd_Bot.Handler
 
                 CoolingCache.SetMemberSetuCooling(args.Sender.Group.Id, memberId);//进入CD状态
             }
+            catch (ApiException ex)
+            {
+                string errMsg = $"pixivSearchAsync异常";
+                LogHelper.Error(ex, errMsg);
+                await session.SendGroupMessageWithAtAsync(args, $"获取涩图出错了，{ex.Message}");
+                ReportHelper.SendError(ex, errMsg);
+            }
             catch (Exception ex)
             {
                 string errMsg = $"pixivSearchAsync异常";
                 LogHelper.Error(ex, errMsg);
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.ErrorMsg, " 获取涩图出错了，再试一次吧~");
+                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
                 ReportHelper.SendError(ex, errMsg);
             }
             finally

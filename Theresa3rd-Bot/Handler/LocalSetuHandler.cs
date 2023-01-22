@@ -49,7 +49,8 @@ namespace Theresa3rd_Bot.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex);
+                LogHelper.Error(ex, "定时涩图发送失败");
+                ReportHelper.SendError(ex, "定时涩图发送失败");
             }
         }
 

@@ -193,7 +193,7 @@ namespace Theresa3rd_Bot.Event
                     if (await CheckSetuUseUpAsync(session, args)) return;
                     if (await CheckHandingAsync(session, args)) return;
                     CoolingCache.SetGroupSetuCooling(groupId, memberId);
-                    await new LoliconHandler().sendGeneralLoliconImageAsync(session, args, message);
+                    await new LoliconHandler().loliconSearchAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -208,7 +208,7 @@ namespace Theresa3rd_Bot.Event
                     if (await CheckSetuUseUpAsync(session, args)) return;
                     if (await CheckHandingAsync(session, args)) return;
                     CoolingCache.SetGroupSetuCooling(groupId, memberId);
-                    await new LolisukiHandler().sendGeneralLolisukiImageAsync(session, args, message);
+                    await new LolisukiHandler().lolisukiSearchAsync(session, args, message);
                     new RequestRecordBusiness().addRecord(args, CommandType.Setu, message);
                     args.BlockRemainingHandlers = true;
                     return;
@@ -251,10 +251,12 @@ namespace Theresa3rd_Bot.Event
                     return;
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.ErrorMsg, " 出了点小问题，再试一次吧~");
-                LogHelper.Error(ex, "GroupMessageEvent异常");
+                LogHelper.Error(ex, "群指令异常");
+                await Task.Delay(1000);
+                ReportHelper.SendError(ex, "群指令异常");
             }
         }
 

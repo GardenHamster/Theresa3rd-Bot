@@ -65,6 +65,18 @@ namespace Theresa3rd_Bot.Util
         }
 
         /// <summary>
+        /// 正则搜索一个目录下的文件
+        /// </summary>
+        /// <param name="downTask"></param>
+        /// <returns></returns>
+        public static FileInfo[] searchFiles(string dirPath, string searchPattern)
+        {
+            if (Directory.Exists(dirPath) == false) return null;
+            DirectoryInfo searchFolder = new DirectoryInfo(dirPath);
+            return searchFolder.GetFiles(searchPattern, SearchOption.AllDirectories);
+        }
+
+        /// <summary>
         /// 从文件夹中获取指定数量的涩图
         /// </summary>
         /// <param name="count"></param>

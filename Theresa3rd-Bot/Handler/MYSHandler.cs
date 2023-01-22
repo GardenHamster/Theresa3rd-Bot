@@ -96,7 +96,7 @@ namespace Theresa3rd_Bot.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "订阅米游社用户异常");
-                throw;
+                ReportHelper.SendError(ex, "订阅米游社用户异常");
             }
         }
 
@@ -146,7 +146,7 @@ namespace Theresa3rd_Bot.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "退订米游社用户异常");
-                throw;
+                ReportHelper.SendError(ex, "退订米游社用户异常");
             }
         }
 

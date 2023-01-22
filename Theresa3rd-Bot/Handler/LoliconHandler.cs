@@ -52,7 +52,7 @@ namespace Theresa3rd_Bot.Handler
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, excludeAI);
+                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, excludeAI, 1);
                 }
                 else
                 {

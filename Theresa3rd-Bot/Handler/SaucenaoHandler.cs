@@ -339,7 +339,7 @@ namespace Theresa3rd_Bot.Handler
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);
-                Task sendTempTask = session.SendTempSetuAsync(args, workMsgs);
+                Task sendTempTask = session.SendTempSetuAsync(args, workMsgs, setuFiles);
             }
         }
 

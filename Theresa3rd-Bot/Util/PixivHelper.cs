@@ -58,7 +58,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivResult<PixivWorkInfo>> GetPixivWorkInfoAsync(string workId, int? retryTimes = null)
         {
-            string operation = $"获取pixiv作品信息pid:{workId}失败";
+            string operation = $"获取pixiv作品信息pid:{workId}";
             if (retryTimes == null) retryTimes = BotConfig.PixivConfig.ErrRetryTimes;
             string referer = HttpUrl.getPixivArtworksReferer(workId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
@@ -68,7 +68,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivResult<PixivUserInfo>> GetPixivUserInfoAsync(string userId)
         {
-            string operation = $"获取pixiv画师作品列表uid:{userId}失败";
+            string operation = $"获取pixiv画师作品列表uid:{userId}";
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
@@ -77,7 +77,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivResult<PixivUgoiraMeta>> GetPixivUgoiraMetaAsync(string workId)
         {
-            string operation = $"获取pixiv动图信息pid:{workId}失败";
+            string operation = $"获取pixiv动图信息pid:{workId}";
             string referer = HttpUrl.getPixivArtworksReferer(workId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUgoiraMetaUrl(workId);
@@ -86,7 +86,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivResult<PixivFollow>> GetPixivFollowAsync(long loginId, int offset, int limit)
         {
-            string operation = "获取pixiv关注列表失败";
+            string operation = "获取pixiv关注列表";
             string referer = HttpUrl.getPixivFollowReferer(loginId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivFollowUrl(loginId, offset, limit);
@@ -95,7 +95,7 @@ namespace Theresa3rd_Bot.Util
 
         public static async Task<PixivResult<PixivBookmarks>> GetPixivBookmarkAsync(long loginId, int offset, int limit)
         {
-            string operation = "获取pixiv收藏列表失败";
+            string operation = "获取pixiv收藏列表";
             string referer = HttpUrl.getPixivBookmarkReferer(loginId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivBookmarkUrl(loginId, offset, limit);

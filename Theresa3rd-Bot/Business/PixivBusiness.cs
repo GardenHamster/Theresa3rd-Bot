@@ -412,7 +412,7 @@ namespace Theresa3rd_Bot.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivUserSubscribeAsync(SubscribeTask subscribeTask, int getCount = 5)
+        public async Task<List<PixivSubscribe>> getPixivUserSubscribeAsync(SubscribeTask subscribeTask, PixivUserScanReport scanReport, int getCount = 5)
         {
             int index = 0;
             string userId = subscribeTask.SubscribeCode;
@@ -432,6 +432,7 @@ namespace Theresa3rd_Bot.Business
                     if (workInfo == null || string.IsNullOrWhiteSpace(workInfo.id)) continue;
                     if (shelfLife > 0 && workInfo.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, workInfo.id)) continue;
+                    scanReport.ScanWork++;
                     PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id, 0);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
@@ -449,8 +450,8 @@ namespace Theresa3rd_Bot.Business
                 }
                 catch (Exception ex)
                 {
+                    scanReport.ErrorWork++;
                     LogHelper.Error(ex);
-                    ReportHelper.SendError(ex);
                 }
                 finally
                 {
@@ -466,7 +467,7 @@ namespace Theresa3rd_Bot.Business
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(SubscribeTask subscribeTask, int maxScan)
+        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(SubscribeTask subscribeTask, PixivTagScanReport scanReport, int maxScan)
         {
             string tagNames = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
@@ -481,6 +482,7 @@ namespace Theresa3rd_Bot.Business
                     if (item == null || string.IsNullOrWhiteSpace(item.id)) continue;
                     if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, item.id)) continue;
+                    scanReport.ScanWork++;
                     PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(item.id, 0);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
@@ -499,8 +501,8 @@ namespace Theresa3rd_Bot.Business
                 }
                 catch (Exception ex)
                 {
+                    scanReport.ErrorWork++;
                     LogHelper.Error(ex);
-                    ReportHelper.SendError(ex);
                 }
                 finally
                 {
@@ -517,7 +519,7 @@ namespace Theresa3rd_Bot.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivFollowLatestAsync()
+        public async Task<List<PixivSubscribe>> getPixivFollowLatestAsync(PixivUserScanReport scanReport)
         {
             int pageIndex = 1;
             PixivResult<PixivFollowLatest> pageOne = await PixivHelper.GetPixivFollowLatestAsync(pageIndex);
@@ -531,6 +533,7 @@ namespace Theresa3rd_Bot.Business
                 {
                     if (workId <= 0) continue;
                     if (subscribeRecordDao.checkExists(SubscribeType.P站画师, workId.ToString())) continue;
+                    scanReport.ScanWork++;
                     PixivResult<PixivWorkInfo> pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString(), 0);
                     if (pixivWorkInfoDto == null || pixivWorkInfoDto.error) continue;
                     if (shelfLife > 0 && pixivWorkInfoDto.body.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
@@ -550,8 +553,8 @@ namespace Theresa3rd_Bot.Business
                 }
                 catch (Exception ex)
                 {
+                    scanReport.ErrorWork++;
                     LogHelper.Error(ex);
-                    ReportHelper.SendError(ex);
                 }
                 finally
                 {

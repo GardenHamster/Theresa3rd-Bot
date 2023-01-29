@@ -90,7 +90,7 @@ namespace Theresa3rd_Bot.Model.Lolisuki
 
         public override List<string> getOriginalUrls()
         {
-            if (urls == null) return new List<string>();
+            if (urls is null) return new List<string>();
             return new List<string>() { urls.original };
         }
     }

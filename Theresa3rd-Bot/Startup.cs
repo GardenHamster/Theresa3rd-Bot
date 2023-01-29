@@ -9,6 +9,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.BotPlatform.Mirai.Util;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
 using Theresa3rd_Bot.Model.Config;

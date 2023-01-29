@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 namespace Theresa3rd_Bot.Model.Config
 {
-    public class ReminderConfig
+    public class ReminderConfig : BasePluginConfig
     {
-        public bool Enable { get; set; }
-
         public List<ReminderTimer> Timers { get; set; }
     }
 

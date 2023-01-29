@@ -1,42 +1,36 @@
-﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using Mirai.CSharp.HttpApi.Models.EventArgs;
-using Mirai.CSharp.HttpApi.Session;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Theresa3rd_Bot.Business;
+using Theresa3rd_Bot.BotPlatform.Base.Command;
 using Theresa3rd_Bot.Common;
-using Theresa3rd_Bot.Model.PO;
+using Theresa3rd_Bot.Model.Content;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class MenuHandler
+    public class MenuHandler : BaseHandler
     {
-        public async Task sendMenuAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public async Task sendMenuAsync(GroupCommand groupCommand)
         {
             try
             {
-                long groupId = args.Sender.Group.Id;
-                long memberId = args.Sender.Id;
-
                 if (string.IsNullOrWhiteSpace(BotConfig.MenuConfig?.Template) == false)
                 {
-                    List<IChatMessage> templateList = session.SplitToChainAsync(BotConfig.MenuConfig.Template).Result;
-                    await session.SendGroupMessageWithAtAsync(args, templateList);
+                    List<ChatContent> templateList = BotConfig.MenuConfig.Template.SplitToChainAsync(SendTarget.Group);
+                    await BotCommand.ReplyGroupMessageWithAtAsync(command.Args, templateList);
                     return;
                 }
 
-                await session.SendGroupMessageAsync(args, getMemberMenu());
-                
-                if (memberId.IsSuperManager())
+                await command.SendGroupMessageAsync(command.Args, getMemberMenu());
+
+                if (command.MemberId.IsSuperManager())
                 {
                     await Task.Delay(1000);
-                    await session.SendGroupMessageAsync(args, getManagerMenu());
+                    await command.SendGroupMessageAsync(command.Args, getManagerMenu());
                 }
-               
+
             }
             catch (Exception ex)
             {

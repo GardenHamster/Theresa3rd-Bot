@@ -1,11 +1,8 @@
-﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using Mirai.CSharp.HttpApi.Models.EventArgs;
-using Mirai.CSharp.HttpApi.Session;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.BotPlatform.Base.Command;
 using Theresa3rd_Bot.Model.Cache;
-using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Cache
 {
@@ -22,54 +19,49 @@ namespace Theresa3rd_Bot.Cache
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static async Task<StepInfo> CreateStepAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, bool isRemindTimeout = true)
+        public static async Task<StepInfo> CreateStepAsync(GroupCommand command, bool isRemindTimeout = true)
         {
             lock (StepInfoDic)
             {
-                long memberId = args.Sender.Id;
-                long groupId = args.Sender.Group.Id;
+                long memberId = command.MemberId;
+                long groupId = command.GroupId;
                 if (!StepInfoDic.ContainsKey(groupId)) StepInfoDic[groupId] = new List<StepInfo>();
                 StepInfo stepInfo = StepInfoDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
-                if (stepInfo == null)
+                if (stepInfo is null)
                 {
-                    stepInfo = new StepInfo(groupId, memberId, isRemindTimeout);
+                    stepInfo = new StepInfo(command, isRemindTimeout);
                     StepInfoDic[groupId].Add(stepInfo);
                     return stepInfo;
                 }
                 if (stepInfo.IsActive == false)
                 {
                     StepInfoDic[groupId].Remove(stepInfo);
-                    stepInfo = new StepInfo(groupId, memberId, isRemindTimeout);
+                    stepInfo = new StepInfo(command, isRemindTimeout);
                     StepInfoDic[groupId].Add(stepInfo);
                     return stepInfo;
                 }
             }
-            await session.SendGroupMessageWithAtAsync(args, "你的一个指令正在执行中");
+            await command.ReplyGroupMessageWithAtAsync("你的一个指令正在执行中");
             return null;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="args"></param>
-        public static bool HandleStep(IMiraiHttpSession session, IGroupMessageEventArgs args, string value)
+
+        public static bool HandleStep(long groupId, long memberId, string value)
         {
-            long memberId = args.Sender.Id;
-            long groupId = args.Sender.Group.Id;
             if (StepInfoDic.ContainsKey(groupId) == false) return false;
             List<StepInfo> stepInfos = StepInfoDic[groupId];
-            if (stepInfos == null) return false;
+            if (stepInfos is null) return false;
             StepInfo stepInfo = StepInfoDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
-            if (stepInfo == null) return false;
+            if (stepInfo is null) return false;
             lock (stepInfo)
             {
                 if (stepInfo.IsActive == false) return false;
                 List<StepDetail> stepDetails = stepInfo.StepDetails;
-                if (stepDetails == null || stepDetails.Count == 0) return false;
+                if (stepDetails is null || stepDetails.Count == 0) return false;
                 StepDetail stepDetail = stepDetails.Where(x => x.IsFinish == false).FirstOrDefault();
-                if (stepDetail == null) return false;
-                if (stepDetail.CheckInput != null && stepDetail.CheckInput(session, args, value).Result == false) return true;
-                stepDetail.FinishStep(args, value);
+                if (stepDetail is null) return false;
+                if (stepDetail.CheckInput != null && stepDetail.CheckInput(stepInfo.BotCommand, value).Result == false) return true;
+                stepDetail.FinishStep(value);
                 return true;
             }
         }

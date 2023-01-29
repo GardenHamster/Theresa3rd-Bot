@@ -15,7 +15,7 @@ namespace Theresa3rd_Bot.Business
             if (!Directory.Exists(localPath)) throw new Exception("LocalPath不存在");
             DirectoryInfo localDir = new DirectoryInfo(localPath);
             DirectoryInfo[] directoryInfos = localDir.GetDirectories();
-            if (directoryInfos == null || directoryInfos.Length == 0) throw new Exception("LocalPath中不存在子文件夹");
+            if (directoryInfos is null || directoryInfos.Length == 0) throw new Exception("LocalPath中不存在子文件夹");
             int randomDirIndex = new Random().Next(0, directoryInfos.Length);
             for (int i = 0; i < count; i++)
             {

@@ -24,7 +24,7 @@ namespace Theresa3rd_Bot.Event
             if (memberId == BotConfig.MiraiConfig.BotQQ) return;
 
             WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
-            if (welcomeConfig == null || welcomeConfig.Enable == false) return;
+            if (welcomeConfig is null || welcomeConfig.Enable == false) return;
             string template = welcomeConfig.Template;
             WelcomeSpecial welcomeSpecial = welcomeConfig.Special?.Where(m => m.GroupId == groupId).FirstOrDefault();
             if (welcomeSpecial != null) template = welcomeSpecial.Template;

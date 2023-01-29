@@ -42,7 +42,7 @@ namespace Theresa3rd_Bot.Business
                 if (!subscribeTaskMap.ContainsKey(subscribeType)) subscribeTaskMap[subscribeType] = new List<SubscribeTask>();
                 List<SubscribeTask> subscribeTaskList = subscribeTaskMap[subscribeType];
                 SubscribeTask subscribeTask = subscribeTaskList.Where(o => o.SubscribeCode == subscribeInfo.SubscribeCode).FirstOrDefault();
-                if (subscribeTask == null)
+                if (subscribeTask is null)
                 {
                     subscribeTask = new SubscribeTask(subscribeInfo);
                     subscribeTaskList.Add(subscribeTask);

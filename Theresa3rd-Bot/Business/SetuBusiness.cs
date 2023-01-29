@@ -135,7 +135,7 @@ namespace Theresa3rd_Bot.Business
                 foreach (FileInfo file in files)
                 {
                     PixivUgoiraMetaFrames frame = frames.Where(o => o.file.Trim() == file.Name).FirstOrDefault();
-                    int delay = frame == null ? 60 : frame.delay;
+                    int delay = frame is null ? 60 : frame.delay;
                     using Image img = Image.FromFile(file.FullName);
                     gif.AddFrame(img, delay, GifQuality.Bit8);
                     await Task.Delay(1000);

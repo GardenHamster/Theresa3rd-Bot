@@ -1,7 +1,4 @@
-﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,8 +7,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Model.Config;
+using Theresa3rd_Bot.Model.Content;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.PO;
+using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Util
 {
@@ -27,27 +26,16 @@ namespace Theresa3rd_Bot.Util
         /// </summary>
         private static string ImageCodeHeader = @"[image:";
 
-        /// <summary>
-        /// 判断是否以某一个指令开头
-        /// </summary>
-        /// <param name="instructions"></param>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        public static bool StartWithCommand(this string instructions, string command)
-        {
-            return string.IsNullOrWhiteSpace(command) == false && instructions.ToLower().StartsWith(command.Trim().ToLower());
-        }
 
         /// <summary>
-        /// 判断是否以某一个指令开头
+        /// 检查是否黑名单成员
         /// </summary>
-        /// <param name="instructions"></param>
-        /// <param name="command"></param>
+        /// <param name="memberId"></param>
         /// <returns></returns>
-        public static bool StartWithCommand(this string instructions, string[] commands)
+        public static bool IsBanMember(long memberId)
         {
-            if (commands == null || commands.Length == 0) return false;
-            return commands.Where(o => string.IsNullOrWhiteSpace(o) == false && instructions.ToLower().StartsWith(o.Trim().ToLower())).Any();
+            if (memberId == 0) return false;
+            return BotConfig.BanMemberList.Where(o => o.KeyWord == memberId.ToString()).Any();
         }
 
         /// <summary>
@@ -58,9 +46,9 @@ namespace Theresa3rd_Bot.Util
         public static bool IsHandleMessage(long groupId)
         {
             PermissionsConfig permissionsConfig = BotConfig.PermissionsConfig;
-            if (permissionsConfig == null) return false;
+            if (permissionsConfig is null) return false;
             List<long> acceptGroups = permissionsConfig.AcceptGroups;
-            if (acceptGroups == null) return false;
+            if (acceptGroups is null) return false;
             return acceptGroups.Contains(groupId);
         }
 
@@ -83,7 +71,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool IsR18(this List<string> tags)
         {
-            if (tags == null || tags.Count == 0) return false;
+            if (tags is null || tags.Count == 0) return false;
             return tags.Where(o => o.IsR18()).Any();
         }
 
@@ -106,7 +94,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool IsAI(this List<string> tags)
         {
-            if (tags == null || tags.Count == 0) return false;
+            if (tags is null || tags.Count == 0) return false;
             return tags.Where(o => o.IsAI()).Any();
         }
 
@@ -117,7 +105,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool IsImproper(this List<string> tags)
         {
-            if (tags == null || tags.Count == 0) return false;
+            if (tags is null || tags.Count == 0) return false;
             if (tags.Where(o => o.ToUpper().Replace("-", "").Replace(" ", "").Contains("R18G")).Any()) return true;
             return false;
         }
@@ -129,7 +117,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static string hasBanTags(this List<string> tags)
         {
-            if (tags == null || tags.Count == 0) return null;
+            if (tags is null || tags.Count == 0) return null;
             List<string> banTags = new List<string>();
             foreach (string tag in tags)
             {
@@ -146,7 +134,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool IsGif(this List<string> tags)
         {
-            if (tags == null || tags.Count == 0) return false;
+            if (tags is null || tags.Count == 0) return false;
             return tags.Where(o => o == "うごイラ" || o == "动图" || o == "動圖" || o.ToLower() == "ugoira").Any();
         }
 
@@ -169,9 +157,10 @@ namespace Theresa3rd_Bot.Util
         /// <param name="session"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static async Task<List<IChatMessage>> SplitToChainAsync(this IMiraiHttpSession session, string template, UploadTarget uploadTarget = UploadTarget.Group)
+        public static List<ChatContent> SplitToChainAsync(this string template, SendTarget sendTarget = SendTarget.Group)
         {
-            List<IChatMessage> chatMessages = new List<IChatMessage>();
+            if (string.IsNullOrWhiteSpace(template)) return new();
+            List<ChatContent> chatContents = new List<ChatContent>();
             List<string> splitList = SplitImageCode(template);
             foreach (var item in splitList)
             {
@@ -181,14 +170,14 @@ namespace Theresa3rd_Bot.Util
                 {
                     string path = code.Substring(ImageCodeHeader.Length, code.Length - ImageCodeHeader.Length - 1);
                     if (File.Exists(path) == false) continue;
-                    chatMessages.Add((IChatMessage)await session.UploadPictureAsync(uploadTarget, path));
+                    chatContents.Add(new LocalImageContent(sendTarget, path));
                 }
                 else
                 {
-                    chatMessages.Add(new PlainMessage(item));
+                    chatContents.Add(new PlainContent(item));
                 }
             }
-            return chatMessages;
+            return chatContents;
         }
 
         /// <summary>
@@ -247,7 +236,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static string JoinPixivTagsStr(PixivTags pixivTag, int maxShowCount = 0)
         {
-            if (pixivTag?.tags == null) return String.Empty;
+            if (pixivTag?.tags is null) return String.Empty;
             List<string> tags = pixivTag.tags.Select(o => o.tag).ToList();
             return JoinPixivTagsStr(tags, maxShowCount);
         }
@@ -261,7 +250,7 @@ namespace Theresa3rd_Bot.Util
         public static string JoinPixivTagsStr(List<string> tags, int maxShowCount = 0)
         {
             string tagstr = "";
-            if (tags == null || tags.Count == 0) return String.Empty;
+            if (tags is null || tags.Count == 0) return String.Empty;
             for (int i = 0; i < tags.Count; i++)
             {
                 if (maxShowCount > 0 && i >= maxShowCount) return $"{tagstr}，...";

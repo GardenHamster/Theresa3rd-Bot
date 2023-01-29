@@ -1,22 +1,26 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
+using MySqlX.XDevAPI;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.BotPlatform.Base.Command;
+using Theresa3rd_Bot.BotPlatform.Mirai.Util;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Common;
+using Theresa3rd_Bot.Model.Command;
 using Theresa3rd_Bot.Model.PO;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Handler
 {
-    public class WebsiteHandler
+    public class CookieHandler : BaseHandler
     {
         private WebsiteBusiness websiteBusiness;
 
-        public WebsiteHandler()
+        public CookieHandler()
         {
             websiteBusiness = new WebsiteBusiness();
         }
@@ -28,12 +32,12 @@ namespace Theresa3rd_Bot.Handler
         /// <param name="args"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task UpdatePixivCookieAsync(IMiraiHttpSession session, IFriendMessageEventArgs args, string message)
+        public async Task UpdatePixivCookieAsync(FriendCommand command)
         {
-            string cookie = message.splitKeyWord(BotConfig.ManageConfig?.PixivCookieCommand);
+            string cookie = command.KeyWord;
             if (string.IsNullOrWhiteSpace(cookie))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用{BotConfig.GeneralConfig.Prefix}{BotConfig.ManageConfig.PixivCookieCommand} + cookie形式发送"));
+                await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($"未检测到cookie"));
                 return;
             }
 
@@ -42,21 +46,21 @@ namespace Theresa3rd_Bot.Handler
             string PHPSESSID = cookieDic.ContainsKey("PHPSESSID") ? cookieDic["PHPSESSID"] : null;
             if (string.IsNullOrWhiteSpace(PHPSESSID))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie中没有检测到PHPSESSID，请重新获取cookie"));
+                await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($"cookie中没有检测到PHPSESSID，请重新获取cookie"));
                 return;
             }
 
             string[] sessionArr = PHPSESSID.Split('_', StringSplitOptions.RemoveEmptyEntries);
             if (sessionArr.Length < 2 || string.IsNullOrWhiteSpace(sessionArr[0]))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie中的PHPSESSID格式不正确，请重新获取cookie"));
+                await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($"cookie中的PHPSESSID格式不正确，请重新获取cookie"));
                 return;
             }
 
             long userId = 0;
             if (long.TryParse(sessionArr[0].Trim(), out userId) == false)
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie中的PHPSESSID格式不正确，请重新获取cookie"));
+                await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($"cookie中的PHPSESSID格式不正确，请重新获取cookie"));
                 return;
             }
 
@@ -70,7 +74,7 @@ namespace Theresa3rd_Bot.Handler
             WebsitePO website = websiteBusiness.updateWebsite(websiteCode, cookie, userId, BotConfig.PixivConfig.CookieExpire);
             ConfigHelper.loadWebsite();
             string expireDate = website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss");
-            await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($" cookie更新完毕,过期时间为{expireDate}"));
+            await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($" cookie更新完毕,过期时间为{expireDate}"));
         }
 
         /// <summary>
@@ -80,12 +84,12 @@ namespace Theresa3rd_Bot.Handler
         /// <param name="args"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task UpdateSaucenaoCookieAsync(IMiraiHttpSession session, IFriendMessageEventArgs args, string message)
+        public async Task UpdateSaucenaoCookieAsync(FriendCommand command)
         {
-            string cookie = message.splitKeyWord(BotConfig.ManageConfig?.SaucenaoCookieCommand);
+            string cookie = command.KeyWord;
             if (string.IsNullOrWhiteSpace(cookie))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"未检测到cookie,请使用{BotConfig.GeneralConfig.Prefix}{BotConfig.ManageConfig.SaucenaoCookieCommand} + cookie形式发送"));
+                await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($"未检测到cookie"));
                 return;
             }
 
@@ -96,50 +100,74 @@ namespace Theresa3rd_Bot.Handler
             string tokenStr = cookieDic.ContainsKey("token") ? cookieDic["token"] : null;
             if (string.IsNullOrWhiteSpace(tokenStr))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie中没有检测到token，请重新获取cookie"));
+                await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($"cookie中没有检测到token，请重新获取cookie"));
                 return;
             }
 
             string authStr = cookieDic.ContainsKey("auth") ? cookieDic["auth"] : null;
             if (string.IsNullOrWhiteSpace(authStr))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie中没有检测到auth，请重新获取cookie"));
+                await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($"cookie中没有检测到auth，请重新获取cookie"));
                 return;
             }
 
             string userStr = cookieDic.ContainsKey("user") ? cookieDic["user"] : null;
             if (string.IsNullOrWhiteSpace(userStr))
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie中没有检测到user，请重新获取cookie"));
+                await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($"cookie中没有检测到user，请重新获取cookie"));
                 return;
             }
 
             long userId = 0;
             if (long.TryParse(userStr, out userId) == false)
             {
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($"cookie中的user格式不正确，请重新获取cookie"));
+                await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($"cookie中的user格式不正确，请重新获取cookie"));
                 return;
             }
 
             string websiteCode = Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao);
             websiteBusiness.updateWebsite(websiteCode, cookie, userId, DateTime.Now.AddYears(1));
             ConfigHelper.loadWebsite();
-            await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage($" cookie更新完毕"));
+            await session.SendFriendMessageAsync(command.Args.Sender.Id, new PlainMessage($" cookie更新完毕"));
         }
 
-        /// <summary>
-        /// 更新BiliCookie
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public async Task UpdateBiliCookieAsync(IMiraiHttpSession session, IFriendMessageEventArgs args, string message)
+        public async Task CheckAndWarn(WebsitePO website, int diffDay, string cookieName)
         {
-            await Task.CompletedTask;
+            DateTime expireDate = website.CookieExpireDate;
+            if (DateTime.Now.AddDays(diffDay) < expireDate) return;
+            if (expireDate.AddDays(diffDay) < DateTime.Now) return;
+            string warnMessage = $"{cookieName}将在{expireDate.ToString("yyyy-MM-dd HH:mm:ss")}过期，请尽快更新cookie";
+            foreach (long groupId in BotConfig.GeneralConfig.ErrorGroups)
+            {
+                try
+                {
+                    await MiraiHelper.Session.SendGroupMessageAsync(groupId, new PlainMessage(warnMessage));
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex);
+                }
+                finally
+                {
+                    await Task.Delay(1000);
+                }
+            }
+            foreach (long memberId in BotConfig.PermissionsConfig.SuperManagers)
+            {
+                try
+                {
+                    await MiraiHelper.Session.SendFriendMessageAsync(memberId, new PlainMessage(warnMessage));
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex);
+                }
+                finally
+                {
+                    await Task.Delay(1000);
+                }
+            }
         }
-
-
 
 
     }

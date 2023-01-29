@@ -1,4 +1,5 @@
-﻿using Theresa3rd_Bot.Type;
+﻿using System.Collections.Generic;
+using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Model.Config
 {
@@ -6,7 +7,7 @@ namespace Theresa3rd_Bot.Model.Config
     {
         public PixivScanMode ScanMode { get; set; }
 
-        public string SyncCommand { get; set; }
+        public List<string> SyncCommands { get; set; }
 
         public int ShelfLife { get; set; }
 

@@ -29,14 +29,14 @@ namespace Theresa3rd_Bot.Business
             IEnumerable<IElement> domList = document.All.Where(m => m.ClassList.Contains("result"));
 
             List<SaucenaoItem> itemList = new List<SaucenaoItem>();
-            if (domList == null || domList.Count() == 0) return new SaucenaoResult(itemList, startTime, 0);
+            if (domList is null || domList.Count() == 0) return new SaucenaoResult(itemList, startTime, 0);
             foreach (IElement resultElement in domList)
             {
                 IHtmlCollection<IElement> contentList = resultElement.GetElementsByClassName("resulttablecontent");
-                if (contentList == null || contentList.Length == 0) continue;
+                if (contentList is null || contentList.Length == 0) continue;
 
                 IHtmlCollection<IElement> linkifyList = contentList.First().GetElementsByTagName("a");
-                if (linkifyList == null || linkifyList.Length == 0) continue;
+                if (linkifyList is null || linkifyList.Length == 0) continue;
 
                 decimal similarity = 0;
                 IHtmlCollection<IElement> similarityList = resultElement.GetElementsByClassName("resultsimilarityinfo");
@@ -49,7 +49,7 @@ namespace Theresa3rd_Bot.Business
                 foreach (IElement linkifyElement in linkifyList)
                 {
                     SaucenaoItem saucenaoItem = getSaucenaoItem(linkifyElement, similarity);
-                    if (saucenaoItem == null) continue;
+                    if (saucenaoItem is null) continue;
                     if (itemList.Where(o => o.SourceUrl == saucenaoItem.SourceUrl).Any()) continue;
                     itemList.Add(saucenaoItem);
                 }
@@ -142,7 +142,7 @@ namespace Theresa3rd_Bot.Business
                 if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
                     PixivResult < PixivWorkInfo> pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
-                    if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
+                    if (pixivWorkInfo is null || pixivWorkInfo.error == true) continue;
                     saucenaoItem.PixivWorkInfo = pixivWorkInfo.body;
                     return saucenaoItem;
                 }
@@ -206,7 +206,7 @@ namespace Theresa3rd_Bot.Business
         /// <returns></returns>
         private List<SaucenaoItem> sortSaucenaoItem(List<SaucenaoItem> itemList)
         {
-            if (itemList == null) return new List<SaucenaoItem>();
+            if (itemList is null) return new List<SaucenaoItem>();
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();
             List<SaucenaoItem> selectList = itemList.OrderByDescending(o => o.Similarity).Take(20).ToList();
             sortList.AddRange(selectList.Where(o => o.SourceType == SetuSourceType.Pixiv && o.Similarity >= 90).ToList());

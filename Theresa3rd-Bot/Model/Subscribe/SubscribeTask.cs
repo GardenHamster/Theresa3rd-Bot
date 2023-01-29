@@ -8,7 +8,7 @@ using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Model.Subscribe
 {
-    public class SubscribeTask
+    public abstract class SubscribeTask
     {
         public int SubscribeId { get; set; }
         public string SubscribeCode { get; set; }
@@ -28,6 +28,8 @@ namespace Theresa3rd_Bot.Model.Subscribe
             this.SubscribeDescription = subscribeInfo.SubscribeDescription;
             this.GroupIdList = new List<long>();
         }
+
+        public abstract Task SendGroupMessageAsync();
 
 
     }

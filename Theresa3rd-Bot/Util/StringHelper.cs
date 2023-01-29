@@ -39,7 +39,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static string cutString(this string str, int keepLength = 100, string endString = "...")
         {
-            if (str == null) return null;
+            if (str is null) return null;
             str = str.Trim();
             if (str.Length <= keepLength) return str;
             if (string.IsNullOrEmpty(endString)) return str.Substring(0, keepLength);
@@ -51,11 +51,11 @@ namespace Theresa3rd_Bot.Util
         /// 提取关键词
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="commandStr"></param>
+        /// <param name="command"></param>
         /// <returns></returns>
-        public static string splitKeyWord(this string message, string commandStr)
+        public static string splitKeyWord(this string message, string command)
         {
-            string[] messageSplit = message.Split(new string[] { commandStr }, StringSplitOptions.RemoveEmptyEntries);
+            string[] messageSplit = message.Split(new string[] { command }, StringSplitOptions.RemoveEmptyEntries);
             if (messageSplit.Length < 2) return String.Empty;
             return messageSplit[1].Trim();
         }
@@ -64,25 +64,12 @@ namespace Theresa3rd_Bot.Util
         /// 提取参数
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="commandStr"></param>
+        /// <param name="command"></param>
         /// <returns></returns>
-        public static string splitParam(this string message, string commandStr)
+        public static string[] splitKeyWords(this string message, string command)
         {
-            string paramStr = message.splitKeyWord(commandStr);
-            if (paramStr == null) return null;
-            return paramStr.Trim();
-        }
-
-        /// <summary>
-        /// 提取参数
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="commandStr"></param>
-        /// <returns></returns>
-        public static string[] splitParams(this string message, string commandStr)
-        {
-            string paramStr = message.splitKeyWord(commandStr);
-            if (paramStr == null) return null;
+            string paramStr = message.splitKeyWord(command);
+            if (paramStr is null) return null;
             return paramStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
         }
 
@@ -241,7 +228,7 @@ namespace Theresa3rd_Bot.Util
             if (lastPointIndex < 0) return "";
             if (lastPointIndex < lastSlashIndex) return "";
             string fileSuffix = url.Substring(lastPointIndex + 1, url.Length - lastPointIndex - 1);
-            if (fileSuffix == null || fileSuffix.Trim().Length == 0) return "";
+            if (fileSuffix is null || fileSuffix.Trim().Length == 0) return "";
             return fileSuffix;
         }
 
@@ -281,7 +268,7 @@ namespace Theresa3rd_Bot.Util
         {
             int matchCount = 0;
             int previousIndex = -1;
-            if (str1 == null || str2 == null) return false;
+            if (str1 is null || str2 is null) return false;
             str1 = str1.Replace(" ", "").Trim().ToLower();
             str2 = str2.Replace(" ", "").Trim().ToLower();
             if (str1.Length == 0 || str2.Length == 0) return false;
@@ -340,7 +327,7 @@ namespace Theresa3rd_Bot.Util
 
         public static string getSupplyNameWithoutSymbol(this string itemName)
         {
-            if (itemName == null) return "";
+            if (itemName is null) return "";
             itemName = itemName.Replace("(", "");
             itemName = itemName.Replace(")", "");
             itemName = itemName.Replace("（", "");
@@ -373,7 +360,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool isShareChar(this string message)
         {
-            if (message == null) return false;
+            if (message is null) return false;
             string messageLower = message.ToLower();
             if (messageLower.Contains("xml")) return true;
             if (messageLower.Contains("http")) return true;

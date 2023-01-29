@@ -3,9 +3,8 @@ using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Model.Config
 {
-    public class TimingSetuConfig
+    public class TimingSetuConfig : BasePluginConfig
     {
-        public bool Enable { get; set; }
         public List<TimingSetuTimer> Timers { get; set; }
     }
 

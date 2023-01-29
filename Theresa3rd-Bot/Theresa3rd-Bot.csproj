@@ -6,6 +6,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Trigger\**" />
+	  <Content Remove="Trigger\**" />
+	  <EmbeddedResource Remove="Trigger\**" />
+	  <None Remove="Trigger\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AngleSharp" Version="0.17.1" />
 		<PackageReference Include="AnimatedGif" Version="1.0.5" />
 		<PackageReference Include="log4net" Version="2.0.15" />
@@ -50,5 +57,7 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
+
+	<ProjectExtensions><VisualStudio><UserProperties appsettings_1production_1json__JsonSchema="https://beaujs.com/schema.json" /></VisualStudio></ProjectExtensions>
 
 </Project>

@@ -13,7 +13,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
         public List<string> getTags()
         {
             List<string> tagList = new List<string>();
-            if (tags == null) return tagList;
+            if (tags is null) return tagList;
             tagList.AddRange(tags.Select(o => o.tag).Where(o => o != null).ToList());
             tagList.AddRange(tags.Select(o => o.translation?.en).Where(o => o != null).ToList());
             tagList.AddRange(tags.Select(o => o.translation?.ko).Where(o => o != null).ToList());

@@ -52,7 +52,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool IsShowAISetu(this long groupId)
         {
-            if (BotConfig.PermissionsConfig?.SetuShowAIGroups == null) return true;
+            if (BotConfig.PermissionsConfig?.SetuShowAIGroups is null) return true;
             return BotConfig.PermissionsConfig.SetuShowAIGroups.Contains(groupId);
         }
 
@@ -65,7 +65,7 @@ namespace Theresa3rd_Bot.Util
         public static bool IsShowSetuImg(this long groupId, bool isR18Img)
         {
             List<long> SetuShowImgGroups = BotConfig.PermissionsConfig?.SetuShowImgGroups;
-            if (SetuShowImgGroups == null) return false;
+            if (SetuShowImgGroups is null) return false;
             if (SetuShowImgGroups.Contains(groupId) == false) return false;
             if (isR18Img) return false;
             return true;
@@ -80,7 +80,7 @@ namespace Theresa3rd_Bot.Util
         public static bool IsShowSaucenaoImg(this long groupId, bool isR18Img)
         {
             List<long> SetuShowImgGroups = BotConfig.PermissionsConfig?.SetuShowImgGroups;
-            if (SetuShowImgGroups == null) return false;
+            if (SetuShowImgGroups is null) return false;
             if (SetuShowImgGroups.Contains(groupId) == false) return false;
             if (isR18Img) return false;
             return true;
@@ -93,7 +93,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool IsShowR18Setu(this long groupId)
         {
-            if (BotConfig.PermissionsConfig?.SetuShowR18Groups == null) return false;
+            if (BotConfig.PermissionsConfig?.SetuShowR18Groups is null) return false;
             return BotConfig.PermissionsConfig.SetuShowR18Groups.Contains(groupId);
         }
 
@@ -104,7 +104,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool IsShowR18Saucenao(this long groupId)
         {
-            if (BotConfig.PermissionsConfig?.SaucenaoR18Groups == null) return false;
+            if (BotConfig.PermissionsConfig?.SaucenaoR18Groups is null) return false;
             return BotConfig.PermissionsConfig.SaucenaoR18Groups.Contains(groupId);
         }
 
@@ -115,7 +115,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static bool IsSuperManager(this long memberId)
         {
-            if (BotConfig.PermissionsConfig?.SuperManagers == null) return false;
+            if (BotConfig.PermissionsConfig?.SuperManagers is null) return false;
             return BotConfig.PermissionsConfig.SuperManagers.Contains(memberId);
         }
 

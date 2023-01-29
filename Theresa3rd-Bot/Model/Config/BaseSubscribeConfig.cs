@@ -1,12 +1,12 @@
-﻿namespace Theresa3rd_Bot.Model.Config
+﻿using System.Collections.Generic;
+
+namespace Theresa3rd_Bot.Model.Config
 {
-    public class BaseSubscribeConfig
+    public class BaseSubscribeConfig : BasePluginConfig
     {
-        public bool Enable { get; set; }
+        public List<string> AddCommands { get; set; }
 
-        public string AddCommand { get; set; }
-
-        public string RmCommand { get; set; }
+        public List<string> RmCommands { get; set; }
 
         public string Template { get; set; }
 

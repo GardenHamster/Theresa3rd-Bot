@@ -3,11 +3,9 @@ using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Model.Config
 {
-    public class SetuPixivConfig
+    public class SetuPixivConfig : BasePluginConfig
     {
-        public bool Enable { get; set; }
-
-        public string Command { get; set; }
+        public List<string> Commands { get; set; }
 
         public PixivRandomMode RandomMode { get; set; }
 

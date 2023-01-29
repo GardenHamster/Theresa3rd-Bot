@@ -59,7 +59,7 @@ namespace Theresa3rd_Bot.Util
         public static async Task<PixivResult<PixivWorkInfo>> GetPixivWorkInfoAsync(string workId, int? retryTimes = null)
         {
             string operation = $"获取pixiv作品信息pid:{workId}";
-            if (retryTimes == null) retryTimes = BotConfig.PixivConfig.ErrRetryTimes;
+            if (retryTimes is null) retryTimes = BotConfig.PixivConfig.ErrRetryTimes;
             string referer = HttpUrl.getPixivArtworksReferer(workId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivWorkInfoUrl(workId);

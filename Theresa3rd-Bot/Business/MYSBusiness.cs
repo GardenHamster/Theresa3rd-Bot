@@ -1,10 +1,8 @@
-﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using Mirai.CSharp.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Dao;
@@ -39,7 +37,7 @@ namespace Theresa3rd_Bot.Business
         {
             List<SubscribePO> subscribeList = new List<SubscribePO>();
             List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
-            if (dbSubscribes == null || dbSubscribes.Count == 0) return subscribeList;
+            if (dbSubscribes is null || dbSubscribes.Count == 0) return subscribeList;
             foreach (var item in dbSubscribes)
             {
                 if (subscribeGroupDao.isExistsSubscribeGroup(item.Id)) subscribeList.Add(item);
@@ -57,7 +55,7 @@ namespace Theresa3rd_Bot.Business
         {
             List<SubscribePO> subscribeList = new List<SubscribePO>();
             List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
-            if (dbSubscribes == null || dbSubscribes.Count == 0) return subscribeList;
+            if (dbSubscribes is null || dbSubscribes.Count == 0) return subscribeList;
             foreach (var item in dbSubscribes)
             {
                 if (subscribeGroupDao.isExistsSubscribeGroup(groupId, item.Id)) subscribeList.Add(item);
@@ -83,7 +81,7 @@ namespace Theresa3rd_Bot.Business
             int subscribeId = subscribeTask.SubscribeId;
             List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
             MysResult<MysPostDataDto> mysPostDataDto = await getMysUserPostDtoAsync(subscribeTask.SubscribeCode, 10);
-            if (mysPostDataDto?.data?.list == null || mysPostDataDto.data.list.Count == 0) return mysSubscribeList;
+            if (mysPostDataDto?.data?.list is null || mysPostDataDto.data.list.Count == 0) return mysSubscribeList;
             int shelfLife = BotConfig.SubscribeConfig.Mihoyo.ShelfLife;
             List<MysPostListDto> postList = mysPostDataDto.data.list.OrderByDescending(o => o.post.created_at).ToList();
             foreach (var item in postList)
@@ -121,7 +119,7 @@ namespace Theresa3rd_Bot.Business
         }
 
 
-        public List<IChatMessage> getPostInfoAsync(MysSubscribe mysSubscribe, string template = "")
+        public string getPostInfoAsync(MysSubscribe mysSubscribe, string template = "")
         {
             if (string.IsNullOrWhiteSpace(template)) return getDefaultPostInfoAsync(mysSubscribe);
             template = template.Replace("{UserName}", mysSubscribe.MysUserPostDto.user.nickname);
@@ -129,16 +127,16 @@ namespace Theresa3rd_Bot.Business
             template = template.Replace("{Title}", mysSubscribe.SubscribeRecord.Title);
             template = template.Replace("{Content}", mysSubscribe.SubscribeRecord.Content);
             template = template.Replace("{Urls}", mysSubscribe.SubscribeRecord.LinkUrl);
-            return new List<IChatMessage>() { new PlainMessage(template) };
+            return template;
         }
 
-        private List<IChatMessage> getDefaultPostInfoAsync(MysSubscribe mysSubscribe)
+        private string getDefaultPostInfoAsync(MysSubscribe mysSubscribe)
         {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            msgList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Title}\r\n"));
-            msgList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.Content.cutString(300)}\r\n"));
-            msgList.Add(new PlainMessage($"{mysSubscribe.SubscribeRecord.LinkUrl}"));
-            return msgList;
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine($"{mysSubscribe.SubscribeRecord.Title}");
+            stringBuilder.AppendLine($"{mysSubscribe.SubscribeRecord.Content.cutString(300)}");
+            stringBuilder.Append($"{mysSubscribe.SubscribeRecord.LinkUrl}");
+            return stringBuilder.ToString();
         }
 
         /*-------------------------------------------------------------接口相关--------------------------------------------------------------------------*/

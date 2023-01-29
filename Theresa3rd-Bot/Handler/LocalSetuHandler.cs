@@ -1,10 +1,10 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.BotPlatform.Base.Command;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Model.LocalSetu;
@@ -26,7 +26,7 @@ namespace Theresa3rd_Bot.Handler
             string localPath = timingSetuTimer.LocalPath;
             if (string.IsNullOrWhiteSpace(localPath)) throw new Exception("未配置LocalPath");
             List<LocalSetuInfo> setuInfos = localSetuBusiness.loadRandom(localPath, timingSetuTimer.Quantity, timingSetuTimer.FromOneDir);
-            if (setuInfos == null || setuInfos.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
+            if (setuInfos is null || setuInfos.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
             string tags = timingSetuTimer.FromOneDir ? setuInfos[0].DirInfo.Name : "";
             await sendTimingSetuMessage(session, timingSetuTimer, tags, groupId);
             await Task.Delay(2000);

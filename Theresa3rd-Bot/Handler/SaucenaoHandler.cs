@@ -1,19 +1,18 @@
-﻿using AngleSharp.Html.Dom;
-using Mirai.CSharp.HttpApi.Models.ChatMessages;
+﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.BotPlatform.Base.Command;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
-using Theresa3rd_Bot.Exceptions;
 using Theresa3rd_Bot.Model.Cache;
+using Theresa3rd_Bot.Model.Command;
 using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Model.Saucenao;
 using Theresa3rd_Bot.Type;
@@ -34,7 +33,7 @@ namespace Theresa3rd_Bot.Handler
             ascii2dBusiness = new Ascii2dBusiness();
         }
 
-        public async Task searchResult(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public async Task searchResult(GroupCommand command)
         {
             try
             {
@@ -45,10 +44,10 @@ namespace Theresa3rd_Bot.Handler
                 CoolingCache.SetHanding(groupId, memberId);//请求处理中
                 List<ImageMessage> imgList = args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
 
-                if (imgList == null || imgList.Count == 0)
+                if (imgList is null || imgList.Count == 0)
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
-                    if (stepInfo == null) return;
+                    if (stepInfo is null) return;
                     StepDetail imgStep = new StepDetail(60, " 请在60秒内发送要查找的图片", CheckImageSourceAsync);
                     stepInfo.AddStep(imgStep);
                     if (await stepInfo.HandleStep(session, args) == false) return;
@@ -56,9 +55,9 @@ namespace Theresa3rd_Bot.Handler
                     imgArgs = imgStep.Args;
                 }
 
-                if (imgList == null || imgList.Count == 0)
+                if (imgList is null || imgList.Count == 0)
                 {
-                    await session.SendGroupMessageWithAtAsync(args, $"没有接收到图片，请重新发送指令开始操作");
+                    await session.ReplyGroupMessageWithAtAsync(args, $"没有接收到图片，请重新发送指令开始操作");
                     return;
                 }
 
@@ -71,7 +70,7 @@ namespace Theresa3rd_Bot.Handler
                 if (BotConfig.SaucenaoConfig.MaxReceive > 0 && imgList.Count > BotConfig.SaucenaoConfig.MaxReceive)
                 {
                     imgList = imgList.Take(BotConfig.SaucenaoConfig.MaxReceive).ToList();
-                    await session.SendGroupMessageWithAtAsync(args, $"总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~");
+                    await session.ReplyGroupMessageWithAtAsync(args, $"总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~");
                     await Task.Delay(1000);
                 }
 
@@ -115,7 +114,7 @@ namespace Theresa3rd_Bot.Handler
             if (ynaType == YNAType.Yes) return true;
             if (ynaType == YNAType.No) return false;
             StepInfo stepInfo = await StepCache.CreateStepAsync(session, args, false);
-            if (stepInfo == null) return false;
+            if (stepInfo is null) return false;
             StepDetail askStep = new StepDetail(30, $" 是否使用Ascii2d继续搜索剩余的图片？请在30秒内发送\r\n1：是，0：否");
             stepInfo.AddStep(askStep);
             if (await stepInfo.HandleStep(session, args) == false) return false;
@@ -125,7 +124,7 @@ namespace Theresa3rd_Bot.Handler
         private async Task<bool> CheckImageSourceAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string value)
         {
             List<ImageMessage> imgList = args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
-            if (imgList == null || imgList.Count == 0) return await Task.FromResult(false);
+            if (imgList is null || imgList.Count == 0) return await Task.FromResult(false);
             return await Task.FromResult(true);
         }
 
@@ -137,7 +136,7 @@ namespace Theresa3rd_Bot.Handler
                 long groupId = args.Sender.Group.Id;
                 DateTime startTime = DateTime.Now;
                 SaucenaoResult saucenaoResult = await saucenaoBusiness.getSaucenaoResultAsync(imageMessage.Url);
-                if (saucenaoResult == null || saucenaoResult.Items.Count == 0)
+                if (saucenaoResult is null || saucenaoResult.Items.Count == 0)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.NotFoundMsg, $" 找不到与第{index}张图片相似的图");
                     return true;
@@ -154,7 +153,7 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 SaucenaoItem saucenaoItem = await saucenaoBusiness.getBestMatchAsync(saucenaoResult);
-                if (saucenaoItem == null)
+                if (saucenaoItem is null)
                 {
                     await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.NotFoundMsg, $" 找不到与第{index}张图片相似的图");
                     return true;
@@ -198,9 +197,9 @@ namespace Theresa3rd_Bot.Handler
                 long groupId = args.Sender.Group.Id;
                 DateTime startTime = DateTime.Now;
                 Ascii2dResult ascii2dResult = await ascii2dBusiness.getAscii2dResultAsync(imageMessage.Url);
-                if (ascii2dResult == null || ascii2dResult.Items.Count == 0)
+                if (ascii2dResult is null || ascii2dResult.Items.Count == 0)
                 {
-                    await session.SendGroupMessageWithAtAsync(args, "ascii2d中找不到相似的图片");
+                    await session.ReplyGroupMessageWithAtAsync(args, "ascii2d中找不到相似的图片");
                     return;
                 }
 
@@ -217,9 +216,9 @@ namespace Theresa3rd_Bot.Handler
                 }
 
                 List<Ascii2dItem> matchList = await ascii2dBusiness.getBestMatchAsync(ascii2dItems);
-                if (matchList == null || matchList.Count == 0)
+                if (matchList is null || matchList.Count == 0)
                 {
-                    await session.SendGroupMessageWithAtAsync(args, "ascii2d中找不到相似的图片");
+                    await session.ReplyGroupMessageWithAtAsync(args, "ascii2d中找不到相似的图片");
                     return;
                 }
 

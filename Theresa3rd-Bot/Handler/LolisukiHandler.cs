@@ -1,19 +1,19 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Theresa3rd_Bot.BotPlatform.Base.Command;
 using Theresa3rd_Bot.Business;
 using Theresa3rd_Bot.Cache;
 using Theresa3rd_Bot.Common;
 using Theresa3rd_Bot.Exceptions;
+using Theresa3rd_Bot.Model.Command;
 using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Model.Lolisuki;
-using Theresa3rd_Bot.Model.Pixiv;
 using Theresa3rd_Bot.Type;
 using Theresa3rd_Bot.Util;
 
@@ -28,22 +28,20 @@ namespace Theresa3rd_Bot.Handler
             lolisukiBusiness = new LolisukiBusiness();
         }
 
-        public async Task lolisukiSearchAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string message)
+        public async Task lolisukiSearchAsync(GroupCommand command)
         {
             try
             {
-                long memberId = args.Sender.Id;
-                long groupId = args.Sender.Group.Id;
                 DateTime startDateTime = DateTime.Now;
-                CoolingCache.SetHanding(groupId, memberId);//请求处理中
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
 
-                bool isShowAI = groupId.IsShowAISetu();
-                bool isShowR18 = groupId.IsShowR18Setu();
-                string tagStr = message.splitKeyWord(BotConfig.SetuConfig.Lolisuki.Command) ?? "";
-                if (await CheckSetuTagEnableAsync(session, args, tagStr) == false) return;
+                bool isShowAI = command.GroupId.IsShowAISetu();
+                bool isShowR18 = command.GroupId.IsShowR18Setu();
+                string tagStr = command.KeyWord;
+                if (await CheckSetuTagEnableAsync(session, command.Args, tagStr) == false) return;
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
                 {
-                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.ProcessingMsg, null);
+                    await session.SendTemplateWithAtAsync(command.Args, BotConfig.SetuConfig.ProcessingMsg, null);
                     await Task.Delay(1000);
                 }
 
@@ -58,22 +56,22 @@ namespace Theresa3rd_Bot.Handler
                 }
                 else
                 {
-                    if (await CheckSetuCustomEnableAsync(session, args) == false) return;
+                    if (await CheckSetuCustomEnableAsync(session, command.Args) == false) return;
                     string[] tagArr = toLoliconTagArr(tagStr);
                     lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, aiMode, levelStr, 1, tagArr);
                 }
 
-                if (lolisukiResult == null || lolisukiResult.data == null || lolisukiResult.data.Count == 0)
+                if (lolisukiResult is null || lolisukiResult.data is null || lolisukiResult.data.Count == 0)
                 {
-                    await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
+                    await session.SendTemplateWithAtAsync(command.Args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
                 LolisukiData lolisukiData = lolisukiResult.data.First();
-                if (await CheckSetuSendable(session, args, lolisukiData, isShowR18, isShowAI) == false) return;
+                if (await CheckSetuSendable(session, command.Args, lolisukiData, isShowR18, isShowAI) == false) return;
 
-                bool isShowImg = groupId.IsShowSetuImg(lolisukiData.IsR18);
-                long todayLeftCount = GetSetuLeftToday(groupId, memberId);
+                bool isShowImg = command.GroupId.IsShowSetuImg(lolisukiData.IsR18);
+                long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
                 List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgsAsync(lolisukiData) : null;
 
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
@@ -87,33 +85,33 @@ namespace Theresa3rd_Bot.Handler
                     workMsgs.Add(new PlainMessage(lolisukiBusiness.getWorkInfo(lolisukiData, startDateTime, todayLeftCount, template)));
                 }
 
-                Task sendGroupTask = session.SendGroupSetuAndRevokeAsync(args, workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
+                Task sendGroupTask = session.SendGroupSetuAndRevokeAsync(command.Args, workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
 
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = session.SendTempSetuAsync(args, workMsgs, setuFiles);
+                    Task sendTempTask = session.SendTempSetuAsync(command.Args, workMsgs, setuFiles);
                 }
 
-                CoolingCache.SetMemberSetuCooling(groupId, memberId);
+                CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);
             }
             catch (ApiException ex)
             {
                 string errMsg = $"lolisukiSearchAsync异常";
                 LogHelper.Error(ex, errMsg);
-                await session.SendGroupMessageWithAtAsync(args, $"获取涩图出错了，{ex.Message}");
+                await session.ReplyGroupMessageWithAtAsync(command.Args, $"获取涩图出错了，{ex.Message}");
                 ReportHelper.SendError(ex, errMsg);
             }
             catch (Exception ex)
             {
                 string errMsg = "lolisukiSearchAsync异常";
                 LogHelper.Error(ex, errMsg);
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
+                await session.SendTemplateWithAtAsync(command.Args, BotConfig.SetuConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
                 ReportHelper.SendError(ex, errMsg);
             }
             finally
             {
-                CoolingCache.SetHandFinish(args.Sender.Group.Id, args.Sender.Id);//请求处理完成
+                CoolingCache.SetHandFinish(command.GroupId, command.MemberId);//请求处理完成
             }
         }
 

@@ -38,7 +38,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static T getRandomItem<T>(List<T> list)
         {
-            if (list == null || list.Count == 0) return default;
+            if (list is null || list.Count == 0) return default;
             int randomIndex = new Random().Next(0, list.Count);
             return list[randomIndex];
         }

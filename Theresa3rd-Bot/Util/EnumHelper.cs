@@ -25,13 +25,13 @@ namespace Theresa3rd_Bot.Util
 
         public static string GetTypeName(this TimingSetuSourceType sourceType)
         {
-            switch (sourceType)
+            return sourceType switch
             {
-                case TimingSetuSourceType.Local: return "本地图库";
-                case TimingSetuSourceType.Lolicon: return "Lolicon Api";
-                case TimingSetuSourceType.Lolisuki: return "Lolisuki Api";
-                default: return string.Empty;
-            }
+                TimingSetuSourceType.Local => "本地图库",
+                TimingSetuSourceType.Lolicon => "Lolicon Api",
+                TimingSetuSourceType.Lolisuki => "Lolisuki Api",
+                _ => string.Empty
+            };
         }
 
     }

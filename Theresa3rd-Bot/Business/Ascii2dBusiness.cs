@@ -29,15 +29,15 @@ namespace Theresa3rd_Bot.Business
             IEnumerable<IElement> domList = document.All.Where(m => m.ClassList.Contains("detail-box"));
 
             List<Ascii2dItem> itemList = new List<Ascii2dItem>();
-            if (domList == null || domList.Count() == 0) return new Ascii2dResult(itemList, startTime, 0);
+            if (domList is null || domList.Count() == 0) return new Ascii2dResult(itemList, startTime, 0);
             foreach (IElement resultElement in domList)
             {
                 IHtmlCollection<IElement> linkList = resultElement.GetElementsByTagName("a");
-                if (linkList == null || linkList.Length == 0) continue;
+                if (linkList is null || linkList.Length == 0) continue;
                 foreach (IElement linkElement in linkList)
                 {
                     Ascii2dItem saucenaoItem = getAscii2dItem(linkElement);
-                    if (saucenaoItem == null) continue;
+                    if (saucenaoItem is null) continue;
                     if (itemList.Where(o => o.SourceUrl == saucenaoItem.SourceUrl).Any()) continue;
                     itemList.Add(saucenaoItem);
                 }
@@ -72,7 +72,7 @@ namespace Theresa3rd_Bot.Business
 
         public async Task<List<Ascii2dItem>> getBestMatchAsync(List<Ascii2dItem> itemList)
         {
-            if (itemList == null || itemList.Count == 0) return null;
+            if (itemList is null || itemList.Count == 0) return null;
             List<Ascii2dItem> matchList = new List<Ascii2dItem>();
             for (int i = 0; i < itemList.Count; i++)
             {
@@ -82,7 +82,7 @@ namespace Theresa3rd_Bot.Business
                     if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
                     {
                         PixivResult<PixivWorkInfo> pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(ascii2dItem.SourceId);
-                        if (pixivWorkInfo == null || pixivWorkInfo.error == true) continue;
+                        if (pixivWorkInfo is null || pixivWorkInfo.error == true) continue;
                         ascii2dItem.PixivWorkInfo = pixivWorkInfo.body;
                     }
                     if (ascii2dItem.SourceType == SetuSourceType.Twitter)

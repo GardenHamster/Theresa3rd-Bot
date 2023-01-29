@@ -1,11 +1,11 @@
-﻿using Theresa3rd_Bot.Type;
+﻿using System.Collections.Generic;
+using Theresa3rd_Bot.Type;
 
 namespace Theresa3rd_Bot.Model.Config
 {
-    public class SaucenaoConfig
+    public class SaucenaoConfig : BasePluginConfig
     {
-        public bool Enable { get; set; }
-        public string Command { get; set; }
+        public List<string> Commands { get; set; }
         public string DisableMsg { get; set; }
         public string NotFoundMsg { get; set; }
         public string ErrorMsg { get; set; }

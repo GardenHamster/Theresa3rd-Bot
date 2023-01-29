@@ -228,7 +228,7 @@ namespace Theresa3rd_Bot.Util
         /// <returns></returns>
         public static void addHeaders(this HttpClient client, Dictionary<string, string> headerDic)
         {
-            if (headerDic == null) return;
+            if (headerDic is null) return;
             foreach (var item in headerDic) client.DefaultRequestHeaders.Add(item.Key, item.Value);
         }
 

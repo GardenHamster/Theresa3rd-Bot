@@ -1,5 +1,4 @@
-﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ namespace Theresa3rd_Bot.Util
         {
             try
             {
-                if (BotConfig.GeneralConfig?.ErrorGroups == null) return;
+                if (BotConfig.GeneralConfig?.ErrorGroups is null) return;
                 if (IsSendError(exception) == false) return;
                 StringBuilder messageBuilder = new StringBuilder();
                 if (string.IsNullOrWhiteSpace(message) == false)
@@ -63,7 +62,7 @@ namespace Theresa3rd_Bot.Util
         {
             try
             {
-                if (BotConfig.GeneralConfig?.ErrorGroups == null) return;
+                if (BotConfig.GeneralConfig?.ErrorGroups is null) return;
                 string sendMessage = $"{message}\r\n{exception.Message}\r\n{exception.StackTrace}";
                 foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups) sendReport(groupId, sendMessage);
             }
@@ -82,12 +81,12 @@ namespace Theresa3rd_Bot.Util
         {
             lock (SendDic)
             {
-                if (ex == null) return false;
+                if (ex is null) return false;
                 if (LastSendHour != DateTime.Now.Hour) return true;
                 System.Type exType = ex.GetType();
                 if (!SendDic.ContainsKey(exType)) return true;
                 List<ErrorRecord> recordList = SendDic[exType];
-                if (recordList == null || recordList.Count == 0) return true;
+                if (recordList is null || recordList.Count == 0) return true;
                 if (exType == typeof(Exception)) return recordList.Count < exceptionSendTimes;
                 return recordList.Count < childSendTimes;
             }
@@ -115,22 +114,6 @@ namespace Theresa3rd_Bot.Util
             }
         }
 
-        /// <summary>
-        /// 发送错误记录
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="message"></param>
-        private static void sendReport(long groupId, string message)
-        {
-            try
-            {
-                MiraiHelper.Session.SendGroupMessageAsync(groupId, new PlainMessage(message)).Wait();
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex);
-            }
-        }
 
 
 

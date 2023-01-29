@@ -39,7 +39,7 @@ namespace Theresa3rd_Bot.Cache
         {
             lock (SetuTimingCoolingInfo)
             {
-                if (SetuTimingCoolingInfo.LastRunTime == null) return false;
+                if (SetuTimingCoolingInfo.LastRunTime is null) return false;
                 return DateTime.Now < SetuTimingCoolingInfo.LastRunTime.Value.AddMinutes(coolingMinutes);
             }
         }
@@ -153,7 +153,7 @@ namespace Theresa3rd_Bot.Cache
         /// <returns></returns>
         private static int GetCoolingSeconds(DateTime? datetime, int secondInterval)
         {
-            if (datetime == null || secondInterval == 0) return 0;
+            if (datetime is null || secondInterval == 0) return 0;
             TimeSpan timeSpan = new TimeSpan(DateTime.Now.Ticks) - new TimeSpan(datetime.Value.Ticks);
             return timeSpan.TotalSeconds >= secondInterval ? 0 : secondInterval - (int)timeSpan.TotalSeconds;
         }

@@ -1,10 +1,10 @@
-﻿namespace Theresa3rd_Bot.Model.Config
-{
-    public class LolisukiConfig
-    {
-        public bool Enable { get; set; }
+﻿using System.Collections.Generic;
 
-        public string Command { get; set; }
+namespace Theresa3rd_Bot.Model.Config
+{
+    public class LolisukiConfig : BasePluginConfig
+    {
+        public List<string> Commands { get; set; }
 
         public string Level { get; set; }
 

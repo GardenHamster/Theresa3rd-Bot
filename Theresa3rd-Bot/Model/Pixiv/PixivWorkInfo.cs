@@ -54,7 +54,7 @@ namespace Theresa3rd_Bot.Model.Pixiv
 
         public override List<string> getOriginalUrls()
         {
-            if (urls == null) return new List<string>();
+            if (urls is null) return new List<string>();
             List<string> urlList = new List<string>();
             for (int i = 0; i < pageCount; i++)
             {

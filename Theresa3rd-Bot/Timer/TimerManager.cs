@@ -25,7 +25,7 @@ namespace Theresa3rd_Bot.Timer
             try
             {
                 ReminderConfig reminderConfig = BotConfig.ReminderConfig;
-                if (reminderConfig == null) return;
+                if (reminderConfig is null) return;
                 if (reminderConfig.Enable == false) return;
                 foreach (var item in reminderConfig.Timers) createReminderJob(item);
             }
@@ -40,9 +40,9 @@ namespace Theresa3rd_Bot.Timer
             try
             {
                 TimingSetuConfig timingSetuConfig = BotConfig.TimingSetuConfig;
-                if (timingSetuConfig == null) return;
+                if (timingSetuConfig is null) return;
                 if (timingSetuConfig.Enable == false) return;
-                if (timingSetuConfig.Timers == null) return;
+                if (timingSetuConfig.Timers is null) return;
                 if (timingSetuConfig.Timers.Count == 0) return;
                 List<TimingSetuTimer> timers = timingSetuConfig.Timers.Take(10).ToList();
                 foreach (var item in timers) createTimingSetuJob(item);
@@ -92,7 +92,7 @@ namespace Theresa3rd_Bot.Timer
         private static void initSubscribeTimers()
         {
             SubscribeConfig subscribeConfig = BotConfig.SubscribeConfig;
-            if (subscribeConfig == null) return;
+            if (subscribeConfig is null) return;
             if (subscribeConfig.PixivUser != null && subscribeConfig.PixivUser.Enable)
             {
                 PixivUserTimer.init();

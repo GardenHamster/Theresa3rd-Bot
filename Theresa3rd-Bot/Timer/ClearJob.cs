@@ -1,12 +1,9 @@
-﻿using Mirai.CSharp.Models.ChatMessages;
-using Quartz;
+﻿using Quartz;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Theresa3rd_Bot.Common;
-using Theresa3rd_Bot.Model.Config;
 using Theresa3rd_Bot.Util;
 
 namespace Theresa3rd_Bot.Timer
@@ -66,7 +63,7 @@ namespace Theresa3rd_Bot.Timer
         {
             string dirPath = System.IO.Path.GetTempPath();
             FileInfo[] fileList = FileHelper.searchFiles(dirPath, "file-upload*.tmp");
-            if (fileList == null || fileList.Length == 0) return;
+            if (fileList is null || fileList.Length == 0) return;
             foreach (var item in fileList) FileHelper.deleteFile(item);
             LogHelper.Info($"上传临时文件清理完毕，共计清理 {fileList.Length} 个临时文件...");
         }

@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
+using TheresaBot.MiraiHttpApi.Command;
+using TheresaBot.MiraiHttpApi.Helper;
+using TheresaBot.MiraiHttpApi.Relay;
 
 namespace TheresaBot.MiraiHttpApi.Event
 {
@@ -33,6 +36,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
                 if (chainList is null || chainList.Count == 0) return;
 
+                int msgId = args.GetMessageId();
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
                 string instructions = plainList.FirstOrDefault()?.Trim() ?? "";
                 if (string.IsNullOrWhiteSpace(message)) return;
@@ -44,14 +48,15 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 if (isAt == false && isInstruct == false)//没有@也不是一条指令
                 {
-                    if (StepCache.HandleStep(groupId, memberId, message)) return; //分步处理
+                    MiraiGroupRelay relay = new MiraiGroupRelay(args, msgId, message, groupId, memberId);
+                    if (StepCache.HandleStep(relay, groupId, memberId)) return; //分步处理
                     if (RepeatCache.CheckCanRepeat(groupId, botId, memberId, message)) await SendRepeat(session, args);//复读机
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(instructions)) return;//不存在任何指令
 
-                MiraiGroupCommand botCommand = GetGroupHandlerInvoker(session, args, message, groupId, memberId);
+                MiraiGroupCommand botCommand = GetGroupCommand(session, args, message, groupId, memberId);
                 if (botCommand is not null)
                 {
                     args.BlockRemainingHandlers = await botCommand.InvokeAsync();

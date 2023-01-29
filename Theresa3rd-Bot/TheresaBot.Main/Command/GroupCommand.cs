@@ -1,5 +1,8 @@
-﻿using TheresaBot.Main.Model.Content;
+﻿using System;
+using TheresaBot.Main.Model.Cache;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
+using TheresaBot.Main.Relay;
 
 namespace TheresaBot.Main.Command
 {
@@ -8,14 +11,16 @@ namespace TheresaBot.Main.Command
         public long GroupId { get; init; }
         public CommandHandler<GroupCommand> HandlerInvoker { get; init; }
 
-        public GroupCommand(CommandHandler<GroupCommand> invoker, string[] keyWords, string instruction, long groupId, long memberId) : base(keyWords, invoker.CommandType, instruction, memberId)
+        public GroupCommand(CommandHandler<GroupCommand> invoker, int msgId, string[] keyWords, string instruction, long groupId, long memberId) : base(msgId, keyWords, invoker.CommandType, instruction, memberId)
         {
             this.HandlerInvoker = invoker;
             this.MemberId = memberId;
             this.GroupId = groupId;
         }
 
-        public abstract List<string> GetImageUrls();
+        public abstract List<string> GetReplyImageUrls();
+
+        public abstract StepDetail CreateStepDetail(int waitSecond, string question, Func<GroupCommand, GroupRelay, Task<bool>> checkInput);
 
         public abstract Task<int> ReplyGroupMessageAsync(string message, bool isAt = false);
 

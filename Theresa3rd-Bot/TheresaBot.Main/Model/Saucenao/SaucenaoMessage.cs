@@ -1,14 +1,16 @@
-﻿namespace TheresaBot.Main.Model.Saucenao
+﻿using TheresaBot.Main.Model.Content;
+
+namespace TheresaBot.Main.Model.Saucenao
 {
     public class SaucenaoMessage
     {
         public decimal Similar { get; set; }
 
-        public List<IChatMessage> GroupMsgs { get; set; }
+        public List<BaseContent> GroupMsgs { get; set; }
 
-        public List<IChatMessage> TempMsgs { get; set; }
+        public List<BaseContent> TempMsgs { get; set; }
 
-        public SaucenaoMessage(SaucenaoItem saucenaoItem, List<IChatMessage> groupMsgs, List<IChatMessage> tempMsgs)
+        public SaucenaoMessage(SaucenaoItem saucenaoItem, List<BaseContent> groupMsgs, List<BaseContent> tempMsgs)
         {
             this.GroupMsgs = groupMsgs;
             this.TempMsgs = tempMsgs;

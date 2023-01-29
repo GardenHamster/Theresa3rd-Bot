@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Business;
+﻿using Quartz.Util;
+using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -8,6 +9,7 @@ using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Mys;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
+using TheresaBot.Main.Relay;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.Main.Type.StepOption;
@@ -52,8 +54,8 @@ namespace TheresaBot.Main.Handler
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要订阅用户的id", CheckUserIdAsync);
-                    StepDetail groupStep = new StepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
+                    StepDetail uidStep = command.CreateStepDetail(60, " 请在60秒内发送要订阅用户的id", CheckUserIdAsync);
+                    StepDetail groupStep = command.CreateStepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                     stepInfo.AddStep(uidStep);
                     stepInfo.AddStep(groupStep);
                     if (await stepInfo.HandleStep() == false) return;
@@ -112,7 +114,7 @@ namespace TheresaBot.Main.Handler
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail uidStep = new StepDetail(60, "请在60秒内发送要退订用户的id", CheckUserIdAsync);
+                    StepDetail uidStep = command.CreateStepDetail(60, "请在60秒内发送要退订用户的id", CheckUserIdAsync);
                     stepInfo.AddStep(uidStep);
                     if (await stepInfo.HandleStep() == false) return;
                     userId = uidStep.Answer;
@@ -208,6 +210,16 @@ namespace TheresaBot.Main.Handler
                     }
                 }
             }
+        }
+
+        private async Task<bool> CheckUserIdAsync(GroupCommand command, GroupRelay relay)
+        {
+            return await CheckUserIdAsync(command, relay.Message);
+        }
+
+        private async Task<bool> CheckSubscribeGroupAsync(GroupCommand command, GroupRelay relay)
+        {
+            return await CheckSubscribeGroupAsync(command, relay.Message);
         }
 
         private async Task<bool> CheckUserIdAsync(GroupCommand command, string value)

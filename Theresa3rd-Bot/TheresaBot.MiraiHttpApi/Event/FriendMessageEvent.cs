@@ -29,6 +29,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (chainList is null || chainList.Count == 0) return;
                 if (plainList is null || plainList.Count == 0) return;
 
+                int msgId = args.GetMessageId();
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
                 string instructions = plainList.FirstOrDefault();
                 if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(instructions)) return;
@@ -40,7 +41,7 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 if (string.IsNullOrWhiteSpace(instructions)) return;//不存在任何指令
 
-                MiraiFriendCommand botCommand = GetFriendHandlerInvoker(session, args, message, memberId);
+                MiraiFriendCommand botCommand = GetFriendCommand(session, args, message, memberId);
                 if (botCommand is not null)
                 {
                     args.BlockRemainingHandlers = await botCommand.InvokeAsync();

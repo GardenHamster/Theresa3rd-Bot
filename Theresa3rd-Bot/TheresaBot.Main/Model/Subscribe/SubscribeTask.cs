@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheresaBot.Main.Type;
-using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Subscribe
 {
-    public abstract class SubscribeTask
+    public class SubscribeTask
     {
         public int SubscribeId { get; set; }
         public string SubscribeCode { get; set; }
@@ -28,9 +22,6 @@ namespace TheresaBot.Main.Model.Subscribe
             this.SubscribeDescription = subscribeInfo.SubscribeDescription;
             this.GroupIdList = new List<long>();
         }
-
-        public abstract Task SendGroupMessageAsync();
-
 
     }
 }

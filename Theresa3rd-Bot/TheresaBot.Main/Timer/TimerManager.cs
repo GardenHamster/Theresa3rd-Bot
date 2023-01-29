@@ -1,11 +1,9 @@
-﻿using Quartz;
+﻿using MySqlX.XDevAPI;
+using Quartz;
 using Quartz.Impl;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TheresaBot.Main.Common;
-using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Config;
 
 namespace TheresaBot.Main.Timer
 {
@@ -35,7 +33,7 @@ namespace TheresaBot.Main.Timer
             }
         }
 
-        private static void initTimingSetuJob()
+        private static void initTimingSetuJob(BaseSession session)
         {
             try
             {
@@ -129,7 +127,7 @@ namespace TheresaBot.Main.Timer
             }
         }
 
-        private static async void createTimingSetuJob(TimingSetuTimer timingSetuTimer)
+        private static async void createTimingSetuJob(TimingSetuTimer timingSetuTimer, BaseSession session)
         {
             try
             {
@@ -137,6 +135,7 @@ namespace TheresaBot.Main.Timer
                 IJobDetail jobDetail = JobBuilder.Create<TimingSetuJob>().WithIdentity(timingSetuTimer.GetHashCode().ToString(), "TimingSetuJob").Build();
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
                 jobDetail.JobDataMap.Put("TimingSetuTimer", timingSetuTimer);
+                jobDetail.JobDataMap.Put("TimingSetuSession", session);
                 await scheduler.ScheduleJob(jobDetail, trigger);
                 await scheduler.Start();
                 LogHelper.Info($"定时涩图任务[{timingSetuTimer.Name}]启动完毕...");

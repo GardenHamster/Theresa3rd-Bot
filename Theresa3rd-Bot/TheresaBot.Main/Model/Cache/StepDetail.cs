@@ -1,9 +1,9 @@
 ﻿using TheresaBot.Main.Command;
-using TheresaBot.Main.Helper;
+using TheresaBot.Main.Relay;
 
 namespace TheresaBot.Main.Model.Cache
 {
-    public class StepDetail
+    public abstract class StepDetail
     {
         public bool IsFinish { get; set; }
 
@@ -13,41 +13,39 @@ namespace TheresaBot.Main.Model.Cache
 
         public string Question { get; set; }
 
+        public GroupRelay Relay { get; set; }
+
         public string Answer { get; set; }
 
-        public Func<GroupCommand, string, Task<bool>> CheckInput { get; set; }
+        public Func<GroupCommand, GroupRelay, Task<bool>> CheckInput { get; set; }
 
         public Func<StepInfo, StepDetail, Task<string>> StepQuestion { get; set; }
 
-        public StepDetail(int waitSecond, string question, Func<GroupCommand, string, Task<bool>> checkInput = null)
+        public StepDetail(int waitSecond, string question, Func<GroupCommand, GroupRelay, Task<bool>> checkInput = null)
         {
             this.WaitSecond = waitSecond;
             this.Question = question;
             this.CheckInput = checkInput;
         }
 
-        public StepDetail(int waitSecond, Func<StepInfo, StepDetail, Task<string>> stepQuestion, Func<GroupCommand, string, Task<bool>> checkInput = null)
+        public StepDetail(int waitSecond, Func<StepInfo, StepDetail, Task<string>> stepQuestion, Func<GroupCommand, GroupRelay, Task<bool>> checkInput = null)
         {
             this.WaitSecond = waitSecond;
             this.StepQuestion = stepQuestion;
             this.CheckInput = checkInput;
         }
 
-        public bool IsTimeout()
-        {
-            if (StartTime is null) return false;
-            int seconds = DateTimeHelper.GetSecondDiff(StartTime.Value, DateTime.Now);
-            return seconds >= WaitSecond;
-        }
+        public abstract List<string> GetReplyImageUrls();
 
         public void StartStep()
         {
             this.StartTime = DateTime.Now;
         }
 
-        public void FinishStep(string answer)
+        public void FinishStep(GroupRelay relay)
         {
-            this.Answer = answer;
+            this.Relay = relay;
+            this.Answer = relay.Message;
             this.IsFinish = true;
         }
 

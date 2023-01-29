@@ -5,6 +5,7 @@ namespace TheresaBot.Main.Command
 {
     public abstract class BaseCommand
     {
+        public int MsgId { get; set; }
         public long MemberId { get; init; }
         public string Instruction { get; init; }
         public string[] KeyWords { get; init; }
@@ -14,8 +15,9 @@ namespace TheresaBot.Main.Command
             get { return KeyWords is not null && KeyWords.Length > 0 ? KeyWords[0].Trim() : string.Empty; }
         }
 
-        public BaseCommand(string[] keyWords, CommandType commandType, string instruction, long memberId)
+        public BaseCommand(int msgId, string[] keyWords, CommandType commandType, string instruction, long memberId)
         {
+            this.MsgId = msgId;
             this.KeyWords = keyWords;
             this.Instruction = instruction;
             this.CommandType = commandType;

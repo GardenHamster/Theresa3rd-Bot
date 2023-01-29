@@ -137,8 +137,30 @@ namespace TheresaBot.MiraiHttpApi.Helper
 
         public static int GetMessageId(this IGroupMessageEventArgs args)
         {
-            SourceMessage sourceMessage = (SourceMessage)args.Chain.First();
-            return sourceMessage.Id;
+            try
+            {
+                SourceMessage sourceMessage = (SourceMessage)args.Chain.First();
+                return sourceMessage.Id;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "GetMessageId异常");
+                return 0;
+            }
+        }
+
+        public static int GetMessageId(this IFriendMessageEventArgs args)
+        {
+            try
+            {
+                SourceMessage sourceMessage = (SourceMessage)args.Chain.First();
+                return sourceMessage.Id;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "GetMessageId异常");
+                return 0;
+            }
         }
 
         public static async Task<List<IChatMessage>> ToMiraiMessageAsync(this List<BaseContent> chatContents)

@@ -1,5 +1,6 @@
 ﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Model.Cache;
+using TheresaBot.Main.Relay;
 
 namespace TheresaBot.Main.Cache
 {
@@ -43,7 +44,7 @@ namespace TheresaBot.Main.Cache
         }
 
 
-        public static bool HandleStep(long groupId, long memberId, string value)
+        public static bool HandleStep(GroupRelay relay, long groupId, long memberId)
         {
             if (StepInfoDic.ContainsKey(groupId) == false) return false;
             List<StepInfo> stepInfos = StepInfoDic[groupId];
@@ -57,8 +58,8 @@ namespace TheresaBot.Main.Cache
                 if (stepDetails is null || stepDetails.Count == 0) return false;
                 StepDetail stepDetail = stepDetails.Where(x => x.IsFinish == false).FirstOrDefault();
                 if (stepDetail is null) return false;
-                if (stepDetail.CheckInput != null && stepDetail.CheckInput(stepInfo.GroupCommand, value).Result == false) return true;
-                stepDetail.FinishStep(value);
+                if (stepDetail.CheckInput != null && stepDetail.CheckInput(stepInfo.GroupCommand, relay).Result == false) return true;
+                stepDetail.FinishStep(relay);
                 return true;
             }
         }

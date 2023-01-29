@@ -9,9 +9,9 @@ namespace TheresaBot.MiraiHttpApi.Event
     public abstract class BaseEvent
     {
 
-        public static MiraiGroupCommand GetGroupHandlerInvoker(IMiraiHttpSession session, IGroupMessageEventArgs args, string message, long groupId, long memberId)
+        public static MiraiGroupCommand GetGroupCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, string message, long groupId, long memberId)
         {
-            foreach (var invoker in HandlerInvokers.GroupCommandInvokers)
+            foreach (var invoker in HandlerInvokers.GroupCommands)
             {
                 MiraiGroupCommand command = message.CheckCommand(invoker, session, args, groupId, memberId);
                 if (command is not null) return command;
@@ -19,9 +19,9 @@ namespace TheresaBot.MiraiHttpApi.Event
             return null;
         }
 
-        public static MiraiFriendCommand GetFriendHandlerInvoker(IMiraiHttpSession session, IFriendMessageEventArgs args, string message, long memberId)
+        public static MiraiFriendCommand GetFriendCommand(IMiraiHttpSession session, IFriendMessageEventArgs args, string message, long memberId)
         {
-            foreach (var invoker in HandlerInvokers.FriendCommandInvokers)
+            foreach (var invoker in HandlerInvokers.FriendCommands)
             {
                 MiraiFriendCommand command = message.CheckCommand(invoker, session, args, memberId);
                 if (command is not null) return command;

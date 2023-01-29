@@ -1,12 +1,14 @@
-﻿using TheresaBot.Main.BotPlatform.Base.Command;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
-using TheresaBot.Main.Model.Config;
-using TheresaBot.Main.Model.Lolisuki;
-using TheresaBot.Main.Type;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.Lolisuki;
+using TheresaBot.Main.Session;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
@@ -14,7 +16,7 @@ namespace TheresaBot.Main.Handler
     {
         private LolisukiBusiness lolisukiBusiness;
 
-        public LolisukiHandler()
+        public LolisukiHandler(BaseSession session) : base(session)
         {
             lolisukiBusiness = new LolisukiBusiness();
         }
@@ -29,14 +31,14 @@ namespace TheresaBot.Main.Handler
                 bool isShowAI = command.GroupId.IsShowAISetu();
                 bool isShowR18 = command.GroupId.IsShowR18Setu();
                 string tagStr = command.KeyWord;
-                if (await CheckSetuTagEnableAsync(session, command.Args, tagStr) == false) return;
+                if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
                 {
-                    await session.SendTemplateWithAtAsync(command.Args, BotConfig.SetuConfig.ProcessingMsg, null);
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ProcessingMsg);
                     await Task.Delay(1000);
                 }
 
-                LolisukiResult lolisukiResult = null;
+                LolisukiResult lolisukiResult;
                 int r18Mode = isShowR18 ? 2 : 0;
                 int aiMode = isShowAI ? 2 : 0;
                 string levelStr = getLevelStr(isShowR18);
@@ -47,41 +49,41 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    if (await CheckSetuCustomEnableAsync(session, command.Args) == false) return;
+                    if (await CheckSetuCustomEnableAsync(command) == false) return;
                     string[] tagArr = toLoliconTagArr(tagStr);
                     lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, aiMode, levelStr, 1, tagArr);
                 }
 
                 if (lolisukiResult is null || lolisukiResult.data is null || lolisukiResult.data.Count == 0)
                 {
-                    await session.SendTemplateWithAtAsync(command.Args, BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
                 LolisukiData lolisukiData = lolisukiResult.data.First();
-                if (await CheckSetuSendable(session, command.Args, lolisukiData, isShowR18, isShowAI) == false) return;
+                if (await CheckSetuSendable(command, lolisukiData, isShowR18, isShowAI) == false) return;
 
                 bool isShowImg = command.GroupId.IsShowSetuImg(lolisukiData.IsR18);
                 long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
-                List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgsAsync(lolisukiData) : null;
+                List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgsAsync(lolisukiData) : new();
 
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
-                List<IChatMessage> workMsgs = new List<IChatMessage>();
+                List<BaseContent> workMsgs = new List<BaseContent>();
                 if (string.IsNullOrWhiteSpace(template))
                 {
-                    workMsgs.Add(new PlainMessage(lolisukiBusiness.getDefaultWorkInfo(lolisukiData, startDateTime)));
+                    workMsgs.Add(new PlainContent(lolisukiBusiness.getDefaultWorkInfo(lolisukiData, startDateTime)));
                 }
                 else
                 {
-                    workMsgs.Add(new PlainMessage(lolisukiBusiness.getWorkInfo(lolisukiData, startDateTime, todayLeftCount, template)));
+                    workMsgs.Add(new PlainContent(lolisukiBusiness.getWorkInfo(lolisukiData, startDateTime, todayLeftCount, template)));
                 }
 
-                Task sendGroupTask = session.SendGroupSetuAndRevokeAsync(command.Args, workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
+                Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
 
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = session.SendTempSetuAsync(command.Args, workMsgs, setuFiles);
+                    Task sendTempTask = command.SendTempSetuAsync(workMsgs, setuFiles);
                 }
 
                 CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);
@@ -90,14 +92,14 @@ namespace TheresaBot.Main.Handler
             {
                 string errMsg = $"lolisukiSearchAsync异常";
                 LogHelper.Error(ex, errMsg);
-                await session.ReplyGroupMessageWithAtAsync(command.Args, $"获取涩图出错了，{ex.Message}");
+                await command.ReplyGroupMessageWithAtAsync($"获取涩图出错了，{ex.Message}");
                 ReportHelper.SendError(ex, errMsg);
             }
             catch (Exception ex)
             {
                 string errMsg = "lolisukiSearchAsync异常";
                 LogHelper.Error(ex, errMsg);
-                await session.SendTemplateWithAtAsync(command.Args, BotConfig.SetuConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
                 ReportHelper.SendError(ex, errMsg);
             }
             finally
@@ -106,7 +108,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task sendTimingSetuAsync(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, long groupId)
+        public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
             int eachPage = 5;
             bool isShowAI = groupId.IsShowAISetu();
@@ -116,8 +118,8 @@ namespace TheresaBot.Main.Handler
             int count = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
             string levelStr = getLevelStr(isShowR18);
             string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
-            string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? null : toLoliconTagArr(tagStr);
-            await sendTimingSetuMessage(session, timingSetuTimer, tagStr, groupId);
+            string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
+            await sendTimingSetuMessage(timingSetuTimer, tagStr, groupId);
             await Task.Delay(2000);
             while (count > 0)
             {
@@ -127,23 +129,23 @@ namespace TheresaBot.Main.Handler
                 if (lolisukiResult.data.Count == 0) continue;
                 foreach (var setuInfo in lolisukiResult.data)
                 {
-                    await sendSetuInfoAsync(session, setuInfo, groupId);
+                    await sendSetuInfoAsync(setuInfo, groupId);
                     await Task.Delay(1000);
                 }
             }
         }
 
-        private async Task sendSetuInfoAsync(IMiraiHttpSession session, LolisukiData setuInfo, long groupId)
+        private async Task sendSetuInfoAsync(LolisukiData setuInfo, long groupId)
         {
             try
             {
                 bool isR18Img = setuInfo.IsR18;
                 bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                 DateTime startTime = DateTime.Now;
-                List<IChatMessage> workMsgs = new List<IChatMessage>();
-                List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgsAsync(setuInfo) : null;
-                workMsgs.Add(new PlainMessage(lolisukiBusiness.getDefaultWorkInfo(setuInfo, startTime)));
-                await session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, isShowImg);
+                List<BaseContent> workMsgs = new List<BaseContent>();
+                List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgsAsync(setuInfo) : new();
+                workMsgs.Add(new PlainContent(lolisukiBusiness.getDefaultWorkInfo(setuInfo, startTime)));
+                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, isShowImg);
             }
             catch (Exception ex)
             {

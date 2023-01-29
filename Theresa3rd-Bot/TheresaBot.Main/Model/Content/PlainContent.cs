@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Content
 {
-    public class PlainContent : ChatContent
+    public class PlainContent : BaseContent
     {
         public string Content { get; set; }
 

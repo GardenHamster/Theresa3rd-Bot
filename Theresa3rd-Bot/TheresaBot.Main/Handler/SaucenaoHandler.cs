@@ -1,13 +1,14 @@
 ﻿using System.Text;
-using TheresaBot.Main.BotPlatform.Base.Command;
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
+using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
-using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Handler
 {
@@ -17,7 +18,7 @@ namespace TheresaBot.Main.Handler
         private SaucenaoBusiness saucenaoBusiness;
         private Ascii2dBusiness ascii2dBusiness;
 
-        public SaucenaoHandler()
+        public SaucenaoHandler(BaseSession session) : base(session)
         {
             pixivBusiness = new PixivBusiness();
             saucenaoBusiness = new SaucenaoBusiness();
@@ -28,11 +29,8 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                long memberId = args.Sender.Id;
-                long groupId = args.Sender.Group.Id;
                 DateTime startDateTime = DateTime.Now;
-                IGroupMessageEventArgs imgArgs = args;
-                CoolingCache.SetHanding(groupId, memberId);//请求处理中
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
                 List<ImageMessage> imgList = args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
 
                 if (imgList is null || imgList.Count == 0)

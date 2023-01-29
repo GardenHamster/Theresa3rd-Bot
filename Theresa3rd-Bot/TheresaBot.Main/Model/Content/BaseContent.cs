@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Content
 {
-    public abstract class ChatContent
+    public abstract class BaseContent
     {
     }
 }

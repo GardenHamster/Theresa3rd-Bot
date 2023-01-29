@@ -1,22 +1,22 @@
-﻿using TheresaBot.Main.Model.Config;
-using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
 {
     public class ReminderHandler : BaseHandler
     {
+        public ReminderHandler(BaseSession session) : base(session)
+        {
+        }
+
         public async Task SendRemindAsync(ReminderTimer reminderTimer)
         {
-            List<IChatMessage> chainList = new List<IChatMessage>();
-            if (reminderTimer.AtAll == true) chainList.Add(new AtAllMessage());
-            if (reminderTimer.AtMembers != null && reminderTimer.AtMembers.Count > 0)
-            {
-                foreach (var memberId in reminderTimer.AtMembers) chainList.Add(new AtMessage(memberId));
-            }
-            chainList.AddRange(BusinessHelper.SplitToChainAsync(MiraiHelper.Session, reminderTimer.Template).Result);
+            List<BaseContent> chainList = BusinessHelper.SplitToChainAsync(reminderTimer.Template);
             foreach (var groupId in reminderTimer.Groups)
             {
-                await MiraiHelper.Session.SendGroupMessageAsync(groupId, chainList.ToArray());
+                await Session.SendGroupMessageAsync(groupId, chainList, reminderTimer.AtMembers, reminderTimer.AtAll);
                 await Task.Delay(1000);
             }
         }

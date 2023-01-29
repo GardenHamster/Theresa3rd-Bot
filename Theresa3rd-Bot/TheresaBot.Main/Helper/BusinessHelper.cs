@@ -152,10 +152,10 @@ namespace TheresaBot.Main.Helper
         /// <param name="session"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static List<ChatContent> SplitToChainAsync(this string template, SendTarget sendTarget = SendTarget.Group)
+        public static List<BaseContent> SplitToChainAsync(this string template, SendTarget sendTarget = SendTarget.Group)
         {
             if (string.IsNullOrWhiteSpace(template)) return new();
-            List<ChatContent> chatContents = new List<ChatContent>();
+            List<BaseContent> chatContents = new List<BaseContent>();
             List<string> splitList = SplitImageCode(template);
             foreach (var item in splitList)
             {

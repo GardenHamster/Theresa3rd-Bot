@@ -141,10 +141,10 @@ namespace TheresaBot.MiraiHttpApi.Helper
             return sourceMessage.Id;
         }
 
-        public static async Task<List<IChatMessage>> ToMiraiMessageAsync(this List<ChatContent> chatContents)
+        public static async Task<List<IChatMessage>> ToMiraiMessageAsync(this List<BaseContent> chatContents)
         {
             List<IChatMessage> chatList = new List<IChatMessage>();
-            foreach (ChatContent content in chatContents)
+            foreach (BaseContent content in chatContents)
             {
                 IChatMessage chatMessage = await content.ToMiraiMessageAsync();
                 if(chatMessage is not null) chatList.Add(chatMessage);
@@ -152,7 +152,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
             return chatList;
         }
 
-        public static async Task<IChatMessage> ToMiraiMessageAsync(this ChatContent chatContent)
+        public static async Task<IChatMessage> ToMiraiMessageAsync(this BaseContent chatContent)
         {
             if (chatContent is PlainContent plainContent)
             {

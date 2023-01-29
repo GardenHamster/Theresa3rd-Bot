@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
 
 namespace TheresaBot.Main.Command
@@ -12,6 +13,10 @@ namespace TheresaBot.Main.Command
             this.HandlerInvoker = invoker;
             this.MemberId = memberId;
         }
+
+        public abstract Task<int> ReplyFriendMessageAsync(string message);
+
+        public abstract Task<int> ReplyFriendMessageAsync(List<BaseContent> contents);
 
         public abstract Task<int> ReplyFriendTemplateAsync(string template, string defaultmsg);
 

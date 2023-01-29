@@ -87,7 +87,7 @@ Reminder:                                                                       
           AtAll:                false                                               #是否艾特群体
           AtMembers:            []                                                  #艾特群员QQ号列表
           Template:             |                                                   #消息模版
-                                今天是深渊结算的日子，舰长打穿红莲了没？
+                                今天是深渊结算的日子，旅行者打穿红莲了没？
                                 [image:C:\BotImg\face\shenyuanjiesuan.png]
 
 Setu:                                                                               #色图相关

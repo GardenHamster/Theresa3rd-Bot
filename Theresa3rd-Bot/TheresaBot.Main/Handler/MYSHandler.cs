@@ -1,15 +1,16 @@
-﻿using TheresaBot.Main.BotPlatform.Base.Command;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Mys;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
+using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.Main.Type.StepOption;
-using TheresaBot.Main.Helper;
 
 
 namespace TheresaBot.Main.Handler
@@ -19,7 +20,7 @@ namespace TheresaBot.Main.Handler
         private MYSBusiness mysBusiness;
         private SubscribeBusiness subscribeBusiness;
 
-        public MYSHandler()
+        public MYSHandler(BaseSession session) : base(session)
         {
             mysBusiness = new MYSBusiness();
             subscribeBusiness = new SubscribeBusiness();
@@ -36,13 +37,13 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string userId = null;
+                string userId;
                 SubscribeGroupType? groupType = null;
                 string[] paramArr = command.KeyWords;
                 if (paramArr != null && paramArr.Length >= 2)
                 {
-                    userId = paramArr.Length > 0 ? paramArr[0] : null;
-                    string groupTypeStr = paramArr.Length > 1 ? paramArr[1] : null;
+                    userId = paramArr.Length > 0 ? paramArr[0] : string.Empty;
+                    string groupTypeStr = paramArr.Length > 1 ? paramArr[1] : string.Empty;
                     if (await CheckUserIdAsync(command, userId) == false) return;
                     if (await CheckSubscribeGroupAsync(command, groupTypeStr) == false) return;
                     groupType = (SubscribeGroupType)Convert.ToInt32(groupTypeStr);
@@ -77,7 +78,7 @@ namespace TheresaBot.Main.Handler
                 }
                 subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
 
-                List<ChatContent> chailList = new List<ChatContent>();
+                List<BaseContent> chailList = new List<BaseContent>();
                 chailList.Add(new PlainContent($"米游社用户[{dbSubscribe.SubscribeName}]订阅成功!\r\n"));
                 chailList.Add(new PlainContent($"目标群：{Enum.GetName(typeof(SubscribeGroupType), groupType)}\r\n"));
                 chailList.Add(new PlainContent($"uid：{dbSubscribe.SubscribeCode}\r\n"));
@@ -178,7 +179,7 @@ namespace TheresaBot.Main.Handler
                 string coverUrl = mysSubscribe.SubscribeRecord.CoverUrl;
                 if (subscribeTask.GroupIdList is null || subscribeTask.GroupIdList.Count == 0) continue;
 
-                List<ChatContent> msgList = new List<ChatContent>();
+                List<BaseContent> msgList = new List<BaseContent>();
                 msgList.Add(new PlainContent(mysBusiness.getPostInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Mihoyo.Template)));
 
                 if (string.IsNullOrEmpty(coverUrl) == false)

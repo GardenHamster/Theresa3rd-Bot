@@ -1,21 +1,22 @@
-﻿using System;
-using System.Threading.Tasks;
-using TheresaBot.Main.BotPlatform.Base.Command;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
     public abstract class BaseHandler
     {
-        private RequestRecordBusiness requestRecordBusiness;
+        protected BaseSession Session;
+        protected RequestRecordBusiness requestRecordBusiness;
 
-        public BaseHandler()
+        public BaseHandler(BaseSession session)
         {
+            this.Session = session;
             this.requestRecordBusiness = new RequestRecordBusiness();
         }
 
@@ -24,14 +25,14 @@ namespace TheresaBot.Main.Handler
             return await Task.FromResult(requestRecordBusiness.getUsedCountToday(groupId, memberId, commandTypeArr));
         }
 
-        public async Task<RequestRecordPO> addRecord(GroupCommand botCommand)
+        public async Task<RequestRecordPO> addRecord(GroupCommand command)
         {
-            return await Task.FromResult(requestRecordBusiness.addRecord(botCommand.GroupId, botCommand.MemberId, botCommand.CommandType, botCommand.Instruction));
+            return await Task.FromResult(requestRecordBusiness.addRecord(command.GroupId, command.MemberId, command.CommandType, command.Instruction));
         }
 
-        public async Task<RequestRecordPO> addRecord(FriendCommand botCommand)
+        public async Task<RequestRecordPO> addRecord(FriendCommand command)
         {
-            return await Task.FromResult(requestRecordBusiness.addRecord(0, botCommand.MemberId, botCommand.CommandType, botCommand.Instruction));
+            return await Task.FromResult(requestRecordBusiness.addRecord(0, command.MemberId, command.CommandType, command.Instruction));
         }
 
         /// <summary>

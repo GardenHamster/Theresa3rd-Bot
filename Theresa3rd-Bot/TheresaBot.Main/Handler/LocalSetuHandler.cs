@@ -1,7 +1,9 @@
 ﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Model.Config;
-using TheresaBot.Main.Model.LocalSetu;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.LocalSetu;
+using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
 {
@@ -9,7 +11,7 @@ namespace TheresaBot.Main.Handler
     {
         private LocalSetuBusiness localSetuBusiness;
 
-        public LocalSetuHandler()
+        public LocalSetuHandler(BaseSession session) : base(session)
         {
             localSetuBusiness = new LocalSetuBusiness();
         }
@@ -21,11 +23,11 @@ namespace TheresaBot.Main.Handler
             List<LocalSetuInfo> setuInfos = localSetuBusiness.loadRandom(localPath, timingSetuTimer.Quantity, timingSetuTimer.FromOneDir);
             if (setuInfos is null || setuInfos.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
             string tags = timingSetuTimer.FromOneDir ? setuInfos[0].DirInfo.Name : "";
-            await sendTimingSetuMessage(session, timingSetuTimer, tags, groupId);
+            await sendTimingSetuMessage(timingSetuTimer, tags, groupId);
             await Task.Delay(2000);
             foreach (LocalSetuInfo setuInfo in setuInfos)
             {
-                await sendSetuInfoAsync(session, timingSetuTimer, setuInfo, groupId);
+                await sendSetuInfoAsync(timingSetuTimer, setuInfo, groupId);
                 await Task.Delay(1000);
             }
         }
@@ -34,11 +36,11 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                List<IChatMessage> workMsgs = new List<IChatMessage>();
+                List<BaseContent> workMsgs = new List<BaseContent>();
                 string template = getSetuInfo(setuInfo, timingSetuTimer.LocalTemplate);
-                if (string.IsNullOrWhiteSpace(template) == false) workMsgs.Add(new PlainMessage(template));
+                if (string.IsNullOrWhiteSpace(template) == false) workMsgs.Add(new PlainContent(template));
                 List<FileInfo> setuFiles = new List<FileInfo>() { setuInfo.FileInfo };
-                await session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, true);
+                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, true);
             }
             catch (Exception ex)
             {

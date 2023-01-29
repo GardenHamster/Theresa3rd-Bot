@@ -1,25 +1,32 @@
 ﻿using TheresaBot.Main.Business;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Base;
 using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
-using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Handler
 {
     public abstract class SetuHandler : BaseHandler
     {
+        public SetuHandler(BaseSession session) : base(session)
+        {
+        }
+
         /// <summary>
         /// 检查是否拥有自定义涩图权限
         /// </summary>
         /// <param name="session"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<bool> CheckSetuCustomEnableAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public async Task<bool> CheckSetuCustomEnableAsync(GroupCommand command)
         {
-            if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(args.Sender.Group.Id)) return true;
-            await session.SendTemplateWithAtAsync(args, BotConfig.GeneralConfig.SetuCustomDisableMsg, "自定义功能已关闭");
+            if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(command.GroupId)) return true;
+            await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.SetuCustomDisableMsg, "自定义功能已关闭");
             return false;
         }
 
@@ -29,22 +36,21 @@ namespace TheresaBot.Main.Handler
         /// <param name="session"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<bool> CheckSetuTagEnableAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string tagName)
+        public async Task<bool> CheckSetuTagEnableAsync(GroupCommand command, string tagName)
         {
-            long groupId = args.Sender.Group.Id;
             tagName = tagName.ToLower().Trim();
 
             if (string.IsNullOrWhiteSpace(tagName)) return true;
-            if (tagName.IsR18() && groupId.IsShowR18Setu() == false)
+            if (tagName.IsR18() && command.GroupId.IsShowR18Setu() == false)
             {
-                await session.ReplyGroupMessageWithAtAsync(args, "本群未设置R18权限，禁止搜索R18相关标签");
+                await command.ReplyGroupMessageWithAtAsync("本群未设置R18权限，禁止搜索R18相关标签");
                 return false;
             }
 
             List<BanWordPO> banSetuTagList = BotConfig.BanSetuTagList;
             if (banSetuTagList.Where(o => tagName.Contains(o.KeyWord.ToLower().Trim())).Any())
             {
-                await session.SendTemplateWithAtAsync(args, BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
                 return false;
             }
             return true;
@@ -58,30 +64,30 @@ namespace TheresaBot.Main.Handler
         /// <param name="setuInfo"></param>
         /// <param name="isShowR18"></param>
         /// <returns></returns>
-        public async Task<bool> CheckSetuSendable(IMiraiHttpSession session, IGroupMessageEventArgs args, BaseWorkInfo setuInfo, bool isShowR18, bool isShowAI)
+        public async Task<bool> CheckSetuSendable(GroupCommand command, BaseWorkInfo setuInfo, bool isShowR18, bool isShowAI)
         {
             if (setuInfo.IsImproper)
             {
-                await session.ReplyGroupMessageWithAtAsync(args, "该作品含有R18G等内容，不显示相关内容");
+                await command.ReplyGroupMessageWithAtAsync("该作品含有R18G等内容，不显示相关内容");
                 return false;
             }
 
             string banTagStr = setuInfo.hasBanTag();
             if (banTagStr != null)
             {
-                await session.ReplyGroupMessageWithAtAsync(args, $"该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容");
+                await command.ReplyGroupMessageWithAtAsync($"该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容");
                 return false;
             }
 
             if (setuInfo.IsR18 && isShowR18 == false)
             {
-                await session.ReplyGroupMessageWithAtAsync(args, "该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限");
+                await command.ReplyGroupMessageWithAtAsync("该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限");
                 return false;
             }
 
             if (setuInfo.IsAI && isShowAI == false)
             {
-                await session.ReplyGroupMessageWithAtAsync(args, "该作品为AI生成作品，不显示相关内容，如需显示请在配置文件中修改权限");
+                await command.ReplyGroupMessageWithAtAsync("该作品为AI生成作品，不显示相关内容，如需显示请在配置文件中修改权限");
                 return false;
             }
             return true;
@@ -95,23 +101,22 @@ namespace TheresaBot.Main.Handler
         /// <param name="tags"></param>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        protected async Task sendTimingSetuMessage(IMiraiHttpSession session, TimingSetuTimer timingSetuTimer, string tags, long groupId)
+        protected async Task sendTimingSetuMessage(TimingSetuTimer timingSetuTimer, string tags, long groupId)
         {
             try
             {
-                List<IChatMessage> chainList = new List<IChatMessage>();
-                if (timingSetuTimer.AtAll) chainList.Add(new AtAllMessage());
+                List<BaseContent> chainList = new List<BaseContent>();
                 string template = timingSetuTimer.TimingMsg;
                 if (string.IsNullOrWhiteSpace(template))
                 {
                     if (chainList.Count == 0) return;
-                    await session.SendGroupMessageAsync(groupId, chainList.ToArray());
+                    await Session.SendGroupMessageAsync(groupId, chainList, timingSetuTimer.AtAll);
                     return;
                 }
                 template = template.Replace("{Tags}", tags);
                 template = template.Replace("{SourceName}", timingSetuTimer.Source.GetTypeName());
-                chainList.AddRange(BusinessHelper.SplitToChainAsync(session, template).Result);
-                await session.SendGroupMessageAsync(groupId, chainList.ToArray());
+                chainList.AddRange(template.SplitToChainAsync());
+                await Session.SendGroupMessageAsync(groupId, chainList, timingSetuTimer.AtAll);
             }
             catch (Exception ex)
             {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using TheresaBot.Main.BotPlatform.Base.Command;
+﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Model.Cache

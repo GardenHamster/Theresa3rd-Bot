@@ -34,7 +34,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
-        public override async Task<int> ReplyGroupMessageAsync(List<ChatContent> chainList, bool isAt = false)
+        public override async Task<int> ReplyGroupMessageAsync(List<BaseContent> chainList, bool isAt = false)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             if (isAt) msgList.Add(new AtMessage(MemberId));
@@ -51,15 +51,15 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
-        public override async Task<int> ReplyGroupMessageWithAtAsync(params ChatContent[] chainArr)
+        public override async Task<int> ReplyGroupMessageWithAtAsync(params BaseContent[] chainArr)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await new List<ChatContent>(chainArr).ToMiraiMessageAsync());
+            msgList.AddRange(await new List<BaseContent>(chainArr).ToMiraiMessageAsync());
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
-        public override async Task<int> ReplyGroupMessageWithAtAsync(List<ChatContent> chainList)
+        public override async Task<int> ReplyGroupMessageWithAtAsync(List<BaseContent> chainList)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             msgList.Add(new AtMessage(MemberId));
@@ -67,7 +67,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
-        public override async Task<int> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg)
+        public override async Task<int> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg="")
         {
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
             if (string.IsNullOrWhiteSpace(template)) return 0;
@@ -117,7 +117,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             return imgMsgs;
         }
 
-        public override async Task SendGroupSetuAsync(List<ChatContent> workMsgs, List<FileInfo> setuFiles, long groupId, bool isShowImg)
+        public override async Task SendGroupSetuAsync(List<BaseContent> workMsgs, List<FileInfo> setuFiles, long groupId, bool isShowImg)
         {
             try
             {
@@ -148,7 +148,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             }
         }
 
-        public override async Task ReplyGroupSetuAndRevokeAsync(List<ChatContent> workContents, List<FileInfo> setuFiles, int revokeInterval, bool isAt = false)
+        public override async Task ReplyGroupSetuAndRevokeAsync(List<BaseContent> workContents, List<FileInfo> setuFiles, int revokeInterval, bool isAt = false)
         {
             try
             {
@@ -189,7 +189,7 @@ namespace TheresaBot.MiraiHttpApi.Command
         }
 
 
-        public override async Task SendTempSetuAsync(List<ChatContent> workContents, List<FileInfo> setuFiles = null)
+        public override async Task SendTempSetuAsync(List<BaseContent> workContents, List<FileInfo> setuFiles = null)
         {
             try
             {

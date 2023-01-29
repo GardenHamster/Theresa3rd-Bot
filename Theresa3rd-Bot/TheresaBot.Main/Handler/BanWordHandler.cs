@@ -1,9 +1,10 @@
-﻿using TheresaBot.Main.BotPlatform.Base.Command;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
-using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Type;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Session;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
@@ -11,7 +12,7 @@ namespace TheresaBot.Main.Handler
     {
         private BanWordBusiness banWordBusiness;
 
-        public BanWordHandler()
+        public BanWordHandler(BaseSession session) : base(session)
         {
             banWordBusiness = new BanWordBusiness();
         }
@@ -20,24 +21,24 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string tagStr = BotCommand.KeyWord;
+                string tagStr = command.KeyWord;
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    await BotCommand.ReplyGroupMessageWithAtAsync("没有检测到要禁止的关键词，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithAtAsync("没有检测到要禁止的关键词，请确保指令格式正确");
                     return;
                 }
 
                 BanWordPO dbBanWord = banWordBusiness.getBanWord(BanType.SetuTag, tagStr);
                 if (dbBanWord != null)
                 {
-                    await BotCommand.ReplyGroupMessageWithAtAsync("该关键词已有记录了");
+                    await command.ReplyGroupMessageWithAtAsync("该关键词已有记录了");
                     return;
                 }
 
                 banWordBusiness.insertBanWord(tagStr, BanType.SetuTag, false);
                 ConfigHelper.loadBanTag();
-                await BotCommand.ReplyGroupMessageWithAtAsync("记录成功");
+                await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
             catch (Exception ex)
             {
@@ -50,24 +51,24 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string tagStr = BotCommand.KeyWord;
+                string tagStr = command.KeyWord;
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    await BotCommand.ReplyGroupMessageWithAtAsync("没有检测到要解除的关键词，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithAtAsync("没有检测到要解除的关键词，请确保指令格式正确");
                     return;
                 }
 
                 BanWordPO dbBanWord = banWordBusiness.getBanWord(BanType.SetuTag, tagStr);
                 if (dbBanWord is null)
                 {
-                    await BotCommand.ReplyGroupMessageWithAtAsync("该关键词未有记录");
+                    await command.ReplyGroupMessageWithAtAsync("该关键词未有记录");
                     return;
                 }
 
                 banWordBusiness.delBanWord(BanType.SetuTag, tagStr);
                 ConfigHelper.loadBanTag();
-                await BotCommand.ReplyGroupMessageWithAtAsync("解除成功");
+                await command.ReplyGroupMessageWithAtAsync("解除成功");
             }
             catch (Exception ex)
             {
@@ -80,30 +81,30 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string memberCode = BotCommand.KeyWord;
-                
+                string memberCode = command.KeyWord;
+
                 if (string.IsNullOrEmpty(memberCode))
                 {
-                    await BotCommand.ReplyGroupMessageWithAtAsync("没有检测到要禁止的qq号，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithAtAsync("没有检测到要禁止的qq号，请确保指令格式正确");
                     return;
                 }
 
                 if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(Convert.ToInt64(memberCode)))
                 {
-                    await BotCommand.ReplyGroupMessageWithAtAsync("无法拉黑超级管理员");
+                    await command.ReplyGroupMessageWithAtAsync("无法拉黑超级管理员");
                     return;
                 }
 
                 BanWordPO dbBanWord = banWordBusiness.getBanWord(BanType.Member, memberCode);
                 if (dbBanWord != null)
                 {
-                    await BotCommand.ReplyGroupMessageWithAtAsync("该qq号已有记录了");
+                    await command.ReplyGroupMessageWithAtAsync("该qq号已有记录了");
                     return;
                 }
 
                 banWordBusiness.insertBanWord(memberCode, BanType.Member, false);
                 ConfigHelper.loadBanMember();
-                await BotCommand.ReplyGroupMessageWithAtAsync("记录成功");
+                await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
             catch (Exception ex)
             {
@@ -116,24 +117,24 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string memberCode = BotCommand.KeyWord;
+                string memberCode = command.KeyWord;
 
                 if (string.IsNullOrEmpty(memberCode))
                 {
-                    await BotCommand.ReplyGroupMessageWithAtAsync("没有检测到要解除的qq号，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithAtAsync("没有检测到要解除的qq号，请确保指令格式正确");
                     return;
                 }
 
                 BanWordPO dbBanWord = banWordBusiness.getBanWord(BanType.Member, memberCode);
                 if (dbBanWord is null)
                 {
-                    await BotCommand.ReplyGroupMessageWithAtAsync("该关键词未有记录");
+                    await command.ReplyGroupMessageWithAtAsync("该关键词未有记录");
                     return;
                 }
 
                 banWordBusiness.delBanWord(BanType.Member, memberCode);
                 ConfigHelper.loadBanMember();
-                await BotCommand.ReplyGroupMessageWithAtAsync("解除成功");
+                await command.ReplyGroupMessageWithAtAsync("解除成功");
             }
             catch (Exception ex)
             {

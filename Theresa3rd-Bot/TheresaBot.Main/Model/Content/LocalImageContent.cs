@@ -2,7 +2,7 @@
 
 namespace TheresaBot.Main.Model.Content
 {
-    public class LocalImageContent: ChatContent
+    public class LocalImageContent: BaseContent
     {
         public string FullFilePath { get; set; }
         public SendTarget SendTarget { get; set; }

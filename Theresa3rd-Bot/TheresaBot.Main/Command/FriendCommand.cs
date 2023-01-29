@@ -14,6 +14,8 @@ namespace TheresaBot.Main.Command
             this.MemberId = memberId;
         }
 
+        public abstract List<string> GetImageUrls();
+
         public abstract Task<int> ReplyFriendMessageAsync(string message);
 
         public abstract Task<int> ReplyFriendMessageAsync(List<BaseContent> contents);

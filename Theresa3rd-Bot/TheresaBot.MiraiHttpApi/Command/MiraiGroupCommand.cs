@@ -5,6 +5,7 @@ using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -25,6 +26,11 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             this.Args = args;
             this.Session = session;
+        }
+
+        public override List<string> GetImageUrls()
+        {
+            return Args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
         }
 
         public override async Task<int> ReplyGroupMessageAsync(string message, bool isAt = false)
@@ -67,7 +73,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
-        public override async Task<int> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg="")
+        public override async Task<int> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "")
         {
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
             if (string.IsNullOrWhiteSpace(template)) return 0;
@@ -236,9 +242,6 @@ namespace TheresaBot.MiraiHttpApi.Command
                 LogHelper.Error(ex);
             }
         }
-
-
-
 
     }
 }

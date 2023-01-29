@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using TheresaBot.Main.BotPlatform.Base.Command;
+﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Model.Cache
@@ -12,7 +9,7 @@ namespace TheresaBot.Main.Model.Cache
 
         public long MemberId { get; set; }
 
-        public GroupCommand BotCommand { get; set; }
+        public GroupCommand GroupCommand { get; set; }
 
         public bool IsActive { get; set; }
 
@@ -23,7 +20,7 @@ namespace TheresaBot.Main.Model.Cache
         public StepInfo(GroupCommand command, bool isRemindTimeout = true)
         {
             this.IsActive = true;
-            this.BotCommand = command;
+            this.GroupCommand = command;
             this.GroupId = command.GroupId;
             this.MemberId = command.MemberId;
             this.IsRemindTimeout = isRemindTimeout;
@@ -54,7 +51,7 @@ namespace TheresaBot.Main.Model.Cache
                             if (string.IsNullOrEmpty(stepDetail.Question)) return false;
                         }
 
-                        await BotCommand.ReplyGroupMessageWithAtAsync(stepDetail.Question);
+                        await GroupCommand.ReplyGroupMessageWithAtAsync(stepDetail.Question);
 
                         while (true)
                         {
@@ -62,7 +59,7 @@ namespace TheresaBot.Main.Model.Cache
                             int secondDiff = DateTimeHelper.GetSecondDiff(stepDetail.StartTime.Value, DateTime.Now);
                             if (secondDiff < 0 || secondDiff >= stepDetail.WaitSecond)
                             {
-                                if(IsRemindTimeout) await BotCommand.ReplyGroupMessageWithAtAsync("操作超时了，请重新发送指令开始操作");
+                                if(IsRemindTimeout) await GroupCommand.ReplyGroupMessageWithAtAsync("操作超时了，请重新发送指令开始操作");
                                 return false;
                             }
                             await Task.Delay(500);

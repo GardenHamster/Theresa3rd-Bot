@@ -47,7 +47,7 @@ namespace TheresaBot.Main.Model.Cache
 
         public void FinishStep(string answer)
         {
-            this.Answer = answer?.Trim();
+            this.Answer = answer;
             this.IsFinish = true;
         }
 

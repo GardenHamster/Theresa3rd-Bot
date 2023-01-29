@@ -1,12 +1,11 @@
-﻿using Mirai.CSharp.Framework.Models.General;
-using Mirai.CSharp.HttpApi.Models.ChatMessages;
+﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -27,6 +26,11 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             this.Args = args;
             this.Session = session;
+        }
+
+        public override List<string> GetImageUrls()
+        {
+            return Args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
         }
 
         public override async Task<int> ReplyFriendTemplateAsync(string template, string defaultmsg)

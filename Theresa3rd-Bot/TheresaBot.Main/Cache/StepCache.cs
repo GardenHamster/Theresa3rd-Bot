@@ -57,7 +57,7 @@ namespace TheresaBot.Main.Cache
                 if (stepDetails is null || stepDetails.Count == 0) return false;
                 StepDetail stepDetail = stepDetails.Where(x => x.IsFinish == false).FirstOrDefault();
                 if (stepDetail is null) return false;
-                if (stepDetail.CheckInput != null && stepDetail.CheckInput(stepInfo.BotCommand, value).Result == false) return true;
+                if (stepDetail.CheckInput != null && stepDetail.CheckInput(stepInfo.GroupCommand, value).Result == false) return true;
                 stepDetail.FinishStep(value);
                 return true;
             }

@@ -15,6 +15,8 @@ namespace TheresaBot.Main.Command
             this.GroupId = groupId;
         }
 
+        public abstract List<string> GetImageUrls();
+
         public abstract Task<int> ReplyGroupMessageAsync(string message, bool isAt = false);
 
         public abstract Task<int> ReplyGroupMessageAsync(List<BaseContent> chainList, bool isAt = false);

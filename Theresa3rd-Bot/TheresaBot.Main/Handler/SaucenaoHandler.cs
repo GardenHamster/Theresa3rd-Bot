@@ -31,17 +31,16 @@ namespace TheresaBot.Main.Handler
             {
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-                List<ImageMessage> imgList = args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
+                List<string> imgList = command.GetImageUrls();
 
                 if (imgList is null || imgList.Count == 0)
                 {
-                    StepInfo stepInfo = await StepCache.CreateStepAsync(session, args);
+                    StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                     if (stepInfo is null) return;
                     StepDetail imgStep = new StepDetail(60, " 请在60秒内发送要查找的图片", CheckImageSourceAsync);
                     stepInfo.AddStep(imgStep);
-                    if (await stepInfo.HandleStep(session, args) == false) return;
+                    if (await stepInfo.HandleStep() == false) return;
                     imgList = imgStep.Args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
-                    imgArgs = imgStep.Args;
                 }
 
                 if (imgList is null || imgList.Count == 0)
@@ -97,37 +96,35 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<bool> CheckContinueAscii2d(IMiraiHttpSession session, IGroupMessageEventArgs args, List<ImageMessage> notFoundList)
+        private async Task<bool> CheckContinueAscii2d(GroupCommand command)
         {
             YNAType ynaType = BotConfig.SaucenaoConfig.ContinueAscii2d;
             if (ynaType == YNAType.Yes) return true;
             if (ynaType == YNAType.No) return false;
-            StepInfo stepInfo = await StepCache.CreateStepAsync(session, args, false);
+            StepInfo stepInfo = await StepCache.CreateStepAsync(command, false);
             if (stepInfo is null) return false;
-            StepDetail askStep = new StepDetail(30, $" 是否使用Ascii2d继续搜索剩余的图片？请在30秒内发送\r\n1：是，0：否");
+            StepDetail askStep = new StepDetail(30, $"是否使用Ascii2d继续搜索剩余的图片？请在30秒内发送\r\n1：是，0：否");
             stepInfo.AddStep(askStep);
-            if (await stepInfo.HandleStep(session, args) == false) return false;
+            if (await stepInfo.HandleStep() == false) return false;
             return askStep.Answer == "1";
         }
 
-        private async Task<bool> CheckImageSourceAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, string value)
+        private async Task<bool> CheckImageSourceAsync(GroupCommand command, string value)
         {
             List<ImageMessage> imgList = args.Chain.Where(o => o is ImageMessage).Select(o => (ImageMessage)o).ToList();
             if (imgList is null || imgList.Count == 0) return await Task.FromResult(false);
             return await Task.FromResult(true);
         }
 
-        private async Task<bool> searchWithSaucenao(IMiraiHttpSession session, IGroupMessageEventArgs args, ImageMessage imageMessage, int index)
+        private async Task<bool> searchWithSaucenao(GroupCommand command, ImageMessage imageMessage, int index)
         {
             try
             {
-                long memberId = args.Sender.Id;
-                long groupId = args.Sender.Group.Id;
                 DateTime startTime = DateTime.Now;
                 SaucenaoResult saucenaoResult = await saucenaoBusiness.getSaucenaoResultAsync(imageMessage.Url);
                 if (saucenaoResult is null || saucenaoResult.Items.Count == 0)
                 {
-                    await session.SendTemplateWithAtAsync(args, BotConfig.SaucenaoConfig.NotFoundMsg, $" 找不到与第{index}张图片相似的图");
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.NotFoundMsg, $" 找不到与第{index}张图片相似的图");
                     return true;
                 }
 
@@ -178,12 +175,10 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task searchWithAscii2d(IMiraiHttpSession session, IGroupMessageEventArgs args, ImageMessage imageMessage)
+        private async Task searchWithAscii2d(GroupCommand command, ImageMessage imageMessage)
         {
             try
             {
-                long memberId = args.Sender.Id;
-                long groupId = args.Sender.Group.Id;
                 DateTime startTime = DateTime.Now;
                 Ascii2dResult ascii2dResult = await ascii2dBusiness.getAscii2dResultAsync(imageMessage.Url);
                 if (ascii2dResult is null || ascii2dResult.Items.Count == 0)
@@ -276,7 +271,7 @@ namespace TheresaBot.Main.Handler
             return msgList;
         }
 
-        public List<IChatMessage> getPixivMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args, SaucenaoItem saucenaoItem, DateTime startTime)
+        public List<IChatMessage> getPixivMessageAsync(GroupCommand command, SaucenaoItem saucenaoItem, DateTime startTime)
         {
             long groupId = args.Sender.Group.Id;
             string template = BotConfig.PixivConfig.Template;
@@ -321,7 +316,7 @@ namespace TheresaBot.Main.Handler
         /// <param name="args"></param>
         /// <param name="saucenaoMessage"></param>
         /// <returns></returns>
-        private async Task sendAndRevokeMessage(IMiraiHttpSession session, IGroupMessageEventArgs args, List<IChatMessage> workMsgs, List<FileInfo> setuFiles = null)
+        private async Task sendAndRevokeMessage(GroupCommand command, List<IChatMessage> workMsgs, List<FileInfo> setuFiles = null)
         {
             Task sendGroupTask = session.SendGroupSetuAndRevokeAsync(args, workMsgs, setuFiles, BotConfig.SaucenaoConfig.RevokeInterval, true);
             if (BotConfig.SaucenaoConfig.SendPrivate)

@@ -9,6 +9,7 @@ using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
@@ -161,8 +162,8 @@ namespace TheresaBot.Main.Handler
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail uidStep = command.CreateStepDetail(60, " 请在60秒内发送要订阅用户的id，多个id之间可以用逗号或者换行隔开", CheckPixivUserIdsAsync);
-                    StepDetail groupStep = command.CreateStepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
+                    StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要订阅用户的id，多个id之间可以用逗号或者换行隔开", CheckPixivUserIdsAsync);
+                    StepDetail groupStep = new StepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                     stepInfo.AddStep(uidStep);
                     stepInfo.AddStep(groupStep);
                     if (await stepInfo.HandleStep() == false) return;
@@ -246,8 +247,8 @@ namespace TheresaBot.Main.Handler
                 StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                 if (stepInfo is null) return;
 
-                StepDetail modeStep = command.CreateStepDetail(60, $" 请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncModeOption()}", CheckSyncModeAsync);
-                StepDetail groupStep = command.CreateStepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
+                StepDetail modeStep = new StepDetail(60, $" 请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncModeOption()}", CheckSyncModeAsync);
+                StepDetail groupStep = new StepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                 stepInfo.AddStep(modeStep);
                 stepInfo.AddStep(groupStep);
                 if (await stepInfo.HandleStep() == false) return;
@@ -327,7 +328,7 @@ namespace TheresaBot.Main.Handler
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail uidStep = command.CreateStepDetail(60, " 请在60秒内发送要退订用户的id，多个id之间可以用逗号或者换行隔开", CheckPixivUserIdsAsync);
+                    StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要退订用户的id，多个id之间可以用逗号或者换行隔开", CheckPixivUserIdsAsync);
                     stepInfo.AddStep(uidStep);
                     if (await stepInfo.HandleStep() == false) return;
                     pixivUserIds = uidStep.Answer;
@@ -389,8 +390,8 @@ namespace TheresaBot.Main.Handler
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail tagStep = command.CreateStepDetail(60, $"请在60秒内发送要订阅的标签名", CheckPixivTagAsync);
-                    StepDetail groupStep = command.CreateStepDetail(60, $"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
+                    StepDetail tagStep = new StepDetail(60, $"请在60秒内发送要订阅的标签名", CheckPixivTagAsync);
+                    StepDetail groupStep = new StepDetail(60, $"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                     stepInfo.AddStep(tagStep);
                     stepInfo.AddStep(groupStep);
                     if (await stepInfo.HandleStep() == false) return;
@@ -447,7 +448,7 @@ namespace TheresaBot.Main.Handler
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail tagStep = command.CreateStepDetail(60, "请在60秒内发送要退订的标签名", CheckPixivTagAsync);
+                    StepDetail tagStep = new StepDetail(60, "请在60秒内发送要退订的标签名", CheckPixivTagAsync);
                     stepInfo.AddStep(tagStep);
                     if (await stepInfo.HandleStep() == false) return;
                     pixivTag = tagStep.Answer;
@@ -788,7 +789,7 @@ namespace TheresaBot.Main.Handler
 
         private async Task<bool> CheckSyncModeAsync(GroupCommand command, string value)
         {
-            int modeId = 0;
+            int modeId;
             if (int.TryParse(value, out modeId) == false)
             {
                 await command.ReplyGroupMessageWithAtAsync("mode必须为数字");

@@ -4,10 +4,10 @@ using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
+using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -41,10 +41,10 @@ namespace TheresaBot.Main.Handler
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail imgStep = command.CreateStepDetail(60, "请在60秒内发送要查找的图片", CheckImageSourceAsync);
+                    StepDetail imgStep = new StepDetail(60, "请在60秒内发送要查找的图片", CheckImageSourceAsync);
                     stepInfo.AddStep(imgStep);
                     if (await stepInfo.HandleStep() == false) return;
-                    imgList = imgStep.GetReplyImageUrls();
+                    imgList = imgStep.Relay.GetReplyImageUrls();
                     revokeMsgId = imgStep.Relay.MsgId;
                 }
 
@@ -113,7 +113,7 @@ namespace TheresaBot.Main.Handler
             questionBuilder.AppendLine($"下列图片搜索失败，是否使用Ascii2d继续搜索剩余的图片？");
             questionBuilder.AppendLine($"请在30秒内发送 1：是，0：否");
             foreach (string imgUrl in notFoundList) questionBuilder.AppendLine(imgUrl);
-            StepDetail askStep = command.CreateStepDetail(30, questionBuilder.ToString(), null);
+            StepDetail askStep = new StepDetail(30, questionBuilder.ToString(), null);
             stepInfo.AddStep(askStep);
             if (await stepInfo.HandleStep() == false) return false;
             return askStep.Answer == "1";

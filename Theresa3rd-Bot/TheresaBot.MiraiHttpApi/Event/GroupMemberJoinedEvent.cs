@@ -10,13 +10,15 @@ using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Type;
+using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Event
 {
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IGroupMemberJoinedEventArgs, GroupMemberJoinedEventArgs>))]
     public class GroupMemberJoinedEvent : IMiraiHttpMessageHandler<IGroupMemberJoinedEventArgs>
     {
-        public async Task HandleMessageAsync(IMiraiHttpSession client, IGroupMemberJoinedEventArgs message)
+        public async Task HandleMessageAsync(IMiraiHttpSession session, IGroupMemberJoinedEventArgs message)
         {
             long memberId = message.Member.Id;
             long groupId = message.Member.Group.Id;
@@ -29,13 +31,13 @@ namespace TheresaBot.MiraiHttpApi.Event
             WelcomeSpecial welcomeSpecial = welcomeConfig.Special?.Where(m => m.GroupId == groupId).FirstOrDefault();
             if (welcomeSpecial != null) template = welcomeSpecial.Template;
             if (string.IsNullOrEmpty(template)) return;
+            List<IChatMessage> templateList = await BusinessHelper.SplitToChainAsync(template, SendTarget.Group).ToMiraiMessageAsync();
             List<IChatMessage> atList = new List<IChatMessage>()
             {
-                new AtMessage(memberId),
-                new PlainMessage("\n")
+                new AtMessage(memberId),new PlainMessage("\n")
             };
-            List<IChatMessage> templateList = await BusinessHelper.SplitToChainAsync(client, template);
-            await client.SendGroupMessageAsync(groupId, atList.Concat(templateList).ToArray());
+            List<IChatMessage> msgList = atList.Concat(templateList).ToList();
+            await session.SendGroupMessageAsync(groupId, msgList.ToArray());
             message.BlockRemainingHandlers = true;
         }
     }

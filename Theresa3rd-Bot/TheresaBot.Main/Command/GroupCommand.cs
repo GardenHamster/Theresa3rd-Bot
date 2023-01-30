@@ -1,8 +1,5 @@
-﻿using System;
-using TheresaBot.Main.Model.Cache;
-using TheresaBot.Main.Model.Content;
+﻿using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
-using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 
@@ -21,8 +18,6 @@ namespace TheresaBot.Main.Command
         }
 
         public abstract List<string> GetReplyImageUrls();
-
-        public abstract StepDetail CreateStepDetail(int waitSecond, string question, Func<GroupCommand, GroupRelay, Task<bool>> checkInput);
 
         public abstract Task<int> ReplyGroupMessageAsync(string message, bool isAt = false);
 

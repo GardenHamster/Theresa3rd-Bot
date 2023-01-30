@@ -12,10 +12,8 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
-using TheresaBot.Main.Relay;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
-using TheresaBot.MiraiHttpApi.Model.Step;
 
 namespace TheresaBot.MiraiHttpApi.Command
 {
@@ -107,24 +105,6 @@ namespace TheresaBot.MiraiHttpApi.Command
             }
         }
 
-        public async Task<List<IChatMessage>> UploadPictureAsync(List<FileInfo> setuFiles, UploadTarget target)
-        {
-            List<IChatMessage> imgMsgs = new List<IChatMessage>();
-            foreach (FileInfo setuFile in setuFiles)
-            {
-                if (setuFile is null)
-                {
-
-                    imgMsgs.AddRange(await BusinessHelper.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, SendTarget.Group).ToMiraiMessageAsync());
-                }
-                else
-                {
-                    imgMsgs.Add((IChatMessage)await Session.UploadPictureAsync(target, setuFile.FullName));
-                }
-            }
-            return imgMsgs;
-        }
-
         public override async Task ReplyGroupSetuAndRevokeAsync(List<BaseContent> workContents, List<FileInfo> setuFiles, int revokeInterval, bool isAt = false)
         {
             try
@@ -133,7 +113,7 @@ namespace TheresaBot.MiraiHttpApi.Command
                 List<IChatMessage> imgMsgs = new List<IChatMessage>();
                 if (setuFiles != null && setuFiles.Count > 0)
                 {
-                    imgMsgs = await UploadPictureAsync(setuFiles, UploadTarget.Group);
+                    imgMsgs = await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Group);
                 }
 
                 if (BotConfig.PixivConfig.SendImgBehind && imgMsgs.Count > 0)
@@ -172,7 +152,7 @@ namespace TheresaBot.MiraiHttpApi.Command
                 List<IChatMessage> imgMsgs = new List<IChatMessage>();
                 if (setuFiles != null && setuFiles.Count > 0)
                 {
-                    imgMsgs = await UploadPictureAsync(setuFiles, UploadTarget.Temp);
+                    imgMsgs = await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Temp);
                 }
 
                 List<IChatMessage> workMsgs = await workContents.ToMiraiMessageAsync();
@@ -195,14 +175,6 @@ namespace TheresaBot.MiraiHttpApi.Command
                 LogHelper.Error(ex, "SendTempSetuAsync异常");
             }
         }
-
-        public override MiraiStepDetail CreateStepDetail(int waitSecond, string question, Func<GroupCommand, GroupRelay, Task<bool>> checkInput)
-        {
-            MiraiStepDetail stepDetail=new MiraiStepDetail();
-
-
-        }
-
 
     }
 }

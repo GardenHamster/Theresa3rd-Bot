@@ -11,6 +11,8 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Helper;
+using TheresaBot.MiraiHttpApi.Reporter;
+using TheresaBot.MiraiHttpApi.Session;
 
 namespace TheresaBot.MiraiHttpApi.Event
 {
@@ -44,7 +46,9 @@ namespace TheresaBot.MiraiHttpApi.Event
                 MiraiFriendCommand botCommand = GetFriendCommand(session, args, message, memberId);
                 if (botCommand is not null)
                 {
-                    args.BlockRemainingHandlers = await botCommand.InvokeAsync();
+                    MiraiSession miraiSession = new MiraiSession();
+                    MiraiReporter miraiReporter = new MiraiReporter();
+                    args.BlockRemainingHandlers = await botCommand.InvokeAsync(miraiSession, miraiReporter);
                     return;
                 }
 
@@ -54,6 +58,8 @@ namespace TheresaBot.MiraiHttpApi.Event
             {
                 LogHelper.Error(ex, "私聊指令异常");
                 await ReplyErrorAsync(session,args);
+                await Task.Delay(1000);
+                new MiraiReporter().SendError(ex, "私聊指令异常");
             }
         }
 

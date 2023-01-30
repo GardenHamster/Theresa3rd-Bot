@@ -22,7 +22,8 @@ namespace TheresaBot.MiraiHttpApi.Command
         public IFriendMessageEventArgs Args { get; set; }
         public IMiraiHttpSession Session { get; set; }
 
-        public MiraiFriendCommand(CommandHandler<FriendCommand> invoker, IMiraiHttpSession session, IFriendMessageEventArgs args, string[] keyWords, string instruction, long memberId) : base(invoker, keyWords, instruction, memberId)
+        public MiraiFriendCommand(CommandHandler<FriendCommand> invoker, int msgId, IMiraiHttpSession session, IFriendMessageEventArgs args, string[] keyWords, string instruction, long memberId)
+            : base(invoker, msgId, keyWords, instruction, memberId)
         {
             this.Args = args;
             this.Session = session;

@@ -1,5 +1,5 @@
 ﻿using TheresaBot.Main.Command;
-using TheresaBot.Main.Model.Cache;
+using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Relay;
 
 namespace TheresaBot.Main.Cache

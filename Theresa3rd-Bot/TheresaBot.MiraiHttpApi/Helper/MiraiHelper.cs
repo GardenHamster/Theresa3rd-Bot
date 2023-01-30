@@ -9,6 +9,7 @@ using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TheresaBot.Main.Command;
@@ -99,7 +100,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
             string lowerCommand = command.ToLower().Trim();
             if (lowerInstructions.StartsWith(lowerCommand) == false) return null;
             string[] keyWords = instruction.splitKeyWords(command);
-            return new(handler, session, args, keyWords, instruction, groupId, memberId);
+            return new(handler, args.GetMessageId(), session, args, keyWords, instruction, groupId, memberId);
         }
 
         /// <summary>
@@ -131,7 +132,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
             string lowerCommand = command.ToLower().Trim();
             if (lowerInstructions.StartsWith(lowerCommand) == false) return null;
             string[] keyWords = instruction.splitKeyWords(command);
-            return new(handler, session, args, keyWords, instruction, memberId);
+            return new(handler, args.GetMessageId(), session, args, keyWords, instruction, memberId);
         }
 
 
@@ -191,7 +192,24 @@ namespace TheresaBot.MiraiHttpApi.Helper
             return null;
         }
 
-        private static async Task<IImageMessage> UploadPictureAsync(LocalImageContent imageContent)
+        public static async Task<List<IChatMessage>> UploadPictureAsync(List<FileInfo> setuFiles, UploadTarget target)
+        {
+            List<IChatMessage> imgMsgs = new List<IChatMessage>();
+            foreach (FileInfo setuFile in setuFiles)
+            {
+                if (setuFile is null)
+                {
+                    imgMsgs.AddRange(await BusinessHelper.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, SendTarget.Group).ToMiraiMessageAsync());
+                }
+                else
+                {
+                    imgMsgs.Add((IChatMessage)await Session.UploadPictureAsync(target, setuFile.FullName));
+                }
+            }
+            return imgMsgs;
+        }
+
+        private static async Task<IChatMessage> UploadPictureAsync(LocalImageContent imageContent)
         {
             return imageContent.SendTarget switch
             {

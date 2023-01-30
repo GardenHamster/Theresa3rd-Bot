@@ -72,7 +72,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 LogHelper.Error(ex, "群指令异常");
                 await ReplyErrorWithAtAsync(session, args);
                 await Task.Delay(1000);
-                ReportHelper.SendError(ex, "群指令异常");
+                new MiraiReporter().SendError(ex, "群指令异常");
             }
         }
 

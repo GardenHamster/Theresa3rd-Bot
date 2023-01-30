@@ -3,7 +3,7 @@ using TheresaBot.Main.Relay;
 
 namespace TheresaBot.Main.Model.Step
 {
-    public abstract class StepDetail
+    public class StepDetail
     {
         public bool IsFinish { get; set; }
 
@@ -34,8 +34,6 @@ namespace TheresaBot.Main.Model.Step
             this.StepQuestion = stepQuestion;
             this.CheckInput = checkInput;
         }
-
-        public abstract List<string> GetReplyImageUrls();
 
         public void StartStep()
         {

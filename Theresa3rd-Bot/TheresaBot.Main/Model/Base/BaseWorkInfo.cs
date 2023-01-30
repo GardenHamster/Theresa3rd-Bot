@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace TheresaBot.Main.Model.Base
+﻿namespace TheresaBot.Main.Model.Base
 {
     public abstract class BaseWorkInfo
     {

@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Timers
 
         private void ClearLinuxUploadTemp()
         {
-            
+
         }
 
 

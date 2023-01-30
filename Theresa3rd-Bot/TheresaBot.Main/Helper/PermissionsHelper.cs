@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TheresaBot.Main.Common;
+﻿using TheresaBot.Main.Common;
 
 namespace TheresaBot.Main.Helper
 {

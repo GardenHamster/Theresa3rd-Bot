@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Model.Pixiv
 {

@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using TheresaBot.Main.Type;
+﻿using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Config
 {
-    public class PixivUserSubscribeConfig: BaseSubscribeConfig
+    public class PixivUserSubscribeConfig : BaseSubscribeConfig
     {
         public PixivScanMode ScanMode { get; set; }
 

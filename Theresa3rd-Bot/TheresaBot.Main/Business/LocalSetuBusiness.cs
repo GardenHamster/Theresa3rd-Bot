@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using TheresaBot.Main.Model.LocalSetu;
-using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Model.LocalSetu;
 
 namespace TheresaBot.Main.Business
 {

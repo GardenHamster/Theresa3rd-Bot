@@ -1,12 +1,6 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using TheresaBot.Main.Model.Pixiv;
 
 namespace TheresaBot.Main.Helper
 {
@@ -264,7 +258,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="str1"></param>
         /// <param name="str2"></param>
         /// <returns></returns>
-        public static bool checkStrSimilar(string str1,string str2)
+        public static bool checkStrSimilar(string str1, string str2)
         {
             int matchCount = 0;
             int previousIndex = -1;
@@ -307,7 +301,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="str"></param>
         /// <param name="word"></param>
         /// <returns></returns>
-        public static string getStrAfterWord(this string str,string word)
+        public static string getStrAfterWord(this string str, string word)
         {
             int index = str.IndexOf(word);
             return str.Substring(index + word.Length, str.Length - index - word.Length);

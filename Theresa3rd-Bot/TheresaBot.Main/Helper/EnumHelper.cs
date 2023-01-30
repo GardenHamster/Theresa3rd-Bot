@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using TheresaBot.Main.Type;
 using TheresaBot.Main.Type.StepOption;
 

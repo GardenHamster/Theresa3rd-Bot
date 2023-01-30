@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Base;
-using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Model.Lolicon
 {

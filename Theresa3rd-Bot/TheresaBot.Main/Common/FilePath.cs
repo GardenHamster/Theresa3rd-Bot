@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TheresaBot.Main.Common
+﻿namespace TheresaBot.Main.Common
 {
     public static class FilePath
     {

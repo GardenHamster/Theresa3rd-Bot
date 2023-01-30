@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Content
 {
-    public class WebImageContent: BaseContent
+    public class WebImageContent : BaseContent
     {
         public string Url { get; set; }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using TheresaBot.Main.Dao;
+﻿using TheresaBot.Main.Dao;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Type;
 

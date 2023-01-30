@@ -134,7 +134,8 @@ namespace Theresa3rd_Bot
             BotConfig.MiraiConfig.BotQQ = Convert.ToInt64(Configuration["Mirai:botQQ"]);
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            using FileStream fileStream = new FileStream("botsettings.yml", FileMode.Open, FileAccess.Read);
+            string ymlPath = Path.Combine(AppContext.BaseDirectory, "botsettings.yml");
+            using FileStream fileStream = new FileStream(ymlPath, FileMode.Open, FileAccess.Read);
             using TextReader reader = new StreamReader(fileStream, Encoding.GetEncoding("gb2312"));
             Deserializer deserializer = new Deserializer();
             BotConfigDto botConfig = deserializer.Deserialize<BotConfigDto>(reader);

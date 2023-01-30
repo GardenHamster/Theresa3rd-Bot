@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TheresaBot.Main.Model.Config
+﻿namespace TheresaBot.Main.Model.Config
 {
     public class WelcomeConfig : BasePluginConfig
     {

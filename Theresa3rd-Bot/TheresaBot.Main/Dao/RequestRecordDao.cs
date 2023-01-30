@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Type;
-using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Dao
 {

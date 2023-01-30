@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TheresaBot.Main.Model.PO;
+﻿using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Dao

@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Type;
-using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Business
 {

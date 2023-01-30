@@ -57,7 +57,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             catch (System.Exception ex)
             {
                 LogHelper.Error(ex, "私聊指令异常");
-                await ReplyErrorAsync(session,args);
+                await ReplyErrorAsync(session, args);
                 await Task.Delay(1000);
                 new MiraiReporter().SendError(ex, "私聊指令异常");
             }

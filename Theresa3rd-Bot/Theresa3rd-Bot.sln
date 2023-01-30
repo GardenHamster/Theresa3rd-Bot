@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheresaBot.MiraiHttpApi", "TheresaBot.MiraiHttpApi\TheresaBot.MiraiHttpApi.csproj", "{75843960-27A1-41AA-BA64-C369386F4346}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheresaBot.Main", "TheresaBot.Main\TheresaBot.Main.csproj", "{7E73EE3D-5000-4DD8-8D96-0D809DD50255}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheresaBot.Main", "TheresaBot.Main\TheresaBot.Main.csproj", "{7E73EE3D-5000-4DD8-8D96-0D809DD50255}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

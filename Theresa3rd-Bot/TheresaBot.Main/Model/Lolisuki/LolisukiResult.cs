@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Base;
-using TheresaBot.Main.Model.Lolicon;
 using TheresaBot.Main.Type;
-using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Model.Lolisuki
 {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace TheresaBot.Main.Model.Config
+﻿namespace TheresaBot.Main.Model.Config
 {
     public class BaseSubscribeConfig : BasePluginConfig
     {

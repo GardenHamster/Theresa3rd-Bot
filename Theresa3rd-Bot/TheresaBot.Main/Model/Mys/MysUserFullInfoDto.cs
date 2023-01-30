@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace TheresaBot.Main.Model.Mys
+﻿namespace TheresaBot.Main.Model.Mys
 {
     public class MysUserFullInfoDto
     {

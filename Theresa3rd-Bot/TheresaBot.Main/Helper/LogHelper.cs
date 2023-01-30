@@ -7,8 +7,6 @@ namespace TheresaBot.Main.Helper
     public static class LogHelper
     {
         private static readonly string RepositoryName = "NETCoreRepository";
-        private static readonly string ConfigFile = "log4net.config";
-
         private static ILog RollingLog { get; set; }
         private static ILog ConsoleLog { get; set; }
         private static ILog FileLog { get; set; }
@@ -19,8 +17,9 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         public static void ConfigureLog()
         {
+            string configPath = Path.Combine(AppContext.BaseDirectory, "log4net.config");
             repository = LogManager.CreateRepository(RepositoryName);
-            XmlConfigurator.Configure(repository, new FileInfo(ConfigFile));
+            XmlConfigurator.Configure(repository, new FileInfo(configPath));
             RollingLog = LogManager.GetLogger(RepositoryName, "RollingLog");
             ConsoleLog = LogManager.GetLogger(RepositoryName, "ConsoleLog");
             FileLog = LogManager.GetLogger(RepositoryName, "FileLog");

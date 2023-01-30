@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TheresaBot.Main.Model.Config
+﻿namespace TheresaBot.Main.Model.Config
 {
     public class ReminderConfig : BasePluginConfig
     {
@@ -17,7 +12,7 @@ namespace TheresaBot.Main.Model.Config
         public string Cron { get; set; }
 
         public List<long> Groups { get; set; }
-        
+
         public bool AtAll { get; set; }
 
         public List<long> AtMembers { get; set; }

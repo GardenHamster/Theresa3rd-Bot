@@ -1,13 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Net.Security;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Model.Pixiv;

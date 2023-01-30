@@ -170,7 +170,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
             foreach (BaseContent content in chatContents)
             {
                 IChatMessage chatMessage = await content.ToMiraiMessageAsync();
-                if(chatMessage is not null) chatList.Add(chatMessage);
+                if (chatMessage is not null) chatList.Add(chatMessage);
             }
             return chatList.ToArray();
         }

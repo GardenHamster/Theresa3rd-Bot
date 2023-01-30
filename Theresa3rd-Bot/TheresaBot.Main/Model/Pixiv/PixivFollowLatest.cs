@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace TheresaBot.Main.Model.Pixiv
+﻿namespace TheresaBot.Main.Model.Pixiv
 {
     public class PixivFollowLatest
     {

@@ -1,13 +1,9 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
-using TheresaBot.Main.Model.Lolisuki;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Lolisuki;
 
 namespace TheresaBot.Main.Business
 {

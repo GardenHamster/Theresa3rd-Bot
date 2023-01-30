@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Type;
-
-namespace TheresaBot.Main.Model.Saucenao
+﻿namespace TheresaBot.Main.Model.Saucenao
 {
     public class SaucenaoResult
     {

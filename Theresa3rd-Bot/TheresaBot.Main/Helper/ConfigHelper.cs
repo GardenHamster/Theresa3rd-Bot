@@ -1,5 +1,4 @@
-﻿using System;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Type;
@@ -28,7 +27,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        
+
         public static void loadSubscribeTask()
         {
             try
@@ -42,7 +41,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        
+
         public static void loadBanTag()
         {
             try

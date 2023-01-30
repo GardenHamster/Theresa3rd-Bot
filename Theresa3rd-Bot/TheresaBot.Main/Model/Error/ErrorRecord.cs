@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TheresaBot.Main.Model.Error
+﻿namespace TheresaBot.Main.Model.Error
 {
     public class ErrorRecord
     {

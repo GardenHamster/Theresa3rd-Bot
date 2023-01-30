@@ -3,6 +3,11 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<RootNamespace>TheresaBot.MiraiHttpApi</RootNamespace>
+		<StartupObject></StartupObject>
+		<BaseOutputPath></BaseOutputPath>
+		<Version>0.8.0</Version>
+		<Nullable>disable</Nullable>
+		<BaseIntermediateOutputPath />
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -24,7 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\TheresaBot.Main\TheresaBot.Main.csproj" />
+		<ProjectReference Include="..\TheresaBot.Main\TheresaBot.Main.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -36,6 +41,10 @@
 		</Content>
 	</ItemGroup>
 
-	<ProjectExtensions><VisualStudio><UserProperties appsettings_1production_1json__JsonSchema="https://beaujs.com/schema.json" /></VisualStudio></ProjectExtensions>
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties appsettings_1json__JsonSchema="" appsettings_1production_1json__JsonSchema="https://beaujs.com/schema.json" />
+		</VisualStudio>
+	</ProjectExtensions>
 
 </Project>

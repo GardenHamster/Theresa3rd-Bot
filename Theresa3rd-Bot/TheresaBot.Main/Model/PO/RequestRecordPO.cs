@@ -1,5 +1,4 @@
 ﻿using SqlSugar;
-using System;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.PO

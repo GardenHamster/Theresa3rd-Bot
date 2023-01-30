@@ -1,5 +1,4 @@
-﻿using System.IO;
-using TheresaBot.Main.Model.Pixiv;
+﻿using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
 
 namespace TheresaBot.Main.Model.Subscribe

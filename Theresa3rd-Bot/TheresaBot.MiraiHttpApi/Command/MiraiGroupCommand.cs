@@ -12,7 +12,6 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
-using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Command

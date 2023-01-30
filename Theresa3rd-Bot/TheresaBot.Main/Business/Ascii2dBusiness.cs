@@ -1,18 +1,13 @@
 ﻿using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Type;
-using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Business
 {

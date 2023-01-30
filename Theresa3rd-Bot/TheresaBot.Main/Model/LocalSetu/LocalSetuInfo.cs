@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-
-namespace TheresaBot.Main.Model.LocalSetu
+﻿namespace TheresaBot.Main.Model.LocalSetu
 {
     public class LocalSetuInfo
     {

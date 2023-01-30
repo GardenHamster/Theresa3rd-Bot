@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TheresaBot.Main.Model.Cache
+﻿namespace TheresaBot.Main.Model.Cache
 {
     public class GroupCoolingInfo
     {

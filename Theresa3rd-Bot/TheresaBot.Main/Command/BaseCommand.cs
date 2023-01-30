@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using TheresaBot.Main.Reporter;
+﻿using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 

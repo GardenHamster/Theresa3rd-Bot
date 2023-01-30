@@ -1,5 +1,4 @@
-﻿using System.Text;
-using TheresaBot.Main.Model.PO;
+﻿using TheresaBot.Main.Model.PO;
 
 namespace TheresaBot.Main.Dao
 {

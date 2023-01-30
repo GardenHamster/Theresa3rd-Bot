@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TheresaBot.Main.Type;
+﻿using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Config
 {

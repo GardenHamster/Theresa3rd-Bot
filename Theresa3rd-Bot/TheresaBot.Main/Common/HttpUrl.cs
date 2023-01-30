@@ -1,7 +1,4 @@
-﻿using System;
-using TheresaBot.Main.Type;
-
-namespace TheresaBot.Main.Common
+﻿namespace TheresaBot.Main.Common
 {
     public static class HttpUrl
     {

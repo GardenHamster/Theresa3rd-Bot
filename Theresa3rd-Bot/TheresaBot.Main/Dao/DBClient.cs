@@ -1,7 +1,6 @@
 ﻿using SqlSugar.IOC;
-using System;
-using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.PO;
 
 namespace TheresaBot.Main.Dao
 {

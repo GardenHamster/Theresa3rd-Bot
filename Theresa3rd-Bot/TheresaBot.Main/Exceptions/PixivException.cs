@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TheresaBot.Main.Exceptions
+﻿namespace TheresaBot.Main.Exceptions
 {
     public class PixivException : Exception
     {

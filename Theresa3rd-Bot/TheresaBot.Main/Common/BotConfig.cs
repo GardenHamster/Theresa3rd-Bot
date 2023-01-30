@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TheresaBot.Main.Model.Config;
+﻿using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Type;

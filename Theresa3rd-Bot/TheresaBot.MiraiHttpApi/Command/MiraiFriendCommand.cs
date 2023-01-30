@@ -38,8 +38,8 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
             if (string.IsNullOrWhiteSpace(template)) return 0;
-            List<IChatMessage> msgList = await template.SplitToChainAsync().ToMiraiMessageAsync();
-            return await Session.SendFriendMessageAsync(MemberId, msgList.ToArray());
+            IChatMessage[] msgList = await template.SplitToChainAsync().ToMiraiMessageAsync();
+            return await Session.SendFriendMessageAsync(MemberId, msgList);
         }
 
         public override async Task<int> ReplyFriendMessageAsync(string message)
@@ -49,8 +49,8 @@ namespace TheresaBot.MiraiHttpApi.Command
 
         public override async Task<int> ReplyFriendMessageAsync(List<BaseContent> contents)
         {
-            List<IChatMessage> msgList = await contents.ToMiraiMessageAsync();
-            return await Session.SendFriendMessageAsync(MemberId, msgList.ToArray());
+            IChatMessage[] msgList = await contents.ToMiraiMessageAsync();
+            return await Session.SendFriendMessageAsync(MemberId, msgList);
         }
 
         public async Task<List<IChatMessage>> UploadPictureAsync(List<FileInfo> setuFiles, UploadTarget target)

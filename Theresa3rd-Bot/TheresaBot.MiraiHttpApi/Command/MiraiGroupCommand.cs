@@ -79,8 +79,8 @@ namespace TheresaBot.MiraiHttpApi.Command
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
             if (string.IsNullOrWhiteSpace(template)) return 0;
             if (template.StartsWith(" ") == false) template = " " + template;
-            List<IChatMessage> msgList = await template.SplitToChainAsync().ToMiraiMessageAsync();
-            return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
+            IChatMessage[] msgList = await template.SplitToChainAsync().ToMiraiMessageAsync();
+            return await Session.SendGroupMessageAsync(GroupId, msgList);
         }
 
         public override async Task RevokeGroupMessageAsync(int messageId, long groupId)
@@ -155,10 +155,10 @@ namespace TheresaBot.MiraiHttpApi.Command
                     imgMsgs = await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Temp);
                 }
 
-                List<IChatMessage> workMsgs = await workContents.ToMiraiMessageAsync();
+                IChatMessage[] workMsgs = await workContents.ToMiraiMessageAsync();
                 if (BotConfig.PixivConfig.SendImgBehind && imgMsgs.Count > 0)
                 {
-                    await Session.SendTempMessageAsync(MemberId, GroupId, workMsgs.ToArray());
+                    await Session.SendTempMessageAsync(MemberId, GroupId, workMsgs);
                     await Task.Delay(500);
                     await Session.SendTempMessageAsync(MemberId, GroupId, imgMsgs.ToArray());
                 }

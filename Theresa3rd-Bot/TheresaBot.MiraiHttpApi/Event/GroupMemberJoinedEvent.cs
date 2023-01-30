@@ -31,7 +31,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             WelcomeSpecial welcomeSpecial = welcomeConfig.Special?.Where(m => m.GroupId == groupId).FirstOrDefault();
             if (welcomeSpecial != null) template = welcomeSpecial.Template;
             if (string.IsNullOrEmpty(template)) return;
-            List<IChatMessage> templateList = await BusinessHelper.SplitToChainAsync(template, SendTarget.Group).ToMiraiMessageAsync();
+            IChatMessage[] templateList = await BusinessHelper.SplitToChainAsync(template, SendTarget.Group).ToMiraiMessageAsync();
             List<IChatMessage> atList = new List<IChatMessage>()
             {
                 new AtMessage(memberId),new PlainMessage("\n")

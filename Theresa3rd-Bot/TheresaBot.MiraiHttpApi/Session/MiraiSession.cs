@@ -1,7 +1,11 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+using Mirai.CSharp.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using TheresaBot.Main.Common;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Session;
 using TheresaBot.MiraiHttpApi.Helper;
@@ -17,14 +21,14 @@ namespace TheresaBot.MiraiHttpApi.Session
 
         public override async Task<int> SendFriendMessageAsync(long memberId, params BaseContent[] contents)
         {
-            List<IChatMessage> msgList = await new List<BaseContent>(contents).ToMiraiMessageAsync();
-            return await MiraiHelper.Session.SendFriendMessageAsync(memberId, msgList.ToArray());
+            IChatMessage[] msgList = await new List<BaseContent>(contents).ToMiraiMessageAsync();
+            return await MiraiHelper.Session.SendFriendMessageAsync(memberId, msgList);
         }
 
         public override async Task<int> SendFriendMessageAsync(long memberId, List<BaseContent> contents)
         {
-            List<IChatMessage> msgList = await contents.ToMiraiMessageAsync();
-            return await MiraiHelper.Session.SendFriendMessageAsync(memberId, msgList.ToArray());
+            IChatMessage[] msgList = await contents.ToMiraiMessageAsync();
+            return await MiraiHelper.Session.SendFriendMessageAsync(memberId, msgList);
         }
 
         public override async Task<int> SendGroupMessageAsync(long groupId, string message)
@@ -34,14 +38,14 @@ namespace TheresaBot.MiraiHttpApi.Session
 
         public override async Task<int> SendGroupMessageAsync(long groupId, params BaseContent[] contents)
         {
-            List<IChatMessage> msgList = await new List<BaseContent>(contents).ToMiraiMessageAsync();
-            return await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
+            IChatMessage[] msgList = await new List<BaseContent>(contents).ToMiraiMessageAsync();
+            return await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList);
         }
 
         public override async Task<int> SendGroupMessageAsync(long groupId, List<BaseContent> contents)
         {
-            List<IChatMessage> msgList = await contents.ToMiraiMessageAsync();
-            return await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
+            IChatMessage[] msgList = await contents.ToMiraiMessageAsync();
+            return await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList);
         }
 
         public override async Task<int> SendGroupMessageAsync(long groupId, List<BaseContent> contents, bool isAtAll = false)
@@ -72,35 +76,28 @@ namespace TheresaBot.MiraiHttpApi.Session
                 List<IChatMessage> imgMsgs = new List<IChatMessage>();
                 if (setuFiles != null && setuFiles.Count > 0)
                 {
-                    imgMsgs = await UploadPictureAsync(setuFiles, UploadTarget.Group);
+                    imgMsgs = await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Group);
                 }
 
                 if (BotConfig.PixivConfig.SendImgBehind && imgMsgs.Count > 0)
                 {
-                    int workMsgId = await ReplyGroupMessageAsync(workContents, isAt);
+                    int workMsgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, await workMsgs.ToMiraiMessageAsync());
                     await Task.Delay(500);
-                    int imgMsgId = await Session.SendGroupMessageAsync(GroupId, imgMsgs.ToArray());
+                    int imgMsgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, imgMsgs.ToArray());
                     msgIds.Add(workMsgId);
                     msgIds.Add(imgMsgId);
                 }
                 else
                 {
                     List<IChatMessage> msgList = new List<IChatMessage>();
-                    if (isAt) msgList.Add(new AtMessage(MemberId));
-                    msgList.AddRange(await workContents.ToMiraiMessageAsync());
+                    msgList.AddRange(await workMsgs.ToMiraiMessageAsync());
                     msgList.AddRange(imgMsgs);
-                    msgIds.Add(await Session.SendGroupMessageAsync(GroupId, msgList.ToArray()));
-                }
-
-                if (revokeInterval > 0)
-                {
-                    await Task.Delay(revokeInterval * 1000);
-                    await RevokeGroupMessageAsync(msgIds, GroupId);
+                    msgIds.Add(await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray()));
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "SendGroupSetuAndRevokeAsync异常");
+                LogHelper.Error(ex, "SendGroupSetuAsync异常");
             }
         }
 

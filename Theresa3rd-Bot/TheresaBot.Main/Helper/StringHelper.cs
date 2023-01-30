@@ -42,28 +42,29 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 提取关键词
+        /// 根据命令提取关键词(命令后的字符全部视为一条关键词)
         /// </summary>
         /// <param name="message"></param>
         /// <param name="command"></param>
         /// <returns></returns>
         public static string splitKeyWord(this string message, string command)
         {
-            string[] messageSplit = message.Split(new string[] { command }, StringSplitOptions.RemoveEmptyEntries);
-            if (messageSplit.Length < 2) return String.Empty;
-            return messageSplit[1].Trim();
+            string[] splitArr = message.Trim().Split(new string[] { command }, StringSplitOptions.RemoveEmptyEntries);
+            if (splitArr.Length < 1) return String.Empty;
+            if (message.StartsWith(command)) return splitArr[0];
+            return splitArr[splitArr.Length - 1].Trim();
         }
 
         /// <summary>
-        /// 提取参数
+        /// 根据命令提取参数(通过空格拆分参数)
         /// </summary>
         /// <param name="message"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        public static string[] splitKeyWords(this string message, string command)
+        public static string[] splitKeyParams(this string message, string command)
         {
-            string paramStr = message.splitKeyWord(command);
-            if (paramStr is null) return null;
+            string paramStr = message.Trim().splitKeyWord(command);
+            if (paramStr is null) return new string[0];
             return paramStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
         }
 

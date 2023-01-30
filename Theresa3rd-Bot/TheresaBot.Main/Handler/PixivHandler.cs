@@ -44,7 +44,7 @@ namespace TheresaBot.Main.Handler
 
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ProcessingMsg, null);
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ProcessingMsg);
                     await Task.Delay(1000);
                 }
 
@@ -148,7 +148,7 @@ namespace TheresaBot.Main.Handler
                 string pixivUserIds;
                 SubscribeGroupType? groupType = null;
 
-                string[] paramArr = command.KeyWords;
+                string[] paramArr = command.Params;
                 if (paramArr != null && paramArr.Length >= 2)
                 {
                     pixivUserIds = paramArr.Length > 0 ? paramArr[0] : string.Empty;
@@ -376,7 +376,7 @@ namespace TheresaBot.Main.Handler
                 string pixivTags;
                 SubscribeGroupType? groupType;
 
-                string[] paramArr = command.KeyWords;
+                string[] paramArr = command.Params;
                 if (paramArr != null && paramArr.Length >= 2)
                 {
                     pixivTags = paramArr.Length > 0 ? paramArr[0] : string.Empty;

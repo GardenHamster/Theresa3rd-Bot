@@ -58,7 +58,7 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 if (string.IsNullOrWhiteSpace(instructions)) return;//不存在任何指令
 
-                MiraiGroupCommand botCommand = GetGroupCommand(session, args, message, groupId, memberId);
+                MiraiGroupCommand botCommand = GetGroupCommand(session, args, instructions, groupId, memberId);
                 if (botCommand is not null)
                 {
                     MiraiSession miraiSession = new MiraiSession();

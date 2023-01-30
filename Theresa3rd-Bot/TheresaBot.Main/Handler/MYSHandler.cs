@@ -41,7 +41,7 @@ namespace TheresaBot.Main.Handler
             {
                 string userId;
                 SubscribeGroupType? groupType = null;
-                string[] paramArr = command.KeyWords;
+                string[] paramArr = command.Params;
                 if (paramArr != null && paramArr.Length >= 2)
                 {
                     userId = paramArr.Length > 0 ? paramArr[0] : string.Empty;

@@ -43,7 +43,7 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 if (string.IsNullOrWhiteSpace(instructions)) return;//不存在任何指令
 
-                MiraiFriendCommand botCommand = GetFriendCommand(session, args, message, memberId);
+                MiraiFriendCommand botCommand = GetFriendCommand(session, args, instructions, memberId);
                 if (botCommand is not null)
                 {
                     MiraiSession miraiSession = new MiraiSession();

@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Reporter;
+﻿using TheresaBot.Main.Helper;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -9,20 +10,20 @@ namespace TheresaBot.Main.Command
         public int MsgId { get; set; }
         public long MemberId { get; init; }
         public string Instruction { get; init; }
-        public string[] KeyWords { get; init; }
+        public string Command { get; set; }
+        public string[] Params { get; init; }
+        public string KeyWord { get; set; }
         public CommandType CommandType { get; init; }
-        public string KeyWord
-        {
-            get { return KeyWords is not null && KeyWords.Length > 0 ? KeyWords[0].Trim() : string.Empty; }
-        }
 
-        public BaseCommand(int msgId, string[] keyWords, CommandType commandType, string instruction, long memberId)
+        public BaseCommand(int msgId, CommandType commandType, string instruction, string command, long memberId)
         {
             this.MsgId = msgId;
-            this.KeyWords = keyWords;
             this.Instruction = instruction;
             this.CommandType = commandType;
             this.MemberId = memberId;
+            this.Command = command;
+            this.KeyWord = instruction.splitKeyWord(command);
+            this.Params = instruction.splitKeyParams(command);
         }
 
         public abstract Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter);

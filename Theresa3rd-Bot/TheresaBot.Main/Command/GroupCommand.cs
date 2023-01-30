@@ -10,7 +10,8 @@ namespace TheresaBot.Main.Command
         public long GroupId { get; init; }
         public CommandHandler<GroupCommand> HandlerInvoker { get; init; }
 
-        public GroupCommand(CommandHandler<GroupCommand> invoker, int msgId, string[] keyWords, string instruction, long groupId, long memberId) : base(msgId, keyWords, invoker.CommandType, instruction, memberId)
+        public GroupCommand(CommandHandler<GroupCommand> invoker, int msgId, string instruction, string command, long groupId, long memberId)
+            : base(msgId, invoker.CommandType, instruction, command, memberId)
         {
             this.HandlerInvoker = invoker;
             this.MemberId = memberId;

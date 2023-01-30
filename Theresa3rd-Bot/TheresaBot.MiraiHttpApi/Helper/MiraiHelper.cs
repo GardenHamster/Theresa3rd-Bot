@@ -96,11 +96,8 @@ namespace TheresaBot.MiraiHttpApi.Helper
         private static MiraiGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, string command, long groupId, long memberId)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
-            string lowerInstructions = instruction.ToLower().Trim();
-            string lowerCommand = command.ToLower().Trim();
-            if (lowerInstructions.StartsWith(lowerCommand) == false) return null;
-            string[] keyWords = instruction.splitKeyWords(command);
-            return new(handler, args.GetMessageId(), session, args, keyWords, instruction, groupId, memberId);
+            if (instruction.StartsWith(command) == false) return null;
+            return new(handler, session, args, instruction, command, groupId, memberId);
         }
 
         /// <summary>
@@ -128,11 +125,8 @@ namespace TheresaBot.MiraiHttpApi.Helper
         private static MiraiFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, IMiraiHttpSession session, IFriendMessageEventArgs args, string command, long memberId)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
-            string lowerInstructions = instruction.ToLower().Trim();
-            string lowerCommand = command.ToLower().Trim();
-            if (lowerInstructions.StartsWith(lowerCommand) == false) return null;
-            string[] keyWords = instruction.splitKeyWords(command);
-            return new(handler, args.GetMessageId(), session, args, keyWords, instruction, memberId);
+            if (instruction.StartsWith(command) == false) return null;
+            return new(handler, session, args, instruction, command, memberId);
         }
 
 

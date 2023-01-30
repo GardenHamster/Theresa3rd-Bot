@@ -21,8 +21,8 @@ namespace TheresaBot.MiraiHttpApi.Command
         public IGroupMessageEventArgs Args { get; set; }
         public IMiraiHttpSession Session { get; set; }
 
-        public MiraiGroupCommand(CommandHandler<GroupCommand> invoker, int msgId, IMiraiHttpSession session, IGroupMessageEventArgs args, string[] keyWords, string instruction, long groupId, long memberId)
-            : base(invoker, msgId, keyWords, instruction, groupId, memberId)
+        public MiraiGroupCommand(CommandHandler<GroupCommand> invoker, IMiraiHttpSession session, IGroupMessageEventArgs args, string instruction, string command, long groupId, long memberId)
+            : base(invoker, args.GetMessageId(), instruction, command, groupId, memberId)
         {
             this.Args = args;
             this.Session = session;

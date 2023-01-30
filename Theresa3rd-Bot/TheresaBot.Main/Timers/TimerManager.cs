@@ -1,31 +1,26 @@
-﻿using MySqlX.XDevAPI;
-using Quartz;
+﻿using Quartz;
 using Quartz.Impl;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Session;
 
-namespace TheresaBot.Main.Timer
+namespace TheresaBot.Main.Timers
 {
     public static class TimerManager
     {
-        public static void init()
-        {
-            initReminderJob();//初始化定时提醒任务
-            initTimingSetuJob();//初始化定时色图任务
-            initSubscribeTimers();//初始化订阅任务
-            initClearJobAsync();//初始化清理任务
-            initCookieJobAsync();//初始化cookie检查任务
-        }
-
-        private static void initReminderJob()
+        /// <summary>
+        /// 初始化定时提醒任务
+        /// </summary>
+        public static void initReminderJob(BaseSession session, BaseReporter reporter)
         {
             try
             {
                 ReminderConfig reminderConfig = BotConfig.ReminderConfig;
                 if (reminderConfig is null) return;
                 if (reminderConfig.Enable == false) return;
-                foreach (var item in reminderConfig.Timers) createReminderJob(item);
+                foreach (var item in reminderConfig.Timers) createReminderJob(item, session, reporter);
             }
             catch (Exception ex)
             {
@@ -33,7 +28,11 @@ namespace TheresaBot.Main.Timer
             }
         }
 
-        private static void initTimingSetuJob(BaseSession session)
+        /// <summary>
+        /// 初始化定时色图任务
+        /// </summary>
+        /// <param name="session"></param>
+        public static void initTimingSetuJob(BaseSession session, BaseReporter reporter)
         {
             try
             {
@@ -43,7 +42,7 @@ namespace TheresaBot.Main.Timer
                 if (timingSetuConfig.Timers is null) return;
                 if (timingSetuConfig.Timers.Count == 0) return;
                 List<TimingSetuTimer> timers = timingSetuConfig.Timers.Take(10).ToList();
-                foreach (var item in timers) createTimingSetuJob(item);
+                foreach (var item in timers) createTimingSetuJob(item, session, reporter);
             }
             catch (Exception ex)
             {
@@ -51,7 +50,34 @@ namespace TheresaBot.Main.Timer
             }
         }
 
-        private static async void initClearJobAsync()
+        /// <summary>
+        /// 初始化订阅任务
+        /// </summary>
+        public static void initSubscribeTimers(BaseSession session, BaseReporter reporter)
+        {
+            SubscribeConfig subscribeConfig = BotConfig.SubscribeConfig;
+            if (subscribeConfig is null) return;
+            if (subscribeConfig.PixivUser != null && subscribeConfig.PixivUser.Enable)
+            {
+                PixivUserTimer.init(session, reporter);
+                LogHelper.Info($"pixiv用户订阅任务启动完毕...");
+            }
+            if (subscribeConfig.PixivTag != null && subscribeConfig.PixivTag.Enable)
+            {
+                PixivTagTimer.init(session, reporter);
+                LogHelper.Info($"pixiv标签订阅任务启动完毕...");
+            }
+            if (subscribeConfig.Mihoyo != null && subscribeConfig.Mihoyo.Enable)
+            {
+                MysUserTimer.init(session, reporter);
+                LogHelper.Info($"米游社订阅任务启动完毕...");
+            }
+        }
+
+        /// <summary>
+        /// 初始化清理任务
+        /// </summary>
+        public static async void initClearJobAsync()
         {
             try
             {
@@ -69,7 +95,12 @@ namespace TheresaBot.Main.Timer
             }
         }
 
-        private static async void initCookieJobAsync()
+        /// <summary>
+        /// 初始化cookie检查任务
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="reporter"></param>
+        public static async void initCookieJobAsync(BaseSession session, BaseReporter reporter)
         {
             try
             {
@@ -77,6 +108,8 @@ namespace TheresaBot.Main.Timer
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(cookieCron).Build();
                 IJobDetail jobDetail = JobBuilder.Create<CookieJob>().WithIdentity("CookieJob", "CookieJob").Build();//创建作业
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+                jobDetail.JobDataMap.Put("BaseSession", session);
+                jobDetail.JobDataMap.Put("BaseReporter", reporter);
                 await scheduler.ScheduleJob(jobDetail, trigger);
                 await scheduler.Start();
                 LogHelper.Info($"Cookie检查定时器启动完毕...");
@@ -87,29 +120,8 @@ namespace TheresaBot.Main.Timer
             }
         }
 
-        private static void initSubscribeTimers()
-        {
-            SubscribeConfig subscribeConfig = BotConfig.SubscribeConfig;
-            if (subscribeConfig is null) return;
-            if (subscribeConfig.PixivUser != null && subscribeConfig.PixivUser.Enable)
-            {
-                PixivUserTimer.init();
-                LogHelper.Info($"pixiv用户订阅任务启动完毕...");
-            }
-            if (subscribeConfig.PixivTag != null && subscribeConfig.PixivTag.Enable)
-            {
-                PixivTagTimer.init();
-                LogHelper.Info($"pixiv标签订阅任务启动完毕...");
-            }
-            if (subscribeConfig.Mihoyo != null && subscribeConfig.Mihoyo.Enable)
-            {
-                MysUserTimer.init();
-                LogHelper.Info($"米游社订阅任务启动完毕...");
-            }
-        }
 
-
-        private static async void createReminderJob(ReminderTimer reminderTimer)
+        private static async void createReminderJob(ReminderTimer reminderTimer, BaseSession session, BaseReporter reporter)
         {
             try
             {
@@ -117,6 +129,8 @@ namespace TheresaBot.Main.Timer
                 IJobDetail jobDetail = JobBuilder.Create<ReminderJob>().WithIdentity(reminderTimer.GetHashCode().ToString(), "ReminderJob").Build();
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
                 jobDetail.JobDataMap.Put("ReminderTimer", reminderTimer);
+                jobDetail.JobDataMap.Put("BaseSession", session);
+                jobDetail.JobDataMap.Put("BaseReporter", reporter);
                 await scheduler.ScheduleJob(jobDetail, trigger);
                 await scheduler.Start();
                 LogHelper.Info($"定时提醒任务[{reminderTimer.Name}]启动完毕...");
@@ -127,7 +141,7 @@ namespace TheresaBot.Main.Timer
             }
         }
 
-        private static async void createTimingSetuJob(TimingSetuTimer timingSetuTimer, BaseSession session)
+        private static async void createTimingSetuJob(TimingSetuTimer timingSetuTimer, BaseSession session, BaseReporter reporter)
         {
             try
             {
@@ -135,7 +149,8 @@ namespace TheresaBot.Main.Timer
                 IJobDetail jobDetail = JobBuilder.Create<TimingSetuJob>().WithIdentity(timingSetuTimer.GetHashCode().ToString(), "TimingSetuJob").Build();
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
                 jobDetail.JobDataMap.Put("TimingSetuTimer", timingSetuTimer);
-                jobDetail.JobDataMap.Put("TimingSetuSession", session);
+                jobDetail.JobDataMap.Put("BaseReporter", reporter);
+                jobDetail.JobDataMap.Put("BaseSession", session);
                 await scheduler.ScheduleJob(jobDetail, trigger);
                 await scheduler.Start();
                 LogHelper.Info($"定时涩图任务[{timingSetuTimer.Name}]启动完毕...");

@@ -3,6 +3,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -12,7 +13,7 @@ namespace TheresaBot.Main.Handler
     {
         private BanWordBusiness banWordBusiness;
 
-        public BanWordHandler(BaseSession session) : base(session)
+        public BanWordHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             banWordBusiness = new BanWordBusiness();
         }
@@ -43,7 +44,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "disableSetuTagAsync异常");
-                ReportHelper.SendError(ex, "disableSetuTagAsync异常");
+                Reporter.SendError(ex, "disableSetuTagAsync异常");
             }
         }
 
@@ -73,7 +74,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "enableSetuAsync异常");
-                ReportHelper.SendError(ex, "enableSetuAsync异常");
+                Reporter.SendError(ex, "enableSetuAsync异常");
             }
         }
 
@@ -109,7 +110,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "disableMemberAsync异常");
-                ReportHelper.SendError(ex, "disableMemberAsync异常");
+                Reporter.SendError(ex, "disableMemberAsync异常");
             }
         }
 
@@ -139,7 +140,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "enableMemberAsync异常");
-                ReportHelper.SendError(ex, "enableMemberAsync异常");
+                Reporter.SendError(ex, "enableMemberAsync异常");
             }
         }
 

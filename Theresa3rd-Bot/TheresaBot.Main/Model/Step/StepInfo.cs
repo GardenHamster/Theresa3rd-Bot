@@ -1,7 +1,7 @@
 ﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 
-namespace TheresaBot.Main.Model.Cache
+namespace TheresaBot.Main.Model.Step
 {
     public class StepInfo
     {

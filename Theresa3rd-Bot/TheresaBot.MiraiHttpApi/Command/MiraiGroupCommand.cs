@@ -12,8 +12,10 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
+using TheresaBot.Main.Relay;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
+using TheresaBot.MiraiHttpApi.Model.Step;
 
 namespace TheresaBot.MiraiHttpApi.Command
 {
@@ -22,7 +24,8 @@ namespace TheresaBot.MiraiHttpApi.Command
         public IGroupMessageEventArgs Args { get; set; }
         public IMiraiHttpSession Session { get; set; }
 
-        public MiraiGroupCommand(CommandHandler<GroupCommand> invoker, IMiraiHttpSession session, IGroupMessageEventArgs args, string[] keyWords, string instruction, long groupId, long memberId) : base(invoker, keyWords, instruction, groupId, memberId)
+        public MiraiGroupCommand(CommandHandler<GroupCommand> invoker, int msgId, IMiraiHttpSession session, IGroupMessageEventArgs args, string[] keyWords, string instruction, long groupId, long memberId)
+            : base(invoker, msgId, keyWords, instruction, groupId, memberId)
         {
             this.Args = args;
             this.Session = session;
@@ -91,7 +94,6 @@ namespace TheresaBot.MiraiHttpApi.Command
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "群消息撤回失败");
-                ReportHelper.SendError(ex, "群消息撤回失败");
             }
         }
 
@@ -121,37 +123,6 @@ namespace TheresaBot.MiraiHttpApi.Command
                 }
             }
             return imgMsgs;
-        }
-
-        public override async Task SendGroupSetuAsync(List<BaseContent> workMsgs, List<FileInfo> setuFiles, long groupId, bool isShowImg)
-        {
-            try
-            {
-                List<IChatMessage> imgMsgs = new List<IChatMessage>();
-                if (isShowImg && setuFiles != null && setuFiles.Count > 0)
-                {
-                    imgMsgs = await UploadPictureAsync(setuFiles, UploadTarget.Group);
-                }
-
-                if (BotConfig.PixivConfig.SendImgBehind && imgMsgs.Count > 0)
-                {
-                    List<IChatMessage> miraiWorkMsgs = await workMsgs.ToMiraiMessageAsync();
-                    int workMsgId = await Session.SendGroupMessageAsync(groupId, miraiWorkMsgs.ToArray());
-                    await Task.Delay(500);
-                    await Session.SendGroupMessageAsync(groupId, imgMsgs.ToArray(), workMsgId);
-                }
-                else
-                {
-                    List<IChatMessage> msgList = new List<IChatMessage>();
-                    msgList.AddRange(await workMsgs.ToMiraiMessageAsync());
-                    msgList.AddRange(imgMsgs);
-                    await Session.SendGroupMessageAsync(groupId, msgList.ToArray());
-                }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "SendGroupSetuAsync异常");
-            }
         }
 
         public override async Task ReplyGroupSetuAndRevokeAsync(List<BaseContent> workContents, List<FileInfo> setuFiles, int revokeInterval, bool isAt = false)
@@ -194,7 +165,6 @@ namespace TheresaBot.MiraiHttpApi.Command
             }
         }
 
-
         public override async Task SendTempSetuAsync(List<BaseContent> workContents, List<FileInfo> setuFiles = null)
         {
             try
@@ -226,22 +196,13 @@ namespace TheresaBot.MiraiHttpApi.Command
             }
         }
 
-        /// <summary>
-        /// 发送错误记录
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="message"></param>
-        private static void sendReport(long groupId, string message)
+        public override MiraiStepDetail CreateStepDetail(int waitSecond, string question, Func<GroupCommand, GroupRelay, Task<bool>> checkInput)
         {
-            try
-            {
-                MiraiHelper.Session.SendGroupMessageAsync(groupId, new PlainMessage(message)).Wait();
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex);
-            }
+            MiraiStepDetail stepDetail=new MiraiStepDetail();
+
+
         }
+
 
     }
 }

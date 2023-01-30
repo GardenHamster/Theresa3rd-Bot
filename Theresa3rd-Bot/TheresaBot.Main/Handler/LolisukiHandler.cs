@@ -7,6 +7,7 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Lolisuki;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -16,7 +17,7 @@ namespace TheresaBot.Main.Handler
     {
         private LolisukiBusiness lolisukiBusiness;
 
-        public LolisukiHandler(BaseSession session) : base(session)
+        public LolisukiHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             lolisukiBusiness = new LolisukiBusiness();
         }
@@ -93,14 +94,14 @@ namespace TheresaBot.Main.Handler
                 string errMsg = $"lolisukiSearchAsync异常";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupMessageWithAtAsync($"获取涩图出错了，{ex.Message}");
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
             catch (Exception ex)
             {
                 string errMsg = "lolisukiSearchAsync异常";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
             finally
             {
@@ -150,7 +151,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "定时涩图发送失败");
-                ReportHelper.SendError(ex, "定时涩图发送失败");
+                Reporter.SendError(ex, "定时涩图发送失败");
             }
         }
 

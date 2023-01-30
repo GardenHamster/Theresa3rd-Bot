@@ -6,6 +6,7 @@ using TheresaBot.Main.Model.Base;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -13,7 +14,7 @@ namespace TheresaBot.Main.Handler
 {
     public abstract class SetuHandler : BaseHandler
     {
-        public SetuHandler(BaseSession session) : base(session)
+        public SetuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
         }
 

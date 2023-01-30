@@ -9,6 +9,7 @@ using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Relay;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -20,7 +21,7 @@ namespace TheresaBot.Main.Handler
         private SaucenaoBusiness saucenaoBusiness;
         private Ascii2dBusiness ascii2dBusiness;
 
-        public SaucenaoHandler(BaseSession session) : base(session)
+        public SaucenaoHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             pixivBusiness = new PixivBusiness();
             saucenaoBusiness = new SaucenaoBusiness();
@@ -92,7 +93,7 @@ namespace TheresaBot.Main.Handler
             {
                 LogHelper.Error(ex, "searchResult异常");
                 await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.ErrorMsg, " 出了点小问题，任务结束~");
-                ReportHelper.SendError(ex, "searchResult异常");
+                Reporter.SendError(ex, "searchResult异常");
             }
             finally
             {
@@ -179,7 +180,7 @@ namespace TheresaBot.Main.Handler
                 string errMsg = $"searchWithSaucenao异常，url={imgUrl}";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.ErrorMsg, $"查找第{index}张图片失败，再试一次吧~");
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
                 return false;
             }
         }
@@ -243,7 +244,7 @@ namespace TheresaBot.Main.Handler
                 string errMsg = $"searchWithAscii2d异常，url={imgUrl}";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.ErrorMsg, $"查找图片失败，再试一次吧~");
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
         }
 

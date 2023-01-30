@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
-using TheresaBot.Main.Model.Content;
+﻿using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
+using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Command
 {
@@ -22,9 +23,9 @@ namespace TheresaBot.Main.Command
 
         public abstract Task<int> ReplyFriendTemplateAsync(string template, string defaultmsg);
 
-        public override async Task<bool> InvokeAsync()
+        public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
         {
-            return await HandlerInvoker.HandleMethod.Invoke(this);
+            return await HandlerInvoker.HandleMethod.Invoke(this, session, reporter);
         }
 
     }

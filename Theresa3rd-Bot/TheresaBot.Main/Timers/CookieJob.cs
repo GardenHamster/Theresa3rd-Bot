@@ -1,11 +1,11 @@
 ﻿using Quartz;
-using System;
-using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Handler;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Session;
 
-namespace TheresaBot.Main.Timer
+namespace TheresaBot.Main.Timers
 {
     [DisallowConcurrentExecution]
     public class CookieJob : IJob
@@ -14,7 +14,10 @@ namespace TheresaBot.Main.Timer
         {
             try
             {
-                await new CookieHandler().CheckAndWarn(BotConfig.WebsiteConfig.Pixiv, 2, "Pixiv Cookie");
+                JobDataMap dataMap = context.MergedJobDataMap;
+                BaseSession session = (BaseSession)dataMap["BaseSession"];
+                BaseReporter reporter = (BaseReporter)dataMap["BaseReporter"];
+                await new CookieHandler(session, reporter).CheckAndWarn(BotConfig.WebsiteConfig.Pixiv, 2, "Pixiv Cookie");
             }
             catch (Exception ex)
             {

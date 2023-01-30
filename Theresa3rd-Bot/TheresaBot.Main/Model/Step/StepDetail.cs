@@ -1,7 +1,7 @@
 ﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Relay;
 
-namespace TheresaBot.Main.Model.Cache
+namespace TheresaBot.Main.Model.Step
 {
     public abstract class StepDetail
     {

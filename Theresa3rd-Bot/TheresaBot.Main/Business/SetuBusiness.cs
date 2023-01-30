@@ -146,9 +146,7 @@ namespace TheresaBot.Main.Business
             }
             catch (Exception ex)
             {
-                string errMsg = "gif合成失败";
-                LogHelper.Error(ex, errMsg);
-                ReportHelper.SendError(ex, errMsg);
+                LogHelper.Error(ex, "gif合成失败");
                 return null;
             }
         }

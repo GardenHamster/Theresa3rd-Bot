@@ -3,10 +3,11 @@ using TheresaBot.Main.Cache;
 using TheresaBot.Main.Handler;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Timer
+namespace TheresaBot.Main.Timers
 {
     [DisallowConcurrentExecution]
     public class TimingSetuJob : IJob
@@ -22,7 +23,8 @@ namespace TheresaBot.Main.Timer
                 }
                 CoolingCache.SetSetuTimingCooling();
                 JobDataMap dataMap = context.MergedJobDataMap;
-                BaseSession session = (BaseSession)dataMap["TimingSetuSession"];
+                BaseSession session = (BaseSession)dataMap["BaseSession"];
+                BaseReporter reporter = (BaseReporter)dataMap["BaseReporter"];
                 TimingSetuTimer timingSetuTimer = (TimingSetuTimer)dataMap["TimingSetuTimer"];
                 if (timingSetuTimer is null) return;
                 if (timingSetuTimer.Groups is null || timingSetuTimer.Groups.Count == 0) return;
@@ -30,7 +32,7 @@ namespace TheresaBot.Main.Timer
                 List<long> groupIds = timingSetuTimer.Groups.Distinct().Take(5).ToList();
                 foreach (long groupId in groupIds)
                 {
-                    Task timingTask = HandleTiming(session, timingSetuTimer, groupId);
+                    Task timingTask = HandleTiming(session, reporter, timingSetuTimer, groupId);
                     await Task.Delay(3000);
                 }
             }
@@ -40,22 +42,22 @@ namespace TheresaBot.Main.Timer
             }
         }
 
-        public async Task HandleTiming(BaseSession session, TimingSetuTimer timingSetuTimer, long groupId)
+        public async Task HandleTiming(BaseSession session, BaseReporter reporter, TimingSetuTimer timingSetuTimer, long groupId)
         {
             try
             {
                 TimingSetuSourceType sourceType = timingSetuTimer.Source;
                 if (sourceType == TimingSetuSourceType.Lolicon)
                 {
-                    await new LoliconHandler(session).sendTimingSetuAsync(timingSetuTimer, groupId);
+                    await new LoliconHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
                 }
                 else if (sourceType == TimingSetuSourceType.Lolisuki)
                 {
-                    await new LolisukiHandler(session).sendTimingSetuAsync(timingSetuTimer, groupId);
+                    await new LolisukiHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
                 }
                 else
                 {
-                    await new LocalSetuHandler(session).sendTimingSetuAsync(timingSetuTimer, groupId);
+                    await new LocalSetuHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
                 }
             }
             catch (Exception ex)

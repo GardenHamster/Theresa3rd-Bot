@@ -1,15 +1,15 @@
-﻿using Quartz.Util;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Mys;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Relay;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.Main.Type.StepOption;
@@ -22,7 +22,7 @@ namespace TheresaBot.Main.Handler
         private MYSBusiness mysBusiness;
         private SubscribeBusiness subscribeBusiness;
 
-        public MYSHandler(BaseSession session) : base(session)
+        public MYSHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             mysBusiness = new MYSBusiness();
             subscribeBusiness = new SubscribeBusiness();
@@ -93,7 +93,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "订阅米游社用户异常");
-                ReportHelper.SendError(ex, "订阅米游社用户异常");
+                Reporter.SendError(ex, "订阅米游社用户异常");
             }
         }
 
@@ -143,7 +143,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "退订米游社用户异常");
-                ReportHelper.SendError(ex, "退订米游社用户异常");
+                Reporter.SendError(ex, "退订米游社用户异常");
             }
         }
 

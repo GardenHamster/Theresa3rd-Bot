@@ -1,12 +1,9 @@
 ﻿using Quartz;
-using System;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 
-namespace TheresaBot.Main.Timer
+namespace TheresaBot.Main.Timers
 {
     [DisallowConcurrentExecution]
     public class ClearJob : IJob

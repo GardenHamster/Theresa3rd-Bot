@@ -3,6 +3,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -12,7 +13,7 @@ namespace TheresaBot.Main.Handler
     {
         private WebsiteBusiness websiteBusiness;
 
-        public CookieHandler(BaseSession session) : base(session)
+        public CookieHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             websiteBusiness = new WebsiteBusiness();
         }

@@ -3,6 +3,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -10,7 +11,7 @@ namespace TheresaBot.Main.Handler
 {
     public class MenuHandler : BaseHandler
     {
-        public MenuHandler(BaseSession session) : base(session)
+        public MenuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
         }
 
@@ -37,7 +38,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "菜单发送失败");
-                ReportHelper.SendError(ex, "菜单发送失败");
+                Reporter.SendError(ex, "菜单发送失败");
             }
         }
 

@@ -14,6 +14,8 @@ using TheresaBot.Main.Helper;
 using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Relay;
+using TheresaBot.MiraiHttpApi.Reporter;
+using TheresaBot.MiraiHttpApi.Session;
 
 namespace TheresaBot.MiraiHttpApi.Event
 {
@@ -59,7 +61,9 @@ namespace TheresaBot.MiraiHttpApi.Event
                 MiraiGroupCommand botCommand = GetGroupCommand(session, args, message, groupId, memberId);
                 if (botCommand is not null)
                 {
-                    args.BlockRemainingHandlers = await botCommand.InvokeAsync();
+                    MiraiSession miraiSession = new MiraiSession();
+                    MiraiReporter miraiReporter = new MiraiReporter();
+                    args.BlockRemainingHandlers = await botCommand.InvokeAsync(miraiSession, miraiReporter);
                     return;
                 }
             }

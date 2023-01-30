@@ -1,4 +1,5 @@
 ﻿using Mirai.CSharp.HttpApi.Models.EventArgs;
+using System.Collections.Generic;
 using TheresaBot.Main.Relay;
 
 namespace TheresaBot.MiraiHttpApi.Relay
@@ -12,5 +13,9 @@ namespace TheresaBot.MiraiHttpApi.Relay
             this.Args = args;
         }
 
+        public override List<string> GetReplyImageUrls()
+        {
+            
+        }
     }
 }

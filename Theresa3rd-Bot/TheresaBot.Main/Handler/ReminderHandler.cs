@@ -1,13 +1,14 @@
 ﻿using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
 {
     public class ReminderHandler : BaseHandler
     {
-        public ReminderHandler(BaseSession session) : base(session)
+        public ReminderHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
         }
 

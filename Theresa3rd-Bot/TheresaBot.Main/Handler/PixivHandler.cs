@@ -11,6 +11,7 @@ using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Relay;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.Main.Type.StepOption;
@@ -22,7 +23,7 @@ namespace TheresaBot.Main.Handler
         private PixivBusiness pixivBusiness;
         private SubscribeBusiness subscribeBusiness;
 
-        public PixivHandler(BaseSession session) : base(session)
+        public PixivHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             pixivBusiness = new PixivBusiness();
             subscribeBusiness = new SubscribeBusiness();
@@ -118,14 +119,14 @@ namespace TheresaBot.Main.Handler
                 string errMsg = $"pixivSearchAsync异常";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupMessageWithAtAsync($"获取涩图出错了，{ex.Message}");
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
             catch (Exception ex)
             {
                 string errMsg = $"pixivSearchAsync异常";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
             finally
             {
@@ -208,7 +209,7 @@ namespace TheresaBot.Main.Handler
                         string errMsg = $"pixiv画师[{pixivUserId}]订阅失败";
                         LogHelper.Error(ex, errMsg);
                         await command.ReplyGroupMessageWithAtAsync(errMsg);
-                        ReportHelper.SendErrorForce(ex, errMsg);
+                        Reporter.SendErrorForce(ex, errMsg);
                     }
                     finally
                     {
@@ -226,7 +227,7 @@ namespace TheresaBot.Main.Handler
                 string errMsg = $"订阅pixiv用户失败";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupMessageWithAtAsync(errMsg);
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -304,7 +305,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 DbScoped.SugarScope.RollbackTran();//事务回滚
                 await command.ReplyGroupMessageWithAtAsync(errMsg);
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -357,7 +358,7 @@ namespace TheresaBot.Main.Handler
                 string errMsg = $"取消pixiv画师订阅失败";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupMessageWithAtAsync(errMsg);
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -425,7 +426,7 @@ namespace TheresaBot.Main.Handler
                 string errMsg = $"订阅pixiv标签失败";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupMessageWithAtAsync(errMsg);
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -473,7 +474,7 @@ namespace TheresaBot.Main.Handler
                 string errMsg = $"退订pixiv标签失败";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupMessageWithAtAsync(errMsg);
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -592,7 +593,7 @@ namespace TheresaBot.Main.Handler
                     scanReport.ErrorWork++;
                     string message = $"扫描pixiv用户[{subscribeTask.SubscribeCode}]订阅失败";
                     LogHelper.Error(ex, message);
-                    ReportHelper.SendError(ex, message);
+                    Reporter.SendError(ex, message);
                 }
                 finally
                 {
@@ -618,7 +619,7 @@ namespace TheresaBot.Main.Handler
             {
                 string message = $"扫描pixiv关注用户最新作品失败";
                 LogHelper.Error(ex, message);
-                ReportHelper.SendError(ex, message);
+                Reporter.SendError(ex, message);
             }
             return scanReport;
         }
@@ -716,7 +717,7 @@ namespace TheresaBot.Main.Handler
                 string errMsg = $"读取画师[{dbSubscribe.SubscribeName}]的最新作品失败";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupMessageAsync(errMsg);
-                ReportHelper.SendError(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
         }
 

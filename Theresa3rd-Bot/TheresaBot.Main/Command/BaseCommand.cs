@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Command
@@ -24,7 +26,7 @@ namespace TheresaBot.Main.Command
             this.MemberId = memberId;
         }
 
-        public abstract Task<bool> InvokeAsync();
+        public abstract Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter);
 
     }
 }

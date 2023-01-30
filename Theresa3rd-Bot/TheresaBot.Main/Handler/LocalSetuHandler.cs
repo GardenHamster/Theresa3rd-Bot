@@ -3,6 +3,7 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.LocalSetu;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
@@ -11,7 +12,7 @@ namespace TheresaBot.Main.Handler
     {
         private LocalSetuBusiness localSetuBusiness;
 
-        public LocalSetuHandler(BaseSession session) : base(session)
+        public LocalSetuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             localSetuBusiness = new LocalSetuBusiness();
         }
@@ -45,7 +46,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "定时涩图发送失败");
-                ReportHelper.SendError(ex, "定时涩图发送失败");
+                Reporter.SendError(ex, "定时涩图发送失败");
             }
         }
 

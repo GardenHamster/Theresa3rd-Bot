@@ -1,15 +1,18 @@
 ﻿using System.Text;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Error;
 
-namespace TheresaBot.Main.Helper
+namespace TheresaBot.Main.Reporter
 {
-    public class ReportHelper
+    public abstract class BaseReporter
     {
         private const int childSendTimes = 3;
         private const int exceptionSendTimes = 10;
         private static int LastSendHour = DateTime.Now.Hour;
         private static Dictionary<System.Type, List<ErrorRecord>> SendDic = new Dictionary<System.Type, List<ErrorRecord>>();
+
+        protected abstract Task<int> SendReport(long groupId, string message);
 
         /// <summary>
         /// 将错误日志发送到日志群中
@@ -17,7 +20,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="exception"></param>
         /// <param name="message"></param>
-        public static void SendError(Exception exception, string message = "")
+        public async void SendError(Exception exception, string message = "")
         {
             try
             {
@@ -39,7 +42,7 @@ namespace TheresaBot.Main.Helper
                 messageBuilder.Append("详细请查看Log日志");
                 foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups)
                 {
-                    sendReport(groupId, messageBuilder.ToString());
+                    await SendReport(groupId, messageBuilder.ToString());
                     Task.Delay(1000).Wait();
                 }
                 AddSendRecord(exception);
@@ -55,13 +58,13 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="exception"></param>
         /// <param name="message"></param>
-        public static void SendErrorForce(Exception exception, string message)
+        public async Task SendErrorForce(Exception exception, string message)
         {
             try
             {
                 if (BotConfig.GeneralConfig?.ErrorGroups is null) return;
                 string sendMessage = $"{message}\r\n{exception.Message}\r\n{exception.StackTrace}";
-                foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups) sendReport(groupId, sendMessage);
+                foreach (var groupId in BotConfig.GeneralConfig.ErrorGroups) await SendReport(groupId, sendMessage);
             }
             catch (Exception ex)
             {
@@ -74,7 +77,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="ex"></param>
         /// <returns></returns>
-        private static bool IsSendError(Exception ex)
+        private bool IsSendError(Exception ex)
         {
             lock (SendDic)
             {
@@ -93,7 +96,7 @@ namespace TheresaBot.Main.Helper
         /// 添加发送记录
         /// </summary>
         /// <param name="exception"></param>
-        private static void AddSendRecord(Exception exception)
+        private void AddSendRecord(Exception exception)
         {
             lock (SendDic)
             {
@@ -110,9 +113,5 @@ namespace TheresaBot.Main.Helper
                 SendDic[exType].Add(new ErrorRecord(exception));
             }
         }
-
-
-
-
     }
 }

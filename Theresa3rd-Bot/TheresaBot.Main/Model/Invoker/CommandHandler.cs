@@ -1,4 +1,5 @@
 ﻿using TheresaBot.Main.Command;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -10,9 +11,9 @@ namespace TheresaBot.Main.Model.Invoker
 
         public CommandType CommandType { get; set; }
 
-        public Func<T, BaseSession, Task<bool>> HandleMethod { get; set; }
+        public Func<T, BaseSession, BaseReporter, Task<bool>> HandleMethod { get; set; }
 
-        public CommandHandler(List<string> commands, CommandType commandType, Func<T, BaseSession, Task<bool>> handleMethod)
+        public CommandHandler(List<string> commands, CommandType commandType, Func<T, BaseSession, BaseReporter, Task<bool>> handleMethod)
         {
             Commands = commands;
             CommandType = commandType;

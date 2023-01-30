@@ -12,8 +12,10 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
-using TheresaBot.Main.Timer;
+using TheresaBot.Main.Timers;
 using TheresaBot.MiraiHttpApi.Helper;
+using TheresaBot.MiraiHttpApi.Reporter;
+using TheresaBot.MiraiHttpApi.Session;
 using YamlDotNet.Serialization;
 
 namespace Theresa3rd_Bot
@@ -59,7 +61,15 @@ namespace Theresa3rd_Bot
                 ConfigHelper.loadBanMember();
 
                 MiraiHelper.ConnectMirai().Wait();
-                TimerManager.init();
+
+                MiraiSession session = new MiraiSession();
+                MiraiReporter reporter = new MiraiReporter();
+                TimerManager.initReminderJob(session, reporter);
+                TimerManager.initTimingSetuJob(session, reporter);
+                TimerManager.initSubscribeTimers(session, reporter);
+                TimerManager.initCookieJobAsync(session, reporter);
+                TimerManager.initClearJobAsync();
+
                 LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£º{BotConfig.BotVersion}");
             }
             catch (Exception ex)

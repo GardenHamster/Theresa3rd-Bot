@@ -4,6 +4,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -12,11 +13,13 @@ namespace TheresaBot.Main.Handler
     public abstract class BaseHandler
     {
         protected BaseSession Session;
+        protected BaseReporter Reporter;
         protected RequestRecordBusiness requestRecordBusiness;
 
-        public BaseHandler(BaseSession session)
+        public BaseHandler(BaseSession session, BaseReporter reporter)
         {
             this.Session = session;
+            this.Reporter = reporter;
             this.requestRecordBusiness = new RequestRecordBusiness();
         }
 

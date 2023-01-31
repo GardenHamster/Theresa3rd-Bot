@@ -63,7 +63,7 @@ sudo yum install libgdiplus
 sudo ln -s /usr/lib/libgdiplus.so /usr/lib/gdiplus.dll
 sudo ln -s /usr/lib64/libgdiplus.so /usr/lib64/gdiplus.dll
 ```
-4、切换到Theresa3rd-Bot.dll所在目录下，运行Theresa3rd-Bot.dll
+4、切换到Theresa3rd-Bot.dll所在目录下，运行Theresa3rd-Bot.dll，这里的端口可以随意
 ```bash
 nohup dotnet Theresa3rd-Bot.dll --launch-profile Production --urls http://0.0.0.0:8088
 ```
@@ -76,12 +76,12 @@ yum update ca-certificates -y
 - 下载并安装 [ASP.NET Core Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)，推荐下载页面中的 [Hosting Bundle](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-6.0.8-windows-hosting-bundle-installer)
 - 启动powershell并将路径切换到Theresa3rd-Bot.dll所在目录下，~~或者在目标文件夹中，按住Shift然后右键，在此处打开Powershell窗口~~
 
-- 运行Theresa3rd-Bot.dll
+- 运行Theresa3rd-Bot.dll，这里的端口可以随意
 ```bash
 dotnet Theresa3rd-Bot.dll --launch-profile Production --urls http://0.0.0.0:8088
 ```
 
-- 可以在桌面创建一个powershell.ps1脚本方便一键启动，注意将路径和端口改成自己的
+- 可以在桌面创建一个powershell.ps1脚本方便一键启动
 ```bash
 $host.ui.RawUI.WindowTitle="Theresa3rd-Bot"
 cd C:\Theresa3rd-Bot

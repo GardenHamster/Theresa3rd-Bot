@@ -86,7 +86,7 @@ namespace TheresaBot.Main.Handler
 
                 long todayLeft = GetSetuLeftToday(command.GroupId, command.MemberId);
                 bool isShowImg = command.GroupId.IsShowSetuImg(pixivWorkInfo.IsR18);
-                List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : new();
+                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
 
                 string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
@@ -209,7 +209,7 @@ namespace TheresaBot.Main.Handler
                         string errMsg = $"pixiv画师[{pixivUserId}]订阅失败";
                         LogHelper.Error(ex, errMsg);
                         await command.ReplyGroupMessageWithAtAsync(errMsg);
-                        Reporter.SendErrorForce(ex, errMsg);
+                        await Reporter.SendErrorForce(ex, errMsg);
                     }
                     finally
                     {
@@ -527,7 +527,7 @@ namespace TheresaBot.Main.Handler
                 string tagName = subscribeTask.SubscribeName;
                 string remindTemplate = BotConfig.SubscribeConfig.PixivTag.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
-                List<FileInfo> setuFiles = isDownImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : new();
+                List<FileInfo> setuFiles = isDownImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 if (string.IsNullOrWhiteSpace(remindTemplate))
@@ -639,7 +639,7 @@ namespace TheresaBot.Main.Handler
                 bool isDownImg = groupIds.IsDownSetuImg(isR18Img);
                 string remindTemplate = BotConfig.SubscribeConfig.PixivUser.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
-                List<FileInfo> setuFiles = isDownImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : new();
+                List<FileInfo> setuFiles = isDownImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 if (string.IsNullOrWhiteSpace(remindTemplate))
@@ -707,7 +707,7 @@ namespace TheresaBot.Main.Handler
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 bool isShowImg = command.GroupId.IsShowSetuImg(pixivWorkInfo.IsR18);
-                List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : new();
+                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
                 workMsgs.Add(new PlainContent($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
                 workMsgs.Add(new PlainContent(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, startTime)));
                 await Session.SendGroupSetuAsync(workMsgs, setuFiles, command.GroupId, isShowImg);

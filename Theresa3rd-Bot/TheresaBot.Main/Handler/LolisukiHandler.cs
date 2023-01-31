@@ -66,7 +66,7 @@ namespace TheresaBot.Main.Handler
 
                 bool isShowImg = command.GroupId.IsShowSetuImg(lolisukiData.IsR18);
                 long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
-                List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgsAsync(lolisukiData) : new();
+                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(lolisukiData) : new();
 
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
@@ -144,7 +144,7 @@ namespace TheresaBot.Main.Handler
                 bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                 DateTime startTime = DateTime.Now;
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                List<FileInfo> setuFiles = isShowImg ? await lolisukiBusiness.downPixivImgsAsync(setuInfo) : new();
+                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(setuInfo) : new();
                 workMsgs.Add(new PlainContent(lolisukiBusiness.getDefaultWorkInfo(setuInfo, startTime)));
                 await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, isShowImg);
             }

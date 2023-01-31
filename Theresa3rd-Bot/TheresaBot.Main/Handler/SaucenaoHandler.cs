@@ -159,7 +159,7 @@ namespace TheresaBot.Main.Handler
                 {
                     PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
                     bool isShowImg = command.GroupId.IsShowSaucenaoImg(pixivWorkInfo.IsR18);
-                    List<FileInfo> setuFiles = isShowImg ? await pixivBusiness.downPixivImgsAsync(pixivWorkInfo) : new();
+                    List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, command.GroupId, command.MemberId));
                     workMsgs.AddRange(getPixivMessageAsync(command, saucenaoItem, startTime));

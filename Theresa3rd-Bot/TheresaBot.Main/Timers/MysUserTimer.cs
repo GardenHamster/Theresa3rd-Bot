@@ -14,6 +14,8 @@ namespace TheresaBot.Main.Timers
 
         public static void init(BaseSession session, BaseReporter reporter)
         {
+            Session = session;
+            Reporter = reporter;
             SystemTimer = new System.Timers.Timer();
             SystemTimer.Interval = BotConfig.SubscribeConfig.Mihoyo.ScanInterval * 1000;
             SystemTimer.AutoReset = true;

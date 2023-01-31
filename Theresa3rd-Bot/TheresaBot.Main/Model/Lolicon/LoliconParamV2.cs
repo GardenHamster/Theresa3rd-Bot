@@ -8,11 +8,11 @@
 
         public int num { get; set; }
 
-        public string[]? tag { get; set; }
+        public string[] tag { get; set; }
 
         public string proxy { get; set; }
 
-        public LoliconParamV2(int r18, bool excludeAI, int num, string proxy, string[]? tag)
+        public LoliconParamV2(int r18, bool excludeAI, int num, string proxy, string[] tag)
         {
             this.r18 = r18;
             this.excludeAI = excludeAI;

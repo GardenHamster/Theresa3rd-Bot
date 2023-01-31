@@ -7,7 +7,7 @@
 		<BaseOutputPath></BaseOutputPath>
 		<Version>0.8.0</Version>
 		<Nullable>disable</Nullable>
-		<BaseIntermediateOutputPath />
+		<WarningLevel>3</WarningLevel>
 	</PropertyGroup>
 
 	<ItemGroup>

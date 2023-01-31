@@ -37,7 +37,7 @@ namespace TheresaBot.Main.Business
             return workInfoStr.ToString();
         }
 
-        public async Task<LoliconResultV2> getLoliconResultAsync(int r18Mode, bool excludeAI, int num = 1, string[]? tags = null)
+        public async Task<LoliconResultV2> getLoliconResultAsync(int r18Mode, bool excludeAI, int num = 1, string[] tags = null)
         {
             LoliconParamV2 param = new LoliconParamV2(r18Mode, excludeAI, num, "i.pixiv.re", tags is null || tags.Length == 0 ? null : tags);
             string httpUrl = HttpUrl.getLoliconApiV2Url();

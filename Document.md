@@ -1,12 +1,5 @@
 # 部署文档
 
-## 环境
-- 以下是本人正在使用的环境
-- Mysql版本：[8.0.30](https://dev.mysql.com/downloads/mysql)
-- mcl版本：[2.1.0](https://github.com/iTXTech/mirai-console-loader/releases/tag/v2.1.0)
-- mirai-api-http版本：[2.5.2](https://github.com/project-mirai/mirai-api-http/releases/tag/v2.5.2)
-- JDK版本：17
-
 ## 安装数据库
 - 数据库为mysql，需要自行安装([小白教程](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/MysqlInstall.md))，或者可以购买云数据库
 

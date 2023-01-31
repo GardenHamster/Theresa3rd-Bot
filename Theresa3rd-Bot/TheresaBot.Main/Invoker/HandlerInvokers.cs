@@ -97,22 +97,22 @@ namespace TheresaBot.Main.Invoker
             })),
 
             //订阅米游社用户
-            new(BotConfig.SubscribeConfig?.Mihoyo?.AddCommands, CommandType.Subscribe, new(async (botCommand,session,reporter) =>
+            new(BotConfig.SubscribeConfig?.Miyoushe?.AddCommands, CommandType.Subscribe, new(async (botCommand,session,reporter) =>
             {
                 MYSHandler handler = new MYSHandler(session,reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                if (await handler.CheckSubscribeEnableAsync(botCommand,BotConfig.SubscribeConfig?.Mihoyo) == false) return false;
+                if (await handler.CheckSubscribeEnableAsync(botCommand,BotConfig.SubscribeConfig?.Miyoushe) == false) return false;
                 await handler.subscribeMYSUserAsync(botCommand);
                 await handler.addRecord(botCommand);
                 return true;
             })),
 
             //退订米游社用户
-            new(BotConfig.SubscribeConfig?.Mihoyo?.RmCommands, CommandType.Subscribe, new(async (botCommand,session,reporter) =>
+            new(BotConfig.SubscribeConfig?.Miyoushe?.RmCommands, CommandType.Subscribe, new(async (botCommand,session,reporter) =>
             {
                 MYSHandler handler = new MYSHandler(session,reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                if (await handler.CheckSubscribeEnableAsync(botCommand,BotConfig.SubscribeConfig?.Mihoyo) == false) return false;
+                if (await handler.CheckSubscribeEnableAsync(botCommand,BotConfig.SubscribeConfig?.Miyoushe) == false) return false;
                 await handler.cancleSubscribeMysUserAsync(botCommand);
                 await handler.addRecord(botCommand);
                 return true;

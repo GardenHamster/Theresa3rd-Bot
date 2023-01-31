@@ -103,7 +103,7 @@ namespace TheresaBot.Main.Handler
             }
             if (pluginConfig is null || pluginConfig.Enable == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.DisableMsg, "该功能已关闭");
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;
             }
             return true;
@@ -124,7 +124,7 @@ namespace TheresaBot.Main.Handler
             }
             if (BotConfig.SaucenaoConfig is null || BotConfig.SaucenaoConfig.Enable == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.DisableMsg, "该功能已关闭");
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;
             }
             return true;

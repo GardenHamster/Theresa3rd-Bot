@@ -6,7 +6,7 @@
 
         public PixivTagSubscribeConfig PixivTag { get; set; }
 
-        public MysUserSubscribeConfig Mihoyo { get; set; }
+        public MysUserSubscribeConfig Miyoushe { get; set; }
     }
 
 }

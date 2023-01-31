@@ -5,9 +5,7 @@ namespace TheresaBot.Main.Model.Config
     public class SaucenaoConfig : BasePluginConfig
     {
         public List<string> Commands { get; set; }
-        public string DisableMsg { get; set; }
         public string NotFoundMsg { get; set; }
-        public string ErrorMsg { get; set; }
         public string ProcessingMsg { get; set; }
         public string Template { get; set; }
         public int MemberCD { get; set; }

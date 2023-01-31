@@ -60,8 +60,8 @@ namespace TheresaBot.Main.Handler
             string prefix = BotConfig.GeneralConfig.Prefix;
             StringBuilder menuBuilder = new StringBuilder();
             menuBuilder.AppendLine($"超级管理员的功能如下：");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.Mihoyo.AddCommands)}】 订阅米游社用户");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.Mihoyo.RmCommands)}】 退订米游社用户");
+            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.Miyoushe.AddCommands)}】 订阅米游社用户");
+            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.Miyoushe.RmCommands)}】 退订米游社用户");
             menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.PixivUser.AddCommands)}】 订阅P站画师");
             menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.PixivUser.SyncCommands)}】 订阅所有P站已关注的画师");
             menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.PixivUser.RmCommands)}】 退订P站画师");

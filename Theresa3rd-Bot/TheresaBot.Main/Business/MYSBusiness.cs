@@ -78,7 +78,7 @@ namespace TheresaBot.Main.Business
             List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
             MysResult<MysPostDataDto> mysPostDataDto = await getMysUserPostDtoAsync(subscribeTask.SubscribeCode, 10);
             if (mysPostDataDto?.data?.list is null || mysPostDataDto.data.list.Count == 0) return mysSubscribeList;
-            int shelfLife = BotConfig.SubscribeConfig.Mihoyo.ShelfLife;
+            int shelfLife = BotConfig.SubscribeConfig.Miyoushe.ShelfLife;
             List<MysPostListDto> postList = mysPostDataDto.data.list.OrderByDescending(o => o.post.created_at).ToList();
             foreach (var item in postList)
             {

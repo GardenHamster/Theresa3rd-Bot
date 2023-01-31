@@ -182,7 +182,7 @@ namespace TheresaBot.Main.Handler
                 if (subscribeTask.GroupIdList is null || subscribeTask.GroupIdList.Count == 0) continue;
 
                 List<BaseContent> msgList = new List<BaseContent>();
-                msgList.Add(new PlainContent(mysBusiness.getPostInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Mihoyo.Template)));
+                msgList.Add(new PlainContent(mysBusiness.getPostInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Miyoushe.Template)));
 
                 if (string.IsNullOrEmpty(coverUrl) == false)
                 {

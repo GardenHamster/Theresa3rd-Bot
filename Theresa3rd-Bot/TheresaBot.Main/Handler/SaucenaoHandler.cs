@@ -92,7 +92,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "searchResult异常");
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.ErrorMsg, " 出了点小问题，任务结束~");
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, " 出了点小问题，任务结束~");
                 Reporter.SendError(ex, "searchResult异常");
             }
             finally
@@ -179,7 +179,7 @@ namespace TheresaBot.Main.Handler
             {
                 string errMsg = $"searchWithSaucenao异常，url={imgUrl}";
                 LogHelper.Error(ex, errMsg);
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.ErrorMsg, $"查找第{index}张图片失败，再试一次吧~");
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, $"查找第{index}张图片失败，再试一次吧~");
                 Reporter.SendError(ex, errMsg);
                 return false;
             }
@@ -243,7 +243,7 @@ namespace TheresaBot.Main.Handler
             {
                 string errMsg = $"searchWithAscii2d异常，url={imgUrl}";
                 LogHelper.Error(ex, errMsg);
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.ErrorMsg, $"查找图片失败，再试一次吧~");
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, $"查找图片失败，再试一次吧~");
                 Reporter.SendError(ex, errMsg);
             }
         }

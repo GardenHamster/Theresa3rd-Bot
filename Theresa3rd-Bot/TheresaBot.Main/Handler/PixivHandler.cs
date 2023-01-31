@@ -125,7 +125,7 @@ namespace TheresaBot.Main.Handler
             {
                 string errMsg = $"pixivSearchAsync异常";
                 LogHelper.Error(ex, errMsg);
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
                 Reporter.SendError(ex, errMsg);
             }
             finally

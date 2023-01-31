@@ -46,7 +46,7 @@ namespace TheresaBot.Main.Timers
                 {
                     report = new PixivHandler(Session, Reporter).HandleFollowSubscribeAsync().Result;
                 }
-                LogHelper.Info($"pixiv画师作品扫描完毕，扫描画师{report.ScanUser}个，失败{report.ErrorUser}个; 扫描作品{report.ScanWork}个，失败{report.ErrorWork}个;");
+                LogHelper.Info($"pixiv画师扫描完毕，扫描画师/扫描作品/失败画师/失败作品={report.ScanUser}/{report.ScanWork}/{report.ErrorUser}/{report.ErrorWork}");
             }
             catch (Exception ex)
             {

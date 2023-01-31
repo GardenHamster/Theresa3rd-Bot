@@ -44,7 +44,7 @@ namespace TheresaBot.Main.Helper
 
         public static async Task<PixivResult<PixivSearch>> GetPixivSearchAsync(string keyword, int pageNo, bool isMatchAll, bool includeR18)
         {
-            string operation = $"搜索pixiv标签{keyword}作品信息";
+            string operation = $"获取标签:{keyword}作品";
             string referer = HttpUrl.getPixivSearchReferer();
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll, includeR18);
@@ -53,7 +53,7 @@ namespace TheresaBot.Main.Helper
 
         public static async Task<PixivResult<PixivWorkInfo>> GetPixivWorkInfoAsync(string workId, int? retryTimes = null)
         {
-            string operation = $"获取pixiv作品信息pid:{workId}";
+            string operation = $"获取pid:{workId}信息";
             if (retryTimes is null) retryTimes = BotConfig.PixivConfig.ErrRetryTimes;
             string referer = HttpUrl.getPixivArtworksReferer(workId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
@@ -63,7 +63,7 @@ namespace TheresaBot.Main.Helper
 
         public static async Task<PixivResult<PixivUserInfo>> GetPixivUserInfoAsync(string userId)
         {
-            string operation = $"获取pixiv画师作品列表uid:{userId}";
+            string operation = $"获取uid信息:{userId}";
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
@@ -72,7 +72,7 @@ namespace TheresaBot.Main.Helper
 
         public static async Task<PixivResult<PixivUgoiraMeta>> GetPixivUgoiraMetaAsync(string workId)
         {
-            string operation = $"获取pixiv动图信息pid:{workId}";
+            string operation = $"获取动图pid信息:{workId}";
             string referer = HttpUrl.getPixivArtworksReferer(workId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivUgoiraMetaUrl(workId);
@@ -81,7 +81,7 @@ namespace TheresaBot.Main.Helper
 
         public static async Task<PixivResult<PixivFollow>> GetPixivFollowAsync(long loginId, int offset, int limit)
         {
-            string operation = "获取pixiv关注列表";
+            string operation = "获取关注列表";
             string referer = HttpUrl.getPixivFollowReferer(loginId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivFollowUrl(loginId, offset, limit);
@@ -90,7 +90,7 @@ namespace TheresaBot.Main.Helper
 
         public static async Task<PixivResult<PixivBookmarks>> GetPixivBookmarkAsync(long loginId, int offset, int limit)
         {
-            string operation = "获取pixiv收藏列表";
+            string operation = "获取收藏列表";
             string referer = HttpUrl.getPixivBookmarkReferer(loginId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivBookmarkUrl(loginId, offset, limit);
@@ -99,7 +99,7 @@ namespace TheresaBot.Main.Helper
 
         public static async Task<PixivResult<PixivFollowLatest>> GetPixivFollowLatestAsync(int page)
         {
-            string operation = "获取pixiv关注画师的最新作品信息";
+            string operation = "获取关注画师作品信息";
             string referer = HttpUrl.getPixivFollowLatestReferer();
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivFollowLatestUrl(page);

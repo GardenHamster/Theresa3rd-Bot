@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Timers
                 PixivTagTimer.init(session, reporter);
                 LogHelper.Info($"pixiv标签订阅任务启动完毕...");
             }
-            if (subscribeConfig.Mihoyo != null && subscribeConfig.Mihoyo.Enable)
+            if (subscribeConfig.Miyoushe != null && subscribeConfig.Miyoushe.Enable)
             {
                 MysUserTimer.init(session, reporter);
                 LogHelper.Info($"米游社订阅任务启动完毕...");

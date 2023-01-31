@@ -8,11 +8,7 @@
 
         public string DisableTagsMsg { get; set; }
 
-        public string DisableMsg { get; set; }
-
         public string NotFoundMsg { get; set; }
-
-        public string ErrorMsg { get; set; }
 
         public string ProcessingMsg { get; set; }
 

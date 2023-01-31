@@ -37,7 +37,7 @@ namespace TheresaBot.Main.Timers
                 }
                 LogHelper.Info($"开始扫描pixiv标签最新作品...");
                 PixivTagScanReport report = new PixivHandler(Session, Reporter).HandleTagSubscribeAsync().Result;
-                LogHelper.Info($"pixiv标签作品扫描完毕，扫描标签{report.ScanTag}个，失败{report.ErrorTag}个; 扫描作品{report.ScanWork}个，失败{report.ErrorWork}个;");
+                LogHelper.Info($"pixiv标签扫描完毕，扫描标签/扫描作品/失败标签/失败作品={report.ScanTag}/{report.ScanWork}/{report.ErrorTag}/{report.ErrorWork}");
             }
             catch (Exception ex)
             {

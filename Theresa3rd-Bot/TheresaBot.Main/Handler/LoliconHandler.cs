@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -55,15 +54,15 @@ namespace TheresaBot.Main.Handler
 
                 if (dataList.Count == 0)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
                 LoliconDataV2 loliconData = dataList.First();
                 if (await CheckSetuSendable(command, loliconData, isShowR18, isShowAI) == false) return;
 
-                long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
                 bool isShowImg = command.GroupId.IsShowSetuImg(loliconData.IsR18);
+                long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
                 List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(loliconData) : new List<FileInfo>();
 
                 string template = BotConfig.SetuConfig.Lolicon.Template;

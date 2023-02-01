@@ -39,29 +39,28 @@ namespace TheresaBot.Main.Handler
                     await Task.Delay(1000);
                 }
 
-                LolisukiResult lolisukiResult;
+                List<LolisukiData> dataList;
                 int r18Mode = isShowR18 ? 2 : 0;
                 int aiMode = isShowAI ? 2 : 0;
                 string levelStr = getLevelStr(isShowR18);
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, aiMode, levelStr, 1);
+                    dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    string[] tagArr = toLoliconTagArr(tagStr);
-                    lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, aiMode, levelStr, 1, tagArr);
+                    dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1, toLoliconTagArr(tagStr));
                 }
 
-                if (lolisukiResult is null || lolisukiResult.data is null || lolisukiResult.data.Count == 0)
+                if (dataList.Count == 0)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
-                LolisukiData lolisukiData = lolisukiResult.data.First();
+                LolisukiData lolisukiData = dataList.First();
                 if (await CheckSetuSendable(command, lolisukiData, isShowR18, isShowAI) == false) return;
 
                 bool isShowImg = command.GroupId.IsShowSetuImg(lolisukiData.IsR18);
@@ -109,52 +108,48 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
-        {
-            int eachPage = 5;
-            bool isShowAI = groupId.IsShowAISetu();
-            bool isShowR18 = groupId.IsShowR18Setu();
-            int r18Mode = isShowR18 ? 2 : 0;
-            int aiMode = isShowAI ? 2 : 0;
-            int count = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
-            string levelStr = getLevelStr(isShowR18);
-            string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
-            string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
-            await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
-            await Task.Delay(2000);
-            while (count > 0)
-            {
-                int num = count >= eachPage ? eachPage : count;
-                LolisukiResult lolisukiResult = await lolisukiBusiness.getLolisukiResultAsync(r18Mode, aiMode, levelStr, num, tagArr);
-                count -= num;
-                if (lolisukiResult.data.Count == 0) continue;
-                foreach (var setuInfo in lolisukiResult.data)
-                {
-                    await sendTimingSetuAsync(setuInfo, groupId);
-                    await Task.Delay(1000);
-                }
-            }
-        }
 
-        private async Task sendTimingSetuAsync(LolisukiData setuInfo, long groupId)
+        public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
             try
             {
-                bool isR18Img = setuInfo.IsR18;
-                bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-                DateTime startTime = DateTime.Now;
-                List<BaseContent> workMsgs = new List<BaseContent>();
-                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(setuInfo) : new();
-                workMsgs.Add(new PlainContent(lolisukiBusiness.getDefaultWorkInfo(setuInfo, startTime)));
-                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId);
+                bool isShowAI = groupId.IsShowAISetu();
+                bool isShowR18 = groupId.IsShowR18Setu();
+                string levelStr = getLevelStr(isShowR18);
+                bool sendMerge = timingSetuTimer.SendMerge;
+                int aiMode = isShowAI ? 2 : 0;
+                int r18Mode = isShowR18 ? 2 : 0;
+                string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
+                string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
+                int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
+                List<LolisukiData> dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, quantity, tagArr);
+                List<SetuContent> setuContents = await getSetuContent(dataList, groupId);
+                await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
+                await Task.Delay(2000);
+                await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge);
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "定时涩图发送失败");
-                Reporter.SendError(ex, "定时涩图发送失败");
+                LogHelper.Error(ex, "定时涩图异常");
+                Reporter.SendError(ex, "定时涩图异常");
             }
         }
 
+        private async Task<List<SetuContent>> getSetuContent(List<LolisukiData> datas, long groupId)
+        {
+            List<SetuContent> setuContents = new List<SetuContent>();
+            foreach (var data in datas) setuContents.Add(await getSetuContent(data, groupId));
+            return setuContents;
+        }
+
+        private async Task<SetuContent> getSetuContent(LolisukiData data, long groupId)
+        {
+            bool isR18Img = data.IsR18;
+            bool isShowImg = groupId.IsShowSetuImg(isR18Img);
+            string setuInfo = lolisukiBusiness.getDefaultWorkInfo(data, DateTime.Now);
+            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(data) : new();
+            return new SetuContent(setuInfo, setuFiles);
+        }
 
         private string getLevelStr(bool isShowR18)
         {

@@ -201,7 +201,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
         {
             if (chatContent is PlainContent plainContent)
             {
-                return new PlainMessage(plainContent.Content);
+                return string.IsNullOrEmpty(plainContent.Content) ? null : new PlainMessage(plainContent.Content);
             }
             if (chatContent is LocalImageContent localImageContent)
             {

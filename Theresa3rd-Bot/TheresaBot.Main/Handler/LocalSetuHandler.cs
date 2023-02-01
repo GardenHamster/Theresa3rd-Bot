@@ -19,35 +19,30 @@ namespace TheresaBot.Main.Handler
 
         public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
+            bool sendMerge = timingSetuTimer.SendMerge;
             string localPath = timingSetuTimer.LocalPath;
             if (string.IsNullOrWhiteSpace(localPath)) throw new Exception("未配置LocalPath");
-            List<LocalSetuInfo> setuInfos = localSetuBusiness.loadRandom(localPath, timingSetuTimer.Quantity, timingSetuTimer.FromOneDir);
-            if (setuInfos is null || setuInfos.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
-            string tags = timingSetuTimer.FromOneDir ? setuInfos[0].DirInfo.Name : "";
+            List<LocalSetuInfo> dataList = localSetuBusiness.loadRandom(localPath, timingSetuTimer.Quantity, timingSetuTimer.FromOneDir);
+            if (dataList is null || dataList.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
+            string tags = timingSetuTimer.FromOneDir ? dataList[0].DirInfo.Name : "";
+            List<SetuContent> setuContents = getSetuContent(timingSetuTimer, dataList);
             await sendTimingSetuMessageAsync(timingSetuTimer, tags, groupId);
             await Task.Delay(2000);
-            foreach (LocalSetuInfo setuInfo in setuInfos)
-            {
-                await sendTimingSetuAsync(timingSetuTimer, setuInfo, groupId);
-                await Task.Delay(1000);
-            }
+            await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge);
         }
 
-        private async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, LocalSetuInfo setuInfo, long groupId)
+        private List<SetuContent> getSetuContent(TimingSetuTimer timingSetuTimer,List<LocalSetuInfo> datas)
         {
-            try
-            {
-                List<BaseContent> workMsgs = new List<BaseContent>();
-                string template = getSetuInfo(setuInfo, timingSetuTimer.LocalTemplate);
-                if (string.IsNullOrWhiteSpace(template) == false) workMsgs.Add(new PlainContent(template));
-                List<FileInfo> setuFiles = new List<FileInfo>() { setuInfo.FileInfo };
-                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "定时涩图发送失败");
-                Reporter.SendError(ex, "定时涩图发送失败");
-            }
+            List<SetuContent> setuContents = new List<SetuContent>();
+            foreach (var data in datas) setuContents.Add(getSetuContent(timingSetuTimer, data));
+            return setuContents;
+        }
+
+        private SetuContent getSetuContent(TimingSetuTimer timingSetuTimer, LocalSetuInfo data)
+        {
+            string setuInfo = getSetuInfo(data, timingSetuTimer.LocalTemplate);
+            List<FileInfo> setuFiles = new List<FileInfo>() { data.FileInfo };
+            return new SetuContent(setuInfo, setuFiles);
         }
 
         private string getSetuInfo(LocalSetuInfo setuInfo, string template)

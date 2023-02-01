@@ -9,6 +9,8 @@ namespace TheresaBot.Main.Business
 {
     public class LolisukiBusiness : SetuBusiness
     {
+        private const int eachPage = 5;
+
         public string getWorkInfo(LolisukiData lolisukiData, DateTime startTime, long todayLeft, string template = "")
         {
             if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(lolisukiData, startTime);
@@ -39,10 +41,26 @@ namespace TheresaBot.Main.Business
             return workInfoStr.ToString();
         }
 
-        public async Task<LolisukiResult> getLolisukiResultAsync(int r18Mode, int aiMode, string level, int num = 1, string[] tags = null)
+        public async Task<List<LolisukiData>> getLolisukiDataListAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
+        {
+            List<LolisukiData> setuList = new();
+            while (quantity > 0)
+            {
+                int num = quantity >= eachPage ? eachPage : quantity;
+                quantity -= eachPage;
+                LolisukiResult lolisukiResult = await getLolisukiResultAsync(r18Mode, aiMode, level, quantity,  tags);
+                if (lolisukiResult?.data is null) continue;
+                foreach (var setuInfo in lolisukiResult.data)
+                {
+                    setuList.Add(setuInfo);
+                }
+            }
+            return setuList;
+        }
+        private async Task<LolisukiResult> getLolisukiResultAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
         {
             string[] postTags = tags is null || tags.Length == 0 ? new string[0] : tags;
-            LolisukiParam param = new LolisukiParam(r18Mode, aiMode, num, "i.pixiv.re", postTags, level, 0);
+            LolisukiParam param = new LolisukiParam(r18Mode, aiMode, quantity, "i.pixiv.re", postTags, level, 0);
             string httpUrl = HttpUrl.getLolisukiApiUrl();
             string postJson = JsonConvert.SerializeObject(param);
             string json = await HttpHelper.PostJsonAsync(httpUrl, postJson);

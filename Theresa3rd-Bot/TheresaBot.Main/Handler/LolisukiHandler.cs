@@ -130,13 +130,13 @@ namespace TheresaBot.Main.Handler
                 if (lolisukiResult.data.Count == 0) continue;
                 foreach (var setuInfo in lolisukiResult.data)
                 {
-                    await sendSetuInfoAsync(setuInfo, groupId);
+                    await sendTimingSetuAsync(setuInfo, groupId);
                     await Task.Delay(1000);
                 }
             }
         }
 
-        private async Task sendSetuInfoAsync(LolisukiData setuInfo, long groupId)
+        private async Task sendTimingSetuAsync(LolisukiData setuInfo, long groupId)
         {
             try
             {
@@ -146,7 +146,7 @@ namespace TheresaBot.Main.Handler
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(setuInfo) : new();
                 workMsgs.Add(new PlainContent(lolisukiBusiness.getDefaultWorkInfo(setuInfo, startTime)));
-                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, isShowImg);
+                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId);
             }
             catch (Exception ex)
             {

@@ -165,7 +165,7 @@ namespace TheresaBot.Main.Helper
                 {
                     string path = code.Substring(ImageCodeHeader.Length, code.Length - ImageCodeHeader.Length - 1);
                     if (File.Exists(path) == false) continue;
-                    chatContents.Add(new LocalImageContent(sendTarget, path));
+                    chatContents.Add(new LocalImageContent(sendTarget, new FileInfo(path)));
                 }
                 else
                 {

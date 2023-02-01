@@ -31,6 +31,12 @@ namespace TheresaBot.MiraiHttpApi.Helper
 
         public static IMiraiHttpSession Session;
 
+        public static IBotProfile BotProfile;
+
+        public static long BotNumber;
+
+        public static string BotName;
+
         public static async Task ConnectMirai()
         {
             try
@@ -63,6 +69,9 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 Session = Services.GetRequiredService<IMiraiHttpSession>();
                 await Session.ConnectAsync(BotConfig.MiraiConfig.BotQQ);
                 LogHelper.Info("已成功连接到mirai-console...");
+                BotProfile = await GetBotProfileAsync();
+                BotNumber = Session.QQNumber ?? 0;
+                BotName = BotProfile?.Nickname ?? "Bot";
             }
             catch (Exception ex)
             {
@@ -129,7 +138,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
             return new(handler, session, args, instruction, command, memberId);
         }
 
-
+        /// <summary>
+        /// 获取消息id
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static int GetMessageId(this IGroupMessageEventArgs args)
         {
             try
@@ -144,6 +157,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
             }
         }
 
+        /// <summary>
+        /// 获取消息id
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static int GetMessageId(this IFriendMessageEventArgs args)
         {
             try
@@ -158,6 +176,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
             }
         }
 
+        /// <summary>
+        /// 将通用消息转为Mirai消息
+        /// </summary>
+        /// <param name="chatContents"></param>
+        /// <returns></returns>
         public static async Task<IChatMessage[]> ToMiraiMessageAsync(this List<BaseContent> chatContents)
         {
             List<IChatMessage> chatList = new List<IChatMessage>();
@@ -169,6 +192,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
             return chatList.ToArray();
         }
 
+        /// <summary>
+        /// 将通用消息转为Mirai消息
+        /// </summary>
+        /// <param name="chatContent"></param>
+        /// <returns></returns>
         public static async Task<IChatMessage> ToMiraiMessageAsync(this BaseContent chatContent)
         {
             if (chatContent is PlainContent plainContent)
@@ -186,7 +214,13 @@ namespace TheresaBot.MiraiHttpApi.Helper
             return null;
         }
 
-        public static async Task<List<IChatMessage>> UploadPictureAsync(List<FileInfo> setuFiles, UploadTarget target)
+        /// <summary>
+        /// 上传图片,返回mirai图片消息
+        /// </summary>
+        /// <param name="setuFiles"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static async Task<List<IChatMessage>> UploadPictureAsync(this List<FileInfo> setuFiles, UploadTarget target)
         {
             List<IChatMessage> imgMsgs = new List<IChatMessage>();
             foreach (FileInfo setuFile in setuFiles)
@@ -203,15 +237,37 @@ namespace TheresaBot.MiraiHttpApi.Helper
             return imgMsgs;
         }
 
+        /// <summary>
+        /// 上传图片,返回mirai图片消息
+        /// </summary>
+        /// <param name="imageContent"></param>
+        /// <returns></returns>
         private static async Task<IChatMessage> UploadPictureAsync(LocalImageContent imageContent)
         {
             return imageContent.SendTarget switch
             {
-                SendTarget.Group => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Group, imageContent.FullFilePath),
-                SendTarget.Friend => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Friend, imageContent.FullFilePath),
-                SendTarget.Temp => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Temp, imageContent.FullFilePath),
+                SendTarget.Group => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Group, imageContent.FileInfo.FullName),
+                SendTarget.Friend => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Friend, imageContent.FileInfo.FullName),
+                SendTarget.Temp => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Temp, imageContent.FileInfo.FullName),
                 _ => null
             };
+        }
+
+        /// <summary>
+        /// 获取机器人信息
+        /// </summary>
+        /// <returns></returns>
+        private static async Task<IBotProfile> GetBotProfileAsync()
+        {
+            try
+            {
+                return await MiraiHelper.Session.GetBotProfileAsync();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "获取Bot资料失败");
+                return null;
+            }
         }
 
     }

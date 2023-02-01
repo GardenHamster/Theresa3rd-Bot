@@ -115,23 +115,37 @@ namespace TheresaBot.Main.Handler
             int count = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
             string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
             string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
-            await sendTimingSetuMessage(timingSetuTimer, tagStr, groupId);
-            await Task.Delay(2000);
+            List<LoliconDataV2> setuList = new();
             while (count > 0)
             {
                 int num = count >= eachPage ? eachPage : count;
                 LoliconResultV2 loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, excludeAI, num, tagArr);
                 count -= num;
-                if (loliconResult.data.Count == 0) continue;
+                if (loliconResult?.data is null) continue;
                 foreach (var setuInfo in loliconResult.data)
                 {
-                    await sendSetuInfoAsync(setuInfo, groupId);
+                    setuList.Add(setuInfo);
+                    await sendTimingSetuAsync(setuInfo, groupId);
                     await Task.Delay(1000);
                 }
             }
+
+            foreach (var setuInfo in setuList)
+            {
+
+            }
+
+            await sendTimingSetuMessage(timingSetuTimer, tagStr, groupId);
+            await Task.Delay(2000);
+            if (timingSetuTimer.SendMerge)
+            {
+
+            }
+
+
         }
 
-        private async Task sendSetuInfoAsync(LoliconDataV2 setuInfo, long groupId)
+        private async Task sendTimingSetuAsync(LoliconDataV2 setuInfo, long groupId)
         {
             try
             {
@@ -141,7 +155,7 @@ namespace TheresaBot.Main.Handler
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(setuInfo) : new();
                 workMsgs.Add(new PlainContent(loliconBusiness.getDefaultWorkInfo(setuInfo, startTime)));
-                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, isShowImg);
+                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId);
             }
             catch (Exception ex)
             {

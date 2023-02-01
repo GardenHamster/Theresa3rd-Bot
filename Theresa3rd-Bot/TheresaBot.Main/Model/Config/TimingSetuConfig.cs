@@ -12,6 +12,7 @@ namespace TheresaBot.Main.Model.Config
         public string Cron { get; set; }
         public string Name { get; set; }
         public TimingSetuSourceType Source { get; set; }
+        public bool SendMerge { get; set; }
         public string LocalPath { get; set; }
         public bool FromOneDir { get; set; }
         public List<string> Tags { get; set; }

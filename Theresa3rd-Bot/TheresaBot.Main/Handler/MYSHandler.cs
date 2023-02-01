@@ -86,7 +86,7 @@ namespace TheresaBot.Main.Handler
                 chailList.Add(new PlainContent($"uid：{dbSubscribe.SubscribeCode}\r\n"));
                 chailList.Add(new PlainContent($"签名：{dbSubscribe.SubscribeDescription}\r\n"));
                 FileInfo fileInfo = string.IsNullOrEmpty(userInfoDto.data.user_info.avatar_url) ? null : await HttpHelper.DownImgAsync(userInfoDto.data.user_info.avatar_url);
-                if (fileInfo != null) chailList.Add(new LocalImageContent(SendTarget.Group, fileInfo.FullName));
+                if (fileInfo != null) chailList.Add(new LocalImageContent(SendTarget.Group, fileInfo));
                 await command.ReplyGroupMessageWithAtAsync(chailList);
                 ConfigHelper.loadSubscribeTask();
             }
@@ -190,9 +190,8 @@ namespace TheresaBot.Main.Handler
                 }
                 if (fileInfo != null)
                 {
-                    msgList.Add(new LocalImageContent(SendTarget.Group, fileInfo.FullName));
+                    msgList.Add(new LocalImageContent(SendTarget.Group, fileInfo));
                 }
-
 
                 foreach (long groupId in subscribeTask.GroupIdList)
                 {

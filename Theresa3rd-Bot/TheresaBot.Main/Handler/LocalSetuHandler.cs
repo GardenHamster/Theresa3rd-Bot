@@ -28,12 +28,12 @@ namespace TheresaBot.Main.Handler
             await Task.Delay(2000);
             foreach (LocalSetuInfo setuInfo in setuInfos)
             {
-                await sendSetuInfoAsync(timingSetuTimer, setuInfo, groupId);
+                await sendTimingSetuAsync(timingSetuTimer, setuInfo, groupId);
                 await Task.Delay(1000);
             }
         }
 
-        private async Task sendSetuInfoAsync(TimingSetuTimer timingSetuTimer, LocalSetuInfo setuInfo, long groupId)
+        private async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, LocalSetuInfo setuInfo, long groupId)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace TheresaBot.Main.Handler
                 string template = getSetuInfo(setuInfo, timingSetuTimer.LocalTemplate);
                 if (string.IsNullOrWhiteSpace(template) == false) workMsgs.Add(new PlainContent(template));
                 List<FileInfo> setuFiles = new List<FileInfo>() { setuInfo.FileInfo };
-                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId, true);
+                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId);
             }
             catch (Exception ex)
             {

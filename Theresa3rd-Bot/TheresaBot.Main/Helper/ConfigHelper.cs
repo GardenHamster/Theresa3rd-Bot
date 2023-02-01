@@ -1,14 +1,61 @@
-﻿using TheresaBot.Main.Business;
+﻿using Microsoft.Extensions.Configuration;
+using System.Text;
+using TheresaBot.Main.Business;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Type;
+using YamlDotNet.Serialization;
 
 namespace TheresaBot.Main.Helper
 {
     public class ConfigHelper
     {
+        private static IConfiguration Configuration;
 
-        public static void loadWebsite()
+        public static void setConfiguration(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        /// <summary>
+        /// 加载MiraiHttpApi配置
+        /// </summary>
+        public static void LoadMiraiConfig()
+        {
+            BotConfig.DBConfig.ConnectionString = Configuration["Database:ConnectionString"];
+            BotConfig.MiraiConfig.Host = Configuration["Mirai:host"];
+            BotConfig.MiraiConfig.Port = Convert.ToInt32(Configuration["Mirai:port"]);
+            BotConfig.MiraiConfig.AuthKey = Configuration["Mirai:authKey"];
+            BotConfig.MiraiConfig.BotQQ = Convert.ToInt64(Configuration["Mirai:botQQ"]);
+        }
+
+        /// <summary>
+        /// 加载botsetting.yml配置
+        /// </summary>
+        public static void LoadBotConfig()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            string ymlPath = Path.Combine(AppContext.BaseDirectory, "botsettings.yml");
+            using FileStream fileStream = new FileStream(ymlPath, FileMode.Open, FileAccess.Read);
+            using TextReader reader = new StreamReader(fileStream, Encoding.GetEncoding("gb2312"));
+            Deserializer deserializer = new Deserializer();
+            BotConfigDto botConfig = deserializer.Deserialize<BotConfigDto>(reader);
+            BotConfig.GeneralConfig = botConfig.General;
+            BotConfig.PixivConfig = botConfig.Pixiv;
+            BotConfig.PermissionsConfig = botConfig.Permissions;
+            BotConfig.ManageConfig = botConfig.Manage;
+            BotConfig.MenuConfig = botConfig.Menu;
+            BotConfig.RepeaterConfig = botConfig.Repeater;
+            BotConfig.WelcomeConfig = botConfig.Welcome;
+            BotConfig.ReminderConfig = botConfig.Reminder;
+            BotConfig.SetuConfig = botConfig.Setu;
+            BotConfig.SaucenaoConfig = botConfig.Saucenao;
+            BotConfig.SubscribeConfig = botConfig.Subscribe;
+            BotConfig.TimingSetuConfig = botConfig.TimingSetu;
+        }
+
+        public static void LoadWebsite()
         {
             try
             {
@@ -27,8 +74,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-
-        public static void loadSubscribeTask()
+        public static void LoadSubscribeTask()
         {
             try
             {
@@ -42,7 +88,7 @@ namespace TheresaBot.Main.Helper
         }
 
 
-        public static void loadBanTag()
+        public static void LoadBanTag()
         {
             try
             {
@@ -55,7 +101,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        public static void loadBanMember()
+        public static void LoadBanMember()
         {
             try
             {
@@ -68,21 +114,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        /*
-        public static void loadMemberClock()
-        {
-            try
-            {
-                Setting.Clock.MemberClockMap = new MemberClockBusiness().loadMemberClockMap();
-                CQHelper.CQLog.InfoSuccess("加载打卡信息完成");
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "加载打卡信息失败");
-            }
-        }
 
-        */
 
     }
 }

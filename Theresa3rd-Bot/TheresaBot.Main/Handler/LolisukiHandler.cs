@@ -120,7 +120,7 @@ namespace TheresaBot.Main.Handler
             string levelStr = getLevelStr(isShowR18);
             string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
             string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
-            await sendTimingSetuMessage(timingSetuTimer, tagStr, groupId);
+            await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
             await Task.Delay(2000);
             while (count > 0)
             {

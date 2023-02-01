@@ -88,7 +88,7 @@ namespace TheresaBot.Main.Handler
                 FileInfo fileInfo = string.IsNullOrEmpty(userInfoDto.data.user_info.avatar_url) ? null : await HttpHelper.DownImgAsync(userInfoDto.data.user_info.avatar_url);
                 if (fileInfo != null) chailList.Add(new LocalImageContent(SendTarget.Group, fileInfo));
                 await command.ReplyGroupMessageWithAtAsync(chailList);
-                ConfigHelper.loadSubscribeTask();
+                ConfigHelper.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -138,7 +138,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了id为{userId}的米游社用户~");
-                ConfigHelper.loadSubscribeTask();
+                ConfigHelper.LoadSubscribeTask();
             }
             catch (Exception ex)
             {

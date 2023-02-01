@@ -38,7 +38,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 banWordBusiness.insertBanWord(tagStr, BanType.SetuTag, false);
-                ConfigHelper.loadBanTag();
+                ConfigHelper.LoadBanTag();
                 await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
             catch (Exception ex)
@@ -68,7 +68,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 banWordBusiness.delBanWord(BanType.SetuTag, tagStr);
-                ConfigHelper.loadBanTag();
+                ConfigHelper.LoadBanTag();
                 await command.ReplyGroupMessageWithAtAsync("解除成功");
             }
             catch (Exception ex)
@@ -104,7 +104,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 banWordBusiness.insertBanWord(memberCode, BanType.Member, false);
-                ConfigHelper.loadBanMember();
+                ConfigHelper.LoadBanMember();
                 await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
             catch (Exception ex)
@@ -134,7 +134,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 banWordBusiness.delBanWord(BanType.Member, memberCode);
-                ConfigHelper.loadBanMember();
+                ConfigHelper.LoadBanMember();
                 await command.ReplyGroupMessageWithAtAsync("解除成功");
             }
             catch (Exception ex)

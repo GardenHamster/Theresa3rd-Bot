@@ -39,28 +39,27 @@ namespace TheresaBot.Main.Handler
                     await Task.Delay(1000);
                 }
 
-                LoliconResultV2 loliconResult;
+                List<LoliconDataV2> dataList;
                 int r18Mode = isShowR18 ? 2 : 0;
                 bool excludeAI = isShowAI == false;
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, excludeAI, 1);
+                    dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    string[] tagArr = toLoliconTagArr(tagStr);
-                    loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, excludeAI, 1, tagArr);
+                    dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1, toLoliconTagArr(tagStr));
                 }
 
-                if (loliconResult is null || loliconResult.data is null || loliconResult.data.Count == 0)
+                if (dataList.Count == 0)
                 {
                     await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
-                LoliconDataV2 loliconData = loliconResult.data.First();
+                LoliconDataV2 loliconData = dataList.First();
                 if (await CheckSetuSendable(command, loliconData, isShowR18, isShowAI) == false) return;
 
                 long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
@@ -120,7 +119,7 @@ namespace TheresaBot.Main.Handler
                 int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
                 List<LoliconDataV2> dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, quantity, tagArr);
                 List<SetuContent> setuContents = await getSetuContent(dataList, groupId);
-                await sendTimingSetuMessage(timingSetuTimer, tagStr, groupId);
+                await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
                 await Task.Delay(2000);
                 await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge);
             }

@@ -65,7 +65,7 @@ namespace TheresaBot.Main.Handler
 
             string websiteCode = Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv) ?? string.Empty;
             WebsitePO website = websiteBusiness.updateWebsite(websiteCode, cookie, userId, BotConfig.PixivConfig.CookieExpire);
-            ConfigHelper.loadWebsite();
+            ConfigHelper.LoadWebsite();
             string expireDate = website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss");
             await command.ReplyFriendMessageAsync($"cookie更新完毕,过期时间为{expireDate}");
         }
@@ -119,7 +119,7 @@ namespace TheresaBot.Main.Handler
 
             string websiteCode = Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao) ?? string.Empty;
             websiteBusiness.updateWebsite(websiteCode, cookie, userId, DateTime.Now.AddYears(1));
-            ConfigHelper.loadWebsite();
+            ConfigHelper.LoadWebsite();
             await command.ReplyFriendMessageAsync($"cookie更新完毕");
         }
 

@@ -282,7 +282,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "PixivBusiness.downImg下载图片失败");
+                LogHelper.Error(ex, "downPixivImgsAsync异常");
                 return null;
             }
         }
@@ -313,9 +313,13 @@ namespace TheresaBot.Main.Handler
                         return await HttpHelper.DownFileAsync(downloadUrl.ToPximgUrl(), fullImgSavePath, headerDic);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    if (--retryTimes < 0) throw;
+                    if (--retryTimes < 0)
+                    {
+                        LogHelper.Error(ex, "PixivImg下载失败");
+                        return null;
+                    }
                     await Task.Delay(3000);
                 }
             }

@@ -14,6 +14,7 @@
         public SaucenaoConfig Saucenao { get; set; }
         public SubscribeConfig Subscribe { get; set; }
         public TimingSetuConfig TimingSetu { get; set; }
+        public object PixivRanking { get; set; }
     }
 
 }

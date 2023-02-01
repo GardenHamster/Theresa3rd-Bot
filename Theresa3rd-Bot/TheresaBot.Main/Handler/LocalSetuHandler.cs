@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Handler
             List<LocalSetuInfo> setuInfos = localSetuBusiness.loadRandom(localPath, timingSetuTimer.Quantity, timingSetuTimer.FromOneDir);
             if (setuInfos is null || setuInfos.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
             string tags = timingSetuTimer.FromOneDir ? setuInfos[0].DirInfo.Name : "";
-            await sendTimingSetuMessage(timingSetuTimer, tags, groupId);
+            await sendTimingSetuMessageAsync(timingSetuTimer, tags, groupId);
             await Task.Delay(2000);
             foreach (LocalSetuInfo setuInfo in setuInfos)
             {

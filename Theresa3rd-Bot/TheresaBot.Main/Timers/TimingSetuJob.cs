@@ -29,6 +29,7 @@ namespace TheresaBot.Main.Timers
                 if (timingSetuTimer is null) return;
                 if (timingSetuTimer.Groups is null || timingSetuTimer.Groups.Count == 0) return;
                 if (timingSetuTimer.Quantity <= 0) throw new Exception("Quantity必须大于0");
+                LogHelper.Info($"开始执行【{timingSetuTimer.Name}】定时涩图任务...");
                 List<long> groupIds = timingSetuTimer.Groups.Distinct().Take(5).ToList();
                 foreach (long groupId in groupIds)
                 {

@@ -102,7 +102,7 @@ namespace TheresaBot.Main.Handler
         /// <param name="tags"></param>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        protected async Task sendTimingSetuMessage(TimingSetuTimer timingSetuTimer, string tags, long groupId)
+        protected async Task sendTimingSetuMessageAsync(TimingSetuTimer timingSetuTimer, string tags, long groupId)
         {
             try
             {

@@ -220,7 +220,7 @@ namespace TheresaBot.Main.Handler
                 {
                     await command.ReplyGroupMessageWithAtAsync($"所有画师订阅完毕");
                 }
-                ConfigHelper.loadSubscribeTask();
+                ConfigHelper.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -297,7 +297,7 @@ namespace TheresaBot.Main.Handler
                 }
                 DbScoped.SugarScope.CommitTran();//提交事务
                 await command.ReplyGroupMessageWithAtAsync("订阅pixiv关注画师列表完毕");
-                ConfigHelper.loadSubscribeTask();
+                ConfigHelper.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -351,7 +351,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv用户[{pixivUserIds}]~");
-                ConfigHelper.loadSubscribeTask();
+                ConfigHelper.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -419,7 +419,7 @@ namespace TheresaBot.Main.Handler
 
                 SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($"标签[{pixivTags}]订阅成功,该标签总作品数为:{pageOne.body.illust.total}");
-                ConfigHelper.loadSubscribeTask();
+                ConfigHelper.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -467,7 +467,7 @@ namespace TheresaBot.Main.Handler
 
                 subscribeBusiness.delSubscribeGroup(dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($" 已为所有群退订了pixiv标签[{pixivTag}]~");
-                ConfigHelper.loadSubscribeTask();
+                ConfigHelper.LoadSubscribeTask();
             }
             catch (Exception ex)
             {

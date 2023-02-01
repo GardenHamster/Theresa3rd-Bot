@@ -9,6 +9,8 @@ namespace TheresaBot.Main.Business
 {
     public class LoliconBusiness : SetuBusiness
     {
+        private const int eachPage = 5;
+
         public string getWorkInfo(LoliconDataV2 loliconData, DateTime startTime, long todayLeft, string template = "")
         {
             if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(loliconData, startTime);
@@ -37,7 +39,24 @@ namespace TheresaBot.Main.Business
             return workInfoStr.ToString();
         }
 
-        public async Task<LoliconResultV2> getLoliconResultAsync(int r18Mode, bool excludeAI, int quantity = 1, string[] tags = null)
+        public async Task<List<LoliconDataV2>> getLoliconDataListAsync(int r18Mode, bool excludeAI, int quantity = 1, string[] tags = null)
+        {
+            List<LoliconDataV2> setuList = new();
+            while (quantity > 0)
+            {
+                int num = quantity >= eachPage ? eachPage : quantity;
+                quantity -= eachPage;
+                LoliconResultV2 loliconResult = await getLoliconResultAsync(r18Mode, excludeAI, num, tags);
+                if (loliconResult?.data is null) continue;
+                foreach (var setuInfo in loliconResult.data)
+                {
+                    setuList.Add(setuInfo);
+                }
+            }
+            return setuList;
+        }
+
+        private async Task<LoliconResultV2> getLoliconResultAsync(int r18Mode, bool excludeAI, int quantity = 1, string[] tags = null)
         {
             LoliconParamV2 param = new LoliconParamV2(r18Mode, excludeAI, quantity, "i.pixiv.re", tags is null || tags.Length == 0 ? null : tags);
             string httpUrl = HttpUrl.getLoliconApiV2Url();
@@ -46,24 +65,6 @@ namespace TheresaBot.Main.Business
             LoliconResultV2 result = JsonConvert.DeserializeObject<LoliconResultV2>(json);
             if (string.IsNullOrWhiteSpace(result.error) == false) throw new ApiException($"lolicon api error,message = {result.error}");
             return result;
-        }
-
-        public async Task<List<LoliconDataV2>> getLoliconDataListAsync(int r18Mode, bool excludeAI, int quantity, string[] tags = null)
-        {
-            int eachPage = 5;
-            List<LoliconDataV2> setuList = new();
-            while (quantity > 0)
-            {
-                int num = quantity >= eachPage ? eachPage : quantity;
-                LoliconResultV2 loliconResult = await getLoliconResultAsync(r18Mode, excludeAI, num, tags);
-                quantity -= num;
-                if (loliconResult?.data is null) continue;
-                foreach (var setuInfo in loliconResult.data)
-                {
-                    setuList.Add(setuInfo);
-                }
-            }
-            return setuList;
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Business;
+﻿using System.Text.RegularExpressions;
+using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -109,61 +110,42 @@ namespace TheresaBot.Main.Handler
 
         public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
-            int eachPage = 5;
-            bool excludeAI = groupId.IsShowAISetu() == false;
-            int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
-            int count = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
-            string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
-            string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
-            List<LoliconDataV2> setuList = new();
-            while (count > 0)
-            {
-                int num = count >= eachPage ? eachPage : count;
-                LoliconResultV2 loliconResult = await loliconBusiness.getLoliconResultAsync(r18Mode, excludeAI, num, tagArr);
-                count -= num;
-                if (loliconResult?.data is null) continue;
-                foreach (var setuInfo in loliconResult.data)
-                {
-                    setuList.Add(setuInfo);
-                    await sendTimingSetuAsync(setuInfo, groupId);
-                    await Task.Delay(1000);
-                }
-            }
-
-            foreach (var setuInfo in setuList)
-            {
-
-            }
-
-            await sendTimingSetuMessage(timingSetuTimer, tagStr, groupId);
-            await Task.Delay(2000);
-            if (timingSetuTimer.SendMerge)
-            {
-
-            }
-
-
-        }
-
-        private async Task sendTimingSetuAsync(LoliconDataV2 setuInfo, long groupId)
-        {
             try
             {
-                bool isR18Img = setuInfo.IsR18;
-                bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-                DateTime startTime = DateTime.Now;
-                List<BaseContent> workMsgs = new List<BaseContent>();
-                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(setuInfo) : new();
-                workMsgs.Add(new PlainContent(loliconBusiness.getDefaultWorkInfo(setuInfo, startTime)));
-                await Session.SendGroupSetuAsync(workMsgs, setuFiles, groupId);
+                bool sendMerge = timingSetuTimer.SendMerge;
+                int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
+                bool excludeAI = groupId.IsShowAISetu() == false;
+                string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
+                string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
+                int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
+                List<LoliconDataV2> dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, quantity, tagArr);
+                List<SetuContent> setuContents = await getSetuContent(dataList, groupId);
+                await sendTimingSetuMessage(timingSetuTimer, tagStr, groupId);
+                await Task.Delay(2000);
+                await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge);
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "定时涩图发送失败");
-                Reporter.SendError(ex, "定时涩图发送失败");
+                LogHelper.Error(ex, "定时涩图异常");
+                Reporter.SendError(ex, "定时涩图异常");
             }
         }
 
+        private async Task<List<SetuContent>> getSetuContent(List<LoliconDataV2> datas, long groupId)
+        {
+            List<SetuContent> setuContents = new List<SetuContent>();
+            foreach (var data in datas) setuContents.Add(await getSetuContent(data, groupId));
+            return setuContents;
+        }
+
+        private async Task<SetuContent> getSetuContent(LoliconDataV2 data, long groupId)
+        {
+            bool isR18Img = data.IsR18;
+            bool isShowImg = groupId.IsShowSetuImg(isR18Img);
+            string setuInfo = loliconBusiness.getDefaultWorkInfo(data, DateTime.Now);
+            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(data) : new();
+            return new SetuContent(setuInfo, setuFiles);
+        }
 
     }
 }

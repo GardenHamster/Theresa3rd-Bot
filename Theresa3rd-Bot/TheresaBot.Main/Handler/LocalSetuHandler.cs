@@ -1,4 +1,5 @@
 ﻿using TheresaBot.Main.Business;
+using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
@@ -20,27 +21,28 @@ namespace TheresaBot.Main.Handler
         public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
             bool sendMerge = timingSetuTimer.SendMerge;
-            string localPath = timingSetuTimer.LocalPath;
+            bool fromOneDir = BotConfig.TimingSetuConfig.FromOneDir;
+            string localPath = BotConfig.TimingSetuConfig.LocalPath;
             if (string.IsNullOrWhiteSpace(localPath)) throw new Exception("未配置LocalPath");
-            List<LocalSetuInfo> dataList = localSetuBusiness.loadRandom(localPath, timingSetuTimer.Quantity, timingSetuTimer.FromOneDir);
+            List<LocalSetuInfo> dataList = localSetuBusiness.loadRandom(localPath, timingSetuTimer.Quantity, fromOneDir);
             if (dataList is null || dataList.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
-            string tags = timingSetuTimer.FromOneDir ? dataList[0].DirInfo.Name : "";
-            List<SetuContent> setuContents = getSetuContent(timingSetuTimer, dataList);
+            string tags = fromOneDir ? dataList[0].DirInfo.Name : "";
+            List<SetuContent> setuContents = getSetuContent(dataList);
             await sendTimingSetuMessageAsync(timingSetuTimer, tags, groupId);
             await Task.Delay(2000);
             await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge);
         }
 
-        private List<SetuContent> getSetuContent(TimingSetuTimer timingSetuTimer,List<LocalSetuInfo> datas)
+        private List<SetuContent> getSetuContent(List<LocalSetuInfo> datas)
         {
             List<SetuContent> setuContents = new List<SetuContent>();
-            foreach (var data in datas) setuContents.Add(getSetuContent(timingSetuTimer, data));
+            foreach (var data in datas) setuContents.Add(getSetuContent(data));
             return setuContents;
         }
 
-        private SetuContent getSetuContent(TimingSetuTimer timingSetuTimer, LocalSetuInfo data)
+        private SetuContent getSetuContent(LocalSetuInfo data)
         {
-            string setuInfo = getSetuInfo(data, timingSetuTimer.LocalTemplate);
+            string setuInfo = getSetuInfo(data, BotConfig.TimingSetuConfig.LocalTemplate);
             List<FileInfo> setuFiles = new List<FileInfo>() { data.FileInfo };
             return new SetuContent(setuInfo, setuFiles);
         }

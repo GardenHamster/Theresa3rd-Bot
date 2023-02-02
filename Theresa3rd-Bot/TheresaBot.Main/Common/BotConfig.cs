@@ -22,6 +22,7 @@ namespace TheresaBot.Main.Common
         public static SaucenaoConfig SaucenaoConfig = new SaucenaoConfig();
         public static SubscribeConfig SubscribeConfig = new SubscribeConfig();
         public static TimingSetuConfig TimingSetuConfig = new TimingSetuConfig();
+        public static PixivRankingConfig PixivRankingConfig = new PixivRankingConfig();
         public static WebsiteConfig WebsiteConfig = new WebsiteConfig();
         public static Dictionary<SubscribeType, List<SubscribeTask>> SubscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
         public static List<BanWordPO> BanSetuTagList = new List<BanWordPO>();

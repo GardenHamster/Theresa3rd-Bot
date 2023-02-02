@@ -3,30 +3,29 @@
     public static class HttpUrl
     {
         /// <summary>
-        /// 月光社主页地址
-        /// </summary>
-        public static string YGSHomeUrl = "https://www.3rdguide.com";
-
-        /// <summary>
         /// pixiv主页
         /// </summary>
-        public static readonly string PixivHomeUrl = "https://www.pixiv.net";
-
+        public const string PixivHomeUrl = "https://www.pixiv.net";
 
         /// <summary>
         /// Saucenao搜索地址
         /// </summary>
-        public static readonly string SaucenaoUrl = "https://saucenao.com/search.php";
+        public const string SaucenaoUrl = "https://saucenao.com/search.php";
 
         /// <summary>
         /// Ascii2d搜索地址
         /// </summary>
-        public static readonly string Ascii2dUrl = "https://ascii2d.net/search/uri";
+        public const string Ascii2dUrl = "https://ascii2d.net/search/uri";
 
         /// <summary>
         /// 默认pixiv图片代理地址
         /// </summary>
-        public static readonly string PixivImgProxyUrl = "https://i.pixiv.re";
+        public const string DefaultPixivImgProxy = "https://i.pixiv.re";
+
+        /// <summary>
+        /// 默认pixiv图片代理Host
+        /// </summary>
+        public const string DefaultPixivImgProxyHost = "i.pixiv.re";
 
         /*---------------------------------------------------------------pixiv-----------------------------------------------------------------------*/
 
@@ -240,91 +239,6 @@
         {
             return $"https://bbs.mihoyo.com/bh3/accountCenter/postList?id={userId}";
         }
-
-
-        /*---------------------------------------------------------------BiliBili-----------------------------------------------------------------------*/
-
-        /// <summary>
-        /// bilibili用户动态地址
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public static string getBLBLUserPostList(string userId)
-        {
-            return $"https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid=0&host_uid={userId}&offset_dynamic_id=0&need_top=1";
-        }
-
-        /// <summary>
-        /// bilibili用户动态refer
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public static string getBLBLUserPostReferer(string userId)
-        {
-            return $"https://space.bilibili.com/{userId}/dynamic";
-        }
-
-        /// <summary>
-        /// bilibili用户动态地址
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public static string getBLBLUserInfo(string userId)
-        {
-            return $"https://api.bilibili.com/x/space/acc/info?mid={userId}&jsonp=jsonp";
-        }
-
-        /// <summary>
-        /// bilibili用户动态referer
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public static string getBLBLUserReferer(string userId)
-        {
-            return $"https://space.bilibili.com/{userId}";
-        }
-
-        /// <summary>
-        /// up主投稿视频地址
-        /// </summary>
-        /// <param name="videoCode"></param>
-        /// <returns></returns>
-        public static string getBLBLVideoUrl(string videoCode)
-        {
-            return $"https://www.bilibili.com/video/{videoCode}";
-        }
-
-        /// <summary>
-        /// up主发布文章地址
-        /// </summary>
-        /// <param name="articleId"></param>
-        /// <returns></returns>
-        public static string getBLBLArticleUrl(string articleId)
-        {
-            return $"https://t.bilibili.com/{articleId}";
-        }
-
-        /// <summary>
-        /// up主发布动态地址
-        /// </summary>
-        /// <param name="articleId"></param>
-        /// <returns></returns>
-        public static string getBLBLDynamicUrl(string dynamicId)
-        {
-            return $"https://t.bilibili.com/{dynamicId}";
-        }
-
-        /// <summary>
-        /// up主动态主页地址
-        /// </summary>
-        /// <param name="articleId"></param>
-        /// <returns></returns>
-        public static string getBLBLSpaceUrl(string userId)
-        {
-            return $"https://space.bilibili.com/{userId}/dynamic";
-        }
-
-
 
     }
 }

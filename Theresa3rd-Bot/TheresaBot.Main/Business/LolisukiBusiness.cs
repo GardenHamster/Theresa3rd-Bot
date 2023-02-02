@@ -60,7 +60,7 @@ namespace TheresaBot.Main.Business
         private async Task<LolisukiResult> getLolisukiResultAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
         {
             string[] postTags = tags is null || tags.Length == 0 ? new string[0] : tags;
-            LolisukiParam param = new LolisukiParam(r18Mode, aiMode, quantity, "i.pixiv.re", postTags, level, 0);
+            LolisukiParam param = new LolisukiParam(r18Mode, aiMode, quantity, HttpUrl.DefaultPixivImgProxyHost, postTags, level, 0);
             string httpUrl = HttpUrl.getLolisukiApiUrl();
             string postJson = JsonConvert.SerializeObject(param);
             string json = await HttpHelper.PostJsonAsync(httpUrl, postJson);

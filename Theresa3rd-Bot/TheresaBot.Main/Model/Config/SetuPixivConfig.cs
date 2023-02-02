@@ -5,17 +5,11 @@ namespace TheresaBot.Main.Model.Config
     public class SetuPixivConfig : BasePluginConfig
     {
         public List<string> Commands { get; set; }
-
         public PixivRandomMode RandomMode { get; set; }
-
         public List<string> RandomTags { get; set; }
-
         public string Template { get; set; }
-
         public int MaxScreen { get; set; }
-
         public double MinBookmark { get; set; }
-
         public double MinBookRate { get; set; }
 
         public SetuPixivConfig()

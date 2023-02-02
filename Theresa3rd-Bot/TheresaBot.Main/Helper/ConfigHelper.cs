@@ -53,6 +53,7 @@ namespace TheresaBot.Main.Helper
             BotConfig.SaucenaoConfig = botConfig.Saucenao;
             BotConfig.SubscribeConfig = botConfig.Subscribe;
             BotConfig.TimingSetuConfig = botConfig.TimingSetu;
+            BotConfig.PixivRankingConfig = botConfig.PixivRanking;
         }
 
         public static void LoadWebsite()

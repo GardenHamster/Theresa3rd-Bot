@@ -59,7 +59,7 @@ namespace TheresaBot.Main.Business
         private async Task<LoliconResultV2> getLoliconResultAsync(int r18Mode, bool excludeAI, int quantity = 1, string[] tags = null)
         {
             string[] postTags = tags is null || tags.Length == 0 ? new string[0] : tags;
-            LoliconParamV2 param = new LoliconParamV2(r18Mode, excludeAI, quantity, "i.pixiv.re", postTags);
+            LoliconParamV2 param = new LoliconParamV2(r18Mode, excludeAI, quantity, HttpUrl.DefaultPixivImgProxyHost, postTags);
             string httpUrl = HttpUrl.getLoliconApiV2Url();
             string postJson = JsonConvert.SerializeObject(param);
             string json = await HttpHelper.PostJsonAsync(httpUrl, postJson);

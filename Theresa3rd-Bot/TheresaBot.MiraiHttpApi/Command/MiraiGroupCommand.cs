@@ -86,7 +86,7 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             try
             {
-                await RevokeGroupMessageAsync(messageId, GroupId);
+                await Session.RevokeMessageAsync(messageId, groupId);
             }
             catch (Exception ex)
             {
@@ -140,7 +140,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "SendGroupSetuAndRevokeAsync异常");
+                LogHelper.Error(ex, "ReplyGroupSetuAndRevokeAsync异常");
             }
         }
 

@@ -10,5 +10,18 @@
         public abstract string hasBanTag();
         public abstract List<string> getTags();
         public abstract List<string> getOriginalUrls();
+        public List<string> Tags
+        {
+            get
+            {
+                List<string> tags = new List<string>();
+                if (IsR18) tags.Add("R-18");
+                if (IsAI) tags.Add("AI绘图");
+                if (IsGif) tags.Add("动图");
+                tags.AddRange(getTags());
+                return tags.Distinct().ToList();
+            }
+        }
+        
     }
 }

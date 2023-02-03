@@ -26,7 +26,7 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{Taste}", lolisukiData.taste.ToString());
             template = template.Replace("{SizeMB}", "??");
             template = template.Replace("{CostSecond}", costSecond.ToString());
-            template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(lolisukiData.tags, BotConfig.PixivConfig.TagShowMaximum));
+            template = template.Replace("{Tags}", lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum));
             template = template.Replace("{Urls}", lolisukiData.urls.original.ToOrginProxyUrl());
             return template;
         }
@@ -36,7 +36,7 @@ namespace TheresaBot.Main.Business
             StringBuilder workInfoStr = new StringBuilder();
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
             workInfoStr.AppendLine($"标题：{lolisukiData.title}，画师：{lolisukiData.author}，画师id：{lolisukiData.uid}，Level：{lolisukiData.level}，分类：{lolisukiData.taste}，耗时：{costSecond}s");
-            workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(lolisukiData.tags, BotConfig.PixivConfig.TagShowMaximum)}");
+            workInfoStr.AppendLine($"标签：{lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum)}");
             workInfoStr.Append(lolisukiData.urls.original.ToOrginProxyUrl());
             return workInfoStr.ToString();
         }
@@ -48,7 +48,7 @@ namespace TheresaBot.Main.Business
             {
                 int num = quantity >= eachPage ? eachPage : quantity;
                 quantity -= eachPage;
-                LolisukiResult lolisukiResult = await getLolisukiResultAsync(r18Mode, aiMode, level, quantity,  tags);
+                LolisukiResult lolisukiResult = await getLolisukiResultAsync(r18Mode, aiMode, level, quantity, tags);
                 if (lolisukiResult?.data is null) continue;
                 foreach (var setuInfo in lolisukiResult.data)
                 {

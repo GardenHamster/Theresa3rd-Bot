@@ -16,7 +16,7 @@ Pixiv:
     HttpProxy:                  ''                                                  #pixiv代理地址，值为空表示直连，FreeProxy启用后失效，格式：http://127.0.0.1:7890
     ImgProxy:                   ''                                                  #图片代理地址，值为空表示不使用代理，FreeProxy启用后使用该值下载图片，默认：https://i.pixiv.re
     ImgShowMaximum:             1                                                   #同一个作品最多显示N张图片，0表示无限制
-    TagShowMaximum:             3                                                   #同一个作品最多显示N个标签，0表示无限制
+    TagShowMaximum:             5                                                   #同一个作品最多显示N个标签，0表示无限制
     UrlShowMaximum:             3                                                   #同一个作品最多显示N条原图链接，0表示无限制
     ImgSize:                    'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb，推荐使用thumb或small降低触发风控的概率
     OriginUrlProxy:             'https://i.pixiv.re'                                #pixiv原图链接的代理地址，如果QQ中打开原图链接时如果显示已停止访问，可以修改该值到其他图片代理地址，默认：https://i.pixiv.re(有频率限制)，也可以参照 https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/pixivproxy.md 搭建自己的代理地址
@@ -191,7 +191,7 @@ TimingSetu:
           Name:                 '下午茶'                                            #定时器名称
           Groups:               [284196392]                                         #发送到群
           Source:               2                                                   #图源，0：本地，1：Lolicon，2：Lolisuki
-          SendMerge:            true                                                #合并消息发送
+          SendMerge:            false                                               #合并消息发送
           Tags:                 []                                                  #涩图标签，不填表示随机，Source为1和2时可用
           Quantity:             5                                                   #发送涩图数量，Source为1和2时取值范围为1~20
           AtAll:                false                                               #是否艾特全体

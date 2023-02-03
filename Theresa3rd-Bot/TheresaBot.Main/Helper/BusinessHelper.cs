@@ -229,7 +229,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="pixivTag"></param>
         /// <param name="maxShowCount"></param>
         /// <returns></returns>
-        public static string JoinPixivTagsStr(PixivTags pixivTag, int maxShowCount = 0)
+        public static string JoinPixivTagsStr(this PixivTags pixivTag, int maxShowCount = 0)
         {
             if (pixivTag?.tags is null) return String.Empty;
             List<string> tags = pixivTag.tags.Select(o => o.tag).ToList();
@@ -242,7 +242,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="tags"></param>
         /// <param name="maxShowCount"></param>
         /// <returns></returns>
-        public static string JoinPixivTagsStr(List<string> tags, int maxShowCount = 0)
+        public static string JoinPixivTagsStr(this List<string> tags, int maxShowCount = 0)
         {
             string tagstr = "";
             if (tags is null || tags.Count == 0) return String.Empty;

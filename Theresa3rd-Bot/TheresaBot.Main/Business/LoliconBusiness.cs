@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{UserId}", loliconData.uid);
             template = template.Replace("{SizeMB}", "??");
             template = template.Replace("{CostSecond}", costSecond.ToString());
-            template = template.Replace("{Tags}", BusinessHelper.JoinPixivTagsStr(loliconData.tags, BotConfig.PixivConfig.TagShowMaximum));
+            template = template.Replace("{Tags}", loliconData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum));
             template = template.Replace("{Urls}", loliconData.urls.original.ToOrginProxyUrl());
             return template;
         }
@@ -34,7 +34,7 @@ namespace TheresaBot.Main.Business
             StringBuilder workInfoStr = new StringBuilder();
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
             workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}，耗时：{costSecond}s");
-            workInfoStr.AppendLine($"标签：{BusinessHelper.JoinPixivTagsStr(loliconData.tags, BotConfig.PixivConfig.TagShowMaximum)}");
+            workInfoStr.AppendLine($"标签：{loliconData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum)}");
             workInfoStr.Append(loliconData.urls.original.ToOrginProxyUrl());
             return workInfoStr.ToString();
         }

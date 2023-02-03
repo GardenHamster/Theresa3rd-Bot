@@ -1,10 +1,13 @@
-﻿using TheresaBot.Main.Business;
+﻿using AnimatedGif;
+using System.Drawing;
+using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Base;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -167,6 +170,84 @@ namespace TheresaBot.Main.Handler
             tagStr = tagStr.Trim().Replace(",", "|").Replace("，", "|");
             return tagStr.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         }
+
+
+        /// <summary>
+        /// 根据配置使用代理或者直连下载图片
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <returns></returns>
+        public async Task<List<FileInfo>> downPixivImgsAsync(BaseWorkInfo pixivWorkInfo)
+        {
+            try
+            {
+                if (pixivWorkInfo.IsGif)
+                {
+                    return new List<FileInfo>() { await downAndComposeGifAsync(pixivWorkInfo.PixivId) };
+                }
+                List<FileInfo> imgList = new List<FileInfo>();
+                List<string> originUrls = pixivWorkInfo.getOriginalUrls();
+                int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
+                for (int i = 0; i < maxCount && i < originUrls.Count; i++)
+                {
+                    imgList.Add(await PixivHelper.DownPixivImgAsync(pixivWorkInfo.PixivId, originUrls[i]));
+                }
+                return imgList;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "downPixivImgsAsync异常");
+                return null;
+            }
+        }
+
+
+        /// <summary>
+        /// 下载动图zip包并合成gif图片
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <returns></returns>
+        protected async Task<FileInfo> downAndComposeGifAsync(string pixivId)
+        {
+            try
+            {
+                string fullGifSavePath = Path.Combine(FilePath.getDownFileSavePath(), $"{pixivId}.gif");
+                if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
+
+                PixivResult<PixivUgoiraMeta> pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId);
+                string zipHttpUrl = pixivUgoiraMetaDto.body.src;
+
+                string fullZipSavePath = Path.Combine(FilePath.getDownFileSavePath(), $"{StringHelper.get16UUID()}.zip");
+                FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivId, zipHttpUrl, fullZipSavePath);
+                if (zipFile == null) return null;
+
+                string unZipDirPath = Path.Combine(FilePath.getDownFileSavePath(), pixivId);
+                ZipHelper.ZipToFile(zipFile.FullName, unZipDirPath);
+
+                DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
+                FileInfo[] files = directoryInfo.GetFiles();
+                List<PixivUgoiraMetaFrames> frames = pixivUgoiraMetaDto.body.frames;
+                using AnimatedGifCreator gif = AnimatedGif.AnimatedGif.Create(fullGifSavePath, 0);
+                foreach (FileInfo file in files)
+                {
+                    PixivUgoiraMetaFrames frame = frames.Where(o => o.file.Trim() == file.Name).FirstOrDefault();
+                    int delay = frame is null ? 60 : frame.delay;
+                    using Image img = Image.FromFile(file.FullName);
+                    gif.AddFrame(img, delay, GifQuality.Bit8);
+                    await Task.Delay(1000);
+                }
+                FileHelper.deleteFile(fullZipSavePath);
+                FileHelper.deleteDirectory(unZipDirPath);
+                return new FileInfo(fullGifSavePath);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "gif合成失败");
+                Reporter.SendError(ex, "gif合成失败");
+                return null;
+            }
+        }
+
 
     }
 }

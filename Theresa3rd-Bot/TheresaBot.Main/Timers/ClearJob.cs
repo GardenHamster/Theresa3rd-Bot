@@ -22,7 +22,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                string path = FilePath.getDownImgSavePath();
+                string path = FilePath.getDownFileSavePath();
                 if (Directory.Exists(path) == false) return;
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
                 directoryInfo.Delete(true);

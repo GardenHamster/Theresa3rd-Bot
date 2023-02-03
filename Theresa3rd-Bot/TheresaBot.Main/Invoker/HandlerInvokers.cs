@@ -148,7 +148,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupSetuCoolingAsync(botCommand)) return false;
                 if (await handler.CheckSetuUseUpAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                CoolingCache.SetGroupSetuCooling(botCommand.GroupId, botCommand.MemberId);
+                CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
                 await handler.pixivSearchAsync(botCommand);
                 await handler.addRecord(botCommand);
                 return true;
@@ -163,7 +163,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupSetuCoolingAsync(botCommand)) return false;
                 if (await handler.CheckSetuUseUpAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                CoolingCache.SetGroupSetuCooling(botCommand.GroupId, botCommand.MemberId);
+                CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
                 await handler.loliconSearchAsync(botCommand);
                 await handler.addRecord(botCommand);
                 return true;
@@ -178,7 +178,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupSetuCoolingAsync(botCommand)) return false;
                 if (await handler.CheckSetuUseUpAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                CoolingCache.SetGroupSetuCooling(botCommand.GroupId, botCommand.MemberId);
+                CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
                 await handler.lolisukiSearchAsync(botCommand);
                 await handler.addRecord(botCommand);
                 return true;
@@ -198,8 +198,22 @@ namespace TheresaBot.Main.Invoker
                 return true;
             })),
 
+            //日榜
+            new(BotConfig.PixivRankingConfig?.Daily?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
+            {
+                PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
+                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupRankingCoolingAsync(botCommand,PixivRankingType.Daily)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.sendDailyRanking(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+
+
             //version
-            new(new() { "版本", "version" }, CommandType.Version, new(async (botCommand,session,reporter) =>
+            new(new List<string>() { "版本", "version" }, CommandType.Version, new(async (botCommand,session,reporter) =>
             {
                 await botCommand.ReplyGroupMessageWithAtAsync($"Theresa3rd-Bot：Version：{BotConfig.BotVersion}");
                 return false;

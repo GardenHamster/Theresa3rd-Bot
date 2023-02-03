@@ -106,6 +106,21 @@ namespace TheresaBot.Main.Helper
             return await GetPixivResultAsync<PixivFollowLatest>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
+        public static async Task<FileInfo> DownPixivImgAsync(string pixivId, string originUrl, string fullFileName = null)
+        {
+            string downloadUrl = GetImgUrlBySize(originUrl);
+            string referer = HttpUrl.getPixivArtworksReferer(pixivId);
+            Dictionary<string, string> headerDic = GetPixivHeader(referer);
+            return await DownPixivImgAsync(downloadUrl, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
+        }
+
+        public static async Task<FileInfo> DownPixivFileAsync(string pixivId, string downloadUrl, string fullFileName = null)
+        {
+            string referer = HttpUrl.getPixivArtworksReferer(pixivId);
+            Dictionary<string, string> headerDic = GetPixivHeader(referer);
+            return await DownPixivFileAsync(downloadUrl, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
+        }
+
         private static async Task<PixivResult<T>> GetPixivResultAsync<T>(string url, string operation, Dictionary<string, string> headerDic = null, int retryTimes = 0, int timeout = 60000)
         {
             if (retryTimes < 0) retryTimes = 0;
@@ -113,7 +128,7 @@ namespace TheresaBot.Main.Helper
             {
                 try
                 {
-                    string json = await GetPixivJsonAsync(url, headerDic, retryTimes, timeout);
+                    string json = await GetPixivJsonAsync(url, headerDic, timeout);
                     json = json.Replace("[]", "null");
                     PixivResult<T> jsonDto = JsonConvert.DeserializeObject<PixivResult<T>>(json);
                     if (jsonDto.error) throw new ApiException($"{operation}失败，pixiv api error，api message={jsonDto.message}");
@@ -133,7 +148,7 @@ namespace TheresaBot.Main.Helper
             return null;
         }
 
-        private static async Task<string> GetPixivJsonAsync(string url, Dictionary<string, string> headerDic = null, int retryTimes = 0, int timeout = 60000)
+        private static async Task<string> GetPixivJsonAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             if (BotConfig.PixivConfig.FreeProxy)
             {
@@ -148,6 +163,99 @@ namespace TheresaBot.Main.Helper
                 return await HttpHelper.GetAsync(url, headerDic, timeout);
             }
         }
+
+        private static async Task<FileInfo> DownPixivImgAsync(string url, Dictionary<string, string> headerDic = null, string fullFileName = null, int retryTimes = 0, int timeout = 60000)
+        {
+            if (retryTimes < 0) retryTimes = 0;
+            while (retryTimes >= 0)
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = url.getHttpFileName();
+                    string fullImgSavePath = Path.Combine(FilePath.getDownFileSavePath(), fullFileName);
+                    return await DownPixivImgAsync(url, fullImgSavePath, headerDic, timeout);
+                }
+                catch (Exception ex)
+                {
+                    if (--retryTimes < 0)
+                    {
+                        LogHelper.Error(ex, "DownPixivImgAsync异常");
+                        return null;
+                    }
+                    await Task.Delay(3000);
+                }
+            }
+            return null;
+        }
+
+        private static async Task<FileInfo> DownPixivImgAsync(string url, string fullISavePath, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        {
+            if (BotConfig.PixivConfig.FreeProxy)
+            {
+                return await HttpHelper.DownFileAsync(url.ToProxyUrl(), fullISavePath, null, timeout);
+            }
+            else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
+            {
+                return await HttpHelper.DownFileAsync(url.ToProxyUrl(), fullISavePath, null, timeout);
+            }
+            else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
+            {
+                return await HttpHelper.DownFileWithProxyAsync(url.ToPximgUrl(), fullISavePath, headerDic);
+            }
+            else
+            {
+                return await HttpHelper.DownFileAsync(url.ToPximgUrl(), fullISavePath, headerDic);
+            }
+        }
+
+        private static async Task<FileInfo> DownPixivFileAsync(string url, Dictionary<string, string> headerDic = null, string fullFileName = null, int retryTimes = 0, int timeout = 60000)
+        {
+            if (retryTimes < 0) retryTimes = 0;
+            while (retryTimes >= 0)
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = url.getHttpFileName();
+                    string fullImgSavePath = Path.Combine(FilePath.getDownFileSavePath(), fullFileName);
+                    return await DownPixivFileAsync(url, fullImgSavePath, headerDic, timeout);
+                }
+                catch (Exception ex)
+                {
+                    if (--retryTimes < 0)
+                    {
+                        LogHelper.Error(ex, "DownPixivFileAsync异常");
+                        return null;
+                    }
+                    await Task.Delay(3000);
+                }
+            }
+            return null;
+        }
+
+        private static async Task<FileInfo> DownPixivFileAsync(string url, string fullImgSavePath, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        {
+            if (BotConfig.PixivConfig.FreeProxy)
+            {
+                 return await HttpHelper.DownFileAsync(url.ToProxyUrl(), fullImgSavePath);
+            }
+            else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
+            {
+                return await HttpHelper.DownFileAsync(url.ToProxyUrl(), fullImgSavePath);
+            }
+            else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
+            {
+                return await HttpHelper.DownFileWithProxyAsync(url.ToPximgUrl(), fullImgSavePath, headerDic);
+            }
+            else
+            {
+                return await HttpHelper.DownFileAsync(url.ToPximgUrl(), fullImgSavePath, headerDic);
+            }
+        }
+
+
+
+
+
 
         private static Dictionary<string, string> GetPixivHeader(string referer)
         {
@@ -258,7 +366,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static string ToThumbUrl(this string originalUrl)
         {
-            PixivWorkPath workPath = originalUrl.getWorkPath();
+            PixivWorkPath workPath = originalUrl.GetWorkPath();
             return $"{workPath.Host}/c/240x240/img-master/{workPath.ImgPath}_master1200.jpg";
         }
 
@@ -269,7 +377,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static string ToSmallUrl(this string originalUrl)
         {
-            PixivWorkPath workPath = originalUrl.getWorkPath();
+            PixivWorkPath workPath = originalUrl.GetWorkPath();
             return $"{workPath.Host}/c/540x540_70/img-master/{workPath.ImgPath}_master1200.jpg";
         }
 
@@ -280,8 +388,22 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static string ToRegularUrl(this string originalUrl)
         {
-            PixivWorkPath workPath = originalUrl.getWorkPath();
+            PixivWorkPath workPath = originalUrl.GetWorkPath();
             return $"{workPath.Host}/img-master/{workPath.ImgPath}_master1200.jpg";
+        }
+
+        /// <summary>
+        /// 根据配置文件设置的图片大小获取图片下载地址
+        /// </summary>
+        /// <returns></returns>
+        private static string GetImgUrlBySize(string originalUrl)
+        {
+            string imgSize = BotConfig.PixivConfig.ImgSize?.ToLower();
+            if (imgSize == "original") return originalUrl;
+            if (imgSize == "regular") return originalUrl.ToRegularUrl();
+            if (imgSize == "small") return originalUrl.ToSmallUrl();
+            if (imgSize == "thumb") return originalUrl.ToThumbUrl();
+            return originalUrl.ToThumbUrl();
         }
 
         /// <summary>
@@ -289,14 +411,13 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="originalUrl"></param>
         /// <returns></returns>
-        public static PixivWorkPath getWorkPath(this string originalUrl)
+        public static PixivWorkPath GetWorkPath(this string originalUrl)
         {
             originalUrl = originalUrl.Trim();
             string[] arr = originalUrl.Split("/img-original/", StringSplitOptions.RemoveEmptyEntries);
             string[] arr2 = arr[1].Split('.', StringSplitOptions.RemoveEmptyEntries);
             return new PixivWorkPath(arr[0], arr2[0], arr2[1]);
         }
-
 
     }
 }

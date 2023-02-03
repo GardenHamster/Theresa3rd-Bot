@@ -1,12 +1,16 @@
-﻿namespace TheresaBot.Main.Model.Cache
+﻿using TheresaBot.Main.Type;
+
+namespace TheresaBot.Main.Model.Cache
 {
     public class GroupCoolingInfo
     {
         public long GroupId { get; set; }
 
-        public DateTime? LastGetSetuTime { get; set; }
+        public DateTime? LastSetuTime { get; set; }
 
         public DateTime? LastSaucenaoTime { get; set; }
+
+        public Dictionary<PixivRankingType, DateTime?> LastPixivRankingTime { get; set; }
 
         public GroupCoolingInfo(long groupId)
         {

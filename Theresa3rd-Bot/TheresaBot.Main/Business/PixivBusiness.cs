@@ -18,7 +18,7 @@ namespace TheresaBot.Main.Business
         /// <summary>
         /// p站每页作品数
         /// </summary>
-        private const int pixivPageSize = 60;
+        private const int PageSize = 60;
 
         /// <summary>
         /// 获取作品信息的线程数
@@ -37,7 +37,6 @@ namespace TheresaBot.Main.Business
             subscribeGroupDao = new SubscribeGroupDao();
             subscribeRecordDao = new SubscribeRecordDao();
         }
-
 
         /// <summary>
         /// 根据一个pid获取作品信息
@@ -195,13 +194,13 @@ namespace TheresaBot.Main.Business
         /// <returns></returns>
         public async Task<PixivResult<PixivWorkInfo>> getRandomWorkAsync(string tagNames, bool includeR18, bool includeAI)
         {
-            int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / pixivPageSize);
+            int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / PageSize);
             if (pageCount < 3) pageCount = 3;
 
             string searchWord = toPixivSearchWord(tagNames);
             PixivResult<PixivSearch> pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, includeR18);
             int total = pageOne.body.getIllust().total;
-            int maxPage = MathHelper.getMaxPage(total, pixivPageSize);
+            int maxPage = MathHelper.getMaxPage(total, PageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
             Thread.Sleep(1000);
 
@@ -562,7 +561,7 @@ namespace TheresaBot.Main.Business
         /// <returns></returns>
         private async Task<List<PixivIllust>> getTagIllustListAsync(string searchWord, int maxScan, int shelfLife)
         {
-            int maxPage = MathHelper.getMaxPage(maxScan, pixivPageSize);
+            int maxPage = MathHelper.getMaxPage(maxScan, PageSize);
             List<PixivIllust> pixivIllustList = new List<PixivIllust>();
 
             for (int i = 1; i <= maxPage; i++)
@@ -573,7 +572,7 @@ namespace TheresaBot.Main.Business
                 List<PixivIllust> illusts = pixivSearch?.body?.getIllust()?.data;
                 if (illusts is null || illusts.Count == 0) break;
                 pixivIllustList.AddRange(illusts);
-                if (illusts.Count < pixivPageSize) break;
+                if (illusts.Count < PageSize) break;
                 if (shelfLife > 0 && illusts.Last().createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
             }
             return pixivIllustList.OrderByDescending(o => o.createDate).Take(maxScan).ToList();

@@ -7,7 +7,7 @@
         /// </summary>
         /// <param name="CQApi"></param>
         /// <returns></returns>
-        public static string getDownImgSavePath()
+        public static string getDownFileSavePath()
         {
             string path = BotConfig.GeneralConfig.DownloadPath;
             if (string.IsNullOrWhiteSpace(path)) path = Path.Combine(AppContext.BaseDirectory, "download");

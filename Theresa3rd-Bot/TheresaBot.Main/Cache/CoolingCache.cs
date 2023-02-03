@@ -1,5 +1,6 @@
 ﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Cache;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Cache
 {
@@ -21,16 +22,9 @@ namespace TheresaBot.Main.Cache
         public static Dictionary<long, GroupCoolingInfo> GroupCoolingDic = new Dictionary<long, GroupCoolingInfo>();
 
         /// <summary>
-        /// 记录定时涩图功能最后触发时间，进入CD状态
-        /// </summary>
-        public static void SetSetuTimingCooling()
-        {
-            lock (SetuTimingCoolingInfo) SetuTimingCoolingInfo.LastRunTime = DateTime.Now;
-        }
-
-        /// <summary>
         /// 判断是否可以触发下一个定时涩图任务
         /// </summary>
+        /// <param name="coolingMinutes"></param>
         /// <returns></returns>
         public static bool IsSetuTimingCooling(int coolingMinutes)
         {
@@ -42,8 +36,32 @@ namespace TheresaBot.Main.Cache
         }
 
         /// <summary>
-        /// 记录瑟图功能最后使用时间,进入CD状态
+        /// 记录定时涩图功能最后触发时间，进入CD状态
         /// </summary>
+        public static void SetSetuTimingCooling()
+        {
+            lock (SetuTimingCoolingInfo)
+            {
+                SetuTimingCoolingInfo.LastRunTime = DateTime.Now;
+            }
+        }
+
+        /// <summary>
+        /// 检查涩图功能是否在冷却中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public static int GetMemberSetuCD(long groupId, long memberId)
+        {
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            return GetCDSeconds(coolingInfo.LastGetSetuTime, BotConfig.SetuConfig.MemberCD);
+        }
+
+        /// <summary>
+        /// 记录涩图功能最后使用时间，进入CD状态
+        /// </summary>
+        /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         public static void SetMemberSetuCooling(long groupId, long memberId)
         {
@@ -55,8 +73,21 @@ namespace TheresaBot.Main.Cache
         }
 
         /// <summary>
-        /// 记录查找原图功能最后使用时间,进入CD状态
+        /// 检查原图功能是否在冷却中
         /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public static int GetMemberSaucenaoCD(long groupId, long memberId)
+        {
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            return GetCDSeconds(coolingInfo.LastSaucenaoTime, BotConfig.SaucenaoConfig.MemberCD);
+        }
+
+        /// <summary>
+        /// 记录搜图功能最后使用时间，进入CD状态
+        /// </summary>
+        /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         public static void SetMemberSaucenaoCooling(long groupId, long memberId)
         {
@@ -68,91 +99,66 @@ namespace TheresaBot.Main.Cache
         }
 
         /// <summary>
-        /// 检查瑟图功能是否在冷却中
+        /// 检查涩图功能是否在共享CD中
         /// </summary>
-        /// <param name="memberId"></param>
+        /// <param name="groupId"></param>
         /// <returns></returns>
-        public static int GetMemberSetuCooling(long groupId, long memberId)
+        public static int GetGroupSetuCD(long groupId)
         {
-            if (IsNoCool(groupId, memberId)) return 0;
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return GetCoolingSeconds(coolingInfo.LastGetSetuTime, BotConfig.SetuConfig.MemberCD);
+            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+            return GetCDSeconds(coolingInfo.LastSetuTime, BotConfig.SetuConfig.GroupCD);
         }
 
         /// <summary>
-        /// 检查查找原图功能是否在冷却中
+        /// 记录涩图功能最后使用时间，进入共享CD状态
         /// </summary>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        public static int GetMemberSaucenaoCooling(long groupId, long memberId)
+        /// <param name="groupId"></param>
+        public static void SetGroupSetuCooling(long groupId)
         {
-            if (IsNoCool(groupId, memberId)) return 0;
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return GetCoolingSeconds(coolingInfo.LastSaucenaoTime, BotConfig.SaucenaoConfig.MemberCD);
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                coolingInfo.LastSetuTime = DateTime.Now;
+            }
         }
 
         /// <summary>
-        /// 检查共享
+        /// 检查日榜功能是否在共享CD中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static int GetGroupPixivRankingCD(PixivRankingType rankingType, long groupId)
+        {
+            if (IsNoCD(groupId)) return 0;
+            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+            if (coolingInfo.LastPixivRankingTime.ContainsKey(rankingType) == false) return 0;
+            DateTime? lastTime = coolingInfo.LastPixivRankingTime[rankingType];
+            return GetCDSeconds(lastTime, BotConfig.PixivRankingConfig.GroupCD);
+        }
+
+        /// <summary>
+        /// 记录日榜功能最后使用时间，进入共享CD状态
+        /// </summary>
+        /// <param name="groupId"></param>
+        public static void SetGroupPixivRankingCooling(PixivRankingType rankingType, long groupId)
+        {
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                coolingInfo.LastPixivRankingTime[rankingType] = DateTime.Now;
+            }
+        }
+
+        /// <summary>
+        /// 是否有请求在处理中
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
-        /// <param name="ignoreNoCoolGroup"></param>
         /// <returns></returns>
-        public static int GetGroupSetuCooling(long groupId, long memberId, bool ignoreNoCoolGroup = false)
+        public static bool IsHanding(long groupId, long memberId)
         {
-            if (IsNoCool(groupId, memberId)) return 0;
-            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId, memberId);
-            return GetCoolingSeconds(coolingInfo.LastGetSetuTime, BotConfig.SetuConfig.GroupCD);
-        }
-
-        /// <summary>
-        /// 记录群瑟图功能最后使用时间,进入CD状态
-        /// </summary>
-        /// <param name="memberId"></param>
-        public static void SetGroupSetuCooling(long groupId, long memberId)
-        {
-            lock (MemberCoolingDic)
-            {
-                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId, memberId);
-                coolingInfo.LastGetSetuTime = DateTime.Now;
-            }
-        }
-
-        /// <summary>
-        /// 记录群查找原图功能最后使用时间,进入CD状态
-        /// </summary>
-        /// <param name="memberId"></param>
-        public static void SetGroupSaucenaoCooling(long groupId, long memberId)
-        {
-            lock (MemberCoolingDic)
-            {
-                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId, memberId);
-                coolingInfo.LastSaucenaoTime = DateTime.Now;
-            }
-        }
-
-        /// <summary>
-        /// 判断是否0CD
-        /// </summary>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        private static bool IsNoCool(long groupId, long memberId)
-        {
-            if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(groupId)) return true;
-            return false;
-        }
-
-        /// <summary>
-        /// 检查时间是否在冷却中
-        /// </summary>
-        /// <param name="datetime"></param>
-        /// <param name="minInterval"></param>
-        /// <returns></returns>
-        private static int GetCoolingSeconds(DateTime? datetime, int secondInterval)
-        {
-            if (datetime is null || secondInterval == 0) return 0;
-            TimeSpan timeSpan = new TimeSpan(DateTime.Now.Ticks) - new TimeSpan(datetime.Value.Ticks);
-            return timeSpan.TotalSeconds >= secondInterval ? 0 : secondInterval - (int)timeSpan.TotalSeconds;
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            return coolingInfo.Handing;
         }
 
         /// <summary>
@@ -183,21 +189,34 @@ namespace TheresaBot.Main.Cache
             }
         }
 
+
+
         /// <summary>
-        /// 是否有请求在处理中
+        /// 判断是否0CD
         /// </summary>
         /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
         /// <returns></returns>
-        public static bool IsHanding(long groupId, long memberId)
+        private static bool IsNoCD(long groupId)
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return coolingInfo.Handing;
+            if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(groupId)) return true;
+            return false;
         }
 
+        /// <summary>
+        /// 检查时间是否在冷却中
+        /// </summary>
+        /// <param name="datetime"></param>
+        /// <param name="secondInterval"></param>
+        /// <returns></returns>
+        private static int GetCDSeconds(DateTime? datetime, int secondInterval)
+        {
+            if (datetime is null || secondInterval == 0) return 0;
+            TimeSpan timeSpan = new TimeSpan(DateTime.Now.Ticks) - new TimeSpan(datetime.Value.Ticks);
+            return timeSpan.TotalSeconds >= secondInterval ? 0 : secondInterval - (int)timeSpan.TotalSeconds;
+        }
 
         /// <summary>
-        /// 根据qqid返回冷却信息,如果不存在则创建一个新对象并返回
+        /// 根据memberId返回冷却信息,如果不存在则创建一个新对象并返回
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
@@ -219,9 +238,8 @@ namespace TheresaBot.Main.Cache
         /// 根据群id返回冷却信息,如果不存在则创建一个新对象并返回
         /// </summary>
         /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
         /// <returns></returns>
-        private static GroupCoolingInfo GetGroupCoolingInfo(long groupId, long memberId)
+        private static GroupCoolingInfo GetGroupCoolingInfo(long groupId)
         {
             lock (GroupCoolingDic)
             {

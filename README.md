@@ -3,14 +3,14 @@
 
 
 ## 简介
- - 某舰团长利用摸鱼时间写出来的自用的bot，准备移植到 [mirai](https://github.com/mamoe/mirai)。基于 .net core 6.0 和 mirai-api-http。
- - 部分功能还在摸鱼开发中，[windows和linux下部署请点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md)，[使用示例和食用教程点击这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md)
+ - 某舰团长利用摸鱼时间写出来的自用的bot，准备移植到 [mirai](https://github.com/mamoe/mirai)
+ - 基于 .netcore6.0 和 mirai-api-http，可以在Windows或Linux上运行
  - 开始白嫖前，请在右上角点一下:star:Star
- - 关于bot没有回应或者只会回复ヾ(≧∇≦*)ゝ或٩(๑òωó๑)۶表情的情况 [先看一下这里](https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Document.md#bot没有回复或者只回复表情)
+ - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)
 
 ## 声明
  - 本项目为个人自娱自乐写出来的项目，并没有任何收益，并不负责由于使用本项目所产生的任何问题，不得将项目用于任何商业用途
- - 如果有建议问题想发或者bug请发Issues
+ - 如果有建议问题或者bug请发Issues
 
 ## 其他
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
@@ -33,7 +33,8 @@
 - [x] pixiv动图转gif功能
 - [x] saucenao搜图功能(如果图片来源于pixiv时，尝试下载并返回原图，并且优先返回来源于pixiv中的原图)
 - [x] ascii2d搜图功能(当saucenao中找不到来源时，继续使用ascii2d搜索)
-- [ ] 定时发送本地随机色图功能
+- [x] 定时色图功能，包括本地色图，lolicon，lolisuki
+- [ ] Pixiv日榜/周榜/月榜/AI榜/男性向日榜 查询和推送功能
 
 ### 订阅推送功能
 - [x] pixiv画师最新作品推送功能
@@ -43,7 +44,7 @@
 ### 抽卡
 - [x] ~~原神模拟抽卡，在[GenshinGacha](https://github.com/GardenHamster/GenshinGacha)中实现了~~
 
-### UI
+### Web UI
 - [ ] 计划用vue写一个可在外网访问的bot管理页面，用于查询和管理订阅列表和黑名单数据等
 
 ### 其他摆烂中的功能，~~反正也已经有dalao写好类似的插件了~~
@@ -57,10 +58,11 @@
 - [mamoe/mirai](https://github.com/mamoe/mirai)
 - [Executor-Cheng/mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)
 - [Lolicon Api](https://api.lolicon.app)
+- [Lolisuki Api](https://lolisuki.cc)
 - [saucenao.com](https://saucenao.com)
 - [ascii2d.net](https://ascii2d.net)
 
-## 效果图
+## 一些效果图
 ![image](https://user-images.githubusercontent.com/89188316/153139063-7ec31cd9-debe-475f-8ec3-b4660f552d21.png)
 
 ![image](https://user-images.githubusercontent.com/89188316/153144525-36b177f2-7ac8-4868-bb4f-223bb6978af9.png)

@@ -47,8 +47,8 @@ namespace TheresaBot.Main.Business
             while (quantity > 0)
             {
                 int num = quantity >= eachPage ? eachPage : quantity;
-                quantity -= eachPage;
-                LolisukiResult lolisukiResult = await getLolisukiResultAsync(r18Mode, aiMode, level, quantity, tags);
+                quantity = quantity - eachPage;
+                LolisukiResult lolisukiResult = await getLolisukiResultAsync(r18Mode, aiMode, level, num, tags);
                 if (lolisukiResult?.data is null) continue;
                 foreach (var setuInfo in lolisukiResult.data)
                 {

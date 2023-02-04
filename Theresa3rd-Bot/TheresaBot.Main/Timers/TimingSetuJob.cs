@@ -12,6 +12,8 @@ namespace TheresaBot.Main.Timers
     [DisallowConcurrentExecution]
     public class TimingSetuJob : IJob
     {
+        private BaseReporter reporter;
+
         public async Task Execute(IJobExecutionContext context)
         {
             try
@@ -23,8 +25,8 @@ namespace TheresaBot.Main.Timers
                 }
                 CoolingCache.SetSetuTimingCooling();
                 JobDataMap dataMap = context.MergedJobDataMap;
+                reporter = (BaseReporter)dataMap["BaseReporter"];
                 BaseSession session = (BaseSession)dataMap["BaseSession"];
-                BaseReporter reporter = (BaseReporter)dataMap["BaseReporter"];
                 TimingSetuTimer timingSetuTimer = (TimingSetuTimer)dataMap["TimingSetuTimer"];
                 if (timingSetuTimer is null) return;
                 if (timingSetuTimer.Groups is null || timingSetuTimer.Groups.Count == 0) return;
@@ -40,6 +42,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "TimingSetuJob异常");
+                reporter.SendError(ex, "TimingSetuJob异常");
             }
         }
 
@@ -56,7 +59,7 @@ namespace TheresaBot.Main.Timers
                 {
                     await new LolisukiHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
                 }
-                else
+                else if (sourceType == TimingSetuSourceType.Local)
                 {
                     await new LocalSetuHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
                 }
@@ -64,6 +67,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"{timingSetuTimer.Name}定时任务异常");
+                reporter.SendError(ex, $"{timingSetuTimer.Name}定时任务异常");
             }
         }
 

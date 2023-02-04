@@ -22,13 +22,14 @@ namespace TheresaBot.Main.Model.Config
     {
         public List<string> Commands { get; set; }
         public int MinBookmark { get; set; }
-        public int MinBookRate { get; set; }
+        public double MinBookRate { get; set; }
     }
 
     public class PixivRankingSubscribe
     {
         public List<long> Groups { get; set; }
         public List<string> Content { get; set; }
+        public bool SendR18Ranking { get; set; }
         public string Cron { get; set; }
     }
 

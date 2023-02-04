@@ -2,17 +2,32 @@
 using System.Runtime.InteropServices;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Timers
 {
     [DisallowConcurrentExecution]
     public class ClearJob : IJob
     {
+        private BaseReporter reporter;
+
         public async Task Execute(IJobExecutionContext context)
         {
-            ClearDownload();
-            ClearUploadTemp();
-            await Task.Delay(1000);
+            try
+            {
+                JobDataMap dataMap = context.MergedJobDataMap;
+                reporter = (BaseReporter)dataMap["BaseReporter"];
+                BaseSession session = (BaseSession)dataMap["BaseSession"];
+                ClearDownload();
+                ClearUploadTemp();
+                await Task.Delay(1000);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "ClearJob异常");
+                reporter.SendError(ex, "ClearJob异常");
+            }
         }
 
         /// <summary>
@@ -31,6 +46,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "图片下载目录清理失败");
+                reporter.SendError(ex, "图片下载目录清理失败");
             }
         }
 
@@ -53,6 +69,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "上传临时文件清理失败");
+                reporter.SendError(ex, "上传临时文件清理失败");
             }
         }
 

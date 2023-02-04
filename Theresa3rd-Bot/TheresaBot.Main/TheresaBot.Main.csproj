@@ -32,11 +32,12 @@
 	<ItemGroup>
 		<Content Include="botsettings.yml">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
 		</Content>
 		<Content Include="log4net.config">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
 		</Content>
 	</ItemGroup>
 

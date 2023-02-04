@@ -45,7 +45,7 @@ namespace TheresaBot.Main.Business
             while (quantity > 0)
             {
                 int num = quantity >= eachPage ? eachPage : quantity;
-                quantity -= eachPage;
+                quantity = quantity - eachPage;
                 LoliconResultV2 loliconResult = await getLoliconResultAsync(r18Mode, excludeAI, num, tags);
                 if (loliconResult?.data is null) continue;
                 foreach (var setuInfo in loliconResult.data)

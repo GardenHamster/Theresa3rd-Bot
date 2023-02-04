@@ -77,7 +77,7 @@ namespace TheresaBot.Main.Timers
         /// <summary>
         /// 初始化清理任务
         /// </summary>
-        public static async void initClearJobAsync()
+        public static async void initClearJobAsync(BaseSession session, BaseReporter reporter)
         {
             try
             {
@@ -85,6 +85,8 @@ namespace TheresaBot.Main.Timers
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(clearCron).Build();
                 IJobDetail jobDetail = JobBuilder.Create<ClearJob>().WithIdentity("ClearJob", "ClearJob").Build();//创建作业
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+                jobDetail.JobDataMap.Put("BaseSession", session);
+                jobDetail.JobDataMap.Put("BaseReporter", reporter);
                 await scheduler.ScheduleJob(jobDetail, trigger);
                 await scheduler.Start();
                 LogHelper.Info($"定时清理任务初始化完毕...");

@@ -23,7 +23,8 @@ namespace TheresaBot.Main.Handler
             bool sendMerge = timingSetuTimer.SendMerge;
             bool fromOneDir = BotConfig.TimingSetuConfig.FromOneDir;
             string localPath = BotConfig.TimingSetuConfig.LocalPath;
-            if (string.IsNullOrWhiteSpace(localPath)) throw new Exception("未配置LocalPath");
+            if (string.IsNullOrWhiteSpace(localPath)) throw new Exception($"未配置LocalPath");
+            if (Directory.Exists(localPath) == false) throw new Exception($"本地涩图路径：{localPath}不存在");
             List<LocalSetuInfo> dataList = localSetuBusiness.loadRandom(localPath, timingSetuTimer.Quantity, fromOneDir);
             if (dataList is null || dataList.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
             string tags = fromOneDir ? dataList[0].DirInfo.Name : "";

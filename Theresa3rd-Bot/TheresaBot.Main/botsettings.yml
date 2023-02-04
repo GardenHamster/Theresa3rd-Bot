@@ -182,7 +182,7 @@ Subscribe:                                                                      
 
 TimingSetu:
     Enable:                     true                                                #是否启用
-    LocalPath:                  'C:\Setu'                                           #本地图片文件夹路径，图片需要分类放在子目录下，Source为0时可用
+    LocalPath:                  'C:\BotImg\localSetu'                               #本地图片文件夹路径，图片需要分类放在子目录下，Source为0时可用
     FromOneDir:                 false                                               #true：从一个随机目录读取涩图，false：从不同的随机目录读取涩图，Source为0时可用
     LocalTemplate:              '文件名：{FileName}，目录：{FilePath}，大小：{SizeMB}MB'   #本地涩图消息模版
     LolisukiLevel:              '0-3'                                               #Lolisuki的Level，Source为2时可用

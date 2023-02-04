@@ -10,6 +10,11 @@
 		<WarningLevel>3</WarningLevel>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Mirai-CSharp" Version="2.1.9" />
 		<PackageReference Include="Mirai-CSharp.HttpApi" Version="2.1.9" />

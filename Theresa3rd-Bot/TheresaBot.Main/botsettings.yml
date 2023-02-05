@@ -212,7 +212,7 @@ PixivRanking:
     CacheSeconds:               3600
     Daily:
         Commands:               ['日榜']
-        MinRatingCount:         1800
+        MinRatingCount:         1000
         MinRatingRate:          0.15
     DailyAI:
         Commands:               ['AI日榜']
@@ -220,7 +220,7 @@ PixivRanking:
         MinRatingRate:          0.1
     DailyMale:
         Commands:               ['LSP日榜']
-        MinRatingCount:         2000
+        MinRatingCount:         1000
         MinRatingRate:          0.2
     Weekly:
         Commands:               ['周榜']

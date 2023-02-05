@@ -73,8 +73,8 @@ namespace TheresaBot.Main.Handler
 
             if (BotConfig.PixivRankingConfig.SendPreview && r18 == false)
             {
-                string previewInfo = $"{date}日{rankingName}一览图";
-                FileInfo previewFile = await createPreviewImg(rankingContents);
+                string previewInfo = $"{date}{rankingName}一览图";
+                FileInfo previewFile = createPreviewImg(rankingContents);
                 previewContent = new SetuContent(previewInfo, previewFile);
             }
             if (BotConfig.PixivRankingConfig.SendDetail)
@@ -129,7 +129,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private Task<FileInfo> createPreviewImg(List<PixivRankingContent> rankingContents)
+        private FileInfo createPreviewImg(List<PixivRankingContent> rankingContents)
         {
             try
             {

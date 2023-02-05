@@ -136,9 +136,9 @@ namespace TheresaBot.Main.Business
                 SaucenaoItem saucenaoItem = sortList[i];
                 if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
-                    PixivResult<PixivWorkInfo> pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
-                    if (pixivWorkInfo is null || pixivWorkInfo.error == true) continue;
-                    saucenaoItem.PixivWorkInfo = pixivWorkInfo.body;
+                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
+                    if (pixivWorkInfo is null) continue;
+                    saucenaoItem.PixivWorkInfo = pixivWorkInfo;
                     return saucenaoItem;
                 }
                 if (saucenaoItem.SourceType == SetuSourceType.Twitter)

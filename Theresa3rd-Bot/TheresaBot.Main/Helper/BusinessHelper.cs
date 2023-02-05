@@ -4,6 +4,7 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
+using TheresaBot.Main.Model.PixivRanking;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Type;
 

@@ -67,14 +67,7 @@ namespace TheresaBot.Main.Handler
 
                 string template = BotConfig.SetuConfig.Lolicon.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                if (string.IsNullOrWhiteSpace(template))
-                {
-                    workMsgs.Add(new PlainContent(loliconBusiness.getDefaultWorkInfo(loliconData, startDateTime)));
-                }
-                else
-                {
-                    workMsgs.Add(new PlainContent(loliconBusiness.getWorkInfo(loliconData, startDateTime, todayLeftCount, template)));
-                }
+                workMsgs.Add(new PlainContent(loliconBusiness.getWorkInfo(loliconData, startDateTime, todayLeftCount, template)));
 
                 Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
 

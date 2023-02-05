@@ -11,6 +11,7 @@ namespace TheresaBot.Main.Model.Pixiv
         public int likeCount { get; set; }
         public string illustId { get; set; }
         public string illustTitle { get; set; }
+        public int illustType { get; set; }
         public string illustComment { get; set; }
         public int userId { get; set; }
         public string userName { get; set; }

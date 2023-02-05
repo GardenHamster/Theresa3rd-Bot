@@ -76,9 +76,9 @@ namespace TheresaBot.Main.Business
                     Ascii2dItem ascii2dItem = itemList[i];
                     if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
                     {
-                        PixivResult<PixivWorkInfo> pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(ascii2dItem.SourceId);
-                        if (pixivWorkInfo is null || pixivWorkInfo.error == true) continue;
-                        ascii2dItem.PixivWorkInfo = pixivWorkInfo.body;
+                        PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(ascii2dItem.SourceId);
+                        if (pixivWorkInfo is null) continue;
+                        ascii2dItem.PixivWorkInfo = pixivWorkInfo;
                     }
                     if (ascii2dItem.SourceType == SetuSourceType.Twitter)
                     {

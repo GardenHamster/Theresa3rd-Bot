@@ -39,7 +39,7 @@ namespace TheresaBot.Main.Handler
                 string keyword = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
                 bool isShowR18 = command.GroupId.IsShowR18Setu();
-                PixivResult<PixivWorkInfo> pixivWorkInfoDto;
+                PixivWorkInfo pixivWorkInfo;
                 if (await CheckSetuTagEnableAsync(command, keyword) == false) return;
 
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
@@ -51,37 +51,36 @@ namespace TheresaBot.Main.Handler
                 if (StringHelper.isPureNumber(keyword))
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    pixivWorkInfoDto = await pixivBusiness.getPixivWorkInfoAsync(keyword);//根据作品id获取作品
+                    pixivWorkInfo = await pixivBusiness.getPixivWorkInfoAsync(keyword);//根据作品id获取作品
                 }
                 else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomSubscribe)
                 {
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInSubscribeAsync(command.GroupId, isShowR18, isShowAI);//获取随机一个订阅中的画师的作品
+                    pixivWorkInfo = await pixivBusiness.getRandomWorkInSubscribeAsync(command.GroupId, isShowR18, isShowAI);//获取随机一个订阅中的画师的作品
                 }
                 else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomFollow)
                 {
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInFollowAsync(isShowR18, isShowAI);//获取随机一个关注中的画师的作品
+                    pixivWorkInfo = await pixivBusiness.getRandomWorkInFollowAsync(isShowR18, isShowAI);//获取随机一个关注中的画师的作品
                 }
                 else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomMode.RandomBookmark)
                 {
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInBookmarkAsync(isShowR18, isShowAI);//获取随机一个收藏中的作品
+                    pixivWorkInfo = await pixivBusiness.getRandomWorkInBookmarkAsync(isShowR18, isShowAI);//获取随机一个收藏中的作品
                 }
                 else if (string.IsNullOrEmpty(keyword))
                 {
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkInTagsAsync(isShowR18, isShowAI);//获取随机一个标签中的作品
+                    pixivWorkInfo = await pixivBusiness.getRandomWorkInTagsAsync(isShowR18, isShowAI);//获取随机一个标签中的作品
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    pixivWorkInfoDto = await pixivBusiness.getRandomWorkAsync(keyword, isShowR18, isShowAI);//获取随机一个作品
+                    pixivWorkInfo = await pixivBusiness.getRandomWorkAsync(keyword, isShowR18, isShowAI);//获取随机一个作品
                 }
 
-                if (pixivWorkInfoDto is null || pixivWorkInfoDto.body is null)
+                if (pixivWorkInfo is null)
                 {
                     await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片或者收藏比过低，换个标签试试吧~");
                     return;
                 }
 
-                PixivWorkInfo pixivWorkInfo = pixivWorkInfoDto.body;
                 if (await CheckSetuSendable(command, pixivWorkInfo, isShowR18, isShowAI) == false) return;
 
                 long todayLeft = GetSetuLeftToday(command.GroupId, command.MemberId);
@@ -96,14 +95,7 @@ namespace TheresaBot.Main.Handler
                     workMsgs.Add(new PlainContent(pixivBusiness.getSetuRemindMsg(remindTemplate, todayLeft)));
                 }
 
-                if (string.IsNullOrWhiteSpace(pixivTemplate))
-                {
-                    workMsgs.Add(new PlainContent(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, startDateTime)));
-                }
-                else
-                {
-                    workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startDateTime, pixivTemplate)));
-                }
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startDateTime, pixivTemplate)));
 
                 Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
                 if (BotConfig.SetuConfig.SendPrivate)
@@ -186,8 +178,8 @@ namespace TheresaBot.Main.Handler
                         if (dbSubscribe is null)
                         {
                             //添加订阅
-                            PixivResult<PixivUserInfo> pixivUserInfoDto = await PixivHelper.GetPixivUserInfoAsync(pixivUserId);
-                            dbSubscribe = subscribeBusiness.insertSurscribe(pixivUserInfoDto, pixivUserId);
+                            PixivUserInfo pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(pixivUserId);
+                            dbSubscribe = subscribeBusiness.insertSurscribe(pixivUserInfo, pixivUserId);
                         }
 
                         long subscribeGroupId = groupType == SubscribeGroupType.All ? 0 : command.GroupId;
@@ -399,8 +391,8 @@ namespace TheresaBot.Main.Handler
                 }
 
                 string searchWord = pixivBusiness.toPixivSearchWord(pixivTags);
-                PixivResult<PixivSearch> pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, command.GroupId.IsShowR18Setu());
-                if (pageOne is null || pageOne.body.getIllust().data.Count == 0)
+                PixivSearch pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, command.GroupId.IsShowR18Setu());
+                if (pageOne is null || pageOne.getIllust().data.Count == 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync("该标签中没有任何作品，订阅失败");
                     return;
@@ -418,7 +410,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
-                await command.ReplyGroupMessageWithAtAsync($"标签[{pixivTags}]订阅成功,该标签总作品数为:{pageOne.body.illust.total}");
+                await command.ReplyGroupMessageWithAtAsync($"标签[{pixivTags}]订阅成功,该标签总作品数为:{pageOne.illust.total}");
                 ConfigHelper.LoadSubscribeTask();
             }
             catch (Exception ex)
@@ -539,14 +531,7 @@ namespace TheresaBot.Main.Handler
                     workMsgs.Add(new PlainContent(pixivBusiness.getTagPushRemindMsg(remindTemplate, tagName)));
                 }
 
-                if (string.IsNullOrWhiteSpace(pixivTemplate))
-                {
-                    workMsgs.Add(new PlainContent(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, startTime)));
-                }
-                else
-                {
-                    workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, pixivTemplate)));
-                }
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, pixivTemplate)));
 
                 foreach (long groupId in groupIds)
                 {
@@ -652,14 +637,7 @@ namespace TheresaBot.Main.Handler
                     workMsgs.Add(new PlainContent(pixivBusiness.getUserPushRemindMsg(remindTemplate, pixivWorkInfo.userName)));
                 }
 
-                if (string.IsNullOrWhiteSpace(pixivTemplate))
-                {
-                    workMsgs.Add(new PlainContent(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, startTime)));
-                }
-                else
-                {
-                    workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, pixivTemplate)));
-                }
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, pixivTemplate)));
 
                 foreach (long groupId in groupIds)
                 {
@@ -711,7 +689,7 @@ namespace TheresaBot.Main.Handler
                 bool isShowImg = command.GroupId.IsShowSetuImg(pixivWorkInfo.IsR18);
                 List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
                 workMsgs.Add(new PlainContent($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
-                workMsgs.Add(new PlainContent(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, startTime)));
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, BotConfig.PixivConfig.Template)));
                 await Session.SendGroupSetuAsync(workMsgs, setuFiles, command.GroupId);
             }
             catch (Exception ex)

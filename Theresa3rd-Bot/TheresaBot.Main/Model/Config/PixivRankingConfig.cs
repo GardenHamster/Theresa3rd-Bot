@@ -6,30 +6,34 @@ namespace TheresaBot.Main.Model.Config
     {
         public string ProcessingMsg { get; set; }
         public string Template { get; set; }
-        public PixivRankingSendMode SendMode { get; set; }
+        public bool SendPreview { get; set; }
+        public bool SendDetail { get; set; }
+        public bool SendMerge { get; set; }
         public int GroupCD { get; set; }
-        public int MaxQuantity { get; set; }
+        public int MaxScan { get; set; }
+        public int MaxShow { get; set; }
+        public bool IllustOnly { get; set; }
+        public bool IncludeR18 { get; set; }
         public int CacheSeconds { get; set; }
-        public PixivRankingContent Daily { get; set; }
-        public PixivRankingContent DailyAI { get; set; }
-        public PixivRankingContent DailyMale { get; set; }
-        public PixivRankingContent Weekly { get; set; }
-        public PixivRankingContent Monthly { get; set; }
+        public PixivRankingItem Daily { get; set; }
+        public PixivRankingItem DailyAI { get; set; }
+        public PixivRankingItem DailyMale { get; set; }
+        public PixivRankingItem Weekly { get; set; }
+        public PixivRankingItem Monthly { get; set; }
         public List<PixivRankingSubscribe> Subscribe { get; set; }
     }
 
-    public class PixivRankingContent
+    public class PixivRankingItem
     {
         public List<string> Commands { get; set; }
-        public int MinBookmark { get; set; }
-        public double MinBookRate { get; set; }
+        public int MinRatingCount { get; set; }
+        public double MinRatingRate { get; set; }
     }
 
     public class PixivRankingSubscribe
     {
         public List<long> Groups { get; set; }
         public List<string> Content { get; set; }
-        public bool SendR18Ranking { get; set; }
         public string Cron { get; set; }
     }
 

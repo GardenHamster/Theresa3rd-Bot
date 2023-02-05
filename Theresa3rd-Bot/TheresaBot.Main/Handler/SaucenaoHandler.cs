@@ -281,7 +281,6 @@ namespace TheresaBot.Main.Handler
 
         public List<BaseContent> getPixivMessageAsync(GroupCommand command, SaucenaoItem saucenaoItem, DateTime startTime)
         {
-            string template = BotConfig.PixivConfig.Template;
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
             List<BaseContent> msgList = new List<BaseContent>();
 
@@ -304,15 +303,7 @@ namespace TheresaBot.Main.Handler
                 return msgList;
             }
 
-            if (string.IsNullOrWhiteSpace(template))
-            {
-                msgList.Add(new PlainContent(pixivBusiness.getDefaultWorkInfo(pixivWorkInfo, startTime)));
-            }
-            else
-            {
-                msgList.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, template)));
-            }
-
+            msgList.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, BotConfig.PixivConfig.Template)));
             return msgList;
         }
 

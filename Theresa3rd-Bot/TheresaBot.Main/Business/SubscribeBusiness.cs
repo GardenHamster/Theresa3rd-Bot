@@ -74,9 +74,9 @@ namespace TheresaBot.Main.Business
             return subscribeDao.Insert(dbSubscribe);
         }
 
-        public SubscribePO insertSurscribe(PixivResult<PixivUserInfo> pixivUserInfoDto, string userId)
+        public SubscribePO insertSurscribe(PixivUserInfo pixivUserInfoDto, string userId)
         {
-            string userName = StringHelper.filterEmoji(pixivUserInfoDto.body.extraData.meta.title.Replace("- pixiv", "").Trim().cutString(200));
+            string userName = StringHelper.filterEmoji(pixivUserInfoDto.extraData.meta.title.Replace("- pixiv", "").Trim().cutString(200));
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;

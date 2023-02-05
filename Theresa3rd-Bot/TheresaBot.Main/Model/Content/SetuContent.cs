@@ -30,5 +30,11 @@ namespace TheresaBot.Main.Model.Content
             this.SetuImages = images;
         }
 
+        public SetuContent(string setuInfo, FileInfo image)
+        {
+            this.SetuInfos = new() { new PlainContent(setuInfo) };
+            this.SetuImages = new() { image };
+        }
+
     }
 }

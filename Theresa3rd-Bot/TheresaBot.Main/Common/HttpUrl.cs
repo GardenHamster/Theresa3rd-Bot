@@ -1,4 +1,6 @@
-﻿namespace TheresaBot.Main.Common
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+
+namespace TheresaBot.Main.Common
 {
     public static class HttpUrl
     {
@@ -100,6 +102,25 @@
         public static string getPixivFollowLatestUrl(int page)
         {
             return $"{PixivHomeUrl}/ajax/follow_latest/illust?p={page}&mode=all&lang=zh";
+        }
+
+        /// <summary>
+        /// pixiv排行榜数据接口
+        /// </summary>
+        /// <returns></returns>
+        public static string getPixivRankingUrl(string mode, int page)
+        {
+            return $"{PixivHomeUrl}/ranking.php?mode={mode}&p={page}&format=json";
+        }
+
+        /// <summary>
+        /// 返回pixiv主页referer
+        /// </summary>
+        /// <param name="searchWord"></param>
+        /// <returns></returns>
+        public static string getPixivReferer()
+        {
+            return PixivHomeUrl;
         }
 
         /// <summary>

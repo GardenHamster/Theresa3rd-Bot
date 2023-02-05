@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Model.Pixiv;
+using TheresaBot.Main.Model.PixivRanking;
 
 namespace TheresaBot.Main.Helper
 {
@@ -42,7 +43,7 @@ namespace TheresaBot.Main.Helper
             PixivHttpClientFactory = pixivServiceCollection.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
         }
 
-        public static async Task<PixivResult<PixivSearch>> GetPixivSearchAsync(string keyword, int pageNo, bool isMatchAll, bool includeR18)
+        public static async Task<PixivSearch> GetPixivSearchAsync(string keyword, int pageNo, bool isMatchAll, bool includeR18)
         {
             string operation = $"获取标签:{keyword}作品";
             string referer = HttpUrl.getPixivSearchReferer();
@@ -51,7 +52,7 @@ namespace TheresaBot.Main.Helper
             return await GetPixivResultAsync<PixivSearch>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
-        public static async Task<PixivResult<PixivWorkInfo>> GetPixivWorkInfoAsync(string workId, int? retryTimes = null)
+        public static async Task<PixivWorkInfo> GetPixivWorkInfoAsync(string workId, int? retryTimes = null)
         {
             string operation = $"获取pid:{workId}信息";
             if (retryTimes is null) retryTimes = BotConfig.PixivConfig.ErrRetryTimes;
@@ -61,7 +62,7 @@ namespace TheresaBot.Main.Helper
             return await GetPixivResultAsync<PixivWorkInfo>(postUrl, operation, headerDic, retryTimes.Value);
         }
 
-        public static async Task<PixivResult<PixivUserInfo>> GetPixivUserInfoAsync(string userId)
+        public static async Task<PixivUserInfo> GetPixivUserInfoAsync(string userId)
         {
             string operation = $"获取uid信息:{userId}";
             string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
@@ -70,7 +71,7 @@ namespace TheresaBot.Main.Helper
             return await GetPixivResultAsync<PixivUserInfo>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
-        public static async Task<PixivResult<PixivUgoiraMeta>> GetPixivUgoiraMetaAsync(string workId)
+        public static async Task<PixivUgoiraMeta> GetPixivUgoiraMetaAsync(string workId)
         {
             string operation = $"获取动图pid信息:{workId}";
             string referer = HttpUrl.getPixivArtworksReferer(workId);
@@ -79,7 +80,7 @@ namespace TheresaBot.Main.Helper
             return await GetPixivResultAsync<PixivUgoiraMeta>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
-        public static async Task<PixivResult<PixivFollow>> GetPixivFollowAsync(long loginId, int offset, int limit)
+        public static async Task<PixivFollow> GetPixivFollowAsync(long loginId, int offset, int limit)
         {
             string operation = "获取关注列表";
             string referer = HttpUrl.getPixivFollowReferer(loginId);
@@ -88,7 +89,7 @@ namespace TheresaBot.Main.Helper
             return await GetPixivResultAsync<PixivFollow>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
-        public static async Task<PixivResult<PixivBookmarks>> GetPixivBookmarkAsync(long loginId, int offset, int limit)
+        public static async Task<PixivBookmarks> GetPixivBookmarkAsync(long loginId, int offset, int limit)
         {
             string operation = "获取收藏列表";
             string referer = HttpUrl.getPixivBookmarkReferer(loginId);
@@ -97,13 +98,22 @@ namespace TheresaBot.Main.Helper
             return await GetPixivResultAsync<PixivBookmarks>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
-        public static async Task<PixivResult<PixivFollowLatest>> GetPixivFollowLatestAsync(int page)
+        public static async Task<PixivFollowLatest> GetPixivFollowLatestAsync(int page)
         {
             string operation = "获取关注画师作品信息";
             string referer = HttpUrl.getPixivFollowLatestReferer();
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivFollowLatestUrl(page);
             return await GetPixivResultAsync<PixivFollowLatest>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
+        }
+
+        public static async Task<PixivRankingData> GetPixivRankingData(string mode, int page)
+        {
+            string operation = "获取排行信息";
+            string referer = HttpUrl.getPixivReferer();
+            Dictionary<string, string> headerDic = GetPixivHeader(referer);
+            string postUrl = HttpUrl.getPixivRankingUrl(mode, page);
+            return await GetPixivRankingAsync<PixivRankingData>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
         public static async Task<FileInfo> DownPixivImgAsync(string pixivId, string originUrl, string fullFileName = null)
@@ -121,7 +131,7 @@ namespace TheresaBot.Main.Helper
             return await DownPixivFileAsync(downloadUrl, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
         }
 
-        private static async Task<PixivResult<T>> GetPixivResultAsync<T>(string url, string operation, Dictionary<string, string> headerDic = null, int retryTimes = 0, int timeout = 60000)
+        private static async Task<T> GetPixivResultAsync<T>(string url, string operation, Dictionary<string, string> headerDic = null, int retryTimes = 0, int timeout = 60000) where T : class
         {
             if (retryTimes < 0) retryTimes = 0;
             while (retryTimes >= 0)
@@ -132,7 +142,7 @@ namespace TheresaBot.Main.Helper
                     json = json.Replace("[]", "null");
                     PixivResult<T> jsonDto = JsonConvert.DeserializeObject<PixivResult<T>>(json);
                     if (jsonDto.error) throw new ApiException($"{operation}失败，pixiv api error，api message={jsonDto.message}");
-                    return jsonDto;
+                    return jsonDto.body;
                 }
                 catch (ApiException)
                 {
@@ -146,6 +156,26 @@ namespace TheresaBot.Main.Helper
                 }
             }
             return null;
+        }
+
+        private static async Task<T> GetPixivRankingAsync<T>(string url, string operation, Dictionary<string, string> headerDic = null, int retryTimes = 0, int timeout = 60000)
+        {
+            if (retryTimes < 0) retryTimes = 0;
+            while (retryTimes >= 0)
+            {
+                try
+                {
+                    string json = await GetPixivJsonAsync(url, headerDic, timeout);
+                    json = json.Replace("[]", "null");
+                    return JsonConvert.DeserializeObject<T>(json);
+                }
+                catch (Exception ex)
+                {
+                    if (--retryTimes < 0) throw new PixivException(ex, $"{operation}失败");
+                    await Task.Delay(2000);
+                }
+            }
+            return default(T);
         }
 
         private static async Task<string> GetPixivJsonAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
@@ -366,7 +396,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static string ToThumbUrl(this string originalUrl)
         {
-            PixivWorkPath workPath = originalUrl.GetWorkPath();
+            PixivWorkPath workPath = originalUrl.GetOriginalWorkPath();
             return $"{workPath.Host}/c/240x240/img-master/{workPath.ImgPath}_master1200.jpg";
         }
 
@@ -377,18 +407,18 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static string ToSmallUrl(this string originalUrl)
         {
-            PixivWorkPath workPath = originalUrl.GetWorkPath();
+            PixivWorkPath workPath = originalUrl.GetOriginalWorkPath();
             return $"{workPath.Host}/c/540x540_70/img-master/{workPath.ImgPath}_master1200.jpg";
         }
 
         /// <summary>
-        /// 将original地址转换为Regular格式的地址
+        /// 将Original地址转换为Regular格式的地址
         /// </summary>
         /// <param name="originalUrl"></param>
         /// <returns></returns>
         public static string ToRegularUrl(this string originalUrl)
         {
-            PixivWorkPath workPath = originalUrl.GetWorkPath();
+            PixivWorkPath workPath = originalUrl.GetOriginalWorkPath();
             return $"{workPath.Host}/img-master/{workPath.ImgPath}_master1200.jpg";
         }
 
@@ -411,12 +441,26 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="originalUrl"></param>
         /// <returns></returns>
-        public static PixivWorkPath GetWorkPath(this string originalUrl)
+        public static PixivWorkPath GetOriginalWorkPath(this string originalUrl)
         {
             originalUrl = originalUrl.Trim();
             string[] arr = originalUrl.Split("/img-original/", StringSplitOptions.RemoveEmptyEntries);
             string[] arr2 = arr[1].Split('.', StringSplitOptions.RemoveEmptyEntries);
             return new PixivWorkPath(arr[0], arr2[0], arr2[1]);
+        }
+
+        /// <summary>
+        /// 拆解regularUrl,返回host和文件目录等信息
+        /// </summary>
+        /// <param name="originalUrl"></param>
+        /// <returns></returns>
+        public static PixivWorkPath GetRegularWorkPath(this string regularUrl)
+        {
+            regularUrl = regularUrl.Trim();
+            string[] arr = regularUrl.Split("/img-master/", StringSplitOptions.RemoveEmptyEntries);
+            string[] arr2 = arr[1].Split("_master", StringSplitOptions.RemoveEmptyEntries);
+            string[] arr3 = arr[1].Split('.', StringSplitOptions.RemoveEmptyEntries);
+            return new PixivWorkPath(arr[0], arr2[0], arr3[1]);
         }
 
     }

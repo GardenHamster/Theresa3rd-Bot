@@ -214,8 +214,8 @@ namespace TheresaBot.Main.Handler
                 string fullGifSavePath = Path.Combine(FilePath.getDownFileSavePath(), $"{pixivId}.gif");
                 if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
-                PixivResult<PixivUgoiraMeta> pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId);
-                string zipHttpUrl = pixivUgoiraMetaDto.body.src;
+                PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId);
+                string zipHttpUrl = pixivUgoiraMetaDto.src;
 
                 string fullZipSavePath = Path.Combine(FilePath.getDownFileSavePath(), $"{StringHelper.get16UUID()}.zip");
                 FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivId, zipHttpUrl, fullZipSavePath);
@@ -226,7 +226,7 @@ namespace TheresaBot.Main.Handler
 
                 DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
                 FileInfo[] files = directoryInfo.GetFiles();
-                List<PixivUgoiraMetaFrames> frames = pixivUgoiraMetaDto.body.frames;
+                List<PixivUgoiraMetaFrames> frames = pixivUgoiraMetaDto.frames;
                 using AnimatedGifCreator gif = AnimatedGif.AnimatedGif.Create(fullGifSavePath, 0);
                 foreach (FileInfo file in files)
                 {

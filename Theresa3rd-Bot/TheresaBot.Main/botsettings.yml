@@ -200,43 +200,45 @@ TimingSetu:
 PixivRanking:
     Enable:                     true                                                #是否启用
     ProcessingMsg:              '正在获取榜单信息...'                                 #开始查找前返回的消息
-    Template:                   '{DateTime}{RankingName}'                           #消息模版
-    SendMode:                   1                                                   #发送模式，0：一览图，1：一览图+合并消息，2：合并消息
+    Template:                   '{Date}{Ranking}内容如下'                        #消息模版
+    SendPreview:                true
+    SendDetail:                 false
+    SendMerge:                  false
     GroupCD:                    300
-    MaxQuantity:                50
+    MaxScan:                    100
+    MaxShow:                    50
+    IncludeR18:                 false
+    IllustOnly:                 true
     CacheSeconds:               3600
     Daily:
         Commands:               ['日榜']
-        MinBookmark:            1800
-        MinBookRate:            0.15
+        MinRatingCount:         1800
+        MinRatingRate:          0.15
     DailyAI:
         Commands:               ['AI日榜']
-        MinBookmark:            1000
-        MinBookRate:            0.1
+        MinRatingCount:         1000
+        MinRatingRate:          0.1
     DailyMale:
         Commands:               ['LSP日榜']
-        MinBookmark:            2000
-        MinBookRate:            0.2
+        MinRatingCount:         2000
+        MinRatingRate:          0.2
     Weekly:
         Commands:               ['周榜']
-        MinBookmark:            3000
-        MinBookRate:            0.15
+        MinRatingCount:         3000
+        MinRatingRate:          0.15
     Monthly:
         Commands:               ['月榜']
-        MinBookmark:            5000
-        MinBookRate:            0.15
+        MinRatingCount:         5000
+        MinRatingRate:          0.15
     Subscribe:
         - Groups:               [284196392]
           Content:              ['Daily','DailyAI','DailyMale']
-          SendR18Ranking:       false
           Cron:                 '0 30 10 * * ?'
 
         - Groups:               [284196392]
           Content:              ['Weekly']
-          SendR18Ranking:       false
           Cron:                 '0 31 10 ? * SAT'
 
         - Groups:               [284196392]
           Content:              ['Monthly']
-          SendR18Ranking:       false
           Cron:                 '0 32 10 28 * ?'

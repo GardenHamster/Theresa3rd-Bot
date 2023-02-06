@@ -37,7 +37,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                string path = FilePath.getDownFileSavePath();
+                string path = FilePath.GetDownFileSavePath();
                 if (Directory.Exists(path) == false) return;
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
                 directoryInfo.Delete(true);

@@ -167,7 +167,7 @@ namespace TheresaBot.Main.Helper
             string suffix = StringHelper.getSuffixByUrl(imgUrl);
             if (string.IsNullOrEmpty(suffix)) suffix = "jpg";
             string fullFileName = StringHelper.get16UUID() + "." + suffix;
-            string fullImageSavePath = Path.Combine(FilePath.getDownFileSavePath(), fullFileName);
+            string fullImageSavePath = Path.Combine(FilePath.GetDownFileSavePath(), fullFileName);
             return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic, timeout);
         }
 

@@ -13,7 +13,7 @@ namespace TheresaBot.Main.Helper
         {
             try
             {
-                string path = FilePath.getDownFileSavePath();
+                string path = FilePath.GetDownFileSavePath();
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
                 FileInfo[] fileInfoArr = directoryInfo.GetFiles();
                 foreach (FileInfo fileInfo in fileInfoArr) deleteFile(fileInfo);

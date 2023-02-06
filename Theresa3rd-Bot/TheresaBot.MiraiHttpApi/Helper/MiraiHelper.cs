@@ -225,13 +225,15 @@ namespace TheresaBot.MiraiHttpApi.Helper
             List<IChatMessage> imgMsgs = new List<IChatMessage>();
             foreach (FileInfo setuFile in setuFiles)
             {
-                if (setuFile is null)
-                {
-                    imgMsgs.AddRange(await BusinessHelper.SplitToChainAsync(BotConfig.GeneralConfig.DownErrorImg, SendTarget.Group).ToMiraiMessageAsync());
-                }
-                else
+                if(setuFile is not null)
                 {
                     imgMsgs.Add((IChatMessage)await Session.UploadPictureAsync(target, setuFile.FullName));
+                    continue;
+                }
+                FileInfo errorImg = FilePath.GetDownErrorImg();
+                if(errorImg is not null)
+                {
+                    imgMsgs.Add((IChatMessage)await Session.UploadPictureAsync(target, errorImg.FullName));
                 }
             }
             return imgMsgs;

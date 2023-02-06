@@ -202,7 +202,7 @@ namespace TheresaBot.Main.Helper
                 try
                 {
                     if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = url.getHttpFileName();
-                    string fullImgSavePath = Path.Combine(FilePath.getDownFileSavePath(), fullFileName);
+                    string fullImgSavePath = Path.Combine(FilePath.GetDownFileSavePath(), fullFileName);
                     return await DownPixivImgAsync(url, fullImgSavePath, headerDic, timeout);
                 }
                 catch (Exception ex)
@@ -246,7 +246,7 @@ namespace TheresaBot.Main.Helper
                 try
                 {
                     if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = url.getHttpFileName();
-                    string fullImgSavePath = Path.Combine(FilePath.getDownFileSavePath(), fullFileName);
+                    string fullImgSavePath = Path.Combine(FilePath.GetDownFileSavePath(), fullFileName);
                     return await DownPixivFileAsync(url, fullImgSavePath, headerDic, timeout);
                 }
                 catch (Exception ex)

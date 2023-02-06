@@ -10,7 +10,7 @@
 
         public string ErrorMsg { get; set; }
 
-        public string DownErrorImg { get; set; }
+        public string DownErrorImgPath { get; set; }
 
         public string DisableMsg { get; set; }
 

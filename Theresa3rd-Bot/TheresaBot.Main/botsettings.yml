@@ -1,11 +1,11 @@
 ﻿General:                                                                            #基础设置
     Prefix:                     '#'                                                 #指令前缀，如果接收到的消息带有该前缀将视为一个指令处理
     DownloadPath:               'C:\BotImg\download'                                #下载文件(比如p站图片等)存放目录
+    DownErrorImgPath:           'C:\BotImg\face\downError.png'                     #图片下载失败时的替代图片
     ErrorGroups:                [284196392]                                         #错误日志群，发生错误时会将日志发送到这些群
     ErrorMsg:                   |                                                   #处理异常时返回的消息
                                 出了点小问题，稍后再试吧
                                 [image:C:\BotImg\face\emmm.jpg]
-    DownErrorImg:               '[image:C:\BotImg\face\downError.png]'              #图片下载失败时的替代图片
     DisableMsg:                 '该功能未开启'                                      #功能未启用时返回的消息
     NoPermissionsMsg:           '该功能未授权'                                      #功能未授权时返回的消息
     ManagersRequiredMsg:        '该功能需要管理员执行'                              #需要管理员权限时返回的消息

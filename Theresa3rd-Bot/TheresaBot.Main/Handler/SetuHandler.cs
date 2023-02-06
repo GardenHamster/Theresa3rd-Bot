@@ -211,17 +211,17 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string fullGifSavePath = Path.Combine(FilePath.getDownFileSavePath(), $"{pixivId}.gif");
+                string fullGifSavePath = Path.Combine(FilePath.GetDownFileSavePath(), $"{pixivId}.gif");
                 if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
                 PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId);
                 string zipHttpUrl = pixivUgoiraMetaDto.src;
 
-                string fullZipSavePath = Path.Combine(FilePath.getDownFileSavePath(), $"{StringHelper.get16UUID()}.zip");
+                string fullZipSavePath = Path.Combine(FilePath.GetDownFileSavePath(), $"{StringHelper.get16UUID()}.zip");
                 FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivId, zipHttpUrl, fullZipSavePath);
                 if (zipFile == null) return null;
 
-                string unZipDirPath = Path.Combine(FilePath.getDownFileSavePath(), pixivId);
+                string unZipDirPath = Path.Combine(FilePath.GetDownFileSavePath(), pixivId);
                 ZipHelper.ZipToFile(zipFile.FullName, unZipDirPath);
 
                 DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);

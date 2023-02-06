@@ -116,7 +116,14 @@ namespace TheresaBot.Main.Helper
             return await GetPixivRankingAsync<PixivRankingData>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
-        public static async Task<FileInfo> DownPixivImgAsync(string pixivId, string originUrl, string fullFileName = null)
+        public static async Task<FileInfo> DownPixivImgAsync(string pixivId, string downloadUrl, string fullFileName = null)
+        {
+            string referer = HttpUrl.getPixivArtworksReferer(pixivId);
+            Dictionary<string, string> headerDic = GetPixivHeader(referer);
+            return await DownPixivImgAsync(downloadUrl, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
+        }
+
+        public static async Task<FileInfo> DownPixivImgBySizeAsync(string pixivId, string originUrl, string fullFileName = null)
         {
             string downloadUrl = GetImgUrlBySize(originUrl);
             string referer = HttpUrl.getPixivArtworksReferer(pixivId);

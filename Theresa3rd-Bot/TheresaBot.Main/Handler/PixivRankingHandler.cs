@@ -1,4 +1,7 @@
-﻿using TheresaBot.Main.Business;
+﻿using AngleSharp.Media;
+using SkiaSharp;
+using System.Drawing;
+using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
@@ -27,6 +30,10 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(BotConfig.PixivRankingConfig.ProcessingMsg) == false)
+                {
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ProcessingMsg);
+                }
                 PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Daily;
                 await sendRanking(command, rankingItem, "日榜", "daily", false);
                 if (BotConfig.PixivRankingConfig.IncludeR18 && command.GroupId.IsShowR18Setu())
@@ -69,17 +76,20 @@ namespace TheresaBot.Main.Handler
             SetuContent previewContent = null;
             List<SetuContent> setuContents = null;
 
-            (List<PixivRankingContent> rankingContents, string date) = await rankingBusiness.getRankingData(rankingItem, mode);
+            (List<PixivRankingContent> rankingContents, string date) = await rankingBusiness.getRankingDatas(rankingItem, mode);
 
             if (BotConfig.PixivRankingConfig.SendPreview && r18 == false)
             {
                 string previewInfo = $"{date}{rankingName}一览图";
-                FileInfo previewFile = createPreviewImg(rankingContents);
-                previewContent = new SetuContent(previewInfo, previewFile);
+                List<PixivRankingPreview> rankingPreviews = await rankingBusiness.getRankingPreviews(rankingContents);
+                FileInfo previewImg = createPreviewImg(rankingPreviews);
+                previewContent = new SetuContent(previewInfo, previewImg);
             }
+
             if (BotConfig.PixivRankingConfig.SendDetail)
             {
-                setuContents = await getSetuContent(rankingContents, rankingItem, command.GroupId, r18);
+                List<PixivWorkInfo> workInfos = await rankingBusiness.getRankingWorks(rankingItem, rankingContents);
+                setuContents = await getSetuContent(workInfos, rankingItem, command.GroupId, r18);
             }
 
             string template = BotConfig.PixivRankingConfig.Template;
@@ -100,27 +110,25 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<List<SetuContent>> getSetuContent(List<PixivRankingContent> datas, PixivRankingItem rankingItem, long groupId, bool r18Content)
+        private async Task<List<SetuContent>> getSetuContent(List<PixivWorkInfo> datas, PixivRankingItem rankingItem, long groupId, bool r18Content)
         {
             List<SetuContent> setuContents = new List<SetuContent>();
             foreach (var data in datas)
             {
                 SetuContent setuContent = await getSetuContent(data, rankingItem, groupId, r18Content);
-                if (setuContent is not null) setuContents.Add(setuContent);
+                setuContents.Add(setuContent);
             }
             return setuContents;
         }
 
-        private async Task<SetuContent> getSetuContent(PixivRankingContent data, PixivRankingItem rankingItem, long groupId, bool r18Content)
+        private async Task<SetuContent> getSetuContent(PixivWorkInfo data, PixivRankingItem rankingItem, long groupId, bool r18Content)
         {
             try
             {
-                bool isR18Img = r18Content || data.isR18();
+                bool isR18Img = r18Content || data.IsR18;
                 bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-                PixivWorkInfo workInfo = await pixivBusiness.getPixivWorkInfoAsync(data.illust_id.ToString());
-                if (rankingBusiness.checkRankingWorkIsOk(rankingItem, workInfo) == false) return null;
-                string setuInfo = pixivBusiness.getWorkInfo(workInfo, DateTime.Now, BotConfig.PixivConfig.Template);
-                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
+                string setuInfo = pixivBusiness.getWorkInfo(data, DateTime.Now, BotConfig.PixivConfig.Template);
+                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(data) : new();
                 return new SetuContent(setuInfo, setuFiles);
             }
             catch (ApiException ex)
@@ -129,11 +137,11 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private FileInfo createPreviewImg(List<PixivRankingContent> rankingContents)
+        public FileInfo createPreviewImg(List<PixivRankingPreview> previewFiles)
         {
             try
             {
-                return null;
+                return DrawHelper.DrawPixivRankingPreview(previewFiles);
             }
             catch (Exception ex)
             {
@@ -142,6 +150,7 @@ namespace TheresaBot.Main.Handler
                 return null;
             }
         }
+
 
     }
 }

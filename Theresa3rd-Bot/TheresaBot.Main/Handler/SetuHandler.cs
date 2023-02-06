@@ -190,7 +190,7 @@ namespace TheresaBot.Main.Handler
                 int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
                 for (int i = 0; i < maxCount && i < originUrls.Count; i++)
                 {
-                    imgList.Add(await PixivHelper.DownPixivImgAsync(pixivWorkInfo.PixivId, originUrls[i]));
+                    imgList.Add(await PixivHelper.DownPixivImgBySizeAsync(pixivWorkInfo.PixivId, originUrls[i]));
                 }
                 return imgList;
             }

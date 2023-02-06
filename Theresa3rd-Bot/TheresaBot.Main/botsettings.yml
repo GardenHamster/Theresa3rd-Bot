@@ -205,7 +205,6 @@ PixivRanking:
     SendDetail:                 false
     SendMerge:                  false
     GroupCD:                    300
-    MaxScan:                    100
     MaxShow:                    50
     IncludeR18:                 false
     IllustOnly:                 true

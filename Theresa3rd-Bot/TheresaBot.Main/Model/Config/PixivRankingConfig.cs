@@ -10,7 +10,6 @@ namespace TheresaBot.Main.Model.Config
         public bool SendDetail { get; set; }
         public bool SendMerge { get; set; }
         public int GroupCD { get; set; }
-        public int MaxScan { get; set; }
         public int MaxShow { get; set; }
         public bool IllustOnly { get; set; }
         public bool IncludeR18 { get; set; }

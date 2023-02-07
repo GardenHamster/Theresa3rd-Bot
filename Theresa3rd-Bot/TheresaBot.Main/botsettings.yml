@@ -206,12 +206,12 @@ PixivRanking:
     MaxScan:                    300
     MaxInPage:                  35
     SortType:                   2                                 
-    SendMerge:                  false
+    SendMerge:                  true
     GroupCD:                    300
     CacheSeconds:               3600
     Daily:
         Commands:               ['日榜']
-        MinRatingCount:         1000
+        MinRatingCount:         700
         MinRatingRate:          0.15
     DailyAI:
         Commands:               ['AI日榜']

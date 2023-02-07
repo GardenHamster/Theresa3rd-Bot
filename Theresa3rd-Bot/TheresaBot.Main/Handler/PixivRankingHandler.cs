@@ -66,12 +66,9 @@ namespace TheresaBot.Main.Handler
         private async Task sendRankingPreview(GroupCommand command, PixivRankingItem rankingItem, string rankingName, string mode)
         {
             (List<PixivRankingContent> rankingContents, string date) = await rankingBusiness.getRankingDatas(rankingItem, mode);
-
-            string previewInfo = $"{date}{rankingName}一览图";
             List<PixivRankingPreview> rankingPreviews = await rankingBusiness.getRankingPreviews(rankingContents);
             List<FileInfo> previewImgs = createPreviewImg(rankingPreviews, mode, date);
             List<SetuContent> setuContents = new List<SetuContent>();
-            setuContents.Add(new(previewInfo));
             setuContents.AddRange(previewImgs.Select(o => new SetuContent(o)));
 
             string template = BotConfig.PixivRankingConfig.Template;

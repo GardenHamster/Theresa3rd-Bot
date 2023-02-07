@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Common;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
@@ -14,16 +15,20 @@ namespace TheresaBot.Main.Business
 
         public async Task<(List<PixivRankingContent>, string)> getRankingDatas(PixivRankingItem rankingItem, string mode)
         {
-            string date = string.Empty;
+            PixivRankingData firstpage = await PixivHelper.GetPixivRankingData(mode, 1);
+            string date = firstpage.date;
             int maxScan = BotConfig.PixivRankingConfig.MaxScan;
+            if (maxScan > 300) maxScan = 300;
+            if (firstpage.rank_total < maxScan) maxScan = firstpage.rank_total;
             int maxPage = MathHelper.getMaxPage(maxScan, eachPage);
+
             List<PixivRankingContent> rankingContents = new List<PixivRankingContent>();
             for (int page = 1; page < maxPage + 1; page++)
             {
                 PixivRankingData rankingData = await PixivHelper.GetPixivRankingData(mode, page);
-                if (page == 1) date = rankingData.date;
                 if (rankingData.contents is null || rankingData.contents.Count == 0) throw new ApiException("无法从api中获取任何排行信息");
                 rankingContents.AddRange(rankingData.contents);
+                await Task.Delay(2000);
             }
             List<PixivRankingContent> filterContents = new List<PixivRankingContent>();
             for (int i = 0; i < rankingContents.Count && i < maxScan; i++)

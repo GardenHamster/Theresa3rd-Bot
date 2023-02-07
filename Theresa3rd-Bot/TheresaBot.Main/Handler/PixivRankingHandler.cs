@@ -32,7 +32,7 @@ namespace TheresaBot.Main.Handler
             {
                 if (string.IsNullOrWhiteSpace(BotConfig.PixivRankingConfig.ProcessingMsg) == false)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ProcessingMsg);
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.PixivRankingConfig.ProcessingMsg);
                 }
                 PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Daily;
                 await sendRanking(command, rankingItem, "日榜", "daily", false);

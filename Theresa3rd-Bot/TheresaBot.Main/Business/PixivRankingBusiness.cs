@@ -58,8 +58,8 @@ namespace TheresaBot.Main.Business
             List<PixivRankingPreview> previewFiles = new List<PixivRankingPreview>();
             foreach (var content in rankingContents)
             {
-                string pixivId = content.illust_id.ToString();
                 string downloadUrl = content.url;
+                string pixivId = content.illust_id.ToString();
                 FileInfo previewFile = await PixivHelper.DownPixivImgAsync(pixivId, downloadUrl);
                 PixivRankingPreview rankingPreview = new PixivRankingPreview(content, previewFile);
                 previewFiles.Add(rankingPreview);

@@ -81,8 +81,10 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.PixivRankingConfig.SendPreview && r18 == false)
             {
                 string previewInfo = $"{date}{rankingName}一览图";
+                string fileName = $"{mode}_preview_{date}.jpg";
+                string savePath = Path.Combine(FilePath.GetDownFileSavePath(), fileName);
                 List<PixivRankingPreview> rankingPreviews = await rankingBusiness.getRankingPreviews(rankingContents);
-                FileInfo previewImg = createPreviewImg(rankingPreviews);
+                FileInfo previewImg = createPreviewImg(rankingPreviews, savePath);
                 previewContent = new SetuContent(previewInfo, previewImg);
             }
 
@@ -137,11 +139,11 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public FileInfo createPreviewImg(List<PixivRankingPreview> previewFiles)
+        public FileInfo createPreviewImg(List<PixivRankingPreview> previewFiles, string savePath)
         {
             try
             {
-                return DrawHelper.DrawPixivRankingPreview(previewFiles);
+                return PixivRankingDrawHelper.DrawPreview(previewFiles, savePath);
             }
             catch (Exception ex)
             {

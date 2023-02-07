@@ -22,6 +22,8 @@ namespace TheresaBot.Main.Model.Pixiv
         public int xRestrict { get; set; }
         public int aiType { get; set; }
 
+        public bool IsIllust => illustType == 0;
+
         public override bool IsR18
         {
             //xRestrict=1为R18,xRestrict=2为R18G

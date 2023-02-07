@@ -1,7 +1,4 @@
-﻿using AngleSharp.Media;
-using SkiaSharp;
-using System.Drawing;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
@@ -35,12 +32,7 @@ namespace TheresaBot.Main.Handler
                     await command.ReplyGroupTemplateWithAtAsync(BotConfig.PixivRankingConfig.ProcessingMsg);
                 }
                 PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Daily;
-                await sendRanking(command, rankingItem, "日榜", "daily", false);
-                if (BotConfig.PixivRankingConfig.IncludeR18 && command.GroupId.IsShowR18Setu())
-                {
-                    await Task.Delay(1000);
-                    await sendRanking(command, rankingItem, "R18日榜", "daily_r18", true);
-                }
+                await sendRankingPreview(command, rankingItem, "日榜", "daily");
             }
             catch (Exception ex)
             {
@@ -71,45 +63,23 @@ namespace TheresaBot.Main.Handler
             return Task.CompletedTask;
         }
 
-        private async Task sendRanking(GroupCommand command, PixivRankingItem rankingItem, string rankingName, string mode, bool r18)
+        private async Task sendRankingPreview(GroupCommand command, PixivRankingItem rankingItem, string rankingName, string mode)
         {
-            SetuContent previewContent = null;
-            List<SetuContent> setuContents = null;
-
             (List<PixivRankingContent> rankingContents, string date) = await rankingBusiness.getRankingDatas(rankingItem, mode);
 
-            if (BotConfig.PixivRankingConfig.SendPreview && r18 == false)
-            {
-                string previewInfo = $"{date}{rankingName}一览图";
-                string fileName = $"{mode}_preview_{date}.jpg";
-                string savePath = Path.Combine(FilePath.GetDownFileSavePath(), fileName);
-                List<PixivRankingPreview> rankingPreviews = await rankingBusiness.getRankingPreviews(rankingContents);
-                FileInfo previewImg = createPreviewImg(rankingPreviews, savePath);
-                previewContent = new SetuContent(previewInfo, previewImg);
-            }
-
-            if (BotConfig.PixivRankingConfig.SendDetail)
-            {
-                List<PixivWorkInfo> workInfos = await rankingBusiness.getRankingWorks(rankingItem, rankingContents);
-                setuContents = await getSetuContent(workInfos, rankingItem, command.GroupId, r18);
-            }
+            string previewInfo = $"{date}{rankingName}一览图";
+            List<PixivRankingPreview> rankingPreviews = await rankingBusiness.getRankingPreviews(rankingContents);
+            List<FileInfo> previewImgs = createPreviewImg(rankingPreviews, mode, date);
+            List<SetuContent> setuContents = new List<SetuContent>();
+            setuContents.Add(new(previewInfo));
+            setuContents.AddRange(previewImgs.Select(o => new SetuContent(o)));
 
             string template = BotConfig.PixivRankingConfig.Template;
             string rankingInfo = rankingBusiness.getRankingInfo(date, rankingName, template);
             await command.ReplyGroupMessageWithAtAsync(rankingInfo);
             await Task.Delay(1000);
-
-            if (previewContent is not null)
-            {
-                await Session.SendGroupSetuAsync(previewContent, command.GroupId);
-                await Task.Delay(1000);
-            }
-            if (setuContents is not null)
-            {
-                bool sendMerge = BotConfig.PixivRankingConfig.SendMerge;
-                await Session.SendGroupSetuAsync(setuContents, command.GroupId, sendMerge);
-                await Task.Delay(1000);
-            }
+            await Session.SendGroupSetuAsync(setuContents, command.GroupId,BotConfig.PixivRankingConfig.SendMerge);
+            await Task.Delay(1000);
         }
 
         private async Task<List<SetuContent>> getSetuContent(List<PixivWorkInfo> datas, PixivRankingItem rankingItem, long groupId, bool r18Content)
@@ -139,11 +109,31 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public FileInfo createPreviewImg(List<PixivRankingPreview> previewFiles, string savePath)
+        private List<FileInfo> createPreviewImg(List<PixivRankingPreview> datas, string mode, string date)
+        {
+            int startIndex = 0;
+            List<FileInfo> fileInfos = new List<FileInfo>();
+            int maxInPage = BotConfig.PixivRankingConfig.MaxInPage;
+            if (maxInPage <= 0) maxInPage = 35;
+            if (datas.Count == 0) return fileInfos;
+
+            while (startIndex < datas.Count)
+            {
+                string fileName = $"{mode}_preview_{date}.jpg";
+                string savePath = Path.Combine(FilePath.GetDownFileSavePath(), fileName);
+                var partList = datas.Skip(startIndex).Take(maxInPage).ToList();
+                var previewFile = createPreviewImg(partList, savePath);
+                if (previewFile is not null) fileInfos.Add(previewFile);
+                startIndex += maxInPage;
+            }
+            return fileInfos;
+        }
+
+        private FileInfo createPreviewImg(List<PixivRankingPreview> datas, string savePath)
         {
             try
             {
-                return PixivRankingDrawHelper.DrawPreview(previewFiles, savePath);
+                return PixivRankingDrawHelper.DrawPreview(datas, savePath);
             }
             catch (Exception ex)
             {

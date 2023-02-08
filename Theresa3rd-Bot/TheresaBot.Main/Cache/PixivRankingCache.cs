@@ -7,22 +7,23 @@ namespace TheresaBot.Main.Cache
     {
         private static readonly Dictionary<PixivRankingMode, List<PixivRankingInfo>> CacheDic = new();
 
-        public static void AddCache(PixivRankingMode rankingType, PixivRankingInfo rankingInfo)
+        public static void AddCache(PixivRankingMode rankingMode, PixivRankingInfo rankingInfo, string searchDate)
         {
             ClearCahce();
             if (rankingInfo is null) return;
-            if (CacheDic.ContainsKey(rankingType) == false) CacheDic[rankingType] = new();
-            CacheDic[rankingType].Add(rankingInfo);
+            if (CacheDic.ContainsKey(rankingMode) == false) CacheDic[rankingMode] = new();
+            PixivRankingInfo cacheInfo = rankingInfo with { SearchDate = searchDate };
+            CacheDic[rankingMode].Add(cacheInfo);
         }
 
-        public static PixivRankingInfo GetCache(PixivRankingMode rankingType, string date = "")
+        public static PixivRankingInfo GetCache(PixivRankingMode rankingMode, string searchDate)
         {
             ClearCahce();
-            if (CacheDic.ContainsKey(rankingType) == false) return null;
-            List<PixivRankingInfo> pixivRankingList = CacheDic[rankingType];
+            if (CacheDic.ContainsKey(rankingMode) == false) return null;
+            List<PixivRankingInfo> pixivRankingList = CacheDic[rankingMode];
             if (pixivRankingList is null) return null;
             if (pixivRankingList.Count == 0) return null;
-            return pixivRankingList.Where(o => o.Date == date).OrderByDescending(o => o.CreateDate).FirstOrDefault();
+            return pixivRankingList.Where(o => o.SearchDate == searchDate || o.Date == searchDate).OrderByDescending(o => o.CreateDate).FirstOrDefault();
         }
 
         private static void ClearCahce()

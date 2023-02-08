@@ -9,9 +9,11 @@ using TheresaBot.Main.Model.PixivRanking;
 
 namespace TheresaBot.Main.Model.Cache
 {
-    public class PixivRankingInfo
+    public record PixivRankingInfo
     {
         public string Date { get; set; }
+
+        public string SearchDate { get; set; }
 
         public DateTime CreateDate { get; set; }
 

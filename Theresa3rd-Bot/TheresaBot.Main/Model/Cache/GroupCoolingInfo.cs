@@ -17,6 +17,7 @@ namespace TheresaBot.Main.Model.Cache
         public GroupCoolingInfo(long groupId)
         {
             this.GroupId = groupId;
+            this.LastPixivRankingTime = new();
         }
 
     }

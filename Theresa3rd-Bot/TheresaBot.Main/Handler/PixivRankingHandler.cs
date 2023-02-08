@@ -47,7 +47,7 @@ namespace TheresaBot.Main.Handler
                 if (rankingInfo == null)
                 {
                     rankingInfo = await getRankingInfos(rankingItem, rankingMode);
-                    PixivRankingCache.AddCache(rankingMode, rankingInfo);
+                    PixivRankingCache.AddCache(rankingMode, rankingInfo, date);
                 }
 
                 await sendRankingPreview(command, rankingInfo, rankingMode);

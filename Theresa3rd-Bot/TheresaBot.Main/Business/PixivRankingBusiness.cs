@@ -30,7 +30,7 @@ namespace TheresaBot.Main.Business
                 PixivRankingData rankingData = await PixivHelper.GetPixivRankingData(mode, page);
                 if (rankingData.contents is null || rankingData.contents.Count == 0) throw new ApiException("无法从api中获取任何排行信息");
                 rankingContents.AddRange(rankingData.contents);
-                await Task.Delay(2000);
+                await Task.Delay(1000);
             }
             return (rankingContents, date);
         }
@@ -40,19 +40,35 @@ namespace TheresaBot.Main.Business
             List<PixivRankingDetail> rankingDetails = new List<PixivRankingDetail>();
             foreach (var rankingContent in rankingContents)
             {
-                if (checkContentIsOk(rankingItem, rankingContent) == false) continue;
-                PixivWorkInfo pixivWorkInfo = await getRankingWork(rankingContent);
-                if (pixivWorkInfo is null) continue;
-                if (checkWorkIsOk(rankingItem, pixivWorkInfo) == false) continue;
-                FileInfo previewFile = await PixivHelper.DownPixivImgAsync(rankingContent.illust_id.ToString(), rankingContent.url);
-                PixivRankingDetail rankingDetail = new PixivRankingDetail(rankingContent, pixivWorkInfo, previewFile.FullName);
-                rankingDetails.Add(rankingDetail);
+                try
+                {
+                    if (checkContentIsOk(rankingItem, rankingContent) == false) continue;
+                    PixivWorkInfo pixivWorkInfo = await getRankingWork(rankingContent);
+                    await Task.Delay(500);
+                    if (pixivWorkInfo is null) continue;
+                    if (checkWorkIsOk(rankingItem, pixivWorkInfo) == false) continue;
+                    FileInfo previewFile = await PixivHelper.DownPixivImgAsync(rankingContent.illust_id.ToString(), rankingContent.url);
+                    PixivRankingDetail rankingDetail = new PixivRankingDetail(rankingContent, pixivWorkInfo, previewFile?.FullName);
+                    rankingDetails.Add(rankingDetail);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex);
+                }
             }
             return sortDetails(rankingDetails, BotConfig.PixivRankingConfig.SortType);
         }
 
         private List<PixivRankingDetail> sortDetails(List<PixivRankingDetail> details, PixivRankingSortType sortType)
         {
+            if (sortType == PixivRankingSortType.BookMark)
+            {
+                return details.OrderByDescending(x => x.WorkInfo.bookmarkCount).ToList();
+            }
+            if (sortType == PixivRankingSortType.BookMarkRate)
+            {
+                return details.OrderByDescending(x => x.WorkInfo.bookmarkRate).ToList();
+            }
             if (sortType == PixivRankingSortType.Ranking)
             {
                 return details.OrderByDescending(x => x.WorkInfo.likeCount).ToList();
@@ -86,12 +102,13 @@ namespace TheresaBot.Main.Business
             if (string.IsNullOrWhiteSpace(template)) return getDefaultRankingInfo(date, rankingName);
             template = template.Replace("{Date}", date);
             template = template.Replace("{Ranking}", rankingName);
+            template = template.Replace("{CacheSeconds}", BotConfig.PixivRankingConfig.CacheSeconds.ToString());
             return template;
         }
 
         public string getDefaultRankingInfo(string date, string rankingName)
         {
-            return $"{date}{rankingName}内容如下：";
+            return $"{date}{rankingName}精选，数据缓存{BotConfig.PixivRankingConfig.CacheSeconds.ToString()}秒";
         }
 
         /// <summary>

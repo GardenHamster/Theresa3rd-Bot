@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using SqlSugar.IOC;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
@@ -69,6 +70,7 @@ namespace Theresa3rd_Bot
                 TimerManager.initCookieJobAsync(session, reporter);
                 TimerManager.initClearJobAsync(session, reporter);
                 LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£º{BotConfig.BotVersion}");
+                Task welcomeTask = MiraiHelper.SendStartUpMessageAsync();
             }
             catch (Exception ex)
             {

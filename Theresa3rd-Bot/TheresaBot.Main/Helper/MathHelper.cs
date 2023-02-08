@@ -35,31 +35,6 @@
         }
 
         /// <summary>
-        /// 计算比率,返回指定小数位
-        /// </summary>
-        /// <param name="num1">被除数</param>
-        /// <param name="num2">除数</param>
-        /// <param name="keep">保留多少位小数</param>
-        /// <returns></returns>
-        public static double getRate(int num1, int num2, int keep)
-        {
-            double rate = Convert.ToDouble(num1) / num2;
-            return Math.Round(rate, keep);
-        }
-
-        /// <summary>
-        /// 计算百分比,返回字符串
-        /// </summary>
-        /// <param name="num1">被除数</param>
-        /// <param name="num2">除数</param>
-        /// <param name="keep">保留多少位小数</param>
-        /// <returns></returns>
-        public static string getRateStr(int num1, int num2, int keep)
-        {
-            return getRate(num1, num2, keep) * 100 + "%";
-        }
-
-        /// <summary>
         /// 通过总数和每页数量计算总页数
         /// </summary>
         /// <param name="total"></param>
@@ -70,6 +45,16 @@
             return (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
         }
 
+        /// <summary>
+        /// 将double转换为百分比字符串
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public static string toPercent(this double number)
+        {
+            number = Convert.ToDouble((int)(number * 100)) / 100;
+            return number.ToString() + "%";
+        }
 
     }
 }

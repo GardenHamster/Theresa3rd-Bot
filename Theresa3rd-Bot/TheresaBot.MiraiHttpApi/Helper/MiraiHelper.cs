@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -77,6 +78,28 @@ namespace TheresaBot.MiraiHttpApi.Helper
             {
                 LogHelper.FATAL(ex, "连接到mirai-console失败");
                 throw;
+            }
+        }
+
+        public static async Task SendStartUpMessageAsync()
+        {
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            StringBuilder msgBuilder=new StringBuilder();
+            msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot {BotConfig.BotVersion}】");
+            msgBuilder.AppendLine($"群聊发送【#菜单】可以查看指令");
+            msgBuilder.AppendLine($"部署或者使用教程可以访问");
+            msgBuilder.Append($"{BotConfig.BotHomepage}");
+            IChatMessage welcomeMessage = new PlainMessage(msgBuilder.ToString());
+            foreach (var memberId in BotConfig.PermissionsConfig.SuperManagers)
+            {
+                try
+                {
+                    await Session.SendFriendMessageAsync(memberId, welcomeMessage);
+                    await Task.Delay(1000);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -271,6 +294,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 return null;
             }
         }
+
 
     }
 }

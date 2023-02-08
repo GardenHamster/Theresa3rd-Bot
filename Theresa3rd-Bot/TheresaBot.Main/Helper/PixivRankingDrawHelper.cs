@@ -12,7 +12,7 @@ namespace TheresaBot.Main.Helper
     public static class PixivRankingDrawHelper
     {
         private const int margin = 30;
-        private const int fontSize = 22;
+        private const int fontSize = 18;
         private const int maxColumn = 5;
         private const int maxWidth = 280;
         private const int maxHeight = 400;
@@ -63,7 +63,7 @@ namespace TheresaBot.Main.Helper
                 Typeface = SKTypeface.FromFamilyName("SimSun")
             };
             PixivRankingContent content = detail.RankingContent;
-            canvas.DrawText($"#{content.rank}  PID：{content.illust_id}", new SKPoint(x, y), paint);
+            canvas.DrawText($"#{content.rank} PID{content.illust_id} {detail.WorkInfo.bookmarkRate.toPercent()}/{detail.WorkInfo.likeRate.toPercent()}", new SKPoint(x, y), paint);
         }
 
         private static void DrawImage(SKCanvas canvas, PixivRankingDetail detail, int areaX, int areaY)

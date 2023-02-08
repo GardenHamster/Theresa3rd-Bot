@@ -201,8 +201,8 @@ TimingSetu:
 
 PixivRanking:
     Enable:                     true                                                #是否启用
-    ProcessingMsg:              '正在获取榜单信息...'                                 #开始查找前返回的消息
-    Template:                   '{Date}{Ranking}内容如下'                            #消息模版
+    ProcessingMsg:              '正在获取榜单信息，需要亿点时间...'                    #开始查找前返回的消息
+    Template:                   '{Date}{Ranking}精选，数据缓存{CacheSeconds}秒'   #消息模版
     MaxScan:                    300
     MaxInPage:                  30
     SortType:                   2
@@ -213,8 +213,8 @@ PixivRanking:
         Commands:               ['日榜']
         MinRatingCount:         500
         MinRatingRate:          0.1
-        MinBookCount:           700
-        MinBookRate:            0.15
+        MinBookCount:           500
+        MinBookRate:            0.1
     DailyAI:
         Commands:               ['AI日榜']
         MinRatingCount:         500

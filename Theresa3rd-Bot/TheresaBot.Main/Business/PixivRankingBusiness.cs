@@ -2,6 +2,7 @@
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Mode;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PixivRanking;
@@ -13,12 +14,13 @@ namespace TheresaBot.Main.Business
     {
         private const int eachPage = 50;
 
-        public async Task<(List<PixivRankingContent>, string)> getRankingDatas(PixivRankingItem rankingItem, string mode)
+        public async Task<(List<PixivRankingContent>, string)> getRankingDatas(PixivRankingItem rankingItem, PixivRankingMode rankingMode)
         {
+            string mode = rankingMode.Code;
             PixivRankingData firstpage = await PixivHelper.GetPixivRankingData(mode, 1);
             string date = firstpage.date;
             int maxScan = BotConfig.PixivRankingConfig.MaxScan;
-            if (maxScan > 300) maxScan = 300;
+            if (maxScan > 500) maxScan = 500;
             if (firstpage.rank_total < maxScan) maxScan = firstpage.rank_total;
             int maxPage = MathHelper.getMaxPage(maxScan, eachPage);
 
@@ -30,59 +32,53 @@ namespace TheresaBot.Main.Business
                 rankingContents.AddRange(rankingData.contents);
                 await Task.Delay(2000);
             }
-            List<PixivRankingContent> filterContents = new List<PixivRankingContent>();
-            for (int i = 0; i < rankingContents.Count && i < maxScan; i++)
-            {
-                if (checkContentIsOk(rankingItem,rankingContents[i]) == false) continue;
-                filterContents.Add(rankingContents[i]);
-            }
-
-            List<PixivRankingContent> sortList = sortContentList(filterContents, BotConfig.PixivRankingConfig.SortType);
-            return (sortList, date);
+            return (rankingContents, date);
         }
 
-        public List<PixivRankingContent> sortContentList(List<PixivRankingContent> contents, PixivRankingSortType sortType)
+        public async Task<List<PixivRankingDetail>> filterContents(PixivRankingItem rankingItem, List<PixivRankingContent> rankingContents)
+        {
+            List<PixivRankingDetail> rankingDetails = new List<PixivRankingDetail>();
+            foreach (var rankingContent in rankingContents)
+            {
+                if (checkContentIsOk(rankingItem, rankingContent) == false) continue;
+                PixivWorkInfo pixivWorkInfo = await getRankingWork(rankingContent);
+                if (pixivWorkInfo is null) continue;
+                if (checkWorkIsOk(rankingItem, pixivWorkInfo) == false) continue;
+                FileInfo previewFile = await PixivHelper.DownPixivImgAsync(rankingContent.illust_id.ToString(), rankingContent.url);
+                PixivRankingDetail rankingDetail = new PixivRankingDetail(rankingContent, pixivWorkInfo, previewFile.FullName);
+                rankingDetails.Add(rankingDetail);
+            }
+            return sortDetails(rankingDetails, BotConfig.PixivRankingConfig.SortType);
+        }
+
+        private List<PixivRankingDetail> sortDetails(List<PixivRankingDetail> details, PixivRankingSortType sortType)
         {
             if (sortType == PixivRankingSortType.Ranking)
             {
-                return contents.OrderByDescending(x => x.rating_count).ToList();
+                return details.OrderByDescending(x => x.WorkInfo.likeCount).ToList();
             }
             if (sortType == PixivRankingSortType.RankingRate)
             {
-                return contents.OrderByDescending(x => x.rating_rate).ToList();
+                return details.OrderByDescending(x => x.WorkInfo.likeRate).ToList();
             }
-            return contents.ToList();
+            return details.ToList();
         }
 
-        public async Task<List<PixivWorkInfo>> getRankingWorks(List<PixivRankingContent> contents)
+        private async Task<PixivWorkInfo> getRankingWork(PixivRankingContent content)
         {
-            List<PixivWorkInfo> workInfos = new List<PixivWorkInfo>();
-            foreach (var content in contents)
+            try
             {
-                try
-                {
-                    PixivWorkInfo workInfo = await PixivHelper.GetPixivWorkInfoAsync(content.illust_id.ToString());
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex);
-                }
+                return await PixivHelper.GetPixivWorkInfoAsync(content.illust_id.ToString());
             }
-            return workInfos;
-        }
-
-        public async Task<List<PixivRankingPreview>> getRankingPreviews(List<PixivRankingContent> rankingContents)
-        {
-            List<PixivRankingPreview> previewFiles = new List<PixivRankingPreview>();
-            foreach (var content in rankingContents)
+            catch (Exception ex)
             {
-                string downloadUrl = content.url;
-                string pixivId = content.illust_id.ToString();
-                FileInfo previewFile = await PixivHelper.DownPixivImgAsync(pixivId, downloadUrl);
-                PixivRankingPreview rankingPreview = new PixivRankingPreview(content, previewFile);
-                previewFiles.Add(rankingPreview);
+                LogHelper.Error(ex);
+                return null;
             }
-            return previewFiles;
+            finally
+            {
+                await Task.Delay(500);
+            }
         }
 
         public string getRankingInfo(string date, string rankingName, string template)
@@ -99,7 +95,7 @@ namespace TheresaBot.Main.Business
         }
 
         /// <summary>
-        /// 检查日榜内容是否存在包含违禁标签
+        /// 检查日榜内容是否合格
         /// </summary>
         /// <param name="rankingItem"></param>
         /// <param name="rankingContent"></param>
@@ -112,6 +108,24 @@ namespace TheresaBot.Main.Business
             if (rankingContent.rating_count < rankingItem.MinRatingCount) return false;
             if (rankingContent.rating_rate < rankingItem.MinRatingRate) return false;
             return true;
+        }
+
+        /// <summary>
+        /// 检查作品内容是否合格
+        /// </summary>
+        /// <param name="rankingItem"></param>
+        /// <param name="rankingContent"></param>
+        /// <returns></returns>
+        private bool checkWorkIsOk(PixivRankingItem rankingItem, PixivWorkInfo workInfo)
+        {
+            if (workInfo.IsImproper) return false;
+            if (workInfo.hasBanTag() is not null) return false;
+            if (workInfo.IsIllust == false) return false;
+            bool isRatingCountOk = workInfo.likeCount >= rankingItem.MinRatingCount;
+            bool isRatingRateOk = workInfo.likeRate >= rankingItem.MinRatingRate;
+            bool isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount;
+            bool isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate;
+            return (isRatingCountOk && isRatingRateOk) || (isBookmarkCountOk && isBookmarkRateOk);
         }
 
     }

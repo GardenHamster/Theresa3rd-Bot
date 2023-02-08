@@ -189,6 +189,43 @@ namespace TheresaBot.Main.Cache
             }
         }
 
+        /// <summary>
+        /// 是否有请求在处理中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static bool IsPixivRankingHanding(long groupId)
+        {
+            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+            return coolingInfo.IsPixivRankingHanding;
+        }
+
+        /// <summary>
+        /// 标记请求处理中
+        /// </summary>
+        /// <param name="groupId"></param>
+        public static void SetPixivRankingHanding(long groupId)
+        {
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                coolingInfo.IsPixivRankingHanding = true;
+            }
+        }
+
+        /// <summary>
+        /// 标记请求处理完成
+        /// </summary>
+        /// <param name="groupId"></param>
+        public static void SetPixivRankingHandFinish(long groupId)
+        {
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                coolingInfo.IsPixivRankingHanding = false;
+            }
+        }
+
 
 
         /// <summary>

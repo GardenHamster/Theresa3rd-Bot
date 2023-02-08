@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.PixivRanking;
 
 namespace TheresaBot.Main.Helper
@@ -18,7 +19,7 @@ namespace TheresaBot.Main.Helper
         private const int areaWidth = maxWidth;
         private const int areaHeight = maxHeight + fontSize;
 
-        public static FileInfo DrawPreview(List<PixivRankingPreview> datas, string savePath)
+        public static FileInfo DrawPreview(List<PixivRankingDetail> datas, string savePath)
         {
             int imgNum = datas.Count;
             int maxRow = MathHelper.getMaxPage(imgNum, maxColumn);
@@ -36,9 +37,8 @@ namespace TheresaBot.Main.Helper
                 int column = 1 + (i % maxColumn);
                 int areaX = margin * column + areaWidth * (column - 1);
                 int areaY = margin * row + areaHeight * (row - 1);
-                FileInfo imgFile = datas[i].Image;
-                DrawRankAndPidText(canvas, datas[i].Content, areaX, areaY);
-                if (imgFile is not null) DrawImage(canvas, imgFile, areaX, areaY);
+                DrawRankAndPidText(canvas, datas[i], areaX, areaY);
+                DrawImage(canvas, datas[i], areaX, areaY);
             }
 
             using SKImage image = surface.Snapshot();
@@ -48,7 +48,7 @@ namespace TheresaBot.Main.Helper
             return new FileInfo(savePath);
         }
 
-        private static void DrawRankAndPidText(SKCanvas canvas, PixivRankingContent content, int areaX, int areaY)
+        private static void DrawRankAndPidText(SKCanvas canvas, PixivRankingDetail detail, int areaX, int areaY)
         {
             int x = areaX;
             int y = areaY;
@@ -62,13 +62,17 @@ namespace TheresaBot.Main.Helper
                 TextSize = fontSize,
                 Typeface = SKTypeface.FromFamilyName("SimSun")
             };
+            PixivRankingContent content = detail.RankingContent;
             canvas.DrawText($"#{content.rank}  PID：{content.illust_id}", new SKPoint(x, y), paint);
         }
 
-        private static void DrawImage(SKCanvas canvas, FileInfo imgFile, int areaX, int areaY)
+        private static void DrawImage(SKCanvas canvas, PixivRankingDetail detail, int areaX, int areaY)
         {
             int x = areaX;
             int y = areaY + fontSize;
+            FileInfo imgFile = GetDrawImg(detail).Result;
+            if (imgFile is null) imgFile = FilePath.GetDownErrorImg();
+            if (imgFile is null) return;
             using FileStream fileStream = File.OpenRead(imgFile.FullName);
             using SKBitmap originBitmap = SKBitmap.Decode(fileStream);
             double widthScale = Convert.ToDouble(maxWidth) / originBitmap.Width;
@@ -78,6 +82,21 @@ namespace TheresaBot.Main.Helper
             int imgHeight = (int)(originBitmap.Height * scale);
             using SKBitmap resizeBitmap = originBitmap.Resize(new SKImageInfo(imgWidth, imgHeight), SKFilterQuality.Low);
             canvas.DrawBitmap(resizeBitmap, new SKPoint(x, y));
+        }
+
+        private static async Task<FileInfo> GetDrawImg(PixivRankingDetail detail)
+        {
+            try
+            {
+                string imgSavePath = detail.ImageSavePath;
+                if (File.Exists(imgSavePath)) return new FileInfo(imgSavePath);
+                return await PixivHelper.DownPixivImgAsync(detail.WorkInfo.PixivId, detail.RankingContent.url, imgSavePath);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                return null;
+            }
         }
 
     }

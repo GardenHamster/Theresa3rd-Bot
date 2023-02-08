@@ -10,6 +10,8 @@ namespace TheresaBot.Main.Model.Cache
 
         public DateTime? LastSaucenaoTime { get; set; }
 
+        public bool IsPixivRankingHanding { get; set; }
+
         public Dictionary<PixivRankingType, DateTime?> LastPixivRankingTime { get; set; }
 
         public GroupCoolingInfo(long groupId)

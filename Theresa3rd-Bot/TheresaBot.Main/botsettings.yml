@@ -204,31 +204,41 @@ PixivRanking:
     ProcessingMsg:              '正在获取榜单信息...'                                 #开始查找前返回的消息
     Template:                   '{Date}{Ranking}内容如下'                            #消息模版
     MaxScan:                    300
-    MaxInPage:                  35
-    SortType:                   2                                 
+    MaxInPage:                  30
+    SortType:                   2
     SendMerge:                  true
     GroupCD:                    300
     CacheSeconds:               3600
     Daily:
         Commands:               ['日榜']
-        MinRatingCount:         700
-        MinRatingRate:          0.15
+        MinRatingCount:         500
+        MinRatingRate:          0.1
+        MinBookCount:           700
+        MinBookRate:            0.15
     DailyAI:
         Commands:               ['AI日榜']
-        MinRatingCount:         1000
+        MinRatingCount:         500
         MinRatingRate:          0.1
+        MinBookCount:           700
+        MinBookRate:            0.15
     DailyMale:
         Commands:               ['LSP日榜']
-        MinRatingCount:         1000
-        MinRatingRate:          0.2
+        MinRatingCount:         500
+        MinRatingRate:          0.1
+        MinBookCount:           700
+        MinBookRate:            0.15
     Weekly:
         Commands:               ['周榜']
-        MinRatingCount:         3000
+        MinRatingCount:         2000
         MinRatingRate:          0.15
+        MinBookCount:           3000
+        MinBookRate:            0.18
     Monthly:
         Commands:               ['月榜']
         MinRatingCount:         5000
         MinRatingRate:          0.15
+        MinBookCount:           6000
+        MinBookRate:            0.18
     Subscribe:
         - Enable:               false
           Groups:               [284196392]

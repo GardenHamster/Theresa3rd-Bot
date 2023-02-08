@@ -4,7 +4,7 @@ namespace TheresaBot.Main.Model.Config
 {
     public class PixivUserSubscribeConfig : BaseSubscribeConfig
     {
-        public PixivScanMode ScanMode { get; set; }
+        public PixivScanType ScanMode { get; set; }
 
         public List<string> SyncCommands { get; set; }
 
@@ -12,7 +12,7 @@ namespace TheresaBot.Main.Model.Config
 
         public PixivUserSubscribeConfig()
         {
-            this.ScanMode = PixivScanMode.Default;
+            this.ScanMode = PixivScanType.Default;
             this.ShelfLife = 12 * 60 * 60;
             this.ScanInterval = 60 * 60;
         }

@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Type
 {
-    public enum PixivRandomMode
+    public enum PixivRandomType
     {
         Default = 0,
         RandomTag = 1,

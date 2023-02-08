@@ -22,29 +22,22 @@ namespace TheresaBot.Main.Model.Pixiv
         public int xRestrict { get; set; }
         public int aiType { get; set; }
 
+        public double likeRate => Convert.ToDouble(likeCount) / viewCount;
+
+        public double bookmarkRate => Convert.ToDouble(bookmarkCount) / viewCount;
+
         public bool IsIllust => illustType == 0;
 
-        public override bool IsR18
-        {
-            //xRestrict=1为R18,xRestrict=2为R18G
-            get { return xRestrict > 0 || getTags().IsR18(); }
-        }
-        public override bool IsGif
-        {
-            get { return getTags().IsGif(); }
-        }
-        public override bool IsAI
-        {
-            get { return aiType > 1 || getTags().IsAI(); }
-        }
-        public override bool IsImproper
-        {
-            get { return xRestrict > 1 || getTags().IsImproper(); }
-        }
-        public override string PixivId
-        {
-            get { return illustId; }
-        }
+        //xRestrict=1为R18,xRestrict=2为R18G
+        public override bool IsR18 => xRestrict > 0 || getTags().IsR18();
+
+        public override bool IsGif => getTags().IsGif();
+
+        public override bool IsAI => aiType > 1 || getTags().IsAI();
+
+        public override bool IsImproper => xRestrict > 1 || getTags().IsImproper();
+
+        public override string PixivId => illustId;
 
         public override List<string> getTags() => tags?.getTags() ?? new List<string>();
 

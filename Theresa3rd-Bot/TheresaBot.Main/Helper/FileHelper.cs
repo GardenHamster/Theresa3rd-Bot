@@ -9,6 +9,16 @@ namespace TheresaBot.Main.Helper
             clearDownloadImg();
         }
 
+        public static bool IsFilesExists(this List<string> fullFilePaths)
+        {
+            if (fullFilePaths is null || fullFilePaths.Count == 0) return false;
+            foreach (string fullFilePath in fullFilePaths)
+            {
+                if (File.Exists(fullFilePath) == false) return false;
+            }
+            return true;
+        }
+
         public static void clearDownloadImg()
         {
             try

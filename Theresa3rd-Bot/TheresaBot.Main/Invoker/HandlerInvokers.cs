@@ -205,6 +205,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand,PixivRankingType.Daily)) return false;
+                if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
                 await handler.sendDailyRanking(botCommand);
                 await handler.addRecord(botCommand);

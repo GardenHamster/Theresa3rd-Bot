@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Type
 {
-    public enum PixivScanMode
+    public enum PixivScanType
     {
         Default = 0,
         ScanFollow = 1,

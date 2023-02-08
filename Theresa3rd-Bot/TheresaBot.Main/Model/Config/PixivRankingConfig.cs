@@ -25,6 +25,8 @@ namespace TheresaBot.Main.Model.Config
         public List<string> Commands { get; set; }
         public int MinRatingCount { get; set; }
         public double MinRatingRate { get; set; }
+        public int MinBookCount { get; set; }
+        public double MinBookRate { get; set; }
     }
 
     public class PixivRankingSubscribe

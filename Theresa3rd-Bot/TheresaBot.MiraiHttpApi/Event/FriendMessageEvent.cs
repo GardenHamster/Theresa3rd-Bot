@@ -33,17 +33,17 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 int msgId = args.GetMessageId();
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
-                string instructions = plainList.FirstOrDefault();
-                if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(instructions)) return;
-                instructions = instructions.Trim();
+                string instruction = plainList.FirstOrDefault();
+                if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(instruction)) return;
+                instruction = instruction.Trim();
                 message = message.Trim();
 
-                bool isInstruct = string.IsNullOrWhiteSpace(instructions) == false && string.IsNullOrWhiteSpace(prefix) == false && instructions.StartsWith(prefix);
-                if (isInstruct) instructions = instructions.Remove(0, prefix.Length).Trim();
+                bool isInstruct = string.IsNullOrWhiteSpace(instruction) == false && string.IsNullOrWhiteSpace(prefix) == false && instruction.StartsWith(prefix);
+                if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 
-                if (string.IsNullOrWhiteSpace(instructions)) return;//不存在任何指令
+                if (string.IsNullOrWhiteSpace(instruction)) return;//不存在任何指令
 
-                MiraiFriendCommand botCommand = GetFriendCommand(session, args, instructions, memberId);
+                MiraiFriendCommand botCommand = GetFriendCommand(session, args, instruction, memberId);
                 if (botCommand is not null)
                 {
                     MiraiSession miraiSession = new MiraiSession();

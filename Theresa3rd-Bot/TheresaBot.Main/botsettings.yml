@@ -10,6 +10,7 @@
     NoPermissionsMsg:           '该功能未授权'                                      #功能未授权时返回的消息
     ManagersRequiredMsg:        '该功能需要管理员执行'                              #需要管理员权限时返回的消息
     SetuCustomDisableMsg:       '自定义功能已关闭'                                  #禁用自定义时返回的消息
+    SendRelevantCommands:       true
 
 Pixiv:
     FreeProxy:                  false                                               #开启pixiv免代理模式，推荐有vpn的情况下禁用，启用后将使用{ImgProxy}下载图片

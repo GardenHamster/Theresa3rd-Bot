@@ -19,5 +19,7 @@
         public string ManagersRequiredMsg { get; set; }
 
         public string SetuCustomDisableMsg { get; set; }
+
+        public bool SendRelevantCommands { get; set; }
     }
 }

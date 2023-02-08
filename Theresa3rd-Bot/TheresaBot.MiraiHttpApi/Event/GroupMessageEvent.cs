@@ -40,13 +40,13 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 int msgId = args.GetMessageId();
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
-                string instructions = plainList.FirstOrDefault()?.Trim() ?? "";
+                string instruction = plainList.FirstOrDefault()?.Trim() ?? "";
                 if (string.IsNullOrWhiteSpace(message)) return;
                 message = message.Trim();
 
                 bool isAt = args.Chain.Where(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber).Any();
-                bool isInstruct = string.IsNullOrWhiteSpace(instructions) == false && string.IsNullOrWhiteSpace(prefix) == false && instructions.StartsWith(prefix);
-                if (isInstruct) instructions = instructions.Remove(0, prefix.Length).Trim();
+                bool isInstruct = string.IsNullOrWhiteSpace(instruction) == false && string.IsNullOrWhiteSpace(prefix) == false && instruction.StartsWith(prefix);
+                if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 
                 if (isAt == false && isInstruct == false)//没有@也不是一条指令
                 {
@@ -56,9 +56,9 @@ namespace TheresaBot.MiraiHttpApi.Event
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(instructions)) return;//不存在任何指令
+                if (string.IsNullOrWhiteSpace(instruction)) return;//不存在任何指令
 
-                MiraiGroupCommand botCommand = GetGroupCommand(session, args, instructions, groupId, memberId);
+                MiraiGroupCommand botCommand = GetGroupCommand(session, args, instruction, groupId, memberId);
                 if (botCommand is not null)
                 {
                     MiraiSession miraiSession = new MiraiSession();
@@ -66,6 +66,12 @@ namespace TheresaBot.MiraiHttpApi.Event
                     args.BlockRemainingHandlers = await botCommand.InvokeAsync(miraiSession, miraiReporter);
                     return;
                 }
+
+                if (BotConfig.GeneralConfig.SendRelevantCommands)
+                {
+                    await MiraiHelper.ReplyRelevantCommandsAsync(instruction, groupId, memberId);
+                }
+
             }
             catch (Exception ex)
             {

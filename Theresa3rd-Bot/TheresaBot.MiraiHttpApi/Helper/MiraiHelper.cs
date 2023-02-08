@@ -103,6 +103,23 @@ namespace TheresaBot.MiraiHttpApi.Helper
             }
         }
 
+        public static async Task ReplyRelevantCommandsAsync(string instruction, long groupId, long memberId)
+        {
+            try
+            {
+                String similarCommands = CommandHelper.GetSimilarGroupCommandStrs(instruction);
+                if (string.IsNullOrWhiteSpace(similarCommands)) return;
+                List<IChatMessage> msgList = new List<IChatMessage>();
+                msgList.Add(new AtMessage(memberId));
+                msgList.Add(new PlainMessage($"不存在的指令，你想要输入的指令是不是【{similarCommands}】?"));
+                await Session.SendGroupMessageAsync(groupId, msgList.ToArray());
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
+        }
+
         /// <summary>
         /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
         /// </summary>

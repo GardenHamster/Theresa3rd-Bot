@@ -147,6 +147,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
+                if (timingSetuTimer.Enable == false) return;
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(timingSetuTimer.Cron).Build();
                 IJobDetail jobDetail = JobBuilder.Create<TimingSetuJob>().WithIdentity(timingSetuTimer.GetHashCode().ToString(), "TimingSetuJob").Build();
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();

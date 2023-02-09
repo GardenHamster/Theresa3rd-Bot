@@ -76,14 +76,12 @@ Welcome:                                                                        
                                 [image:C:\BotImg\face\welcome.png]
                                 请认真阅读群内的相关公告
 
-        - GroupId:              1234567890                                          #群id(群号)
-          Template:             '新人爆照!\r\n进群就别想走了哦~'                    #群欢迎模版
-
 Reminder:                                                                           #定时消息
-    Enable:                     true                                                #是否启用
+    Enable:                     false                                               #是否启用
     Timers:                                                                         #定时列表
-        - Cron:                 '0 0 18 ? * WED,SUN'                                #cron表达式，可以百度cron格式，或者在线生成
-          Name:                 '深渊结算提醒'                                      #定时器名称
+        - Enable:               false                                               #定时器开关
+          Cron:                 '0 0 18 ? * WED,SUN'                                #cron表达式，可以百度cron格式，或者在线生成
+          Name:                 '深渊结算提醒'                                       #定时器名称
           Groups:               [284196392]                                         #群号
           AtAll:                false                                               #是否艾特群体
           AtMembers:            []                                                  #艾特群员QQ号列表

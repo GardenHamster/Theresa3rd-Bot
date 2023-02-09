@@ -13,6 +13,7 @@ namespace TheresaBot.Main.Model.Config
 
     public class TimingSetuTimer
     {
+        public bool Enable { get; set; }
         public string Cron { get; set; }
         public string Name { get; set; }
         public List<long> Groups { get; set; }

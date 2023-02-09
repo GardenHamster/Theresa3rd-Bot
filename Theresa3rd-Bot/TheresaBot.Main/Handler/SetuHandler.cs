@@ -1,5 +1,5 @@
-﻿using AnimatedGif;
-using System.Drawing;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Gif;
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -183,7 +183,8 @@ namespace TheresaBot.Main.Handler
             {
                 if (pixivWorkInfo.IsGif)
                 {
-                    return new List<FileInfo>() { await downAndComposeGifAsync(pixivWorkInfo.PixivId) };
+                    FileInfo gifFile = await downAndComposeGifAsync(pixivWorkInfo.PixivId);
+                    return gifFile is null ? new() : new() { gifFile };
                 }
                 List<FileInfo> imgList = new List<FileInfo>();
                 List<string> originUrls = pixivWorkInfo.getOriginalUrls();
@@ -217,7 +218,7 @@ namespace TheresaBot.Main.Handler
                 PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId);
                 string zipHttpUrl = pixivUgoiraMetaDto.src;
 
-                string fullZipSavePath = Path.Combine(FilePath.GetDownFileSavePath(), $"{StringHelper.get16UUID()}.zip");
+                string fullZipSavePath = Path.Combine(FilePath.GetDownFileSavePath(), $"{pixivId}.zip");
                 FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivId, zipHttpUrl, fullZipSavePath);
                 if (zipFile == null) return null;
 
@@ -226,16 +227,22 @@ namespace TheresaBot.Main.Handler
 
                 DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
                 FileInfo[] files = directoryInfo.GetFiles();
-                List<PixivUgoiraMetaFrames> frames = pixivUgoiraMetaDto.frames;
-                using AnimatedGifCreator gif = AnimatedGif.AnimatedGif.Create(fullGifSavePath, 0);
-                foreach (FileInfo file in files)
+                if (files.Length == 0) return null;
+
+                FileInfo firstFile = files.First();
+                using Image gif = await Image.LoadAsync(firstFile.FullName);
+                PixivUgoiraMetaFrames firstFrame = pixivUgoiraMetaDto.frames.Where(o => o.file.Trim() == firstFile.Name).FirstOrDefault();
+                gif.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay = firstFrame is null ? 6 : firstFrame.delay / 10;
+
+                for (int i = 1; i < files.Length; i++)
                 {
-                    PixivUgoiraMetaFrames frame = frames.Where(o => o.file.Trim() == file.Name).FirstOrDefault();
-                    int delay = frame is null ? 60 : frame.delay;
-                    using Image img = Image.FromFile(file.FullName);
-                    gif.AddFrame(img, delay, GifQuality.Bit8);
-                    await Task.Delay(1000);
+                    using var image = await Image.LoadAsync(files[i].FullName);
+                    PixivUgoiraMetaFrames frame = pixivUgoiraMetaDto.frames.Where(o => o.file.Trim() == files[i].Name).FirstOrDefault();
+                    image.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay = frame is null ? 6 : frame.delay / 10;
+                    gif.Frames.AddFrame(image.Frames.RootFrame);
                 }
+                gif.SaveAsGif(fullGifSavePath);
+
                 FileHelper.deleteFile(fullZipSavePath);
                 FileHelper.deleteDirectory(unZipDirPath);
                 return new FileInfo(fullGifSavePath);

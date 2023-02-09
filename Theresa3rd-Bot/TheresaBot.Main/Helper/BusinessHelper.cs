@@ -4,7 +4,6 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Model.PixivRanking;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Type;
 
@@ -153,7 +152,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="session"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static List<BaseContent> SplitToChainAsync(this string template, SendTarget sendTarget = SendTarget.Group)
+        public static List<BaseContent> SplitToChainAsync(this string template, SendTarget sendTarget)
         {
             if (string.IsNullOrWhiteSpace(template)) return new();
             List<BaseContent> chatContents = new List<BaseContent>();
@@ -174,6 +173,24 @@ namespace TheresaBot.Main.Helper
                 }
             }
             return chatContents;
+        }
+
+        /// <summary>
+        /// 处理错误后返回的提示内容
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="sendTarget"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static List<BaseContent> GetErrorContents(this Exception ex, SendTarget sendTarget, string message = "")
+        {
+            string template = BotConfig.GeneralConfig.ErrorMsg;
+            if (string.IsNullOrWhiteSpace(template)) template = "出了点小问题，再试一次吧~";
+            if (template.StartsWith(" ") == false) template = " " + template;
+            List<BaseContent> contents = template.SplitToChainAsync(sendTarget);
+            if (string.IsNullOrEmpty(message) == false) contents.Add(new PlainContent(message));
+            if (string.IsNullOrEmpty(ex.Message) == false) contents.Add(new PlainContent(ex.Message.cutString(200)));
+            return contents;
         }
 
         /// <summary>

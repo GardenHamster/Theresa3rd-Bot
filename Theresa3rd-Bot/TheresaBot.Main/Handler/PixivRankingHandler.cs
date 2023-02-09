@@ -2,13 +2,11 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
-using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Mode;
 using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PixivRanking;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -57,7 +55,8 @@ namespace TheresaBot.Main.Handler
             {
                 string errMsg = $"sendDailyRanking异常";
                 LogHelper.Error(ex, errMsg);
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, "出了点小问题，再试一次吧~");
+                await command.ReplyError(ex);
+                await Task.Delay(1000);
                 Reporter.SendError(ex, errMsg);
             }
             finally

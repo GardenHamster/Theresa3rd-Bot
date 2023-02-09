@@ -8,6 +8,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
+using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Command
@@ -33,7 +34,7 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
             if (string.IsNullOrWhiteSpace(template)) return 0;
-            IChatMessage[] msgList = await template.SplitToChainAsync().ToMiraiMessageAsync();
+            IChatMessage[] msgList = await template.SplitToChainAsync(SendTarget.Group).ToMiraiMessageAsync();
             return await Session.SendFriendMessageAsync(MemberId, msgList);
         }
 

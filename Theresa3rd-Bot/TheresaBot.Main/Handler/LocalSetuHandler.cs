@@ -70,10 +70,10 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                string errMsg = "localSetuSearchAsync异常";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
-                Reporter.SendError(ex, errMsg);
+                LogHelper.Error(ex, "localSearchAsync异常");
+                await command.ReplyError(ex);
+                await Task.Delay(1000);
+                Reporter.SendError(ex, "localSearchAsync异常");
             }
             finally
             {

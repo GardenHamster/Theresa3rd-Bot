@@ -28,5 +28,7 @@ namespace TheresaBot.Main.Command
 
         public abstract Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter);
 
+        public abstract Task ReplyError(Exception ex, string message = "");
+
     }
 }

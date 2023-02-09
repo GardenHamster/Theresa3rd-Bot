@@ -1,5 +1,4 @@
 ﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Gif;
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -119,7 +118,7 @@ namespace TheresaBot.Main.Handler
                 }
                 template = template.Replace("{Tags}", tags);
                 template = template.Replace("{SourceName}", timingSetuTimer.Source.GetTypeName());
-                chainList.AddRange(template.SplitToChainAsync());
+                chainList.AddRange(template.SplitToChainAsync(SendTarget.Group));
                 await Session.SendGroupMessageAsync(groupId, chainList, timingSetuTimer.AtAll);
             }
             catch (Exception ex)

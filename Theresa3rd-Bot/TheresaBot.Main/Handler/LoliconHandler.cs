@@ -79,19 +79,12 @@ namespace TheresaBot.Main.Handler
 
                 CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);
             }
-            catch (ApiException ex)
-            {
-                string errMsg = $"loliconSearchAsync异常";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyGroupMessageWithAtAsync($"获取涩图出错了，{ex.Message}");
-                Reporter.SendError(ex, errMsg);
-            }
             catch (Exception ex)
             {
-                string errMsg = "loliconSearchAsync异常";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
-                Reporter.SendError(ex, errMsg);
+                LogHelper.Error(ex, "loliconSearchAsync异常");
+                await command.ReplyError(ex);
+                await Task.Delay(1000);
+                Reporter.SendError(ex, "loliconSearchAsync异常");
             }
             finally
             {

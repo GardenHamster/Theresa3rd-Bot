@@ -3,6 +3,7 @@ using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
@@ -92,7 +93,8 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "searchResult异常");
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, " 出了点小问题，任务结束~");
+                await command.ReplyError(ex);
+                await Task.Delay(1000);
                 Reporter.SendError(ex, "searchResult异常");
             }
             finally
@@ -179,7 +181,8 @@ namespace TheresaBot.Main.Handler
             {
                 string errMsg = $"searchWithSaucenao异常，url={imgUrl}";
                 LogHelper.Error(ex, errMsg);
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, $"查找第{index}张图片失败，再试一次吧~");
+                await command.ReplyError(ex, errMsg);
+                await Task.Delay(1000);
                 Reporter.SendError(ex, errMsg);
                 return false;
             }
@@ -243,7 +246,8 @@ namespace TheresaBot.Main.Handler
             {
                 string errMsg = $"searchWithAscii2d异常，url={imgUrl}";
                 LogHelper.Error(ex, errMsg);
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, $"查找图片失败，再试一次吧~");
+                await command.ReplyError(ex, errMsg);
+                await Task.Delay(1000);
                 Reporter.SendError(ex, errMsg);
             }
         }

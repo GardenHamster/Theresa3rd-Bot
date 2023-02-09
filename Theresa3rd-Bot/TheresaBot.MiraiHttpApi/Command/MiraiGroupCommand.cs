@@ -12,6 +12,7 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
+using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Command
@@ -78,7 +79,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
             if (string.IsNullOrWhiteSpace(template)) return 0;
             if (template.StartsWith(" ") == false) template = " " + template;
-            IChatMessage[] msgList = await template.SplitToChainAsync().ToMiraiMessageAsync();
+            IChatMessage[] msgList = await template.SplitToChainAsync(SendTarget.Group).ToMiraiMessageAsync();
             return await Session.SendGroupMessageAsync(GroupId, msgList);
         }
 

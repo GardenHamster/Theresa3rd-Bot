@@ -1,7 +1,9 @@
-﻿using TheresaBot.Main.Model.Content;
+﻿using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Command
 {
@@ -43,6 +45,12 @@ namespace TheresaBot.Main.Command
         public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
         {
             return await HandlerInvoker.HandleMethod.Invoke(this, session, reporter);
+        }
+
+        public override async Task ReplyError(Exception ex, string message = "")
+        {
+            List<BaseContent> contents = ex.GetErrorContents(SendTarget.Group, message);
+            await ReplyGroupMessageWithAtAsync(contents);
         }
 
     }

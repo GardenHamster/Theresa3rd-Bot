@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Relay;
@@ -76,13 +78,13 @@ namespace TheresaBot.MiraiHttpApi.Event
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "群指令异常");
-                await ReplyErrorWithAtAsync(session, args);
+                await ReplyGroupErrorAsync(ex, args);
                 await Task.Delay(1000);
                 new MiraiReporter().SendError(ex, "群指令异常");
             }
         }
 
-        public async Task SendRepeat(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        private async Task SendRepeat(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             try
             {
@@ -96,14 +98,18 @@ namespace TheresaBot.MiraiHttpApi.Event
             }
         }
 
-        public async Task<int> ReplyErrorWithAtAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
+        private async Task ReplyGroupErrorAsync(Exception exception, IGroupMessageEventArgs args)
         {
-            string template = BotConfig.GeneralConfig.ErrorMsg;
-            if (string.IsNullOrWhiteSpace(template)) template = " 出了点小问题，再试一次吧~";
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            msgList.Add(new AtMessage(args.Sender.Id));
-            msgList.AddRange(await template.SplitToChainAsync().ToMiraiMessageAsync());
-            return await MiraiHelper.Session.SendGroupMessageAsync(args.Sender.Group.Id, msgList.ToArray());
+            try
+            {
+                List<BaseContent> contents = exception.GetErrorContents(SendTarget.Group);
+                IChatMessage[] msgList = await contents.ToMiraiMessageAsync();
+                await MiraiHelper.Session.SendGroupMessageAsync(args.Sender.Group.Id, msgList);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "ReplyGroupErrorAsync异常");
+            }
         }
 
 

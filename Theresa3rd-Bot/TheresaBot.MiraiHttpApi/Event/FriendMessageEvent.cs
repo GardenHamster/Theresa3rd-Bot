@@ -4,11 +4,14 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Reporter;
@@ -54,27 +57,28 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage("ヾ(≧∇≦*)ゝ"));
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 LogHelper.Error(ex, "私聊指令异常");
-                await ReplyErrorAsync(session, args);
+                await ReplyFriendErrorAsync(ex, args);
                 await Task.Delay(1000);
                 new MiraiReporter().SendError(ex, "私聊指令异常");
             }
         }
 
-        public async Task<int> ReplyErrorAsync(IMiraiHttpSession session, IFriendMessageEventArgs args)
+        private async Task ReplyFriendErrorAsync(Exception exception, IFriendMessageEventArgs args)
         {
-            string template = BotConfig.GeneralConfig.ErrorMsg;
-            if (string.IsNullOrWhiteSpace(template)) template = "出了点小问题，再试一次吧~";
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            msgList.AddRange(await template.SplitToChainAsync().ToMiraiMessageAsync());
-            return await MiraiHelper.Session.SendFriendMessageAsync(args.Sender.Id, msgList.ToArray());
+            try
+            {
+                List<BaseContent> contents = exception.GetErrorContents(SendTarget.Friend);
+                IChatMessage[] msgList = await contents.ToMiraiMessageAsync();
+                await MiraiHelper.Session.SendFriendMessageAsync(args.Sender.Id, msgList.ToArray());
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "ReplyFriendErrorAsync异常");
+            }
         }
-
-
-
-
 
 
     }

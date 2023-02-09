@@ -672,6 +672,7 @@ namespace TheresaBot.Main.Business
         {
             StringBuilder workInfoStr = new StringBuilder();
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
+            workInfoStr.AppendLine($"本条数据来源于Pixiv~");
             workInfoStr.AppendLine($"标题：{pixivWorkInfo.illustTitle}，PixivId：{pixivWorkInfo.illustId}，画师：{pixivWorkInfo.userName}，画师id：{pixivWorkInfo.userId}，发布时间：{pixivWorkInfo.createDate.ToSimpleString()}，");
             workInfoStr.AppendLine($"收藏：{pixivWorkInfo.bookmarkCount}，赞：{pixivWorkInfo.likeCount}，浏览：{pixivWorkInfo.viewCount}，");
             workInfoStr.AppendLine($"耗时：{costSecond}s，标签图片：{pixivWorkInfo.RelevantCount}张，作品图片:{pixivWorkInfo.pageCount}张");

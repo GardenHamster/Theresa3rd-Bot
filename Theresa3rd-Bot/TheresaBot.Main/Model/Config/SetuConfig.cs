@@ -18,11 +18,13 @@
 
         public bool SendPrivate { get; set; }
 
+        public SetuPixivConfig Pixiv { get; set; }
+
         public LoliconConfig Lolicon { get; set; }
 
         public LolisukiConfig Lolisuki { get; set; }
 
-        public SetuPixivConfig Pixiv { get; set; }
+        public LocalSetuConfig Local { get; set; }
 
     }
 

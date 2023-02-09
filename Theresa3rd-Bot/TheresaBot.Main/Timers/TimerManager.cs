@@ -127,6 +127,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
+                if (reminderTimer.Enable == false) return;
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(reminderTimer.Cron).Build();
                 IJobDetail jobDetail = JobBuilder.Create<ReminderJob>().WithIdentity(reminderTimer.GetHashCode().ToString(), "ReminderJob").Build();
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();

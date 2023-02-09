@@ -1,4 +1,6 @@
 ﻿using TheresaBot.Main.Business;
+using TheresaBot.Main.Cache;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
@@ -16,6 +18,67 @@ namespace TheresaBot.Main.Handler
         public LocalSetuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             localSetuBusiness = new LocalSetuBusiness();
+        }
+
+        public async Task localSearchAsync(GroupCommand command)
+        {
+            try
+            {
+                List<LocalSetuInfo> dataList;
+                string tagName = command.KeyWord;
+
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
+
+                string localPath = BotConfig.TimingSetuConfig.LocalPath;
+                if (string.IsNullOrWhiteSpace(localPath)) throw new Exception($"未配置LocalPath");
+                if (Directory.Exists(localPath) == false) throw new Exception($"本地涩图路径：{localPath}不存在");
+                
+                if (await CheckSetuTagEnableAsync(command, tagName) == false) return;
+
+                if (string.IsNullOrEmpty(tagName))
+                {
+                    dataList = localSetuBusiness.loadRandom(localPath, 1, true);
+                }
+                else
+                {
+                    if (await CheckSetuCustomEnableAsync(command) == false) return;
+                    dataList = localSetuBusiness.loadInDir(localPath, tagName, 1);
+                }
+
+                if (dataList.Count == 0)
+                {
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "没有获取到任何本地涩图~");
+                    return;
+                }
+
+                string template = BotConfig.SetuConfig.Local.Template;
+                long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
+
+                LocalSetuInfo setuInfo = dataList.First();
+                List<BaseContent> workMsgs = new List<BaseContent>();
+                workMsgs.Add(new PlainContent(localSetuBusiness.getSetuInfo(setuInfo, todayLeftCount, template)));
+                List<FileInfo> setuFiles = new() { setuInfo.FileInfo };
+
+                Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
+                if (BotConfig.SetuConfig.SendPrivate)
+                {
+                    await Task.Delay(1000);
+                    Task sendTempTask = command.SendTempSetuAsync(workMsgs, setuFiles);
+                }
+
+                CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "localSetuSearchAsync异常";
+                LogHelper.Error(ex, errMsg);
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ErrorMsg, "获取涩图出错了，再试一次吧~");
+                Reporter.SendError(ex, errMsg);
+            }
+            finally
+            {
+                CoolingCache.SetHandFinish(command.GroupId, command.MemberId);//请求处理完成
+            }
         }
 
         public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
@@ -43,19 +106,12 @@ namespace TheresaBot.Main.Handler
 
         private SetuContent getSetuContent(LocalSetuInfo data)
         {
-            string setuInfo = getSetuInfo(data, BotConfig.TimingSetuConfig.LocalTemplate);
+            string setuInfo = localSetuBusiness.getDefaultSetuInfo(data);
             List<FileInfo> setuFiles = new List<FileInfo>() { data.FileInfo };
             return new SetuContent(setuInfo, setuFiles);
         }
 
-        private string getSetuInfo(LocalSetuInfo setuInfo, string template)
-        {
-            if (string.IsNullOrWhiteSpace(template)) return string.Empty;
-            template = template.Replace("{FileName}", setuInfo.FileInfo.Name);
-            template = template.Replace("{FilePath}", $"{setuInfo.DirInfo.Name}/{setuInfo.FileInfo.Name}");
-            template = template.Replace("{SizeMB}", MathHelper.getMbWithByte(setuInfo.FileInfo.Length).ToString());
-            return template;
-        }
+
 
 
 

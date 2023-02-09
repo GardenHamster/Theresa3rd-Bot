@@ -33,6 +33,7 @@ namespace TheresaBot.Main.Business
         {
             StringBuilder workInfoStr = new StringBuilder();
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
+            workInfoStr.AppendLine($"本条数据来源于Lolicon Api~");
             workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}，耗时：{costSecond}s");
             workInfoStr.AppendLine($"标签：{loliconData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum)}");
             workInfoStr.Append(loliconData.urls.original.ToOrginProxyUrl());

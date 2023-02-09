@@ -35,6 +35,7 @@ namespace TheresaBot.Main.Business
         {
             StringBuilder workInfoStr = new StringBuilder();
             int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
+            workInfoStr.AppendLine($"本条数据来源于Lolisuki Api~");
             workInfoStr.AppendLine($"标题：{lolisukiData.title}，画师：{lolisukiData.author}，画师id：{lolisukiData.uid}，Level：{lolisukiData.level}，分类：{lolisukiData.taste}，耗时：{costSecond}s");
             workInfoStr.AppendLine($"标签：{lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum)}");
             workInfoStr.Append(lolisukiData.urls.original.ToOrginProxyUrl());

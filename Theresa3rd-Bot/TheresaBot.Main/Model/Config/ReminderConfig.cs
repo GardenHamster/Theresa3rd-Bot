@@ -7,6 +7,8 @@
 
     public class ReminderTimer
     {
+        public bool Enable { get; set; }
+
         public string Name { get; set; }
 
         public string Cron { get; set; }

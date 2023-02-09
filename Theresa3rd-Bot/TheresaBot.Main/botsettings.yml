@@ -243,7 +243,7 @@ PixivRanking:
         MinRatingCount:         100
         MinRatingRate:          0.01
         MinBookCount:           3000
-        MinBookRate:            0.1
+        MinBookRate:            0.155
     Subscribe:
         - Enable:               false
           Groups:               [284196392]
@@ -253,12 +253,6 @@ PixivRanking:
 
         - Enable:               false
           Groups:               [284196392]
-          Content:              ['Weekly']
-          Cron:                 '0 31 10 ? * SAT'
-          SendDetail:           10
-
-        - Enable:               false
-          Groups:               [284196392]
-          Content:              ['Monthly']
-          Cron:                 '0 32 10 28 * ?'
+          Content:              ['Weekly','Monthly']
+          Cron:                 '0 35 10 ? * Tue,SAT'
           SendDetail:           10

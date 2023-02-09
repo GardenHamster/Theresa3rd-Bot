@@ -134,7 +134,7 @@ Setu:                                                                           
         LocalPath:              'C:\BotImg\localSetu'
         Template:               |                                                   #消息模版，值为空时将使用默认模版
                                 本条数据来源于本地图库，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
-                                文件名：{FileName}，目录：{FilePath}，大小：{SizeMB}MB
+                                文件名：{FileName}，大小：{SizeMB}MB
 
 Saucenao:                                                                           #Saucenao以图搜图，查找原图功能
     Enable:                     true                                                #是否启用
@@ -208,7 +208,7 @@ PixivRanking:
     Enable:                     true                                                #是否启用
     ProcessingMsg:              '正在获取榜单信息，需要亿点时间...'                    #开始查找前返回的消息
     Template:                   '{Date}{Ranking}精选，数据缓存{CacheSeconds}秒'   #消息模版
-    MaxScan:                    300
+    MaxScan:                    500
     MaxInPage:                  30
     SortType:                   2
     SendMerge:                  true
@@ -216,38 +216,38 @@ PixivRanking:
     CacheSeconds:               3600
     Daily:
         Commands:               ['日榜']
-        MinRatingCount:         500
+        MinRatingCount:         300
         MinRatingRate:          0.1
         MinBookCount:           500
         MinBookRate:            0.1
     DailyAI:
         Commands:               ['AI日榜']
-        MinRatingCount:         500
+        MinRatingCount:         300
         MinRatingRate:          0.1
-        MinBookCount:           700
-        MinBookRate:            0.15
-    DailyMale:
+        MinBookCount:           500
+        MinBookRate:            0.1
+    Male:
         Commands:               ['LSP日榜']
-        MinRatingCount:         500
-        MinRatingRate:          0.1
-        MinBookCount:           700
-        MinBookRate:            0.15
+        MinRatingCount:         300
+        MinRatingRate:          0.18
+        MinBookCount:           500
+        MinBookRate:            0.24
     Weekly:
         Commands:               ['周榜']
-        MinRatingCount:         2000
-        MinRatingRate:          0.15
-        MinBookCount:           3000
-        MinBookRate:            0.18
+        MinRatingCount:         1000
+        MinRatingRate:          0.18
+        MinBookCount:           1500
+        MinBookRate:            0.25
     Monthly:
         Commands:               ['月榜']
-        MinRatingCount:         5000
-        MinRatingRate:          0.15
-        MinBookCount:           6000
-        MinBookRate:            0.18
+        MinRatingCount:         100
+        MinRatingRate:          0.01
+        MinBookCount:           3000
+        MinBookRate:            0.1
     Subscribe:
         - Enable:               false
           Groups:               [284196392]
-          Content:              ['Daily','DailyAI','DailyMale']
+          Content:              ['Daily','DailyAI']
           Cron:                 '0 30 10 * * ?'
           SendDetail:           10
 

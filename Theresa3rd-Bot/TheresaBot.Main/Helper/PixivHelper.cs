@@ -107,12 +107,12 @@ namespace TheresaBot.Main.Helper
             return await GetPixivResultAsync<PixivFollowLatest>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
-        public static async Task<PixivRankingData> GetPixivRankingData(string mode, int page)
+        public static async Task<PixivRankingData> GetPixivRankingData(string mode, int page, string date = "")
         {
             string operation = "获取排行信息";
             string referer = HttpUrl.getPixivReferer();
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivRankingUrl(mode, page);
+            string postUrl = HttpUrl.getPixivRankingUrl(mode, page, date);
             return await GetPixivRankingAsync<PixivRankingData>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 

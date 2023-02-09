@@ -63,7 +63,7 @@ namespace TheresaBot.Main.Helper
                 Typeface = SKTypeface.FromFamilyName("SimSun")
             };
             PixivRankingContent content = detail.RankingContent;
-            canvas.DrawText($"#{content.rank} PID{content.illust_id} {detail.WorkInfo.bookmarkRate.toPercent()}/{detail.WorkInfo.likeRate.toPercent()}", new SKPoint(x, y), paint);
+            canvas.DrawText($"#{content.rank} PID{content.illust_id} {detail.WorkInfo.likeRate.toPercent()}/{detail.WorkInfo.bookmarkRate.toPercent()}", new SKPoint(x, y), paint);
         }
 
         private static void DrawImage(SKCanvas canvas, PixivRankingDetail detail, int areaX, int areaY)

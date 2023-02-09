@@ -17,7 +17,6 @@ namespace TheresaBot.Main.Invoker
                 await new MenuHandler(session, reporter).sendMenuAsync(botCommand);
                 return true;
             })),
-
             //拉黑成员
             new(BotConfig.ManageConfig?.DisableMemberCommands, CommandType.BanMember, new(async (botCommand, session, reporter) =>
             {
@@ -27,7 +26,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //解禁成员
             new(BotConfig.ManageConfig?.EnableMemberCommands, CommandType.BanMember, new(async (botCommand, session, reporter) =>
             {
@@ -37,7 +35,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //订阅pixiv画师
             new(BotConfig.SubscribeConfig?.PixivUser?.AddCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
@@ -49,7 +46,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //订阅pixiv关注画师列表
             new(BotConfig.SubscribeConfig?.PixivUser?.SyncCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
@@ -61,7 +57,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //退订pixiv画师
             new(BotConfig.SubscribeConfig?.PixivUser?.RmCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
@@ -72,7 +67,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //订阅pixiv标签
             new(BotConfig.SubscribeConfig?.PixivTag?.AddCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
@@ -84,7 +78,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //退订pixiv标签
             new(BotConfig.SubscribeConfig?.PixivTag?.RmCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
@@ -95,7 +88,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //订阅米游社用户
             new(BotConfig.SubscribeConfig?.Miyoushe?.AddCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
@@ -106,7 +98,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //退订米游社用户
             new(BotConfig.SubscribeConfig?.Miyoushe?.RmCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
@@ -117,7 +108,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //禁止色图标签
             new(BotConfig.ManageConfig?.DisableTagCommands, CommandType.BanSetuTag, new(async (botCommand, session, reporter) =>
             {
@@ -127,7 +117,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //解禁色图标签
             new(BotConfig.ManageConfig?.EnableTagCommands, CommandType.BanSetuTag, new(async (botCommand, session, reporter) =>
             {
@@ -137,7 +126,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //Pixiv
             new(BotConfig.SetuConfig?.Pixiv?.Commands, CommandType.Setu, new(async (botCommand, session, reporter) =>
             {
@@ -153,7 +141,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //Lolicon
             new(BotConfig.SetuConfig?.Lolicon?.Commands, CommandType.Setu, new(async (botCommand, session, reporter) =>
             {
@@ -168,7 +155,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //Lolisuki
             new(BotConfig.SetuConfig?.Lolisuki?.Commands, CommandType.Setu, new(async (botCommand, session, reporter) =>
             {
@@ -183,7 +169,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //LocalSetu
             new(BotConfig.SetuConfig?.Local?.Commands, CommandType.Setu, new(async (botCommand, session, reporter) =>
             {
@@ -198,7 +183,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //Saucenao
             new(BotConfig.SaucenaoConfig?.Commands, CommandType.Saucenao, new(async (botCommand, session, reporter) =>
             {
@@ -212,7 +196,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //日榜
             new(BotConfig.PixivRankingConfig?.Daily?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
             {
@@ -226,8 +209,58 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
-
+            //AI日榜
+            new(BotConfig.PixivRankingConfig?.DailyAI?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
+            {
+                PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
+                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.DailyAI)) return false;
+                if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.sendDailyAIRanking(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //受男性欢迎日榜
+            new(BotConfig.PixivRankingConfig?.Male?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
+            {
+                PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
+                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Male)) return false;
+                if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.sendMaleRanking(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //周榜
+            new(BotConfig.PixivRankingConfig?.Weekly?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
+            {
+                PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
+                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Weekly)) return false;
+                if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.sendWeeklyRanking(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //月榜
+            new(BotConfig.PixivRankingConfig?.Monthly?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
+            {
+                PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
+                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Monthly)) return false;
+                if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.sendMonthlyRanking(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
             //version
             new(new List<string>() { "版本", "version" }, CommandType.Version, new(async (botCommand, session, reporter) =>
             {
@@ -247,7 +280,6 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-
             //SaucenaoCookie
             new(BotConfig.ManageConfig?.SaucenaoCookieCommands, CommandType.BanSetuTag, new(async (botCommand, session, reporter) =>
             {

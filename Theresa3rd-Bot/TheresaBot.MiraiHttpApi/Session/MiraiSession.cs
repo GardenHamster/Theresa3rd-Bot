@@ -106,6 +106,7 @@ namespace TheresaBot.MiraiHttpApi.Session
             foreach (var content in setuContents)
             {
                 msgIdList.AddRange(await SendGroupSetuAsync(content, groupId));
+                await Task.Delay(1000);
             }
             return msgIdList.ToArray();
         }

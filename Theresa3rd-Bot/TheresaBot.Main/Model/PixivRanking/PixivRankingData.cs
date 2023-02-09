@@ -13,11 +13,7 @@ namespace TheresaBot.Main.Model.PixivRanking
         public string mode { get; set; }
         public string content { get; set; }
         public int page { get; set; }
-        public bool prev { get; set; }
-        public int next { get; set; }
         public string date { get; set; }
-        public string prev_date { get; set; }
-        public bool next_date { get; set; }
         public int rank_total { get; set; }
     }
 

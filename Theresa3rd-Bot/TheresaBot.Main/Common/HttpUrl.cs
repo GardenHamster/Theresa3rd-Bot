@@ -108,9 +108,16 @@ namespace TheresaBot.Main.Common
         /// pixiv排行榜数据接口
         /// </summary>
         /// <returns></returns>
-        public static string getPixivRankingUrl(string mode, int page)
+        public static string getPixivRankingUrl(string mode, int page, string date = "")
         {
-            return $"{PixivHomeUrl}/ranking.php?mode={mode}&p={page}&format=json";
+            if (string.IsNullOrWhiteSpace(date))
+            {
+                return $"{PixivHomeUrl}/ranking.php?mode={mode}&p={page}&format=json";
+            }
+            else
+            {
+                return $"{PixivHomeUrl}/ranking.php?mode={mode}&p={page}&date={date}&format=json";
+            }
         }
 
         /// <summary>

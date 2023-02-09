@@ -23,7 +23,7 @@ namespace TheresaBot.Main.Cache
             List<PixivRankingInfo> pixivRankingList = CacheDic[rankingMode];
             if (pixivRankingList is null) return null;
             if (pixivRankingList.Count == 0) return null;
-            return pixivRankingList.Where(o => o.SearchDate == searchDate || o.Date == searchDate).OrderByDescending(o => o.CreateDate).FirstOrDefault();
+            return pixivRankingList.Where(o => o.SearchDate == searchDate || o.RankingDate == searchDate).OrderByDescending(o => o.CreateDate).FirstOrDefault();
         }
 
         private static void ClearCahce()

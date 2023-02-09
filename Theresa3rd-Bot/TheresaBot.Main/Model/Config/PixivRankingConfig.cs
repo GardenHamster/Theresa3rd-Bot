@@ -14,7 +14,7 @@ namespace TheresaBot.Main.Model.Config
         public int CacheSeconds { get; set; }
         public PixivRankingItem Daily { get; set; }
         public PixivRankingItem DailyAI { get; set; }
-        public PixivRankingItem DailyMale { get; set; }
+        public PixivRankingItem Male { get; set; }
         public PixivRankingItem Weekly { get; set; }
         public PixivRankingItem Monthly { get; set; }
         public List<PixivRankingSubscribe> Subscribe { get; set; }

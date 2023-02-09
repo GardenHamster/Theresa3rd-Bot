@@ -52,7 +52,7 @@
         /// <returns></returns>
         public static string toPercent(this double number)
         {
-            number = Convert.ToDouble((int)(number * 100)) / 100;
+            number = Convert.ToDouble((int)(number * 1000)) / 1000;
             return number.ToString() + "%";
         }
 

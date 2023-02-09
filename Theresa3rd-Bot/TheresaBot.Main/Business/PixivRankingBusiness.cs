@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using TheresaBot.Main.Common;
+﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Mode;
@@ -14,11 +13,11 @@ namespace TheresaBot.Main.Business
     {
         private const int eachPage = 50;
 
-        public async Task<(List<PixivRankingContent>, string)> getRankingDatas(PixivRankingItem rankingItem, PixivRankingMode rankingMode)
+        public async Task<(List<PixivRankingContent>, string)> getRankingDatas(PixivRankingMode rankingMode, string search_date)
         {
             string mode = rankingMode.Code;
-            PixivRankingData firstpage = await PixivHelper.GetPixivRankingData(mode, 1);
-            string date = firstpage.date;
+            PixivRankingData firstpage = await PixivHelper.GetPixivRankingData(mode, 1, search_date);
+            string ranking_date = firstpage.date;
             int maxScan = BotConfig.PixivRankingConfig.MaxScan;
             if (maxScan > 500) maxScan = 500;
             if (firstpage.rank_total < maxScan) maxScan = firstpage.rank_total;
@@ -27,12 +26,12 @@ namespace TheresaBot.Main.Business
             List<PixivRankingContent> rankingContents = new List<PixivRankingContent>();
             for (int page = 1; page < maxPage + 1; page++)
             {
-                PixivRankingData rankingData = await PixivHelper.GetPixivRankingData(mode, page);
+                PixivRankingData rankingData = await PixivHelper.GetPixivRankingData(mode, page, search_date);
                 if (rankingData.contents is null || rankingData.contents.Count == 0) throw new ApiException("无法从api中获取任何排行信息");
                 rankingContents.AddRange(rankingData.contents);
                 await Task.Delay(1000);
             }
-            return (rankingContents, date);
+            return (rankingContents, ranking_date);
         }
 
         public async Task<List<PixivRankingDetail>> filterContents(PixivRankingItem rankingItem, List<PixivRankingContent> rankingContents)

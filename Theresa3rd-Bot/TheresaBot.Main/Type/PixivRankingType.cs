@@ -11,7 +11,7 @@ namespace TheresaBot.Main.Type
         Other = 0,
         Daily = 1,
         DailyAI = 2,
-        DailyMale = 3,
+        Male = 3,
         Weekly = 4,
         Monthly = 5
     }

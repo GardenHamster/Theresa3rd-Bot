@@ -3,6 +3,7 @@ using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
@@ -135,7 +136,12 @@ namespace TheresaBot.MiraiHttpApi.Session
                     List<IChatMessage> msgList = new List<IChatMessage>();
                     msgList.AddRange(await setuInfos.ToMiraiMessageAsync());
                     msgList.AddRange(imgMsgs);
-                    msgIds.Add(await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray()));
+                    int msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
+                    if (msgId < 0)
+                    {
+                        await Task.Delay(1000);
+                        msgId = await MiraiHelper.Session.SendGroupMessageWithoutImageAsync(groupId, msgList);
+                    }
                 }
                 return msgIds.ToArray();
             }

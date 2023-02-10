@@ -130,7 +130,13 @@ namespace TheresaBot.MiraiHttpApi.Command
                     if (isAt) msgList.Add(new AtMessage(MemberId));
                     msgList.AddRange(await workContents.ToMiraiMessageAsync());
                     msgList.AddRange(imgMsgs);
-                    msgIds.Add(await Session.SendGroupMessageAsync(GroupId, msgList.ToArray()));
+                    int msgId = await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
+                    if (msgId < 0)
+                    {
+                        await Task.Delay(1000);
+                        msgId = await Session.SendGroupMessageWithoutImageAsync(GroupId, msgList);
+                    }
+                    msgIds.Add(msgId);
                 }
 
                 if (revokeInterval > 0)
@@ -175,6 +181,7 @@ namespace TheresaBot.MiraiHttpApi.Command
                 LogHelper.Error(ex, "SendTempSetuAsync异常");
             }
         }
+
 
     }
 }

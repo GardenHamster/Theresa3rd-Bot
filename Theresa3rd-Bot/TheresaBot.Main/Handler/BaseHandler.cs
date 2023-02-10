@@ -195,7 +195,7 @@ namespace TheresaBot.Main.Handler
 
         public async Task<bool> CheckPixivRankingHandingAsync(GroupCommand command)
         {
-            if (CoolingCache.IsPixivRankingHanding(command.GroupId) == false) return false;
+            if (CoolingCache.IsPixivRankingHanding() == false) return false;
             await command.ReplyGroupMessageWithAtAsync("一个日榜功能正在处理中，稍后再来吧");
             return true;
         }

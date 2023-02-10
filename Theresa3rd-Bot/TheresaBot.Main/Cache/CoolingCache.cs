@@ -9,17 +9,147 @@ namespace TheresaBot.Main.Cache
         /// <summary>
         /// 定时涩图任务冷却信息
         /// </summary>
-        public static TimingCoolingInfo SetuTimingCoolingInfo = new TimingCoolingInfo();
+        private static readonly TimingCoolingInfo SetuTimingCoolingInfo = new TimingCoolingInfo();
+
+        /// <summary>
+        /// Pixiv日榜任务锁
+        /// </summary>
+        private static readonly PixivRankingHandingInfo PixivRankingHandingInfo = new PixivRankingHandingInfo();
 
         /// <summary>
         /// 群员功能冷却字典
         /// </summary>
-        public static Dictionary<long, List<MemberCoolingInfo>> MemberCoolingDic = new Dictionary<long, List<MemberCoolingInfo>>();
+        private static readonly Dictionary<long, List<MemberCoolingInfo>> MemberCoolingDic = new Dictionary<long, List<MemberCoolingInfo>>();
 
         /// <summary>
         /// 群功能冷却共享字典
         /// </summary>
-        public static Dictionary<long, GroupCoolingInfo> GroupCoolingDic = new Dictionary<long, GroupCoolingInfo>();
+        private static readonly Dictionary<long, GroupCoolingInfo> GroupCoolingDic = new Dictionary<long, GroupCoolingInfo>();
+
+        /// <summary>
+        /// 检查涩图功能是否在冷却中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public static int GetMemberSetuCD(long groupId, long memberId)
+        {
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            return GetCDSeconds(coolingInfo.LastGetSetuTime, BotConfig.SetuConfig.MemberCD);
+        }
+
+        /// <summary>
+        /// 记录涩图功能最后使用时间，进入CD状态
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        public static void SetMemberSetuCooling(long groupId, long memberId)
+        {
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            coolingInfo.LastGetSetuTime = DateTime.Now;
+        }
+
+        /// <summary>
+        /// 检查原图功能是否在冷却中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public static int GetMemberSaucenaoCD(long groupId, long memberId)
+        {
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            return GetCDSeconds(coolingInfo.LastSaucenaoTime, BotConfig.SaucenaoConfig.MemberCD);
+        }
+
+        /// <summary>
+        /// 记录搜图功能最后使用时间，进入CD状态
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        public static void SetMemberSaucenaoCooling(long groupId, long memberId)
+        {
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            coolingInfo.LastSaucenaoTime = DateTime.Now;
+        }
+
+        /// <summary>
+        /// 检查涩图功能是否在共享CD中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static int GetGroupSetuCD(long groupId)
+        {
+            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+            return GetCDSeconds(coolingInfo.LastSetuTime, BotConfig.SetuConfig.GroupCD);
+        }
+
+        /// <summary>
+        /// 记录涩图功能最后使用时间，进入共享CD状态
+        /// </summary>
+        /// <param name="groupId"></param>
+        public static void SetGroupSetuCooling(long groupId)
+        {
+            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+            coolingInfo.LastSetuTime = DateTime.Now;
+        }
+
+        /// <summary>
+        /// 检查日榜功能是否在共享CD中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static int GetGroupPixivRankingCD(PixivRankingType rankingType, long groupId)
+        {
+            if (IsNoCD(groupId)) return 0;
+            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+            if (coolingInfo.LastPixivRankingTime.ContainsKey(rankingType) == false) return 0;
+            DateTime? lastTime = coolingInfo.LastPixivRankingTime[rankingType];
+            return GetCDSeconds(lastTime, BotConfig.PixivRankingConfig.GroupCD);
+        }
+
+        /// <summary>
+        /// 记录日榜功能最后使用时间，进入共享CD状态
+        /// </summary>
+        /// <param name="groupId"></param>
+        public static void SetGroupPixivRankingCooling(PixivRankingType rankingType, long groupId)
+        {
+            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+            coolingInfo.LastPixivRankingTime[rankingType] = DateTime.Now;
+        }
+
+        /// <summary>
+        /// 是否有请求在处理中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public static bool IsHanding(long groupId, long memberId)
+        {
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            return coolingInfo.Handing;
+        }
+
+        /// <summary>
+        /// 标记请求处理中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        public static void SetHanding(long groupId, long memberId)
+        {
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            coolingInfo.Handing = true;
+        }
+
+        /// <summary>
+        /// 标记请求处理完成
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        public static void SetHandFinish(long groupId, long memberId)
+        {
+            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+            coolingInfo.Handing = false;
+        }
 
         /// <summary>
         /// 判断是否可以触发下一个定时涩图任务
@@ -47,186 +177,32 @@ namespace TheresaBot.Main.Cache
         }
 
         /// <summary>
-        /// 检查涩图功能是否在冷却中
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        public static int GetMemberSetuCD(long groupId, long memberId)
-        {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return GetCDSeconds(coolingInfo.LastGetSetuTime, BotConfig.SetuConfig.MemberCD);
-        }
-
-        /// <summary>
-        /// 记录涩图功能最后使用时间，进入CD状态
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        public static void SetMemberSetuCooling(long groupId, long memberId)
-        {
-            lock (MemberCoolingDic)
-            {
-                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-                coolingInfo.LastGetSetuTime = DateTime.Now;
-            }
-        }
-
-        /// <summary>
-        /// 检查原图功能是否在冷却中
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        public static int GetMemberSaucenaoCD(long groupId, long memberId)
-        {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return GetCDSeconds(coolingInfo.LastSaucenaoTime, BotConfig.SaucenaoConfig.MemberCD);
-        }
-
-        /// <summary>
-        /// 记录搜图功能最后使用时间，进入CD状态
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        public static void SetMemberSaucenaoCooling(long groupId, long memberId)
-        {
-            lock (MemberCoolingDic)
-            {
-                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-                coolingInfo.LastSaucenaoTime = DateTime.Now;
-            }
-        }
-
-        /// <summary>
-        /// 检查涩图功能是否在共享CD中
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <returns></returns>
-        public static int GetGroupSetuCD(long groupId)
-        {
-            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-            return GetCDSeconds(coolingInfo.LastSetuTime, BotConfig.SetuConfig.GroupCD);
-        }
-
-        /// <summary>
-        /// 记录涩图功能最后使用时间，进入共享CD状态
-        /// </summary>
-        /// <param name="groupId"></param>
-        public static void SetGroupSetuCooling(long groupId)
-        {
-            lock (GroupCoolingDic)
-            {
-                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-                coolingInfo.LastSetuTime = DateTime.Now;
-            }
-        }
-
-        /// <summary>
-        /// 检查日榜功能是否在共享CD中
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <returns></returns>
-        public static int GetGroupPixivRankingCD(PixivRankingType rankingType, long groupId)
-        {
-            if (IsNoCD(groupId)) return 0;
-            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-            if (coolingInfo.LastPixivRankingTime.ContainsKey(rankingType) == false) return 0;
-            DateTime? lastTime = coolingInfo.LastPixivRankingTime[rankingType];
-            return GetCDSeconds(lastTime, BotConfig.PixivRankingConfig.GroupCD);
-        }
-
-        /// <summary>
-        /// 记录日榜功能最后使用时间，进入共享CD状态
-        /// </summary>
-        /// <param name="groupId"></param>
-        public static void SetGroupPixivRankingCooling(PixivRankingType rankingType, long groupId)
-        {
-            lock (GroupCoolingDic)
-            {
-                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-                coolingInfo.LastPixivRankingTime[rankingType] = DateTime.Now;
-            }
-        }
-
-        /// <summary>
         /// 是否有请求在处理中
         /// </summary>
         /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
         /// <returns></returns>
-        public static bool IsHanding(long groupId, long memberId)
+        public static bool IsPixivRankingHanding()
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return coolingInfo.Handing;
+            lock (PixivRankingHandingInfo) return PixivRankingHandingInfo.IsHanding;
         }
 
         /// <summary>
         /// 标记请求处理中
         /// </summary>
         /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        public static void SetHanding(long groupId, long memberId)
+        public static void SetPixivRankingHanding()
         {
-            lock (MemberCoolingDic)
-            {
-                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-                coolingInfo.Handing = true;
-            }
+            lock (PixivRankingHandingInfo) PixivRankingHandingInfo.IsHanding = true;
         }
 
         /// <summary>
         /// 标记请求处理完成
         /// </summary>
         /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        public static void SetHandFinish(long groupId, long memberId)
+        public static void SetPixivRankingHandFinish()
         {
-            lock (MemberCoolingDic)
-            {
-                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-                coolingInfo.Handing = false;
-            }
+            lock (PixivRankingHandingInfo) PixivRankingHandingInfo.IsHanding = false;
         }
-
-        /// <summary>
-        /// 是否有请求在处理中
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <returns></returns>
-        public static bool IsPixivRankingHanding(long groupId)
-        {
-            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-            return coolingInfo.IsPixivRankingHanding;
-        }
-
-        /// <summary>
-        /// 标记请求处理中
-        /// </summary>
-        /// <param name="groupId"></param>
-        public static void SetPixivRankingHanding(long groupId)
-        {
-            lock (GroupCoolingDic)
-            {
-                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-                coolingInfo.IsPixivRankingHanding = true;
-            }
-        }
-
-        /// <summary>
-        /// 标记请求处理完成
-        /// </summary>
-        /// <param name="groupId"></param>
-        public static void SetPixivRankingHandFinish(long groupId)
-        {
-            lock (GroupCoolingDic)
-            {
-                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-                coolingInfo.IsPixivRankingHanding = false;
-            }
-        }
-
-
 
         /// <summary>
         /// 判断是否0CD
@@ -284,6 +260,8 @@ namespace TheresaBot.Main.Cache
                 return GroupCoolingDic[groupId];
             }
         }
+
+
 
     }
 }

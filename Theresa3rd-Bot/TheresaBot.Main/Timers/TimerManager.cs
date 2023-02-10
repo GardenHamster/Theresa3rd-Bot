@@ -1,5 +1,6 @@
 ﻿using Quartz;
 using Quartz.Impl;
+using System.Linq;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
@@ -43,6 +44,24 @@ namespace TheresaBot.Main.Timers
                 if (timingSetuConfig.Timers.Count == 0) return;
                 List<TimingSetuTimer> timers = timingSetuConfig.Timers.Take(10).ToList();
                 foreach (var item in timers) createTimingSetuJob(item, session, reporter);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"定时涩图任务初始化失败");
+            }
+        }
+
+        public static void initTimingRankingJobAsync(BaseSession session, BaseReporter reporter)
+        {
+            try
+            {
+                PixivRankingConfig rankingConfig = BotConfig.PixivRankingConfig;
+                if (rankingConfig is null) return;
+                if (rankingConfig.Enable == false) return;
+                if (rankingConfig.Subscribes is null) return;
+                if (rankingConfig.Subscribes.Count == 0) return;
+                List<PixivRankingTimer> timers = rankingConfig.Subscribes;
+                foreach (var item in timers) createTimingRankingJob(item, session, reporter);
             }
             catch (Exception ex)
             {
@@ -122,7 +141,6 @@ namespace TheresaBot.Main.Timers
             }
         }
 
-
         private static async void createReminderJob(ReminderTimer reminderTimer, BaseSession session, BaseReporter reporter)
         {
             try
@@ -162,6 +180,28 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"定时涩图任务[{timingSetuTimer.Name}]启动失败");
+            }
+        }
+
+        private static async void createTimingRankingJob(PixivRankingTimer rankingTimer, BaseSession session, BaseReporter reporter)
+        {
+            try
+            {
+                if (rankingTimer.Enable == false) return;
+                if (rankingTimer.Contents is null || rankingTimer.Contents.Count == 0) return;
+                ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(rankingTimer.Cron).Build();
+                IJobDetail jobDetail = JobBuilder.Create<TimingRankingJob>().WithIdentity(rankingTimer.GetHashCode().ToString(), "TimingRankingJob").Build();
+                IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+                jobDetail.JobDataMap.Put("PixivRankingTimer", rankingTimer);
+                jobDetail.JobDataMap.Put("BaseReporter", reporter);
+                jobDetail.JobDataMap.Put("BaseSession", session);
+                await scheduler.ScheduleJob(jobDetail, trigger);
+                await scheduler.Start();
+                LogHelper.Info($"定时日榜推送任务[{string.Join(',', rankingTimer.Contents)}]启动完毕...");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"定时日榜推送任务[{string.Join(',', rankingTimer.Contents)}]启动失败");
             }
         }
 

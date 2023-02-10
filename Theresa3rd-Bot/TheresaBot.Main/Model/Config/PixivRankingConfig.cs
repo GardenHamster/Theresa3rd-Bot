@@ -17,7 +17,7 @@ namespace TheresaBot.Main.Model.Config
         public PixivRankingItem Male { get; set; }
         public PixivRankingItem Weekly { get; set; }
         public PixivRankingItem Monthly { get; set; }
-        public List<PixivRankingSubscribe> Subscribe { get; set; }
+        public List<PixivRankingTimer> Subscribes { get; set; }
     }
 
     public class PixivRankingItem
@@ -29,11 +29,12 @@ namespace TheresaBot.Main.Model.Config
         public double MinBookRate { get; set; }
     }
 
-    public class PixivRankingSubscribe
+    public class PixivRankingTimer
     {
         public bool Enable { get; set; }
+        public string Name { get; set; }
         public List<long> Groups { get; set; }
-        public List<string> Content { get; set; }
+        public List<string> Contents { get; set; }
         public string Cron { get; set; }
         public int SendDetail { get; set; }
     }

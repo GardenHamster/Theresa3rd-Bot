@@ -67,6 +67,7 @@ namespace Theresa3rd_Bot
                 TimerManager.initReminderJob(session, reporter);
                 TimerManager.initTimingSetuJob(session, reporter);
                 TimerManager.initSubscribeTimers(session, reporter);
+                TimerManager.initTimingRankingJobAsync(session, reporter);
                 TimerManager.initCookieJobAsync(session, reporter);
                 TimerManager.initClearJobAsync(session, reporter);
                 LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£º{BotConfig.BotVersion}");

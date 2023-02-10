@@ -22,8 +22,8 @@ Pixiv:
     ImgSize:                    'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb，推荐使用thumb或small降低触发风控的概率
     OriginUrlProxy:             'https://i.pixiv.re'                                #pixiv原图链接的代理地址，如果QQ中打开原图链接时如果显示已停止访问，可以修改该值到其他图片代理地址，默认：https://i.pixiv.re(有频率限制)，也可以参照 https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/pixivproxy.md 搭建自己的代理地址
     SendImgBehind:              false                                               #将涩图信息和图片分开发送，先发送作品信息，后发送图片，可以开启此项避免消息被吞
-    ImgRetryTimes:              1                                                   #图片下载失败后重试次数，0表示不重试
-    ErrRetryTimes:              1                                                   #读取作品失败后的重试次数，0表示不重试
+    ImgRetryTimes:              2                                                   #图片下载失败后重试次数，0表示不重试
+    ErrRetryTimes:              2                                                   #读取作品失败后的重试次数，0表示不重试
     CookieExpire:               5184000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每60天更新一次
     CookieExpireMsg:            'emmmm,cookie过期了,请艾特管理员更新cookie'         #cookie过期时返回的消息
     Template:                   |                                                   #pixiv模版，值为空时将使用默认模版
@@ -189,12 +189,13 @@ Subscribe:                                                                      
 
 
 TimingSetu:
-    Enable:                     false                                                #是否启用
+    Enable:                     false                                               #是否启用
     LocalPath:                  'C:\BotImg\localSetu'                               #本地图片文件夹路径，图片需要分类放在子目录下，Source为0时可用
     FromOneDir:                 false                                               #true：从一个随机目录读取涩图，false：从不同的随机目录读取涩图，Source为0时可用
     LolisukiLevel:              '0-3'                                               #Lolisuki的Level，Source为2时可用
     Timers:                                                                         #定时列表
-        - Cron:                 '0 0 15 * * ?'                                      #cron表达式，可以百度cron格式，或者在线生成
+        - Enable:               true                                                #是否启用
+          Cron:                 '0 0 15 * * ?'                                      #cron表达式，可以百度cron格式，或者在线生成
           Name:                 '下午茶'                                            #定时器名称
           Groups:               [284196392]                                         #发送到群
           Source:               2                                                   #图源，0：本地，1：Lolicon，2：Lolisuki
@@ -207,7 +208,7 @@ TimingSetu:
 PixivRanking:
     Enable:                     true                                                #是否启用
     ProcessingMsg:              '正在获取榜单信息，需要亿点时间...'                    #开始查找前返回的消息
-    Template:                   '{Date}{Ranking}精选，数据缓存{CacheSeconds}秒'   #消息模版
+    Template:                   '{Date}{Ranking}精选，数据缓存{CacheSeconds}秒'       #消息模版
     MaxScan:                    500
     MaxInPage:                  30
     SortType:                   2
@@ -244,15 +245,15 @@ PixivRanking:
         MinRatingRate:          0.01
         MinBookCount:           3000
         MinBookRate:            0.155
-    Subscribe:
+    Subscribes:
         - Enable:               false
-          Groups:               [284196392]
-          Content:              ['Daily','DailyAI']
           Cron:                 '0 30 10 * * ?'
+          Groups:               [284196392]
+          Contents:             ['Daily','DailyAI']
           SendDetail:           10
 
         - Enable:               false
-          Groups:               [284196392]
-          Content:              ['Weekly','Monthly']
           Cron:                 '0 35 10 ? * Tue,SAT'
+          Groups:               [284196392]
+          Contents:             ['Weekly','Monthly']
           SendDetail:           10

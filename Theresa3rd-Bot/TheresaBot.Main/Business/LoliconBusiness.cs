@@ -11,10 +11,9 @@ namespace TheresaBot.Main.Business
     {
         private const int eachPage = 5;
 
-        public string getWorkInfo(LoliconDataV2 loliconData, DateTime startTime, long todayLeft, string template = "")
+        public string getWorkInfo(LoliconDataV2 loliconData, long todayLeft, string template = "")
         {
-            if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(loliconData, startTime);
-            int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
+            if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(loliconData);
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
@@ -23,18 +22,16 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{UserName}", loliconData.author);
             template = template.Replace("{UserId}", loliconData.uid);
             template = template.Replace("{SizeMB}", "??");
-            template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{Tags}", loliconData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum));
             template = template.Replace("{Urls}", loliconData.urls.original.ToOrginProxyUrl());
             return template;
         }
 
-        public string getDefaultWorkInfo(LoliconDataV2 loliconData, DateTime startTime)
+        public string getDefaultWorkInfo(LoliconDataV2 loliconData)
         {
             StringBuilder workInfoStr = new StringBuilder();
-            int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
             workInfoStr.AppendLine($"本条数据来源于Lolicon Api~");
-            workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}，耗时：{costSecond}s");
+            workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}");
             workInfoStr.AppendLine($"标签：{loliconData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum)}");
             workInfoStr.Append(loliconData.urls.original.ToOrginProxyUrl());
             return workInfoStr.ToString();

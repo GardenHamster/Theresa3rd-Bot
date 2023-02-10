@@ -7,6 +7,7 @@ using TheresaBot.Main.Mode;
 using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PixivRanking;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -63,11 +64,31 @@ namespace TheresaBot.Main.Handler
             try
             {
                 CoolingCache.SetPixivRankingHanding();
-                PixivRankingInfo pixivRankingInfo = await getRankingInfo(rankingItem, rankingMode, String.Empty);
-                PixivRankingCache.AddCache(rankingMode, pixivRankingInfo, String.Empty);
+                PixivRankingInfo rankingInfo = await rankingBusiness.getRankingInfo(rankingItem, rankingMode, String.Empty);
+                PixivRankingCache.AddCache(rankingMode, rankingInfo, String.Empty);
+                if (rankingInfo.RankingDetails.Count == 0) return;
+                await sendPreviewFileAsync(rankingTimer, rankingInfo, rankingMode);
+                await Task.Delay(2000);
+                await sendSetuDetailAsync(rankingTimer, rankingInfo, rankingMode);
+            }
+            catch (Exception ex)
+            {
+                string errMsg = $"handleRankingSubscribeAsync异常";
+                LogHelper.Error(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
+            }
+            finally
+            {
+                CoolingCache.SetPixivRankingHandFinish();
+            }
+        }
 
+        private async Task sendPreviewFileAsync(PixivRankingTimer rankingTimer, PixivRankingInfo pixivRankingInfo, PixivRankingMode rankingMode)
+        {
+            try
+            {
                 string template = BotConfig.PixivRankingConfig.Template;
-                string templateMsg = rankingBusiness.getRankingInfo(pixivRankingInfo.RankingDate, rankingMode.Name, template);
+                string templateMsg = rankingBusiness.getRankingMsg(pixivRankingInfo.RankingDate, rankingMode.Name, template);
 
                 List<string> PreviewFilePaths = pixivRankingInfo.PreviewFilePaths;
                 if (PreviewFilePaths is null || PreviewFilePaths.IsFilesExists() == false)
@@ -89,13 +110,41 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                string errMsg = $"HandleRankingSubscribeAsync异常";
+                string errMsg = $"sendPreviewFileAsync异常";
                 LogHelper.Error(ex, errMsg);
                 Reporter.SendError(ex, errMsg);
             }
-            finally
+        }
+
+        private async Task sendSetuDetailAsync(PixivRankingTimer rankingTimer, PixivRankingInfo pixivRankingInfo, PixivRankingMode rankingMode)
+        {
+            try
             {
-                CoolingCache.SetPixivRankingHandFinish();
+                if (rankingTimer.SendDetail <= 0) return;
+                List<SetuContent> setuContents = new List<SetuContent>();
+                for (int i = 0; i < pixivRankingInfo.RankingDetails.Count && i < rankingTimer.SendDetail; i++)
+                {
+                    PixivRankingDetail detail = pixivRankingInfo.RankingDetails[i];
+                    bool isR18Img = detail.WorkInfo.IsR18;
+                    bool isDownImg = rankingTimer.Groups.IsDownSetuImg(isR18Img);
+                    List<FileInfo> setuFiles = isDownImg ? await downPixivImgsAsync(detail.WorkInfo) : new();
+                    string workMsg = pixivBusiness.getWorkInfo(detail.WorkInfo, BotConfig.PixivConfig.Template);
+                    setuContents.Add(new SetuContent(workMsg, setuFiles));
+                }
+                List<long> groupIds = rankingTimer.Groups;
+                foreach (var groupId in groupIds)
+                {
+                    bool isShowImg = groupId.IsShowSetuImg(false);
+                    var sendContents = setuContents.Select(o => isShowImg ? o with { } : o with { SetuImages = new() }).ToList();
+                    await Session.SendGroupSetuAsync(sendContents, groupId, BotConfig.PixivRankingConfig.SendMerge);
+                    await Task.Delay(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                string errMsg = $"sendSetuDetailAsync异常";
+                LogHelper.Error(ex, errMsg);
+                Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -114,12 +163,12 @@ namespace TheresaBot.Main.Handler
                 PixivRankingInfo pixivRankingInfo = PixivRankingCache.GetCache(rankingMode, search_date);
                 if (pixivRankingInfo == null)
                 {
-                    pixivRankingInfo = await getRankingInfo(rankingItem, rankingMode, search_date);
+                    pixivRankingInfo = await rankingBusiness.getRankingInfo(rankingItem, rankingMode, search_date);
                     PixivRankingCache.AddCache(rankingMode, pixivRankingInfo, search_date);
                 }
 
                 string template = BotConfig.PixivRankingConfig.Template;
-                string templateMsg = rankingBusiness.getRankingInfo(pixivRankingInfo.RankingDate, rankingMode.Name, template);
+                string templateMsg = rankingBusiness.getRankingMsg(pixivRankingInfo.RankingDate, rankingMode.Name, template);
 
                 List<string> PreviewFilePaths = pixivRankingInfo.PreviewFilePaths;
                 if (PreviewFilePaths is null || PreviewFilePaths.IsFilesExists() == false)
@@ -151,13 +200,6 @@ namespace TheresaBot.Main.Handler
                 CoolingCache.SetPixivRankingHandFinish();
                 CoolingCache.SetHandFinish(command.GroupId, command.MemberId);
             }
-        }
-
-        private async Task<PixivRankingInfo> getRankingInfo(PixivRankingItem rankingItem, PixivRankingMode rankingMode, string search_date, int retryTimes = 2)
-        {
-            (List<PixivRankingContent> rankingContents, string ranking_date) = await rankingBusiness.getRankingDatas(rankingMode, search_date);
-            List<PixivRankingDetail> rankingDetails = await rankingBusiness.filterContents(rankingItem, rankingContents);
-            return new PixivRankingInfo(rankingDetails, rankingItem, rankingMode, ranking_date, BotConfig.PixivRankingConfig.CacheSeconds);
         }
 
         private List<string> createPreviewImg(PixivRankingInfo pixivRankingInfo)

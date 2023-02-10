@@ -3,7 +3,6 @@ using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
-using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
@@ -33,13 +32,12 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
 
+                PixivWorkInfo pixivWorkInfo;
                 string keyword = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
                 bool isShowR18 = command.GroupId.IsShowR18Setu();
-                PixivWorkInfo pixivWorkInfo;
                 if (await CheckSetuTagEnableAsync(command, keyword) == false) return;
 
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
@@ -95,7 +93,7 @@ namespace TheresaBot.Main.Handler
                     workMsgs.Add(new PlainContent(pixivBusiness.getSetuRemindMsg(remindTemplate, todayLeft)));
                 }
 
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startDateTime, pixivTemplate)));
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, pixivTemplate)));
 
                 Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
                 if (BotConfig.SetuConfig.SendPrivate)
@@ -504,7 +502,6 @@ namespace TheresaBot.Main.Handler
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
-                DateTime startTime = DateTime.Now;
                 List<long> groupIds = subscribeTask.GroupIdList;
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfo;
                 if (pixivWorkInfo is null || pixivWorkInfo.IsImproper || pixivWorkInfo.hasBanTag() != null) continue;
@@ -529,7 +526,7 @@ namespace TheresaBot.Main.Handler
                     workMsgs.Add(new PlainContent(pixivBusiness.getTagPushRemindMsg(remindTemplate, tagName)));
                 }
 
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, pixivTemplate)));
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, pixivTemplate)));
 
                 foreach (long groupId in groupIds)
                 {
@@ -566,11 +563,10 @@ namespace TheresaBot.Main.Handler
                 try
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
-                    DateTime startTime = DateTime.Now;
                     scanReport.ScanUser++;
                     List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserSubscribeAsync(subscribeTask, scanReport);
                     if (pixivSubscribeList is null || pixivSubscribeList.Count == 0) continue;
-                    await sendGroupSubscribeAsync(pixivSubscribeList, subscribeTask.GroupIdList, startTime);
+                    await sendGroupSubscribeAsync(pixivSubscribeList, subscribeTask.GroupIdList);
                 }
                 catch (Exception ex)
                 {
@@ -590,14 +586,13 @@ namespace TheresaBot.Main.Handler
 
         public async Task<PixivUserScanReport> HandleFollowSubscribeAsync()
         {
-            DateTime startTime = DateTime.Now;
             PixivUserScanReport scanReport = new PixivUserScanReport();
 
             try
             {
                 List<PixivSubscribe> pixivFollowLatestList = await pixivBusiness.getPixivFollowLatestAsync(scanReport);
                 if (pixivFollowLatestList is null || pixivFollowLatestList.Count == 0) return scanReport;
-                await sendGroupSubscribeAsync(pixivFollowLatestList, BotConfig.PermissionsConfig.SubscribeGroups, startTime);
+                await sendGroupSubscribeAsync(pixivFollowLatestList, BotConfig.PermissionsConfig.SubscribeGroups);
             }
             catch (Exception ex)
             {
@@ -609,7 +604,7 @@ namespace TheresaBot.Main.Handler
         }
 
 
-        private async Task sendGroupSubscribeAsync(List<PixivSubscribe> pixivSubscribeList, List<long> groupIds, DateTime startTime)
+        private async Task sendGroupSubscribeAsync(List<PixivSubscribe> pixivSubscribeList, List<long> groupIds)
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
@@ -635,7 +630,7 @@ namespace TheresaBot.Main.Handler
                     workMsgs.Add(new PlainContent(pixivBusiness.getUserPushRemindMsg(remindTemplate, pixivWorkInfo.userName)));
                 }
 
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, pixivTemplate)));
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, pixivTemplate)));
 
                 foreach (long groupId in groupIds)
                 {
@@ -671,7 +666,6 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                DateTime startTime = DateTime.Now;
                 List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, 1);
                 if (pixivSubscribeList is null || pixivSubscribeList.Count == 0)
                 {
@@ -687,7 +681,7 @@ namespace TheresaBot.Main.Handler
                 bool isShowImg = command.GroupId.IsShowSetuImg(pixivWorkInfo.IsR18);
                 List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
                 workMsgs.Add(new PlainContent($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, BotConfig.PixivConfig.Template)));
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, BotConfig.PixivConfig.Template)));
                 await Session.SendGroupSetuAsync(workMsgs, setuFiles, command.GroupId);
             }
             catch (Exception ex)

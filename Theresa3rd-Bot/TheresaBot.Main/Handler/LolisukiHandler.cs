@@ -132,7 +132,7 @@ namespace TheresaBot.Main.Handler
         {
             bool isR18Img = data.IsR18;
             bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-            string setuInfo = lolisukiBusiness.getDefaultWorkInfo(data, DateTime.Now);
+            string setuInfo = lolisukiBusiness.getDefaultWorkInfo(data);
             List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(data) : new();
             return new SetuContent(setuInfo, setuFiles);
         }

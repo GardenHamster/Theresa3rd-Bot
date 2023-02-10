@@ -25,12 +25,11 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
 
+                string tagStr = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
                 bool isShowR18 = command.GroupId.IsShowR18Setu();
-                string tagStr = command.KeyWord;
                 if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
                 {
@@ -67,7 +66,7 @@ namespace TheresaBot.Main.Handler
 
                 string template = BotConfig.SetuConfig.Lolicon.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.Add(new PlainContent(loliconBusiness.getWorkInfo(loliconData, startDateTime, todayLeftCount, template)));
+                workMsgs.Add(new PlainContent(loliconBusiness.getWorkInfo(loliconData, todayLeftCount, template)));
 
                 Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
 
@@ -126,7 +125,7 @@ namespace TheresaBot.Main.Handler
         {
             bool isR18Img = data.IsR18;
             bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-            string setuInfo = loliconBusiness.getDefaultWorkInfo(data, DateTime.Now);
+            string setuInfo = loliconBusiness.getDefaultWorkInfo(data);
             List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(data) : new();
             return new SetuContent(setuInfo, setuFiles);
         }

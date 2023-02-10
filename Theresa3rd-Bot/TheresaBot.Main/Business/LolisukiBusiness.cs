@@ -13,8 +13,7 @@ namespace TheresaBot.Main.Business
 
         public string getWorkInfo(LolisukiData lolisukiData, DateTime startTime, long todayLeft, string template = "")
         {
-            if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(lolisukiData, startTime);
-            int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
+            if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(lolisukiData);
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
@@ -25,18 +24,16 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{Level}", lolisukiData.level.ToString());
             template = template.Replace("{Taste}", lolisukiData.taste.ToString());
             template = template.Replace("{SizeMB}", "??");
-            template = template.Replace("{CostSecond}", costSecond.ToString());
             template = template.Replace("{Tags}", lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum));
             template = template.Replace("{Urls}", lolisukiData.urls.original.ToOrginProxyUrl());
             return template;
         }
 
-        public string getDefaultWorkInfo(LolisukiData lolisukiData, DateTime startTime)
+        public string getDefaultWorkInfo(LolisukiData lolisukiData)
         {
             StringBuilder workInfoStr = new StringBuilder();
-            int costSecond = DateTimeHelper.GetSecondDiff(startTime, DateTime.Now);
             workInfoStr.AppendLine($"本条数据来源于Lolisuki Api~");
-            workInfoStr.AppendLine($"标题：{lolisukiData.title}，画师：{lolisukiData.author}，画师id：{lolisukiData.uid}，Level：{lolisukiData.level}，分类：{lolisukiData.taste}，耗时：{costSecond}s");
+            workInfoStr.AppendLine($"标题：{lolisukiData.title}，画师：{lolisukiData.author}，画师id：{lolisukiData.uid}，Level：{lolisukiData.level}，分类：{lolisukiData.taste}");
             workInfoStr.AppendLine($"标签：{lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum)}");
             workInfoStr.Append(lolisukiData.urls.original.ToOrginProxyUrl());
             return workInfoStr.ToString();

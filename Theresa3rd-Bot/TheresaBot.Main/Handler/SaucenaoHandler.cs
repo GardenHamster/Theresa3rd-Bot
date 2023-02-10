@@ -132,7 +132,6 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                DateTime startTime = DateTime.Now;
                 SaucenaoResult saucenaoResult = await saucenaoBusiness.getSaucenaoResultAsync(imgUrl);
                 if (saucenaoResult is null || saucenaoResult.Items.Count == 0)
                 {
@@ -164,7 +163,7 @@ namespace TheresaBot.Main.Handler
                     List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, command.GroupId, command.MemberId));
-                    workMsgs.AddRange(getPixivMessageAsync(command, saucenaoItem, startTime));
+                    workMsgs.AddRange(getPixivMessageAsync(command, saucenaoItem));
                     Task sendTask = sendAndRevokeMessage(command, workMsgs, setuFiles);
                     return false;
                 }
@@ -283,7 +282,7 @@ namespace TheresaBot.Main.Handler
             return msgList;
         }
 
-        public List<BaseContent> getPixivMessageAsync(GroupCommand command, SaucenaoItem saucenaoItem, DateTime startTime)
+        public List<BaseContent> getPixivMessageAsync(GroupCommand command, SaucenaoItem saucenaoItem)
         {
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
             List<BaseContent> msgList = new List<BaseContent>();
@@ -307,7 +306,7 @@ namespace TheresaBot.Main.Handler
                 return msgList;
             }
 
-            msgList.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, startTime, BotConfig.PixivConfig.Template)));
+            msgList.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, BotConfig.PixivConfig.Template)));
             return msgList;
         }
 

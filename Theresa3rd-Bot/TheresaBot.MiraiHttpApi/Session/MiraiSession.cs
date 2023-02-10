@@ -1,8 +1,11 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.Models;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TheresaBot.Main.Common;
@@ -96,15 +99,24 @@ namespace TheresaBot.MiraiHttpApi.Session
         {
             if (sendMerge)
             {
-                return new int[] { await SendGroupMergeMessageAsync(groupId, setuContents) };
+                int msgId = await SendGroupMergeMessageAsync(groupId, setuContents);
+                if (msgId < 0)
+                {
+                    await Task.Delay(1000);
+                    msgId = await SendGroupMergeMessageAsync(groupId, setuContents.Select(o => o with { SetuImages = new() }).ToList());
+                }
+                return new[] { msgId };
             }
-            List<int> msgIdList = new List<int>();
-            foreach (var content in setuContents)
+            else
             {
-                msgIdList.AddRange(await SendGroupSetuAsync(content, groupId));
-                await Task.Delay(1000);
+                List<int> msgIdList = new List<int>();
+                foreach (var content in setuContents)
+                {
+                    msgIdList.AddRange(await SendGroupSetuAsync(content, groupId));
+                    await Task.Delay(1000);
+                }
+                return msgIdList.ToArray();
             }
-            return msgIdList.ToArray();
         }
 
         public override async Task<int[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)

@@ -29,7 +29,7 @@ Pixiv:
     Template:                   |                                                   #pixiv模版，值为空时将使用默认模版
                                 PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，
                                 收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，
-                                耗时：{CostSecond}s，标签图片：{RelevantCount}张，作品图片:{PageCount}张
+                                标签图片：{RelevantCount}张，作品图片:{PageCount}张
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
 
@@ -114,7 +114,7 @@ Setu:                                                                           
         Commands:               ['瑟图']                                              #命令，用法：#瑟图合法萝莉
         Template:               |                                                   #消息模版，值为空时将使用默认模版
                                 本条数据来源于Lolicon Api，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
-                                PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，耗时：{CostSecond}s
+                                PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
     
@@ -124,7 +124,7 @@ Setu:                                                                           
         Level:                  '0-6'                                               #Level范围，数字越大表示越涩，最小为0，最大为6，5-6为R18
         Template:               |                                                   #消息模版，值为空时将使用默认模版
                                 本条数据来源于Lolisuki Api，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
-                                PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，Level：{Level}，分类：{Taste}，耗时：{CostSecond}s
+                                PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，Level：{Level}，分类：{Taste}
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TheresaBot.Main.Model.Content
 {
-    public class SetuContent
+    public record SetuContent
     {
         public List<BaseContent> SetuInfos { get; set; }
 

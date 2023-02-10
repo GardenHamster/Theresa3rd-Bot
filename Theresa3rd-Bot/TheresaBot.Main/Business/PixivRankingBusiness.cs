@@ -2,6 +2,7 @@
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Mode;
+using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PixivRanking;
@@ -12,6 +13,26 @@ namespace TheresaBot.Main.Business
     public class PixivRankingBusiness : SetuBusiness
     {
         private const int eachPage = 50;
+
+        public async Task<PixivRankingInfo> getRankingInfo(PixivRankingItem rankingItem, PixivRankingMode rankingMode, string search_date, int retryTimes = 2)
+        {
+            if (retryTimes < 0) retryTimes = 0;
+            while (retryTimes >= 0)
+            {
+                try
+                {
+                    (List<PixivRankingContent> rankingContents, string ranking_date) = await getRankingDatas(rankingMode, search_date);
+                    List<PixivRankingDetail> rankingDetails = await filterContents(rankingItem, rankingContents);
+                    return new PixivRankingInfo(rankingDetails, rankingItem, rankingMode, ranking_date, BotConfig.PixivRankingConfig.CacheSeconds);
+                }
+                catch (Exception)
+                {
+                    if (--retryTimes < 0) throw;
+                    await Task.Delay(10000);
+                }
+            }
+            return null;
+        }
 
         public async Task<(List<PixivRankingContent>, string)> getRankingDatas(PixivRankingMode rankingMode, string search_date)
         {
@@ -96,7 +117,7 @@ namespace TheresaBot.Main.Business
             }
         }
 
-        public string getRankingInfo(string date, string rankingName, string template)
+        public string getRankingMsg(string date, string rankingName, string template)
         {
             if (string.IsNullOrWhiteSpace(template)) return getDefaultRankingInfo(date, rankingName);
             template = template.Replace("{Date}", date);

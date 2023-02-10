@@ -91,11 +91,6 @@ namespace TheresaBot.MiraiHttpApi.Session
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, new ForwardMessage(nodeList.ToArray()));
         }
 
-        public override async Task<int[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
-        {
-            return await SendGroupSetuAsync(setuContent.SetuInfos, setuContent.SetuImages, groupId);
-        }
-
         public override async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge)
         {
             if (sendMerge)
@@ -109,6 +104,11 @@ namespace TheresaBot.MiraiHttpApi.Session
                 await Task.Delay(1000);
             }
             return msgIdList.ToArray();
+        }
+
+        public override async Task<int[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
+        {
+            return await SendGroupSetuAsync(setuContent.SetuInfos, setuContent.SetuImages, groupId);
         }
 
         public override async Task<int[]> SendGroupSetuAsync(List<BaseContent> setuInfos, List<FileInfo> setuFiles, long groupId)
@@ -145,6 +145,10 @@ namespace TheresaBot.MiraiHttpApi.Session
                 return new int[0];
             }
         }
+
+
+
+
 
     }
 }

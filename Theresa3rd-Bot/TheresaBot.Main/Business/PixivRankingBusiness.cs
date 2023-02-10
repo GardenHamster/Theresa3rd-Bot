@@ -141,7 +141,7 @@ namespace TheresaBot.Main.Business
             bool isRatingRateOk = workInfo.likeRate >= rankingItem.MinRatingRate;
             bool isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount;
             bool isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate;
-            return (isRatingCountOk && isRatingRateOk) || (isBookmarkCountOk && isBookmarkRateOk);
+            return (isRatingCountOk && isRatingRateOk) && (isBookmarkCountOk && isBookmarkRateOk);
         }
 
     }

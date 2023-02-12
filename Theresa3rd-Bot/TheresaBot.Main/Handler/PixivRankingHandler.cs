@@ -69,7 +69,7 @@ namespace TheresaBot.Main.Handler
                 if (rankingInfo.RankingDetails.Count == 0) return;
                 await sendPreviewFileAsync(rankingTimer, rankingInfo, rankingMode);
                 await Task.Delay(2000);
-                await sendSetuDetailAsync(rankingTimer, rankingInfo, rankingMode);
+                await sendSetuDetailAsync(rankingInfo, rankingTimer.Groups, rankingTimer.SendDetail);
             }
             catch (Exception ex)
             {
@@ -104,7 +104,7 @@ namespace TheresaBot.Main.Handler
                 {
                     await Session.SendGroupMessageAsync(groupId, templateMsg);
                     await Task.Delay(1000);
-                    await Session.SendGroupSetuAsync(setuContents, groupId, BotConfig.PixivRankingConfig.SendMerge);
+                    await Session.SendGroupSetuAsync(setuContents, groupId, true);
                     await Task.Delay(1000);
                 }
             }
@@ -116,27 +116,27 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task sendSetuDetailAsync(PixivRankingTimer rankingTimer, PixivRankingInfo pixivRankingInfo, PixivRankingMode rankingMode)
+        private async Task sendSetuDetailAsync(PixivRankingInfo pixivRankingInfo, List<long> groupIds, int quantity)
         {
             try
             {
-                if (rankingTimer.SendDetail <= 0) return;
+                if (quantity <= 0) return;
+                if (groupIds is null || groupIds.Count == 0) return;
                 List<SetuContent> setuContents = new List<SetuContent>();
-                for (int i = 0; i < pixivRankingInfo.RankingDetails.Count && i < rankingTimer.SendDetail; i++)
+                for (int i = 0; i < pixivRankingInfo.RankingDetails.Count && i < quantity; i++)
                 {
                     PixivRankingDetail detail = pixivRankingInfo.RankingDetails[i];
                     bool isR18Img = detail.WorkInfo.IsR18;
-                    bool isDownImg = rankingTimer.Groups.IsDownSetuImg(isR18Img);
+                    bool isDownImg = groupIds.IsDownSetuImg(isR18Img);
                     List<FileInfo> setuFiles = isDownImg ? await downPixivImgsAsync(detail.WorkInfo) : new();
                     string workMsg = pixivBusiness.getWorkInfo(detail.WorkInfo, BotConfig.PixivConfig.Template);
                     setuContents.Add(new SetuContent(workMsg, setuFiles));
                 }
-                List<long> groupIds = rankingTimer.Groups;
                 foreach (var groupId in groupIds)
                 {
                     bool isShowImg = groupId.IsShowSetuImg(false);
                     var sendContents = setuContents.Select(o => isShowImg ? o with { } : o with { SetuImages = new() }).ToList();
-                    await Session.SendGroupSetuAsync(sendContents, groupId, BotConfig.PixivRankingConfig.SendMerge);
+                    await Session.SendGroupSetuAsync(sendContents, groupId, true);
                     await Task.Delay(1000);
                 }
             }
@@ -178,13 +178,14 @@ namespace TheresaBot.Main.Handler
                 }
 
                 List<SetuContent> setuContents = new List<SetuContent>();
+                setuContents.Add(new SetuContent(templateMsg));
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
 
                 await command.ReplyGroupMessageWithAtAsync(templateMsg);
                 await Task.Delay(1000);
-                await Session.SendGroupSetuAsync(setuContents, command.GroupId, BotConfig.PixivRankingConfig.SendMerge);
+                await Session.SendGroupSetuAsync(setuContents, command.GroupId, true);
                 await Task.Delay(1000);
-
+                await sendSetuDetailAsync(pixivRankingInfo, new List<long>() { command.GroupId }, BotConfig.PixivRankingConfig.SendDetail);
                 CoolingCache.SetGroupPixivRankingCooling(rankingMode.Type, command.GroupId);
             }
             catch (Exception ex)
@@ -202,32 +203,32 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private List<string> createPreviewImg(PixivRankingInfo pixivRankingInfo)
+        private List<string> createPreviewImg(PixivRankingInfo rankingInfo)
         {
             int startIndex = 0;
             int maxInPage = BotConfig.PixivRankingConfig.MaxInPage;
             if (maxInPage <= 0) maxInPage = 30;
             List<string> fileInfos = new List<string>();
-            List<PixivRankingDetail> details = pixivRankingInfo.RankingDetails;
+            List<PixivRankingDetail> details = rankingInfo.RankingDetails;
             if (details.Count == 0) return fileInfos;
-            PixivRankingMode rankingMode = pixivRankingInfo.RankingMode;
+            PixivRankingMode rankingMode = rankingInfo.RankingMode;
             while (startIndex < details.Count)
             {
-                string fileName = $"{rankingMode.Code}_preview_{pixivRankingInfo.RankingDate}_{startIndex}_{startIndex + maxInPage}.jpg";
+                string fileName = $"{rankingMode.Code}_preview_{rankingInfo.RankingDate}_{startIndex}_{startIndex + maxInPage}.jpg";
                 string savePath = Path.Combine(FilePath.GetDownFileSavePath(), fileName);
                 var partList = details.Skip(startIndex).Take(maxInPage).ToList();
-                var previewFile = createPreviewImg(partList, savePath);
+                var previewFile = createPreviewImg(rankingInfo, partList, savePath);
                 if (previewFile is not null) fileInfos.Add(previewFile.FullName);
                 startIndex += maxInPage;
             }
             return fileInfos;
         }
 
-        private FileInfo createPreviewImg(List<PixivRankingDetail> datas, string savePath)
+        private FileInfo createPreviewImg(PixivRankingInfo rankingInfo, List<PixivRankingDetail> datas, string savePath)
         {
             try
             {
-                return PixivRankingDrawHelper.DrawPreview(datas, savePath);
+                return PixivRankingDrawHelper.DrawPreview(rankingInfo, datas, savePath);
             }
             catch (Exception ex)
             {

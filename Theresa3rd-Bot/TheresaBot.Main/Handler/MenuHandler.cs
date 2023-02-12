@@ -46,12 +46,13 @@ namespace TheresaBot.Main.Handler
         {
             string prefix = BotConfig.GeneralConfig.Prefix;
             StringBuilder menuBuilder = new StringBuilder();
-            menuBuilder.AppendLine($"目前实现的功能如下：");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SetuConfig.Pixiv.Commands)}[标签/pid]?】 从pixiv中搜索一张涩图");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SetuConfig.Lolicon.Commands)}[标签]?】 从Lolicon中搜索一张涩图");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SetuConfig.Lolisuki.Commands)}[标签]?】 从Lolisuki中搜索一张涩图");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SaucenaoConfig.Commands)}[图片]?】 尝试用Saucenao查找来源，并返回原图等信息");
-            menuBuilder.AppendLine($"使用实例请参考：https://github.com/GardenHamster/Theresa3rd-Bot/blob/main/Menu.md");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SetuConfig.Pixiv.Commands)}】获取pixiv涩图");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SetuConfig.Lolicon.Commands)}】获取Lolicon涩图");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SetuConfig.Lolisuki.Commands)}】获取Lolisuki涩图");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SetuConfig.Local.Commands)}】获取本地文件夹中的涩图");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SaucenaoConfig.Commands)}】搜索原图，并返回详细信息");
+            menuBuilder.AppendLine($"【{pixivRankingCommands()}】获取pixiv日榜");
+            menuBuilder.Append($"【详细参数阅读文档】{BotConfig.BotHomepage}");
             return menuBuilder.ToString();
         }
 
@@ -60,30 +61,38 @@ namespace TheresaBot.Main.Handler
             string prefix = BotConfig.GeneralConfig.Prefix;
             StringBuilder menuBuilder = new StringBuilder();
             menuBuilder.AppendLine($"超级管理员的功能如下：");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.Miyoushe.AddCommands)}】 订阅米游社用户");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.Miyoushe.RmCommands)}】 退订米游社用户");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.PixivUser.AddCommands)}】 订阅P站画师");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.PixivUser.SyncCommands)}】 订阅所有P站已关注的画师");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.PixivUser.RmCommands)}】 退订P站画师");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.PixivTag.AddCommands)}】 订阅P站标签");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.SubscribeConfig.PixivTag.RmCommands)}】 退订P站标签");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.ManageConfig.DisableMemberCommands)}】 拉黑一个成员，不处理该成员的指令");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.ManageConfig.EnableMemberCommands)}】 解禁一个成员，允许该成员使用指令");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.ManageConfig.DisableTagCommands)}】 禁止搜索一个pixiv标签");
-            menuBuilder.AppendLine($"【{getCommandStr(BotConfig.ManageConfig.EnableTagCommands)}】 允许搜索一个pixiv标签");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.Miyoushe.AddCommands)}】订阅米游社用户");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.Miyoushe.RmCommands)}】退订米游社用户");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.PixivUser.AddCommands)}】订阅P站画师");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.PixivUser.SyncCommands)}】订阅所有P站已关注的画师");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.PixivUser.RmCommands)}】退订P站画师");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.PixivTag.AddCommands)}】订阅P站标签");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.PixivTag.RmCommands)}】退订P站标签");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.ManageConfig.DisableMemberCommands)}】拉黑成员");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.ManageConfig.EnableMemberCommands)}】解除拉黑");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.ManageConfig.DisableTagCommands)}】屏蔽涩图标签");
+            menuBuilder.Append($"【{joinCommands(BotConfig.ManageConfig.EnableTagCommands)}】解除屏蔽");
             return menuBuilder.ToString();
         }
 
-        private string getCommandStr(List<string> commands)
+        private string joinCommands(List<string> commands)
         {
-            StringBuilder commandBuilder = new StringBuilder();
-            foreach (string command in commands)
-            {
-                if (commandBuilder.Length > 0) commandBuilder.Append('/');
-                commandBuilder.Append($"#{command}");
-            }
-            return commandBuilder.ToString();
+            return $"#{string.Join('/', commands)}";
         }
+
+        private string pixivRankingCommands()
+        {
+            string dailyCommand = BotConfig.PixivRankingConfig.Daily?.Commands?.FirstOrDefault();
+            string aiCommand = BotConfig.PixivRankingConfig.DailyAI?.Commands?.FirstOrDefault();
+            string maleCommand = BotConfig.PixivRankingConfig.Male?.Commands?.FirstOrDefault();
+            string weeklyCommand = BotConfig.PixivRankingConfig.Weekly?.Commands?.FirstOrDefault();
+            string monthlyCommand = BotConfig.PixivRankingConfig.Monthly?.Commands?.FirstOrDefault();
+            List<string> commands = new() { dailyCommand, aiCommand, maleCommand, weeklyCommand, monthlyCommand };
+            commands = commands.Where(o => o is not null).Distinct().ToList();
+            return String.Join('/', commands);
+        }
+
+
 
     }
 }

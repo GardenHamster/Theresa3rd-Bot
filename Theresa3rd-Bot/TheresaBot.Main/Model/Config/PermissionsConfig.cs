@@ -28,5 +28,7 @@
 
         public List<long> SubscribeGroups { get; set; }
 
+        public List<long> PixivRankingGroups { get; set; }
+        
     }
 }

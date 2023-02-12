@@ -90,7 +90,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(Convert.ToInt64(memberCode)))
+                if (BotConfig.PermissionsConfig.SuperManagers.Contains(Convert.ToInt64(memberCode)))
                 {
                     await command.ReplyGroupMessageWithAtAsync("无法拉黑超级管理员");
                     return;

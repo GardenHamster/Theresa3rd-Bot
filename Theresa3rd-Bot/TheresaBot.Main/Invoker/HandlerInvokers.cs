@@ -200,7 +200,7 @@ namespace TheresaBot.Main.Invoker
             new(BotConfig.PixivRankingConfig?.Daily?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
             {
                 PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
-                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
+                if (await handler.CheckPixivRankingEnableAsync(botCommand, BotConfig.PixivRankingConfig?.Daily) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Daily)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
@@ -213,7 +213,7 @@ namespace TheresaBot.Main.Invoker
             new(BotConfig.PixivRankingConfig?.DailyAI?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
             {
                 PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
-                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
+                if (await handler.CheckPixivRankingEnableAsync(botCommand, BotConfig.PixivRankingConfig?.DailyAI) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.DailyAI)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
@@ -226,7 +226,7 @@ namespace TheresaBot.Main.Invoker
             new(BotConfig.PixivRankingConfig?.Male?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
             {
                 PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
-                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
+                if (await handler.CheckPixivRankingEnableAsync(botCommand, BotConfig.PixivRankingConfig?.Male) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Male)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
@@ -239,7 +239,7 @@ namespace TheresaBot.Main.Invoker
             new(BotConfig.PixivRankingConfig?.Weekly?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
             {
                 PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
-                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
+                if (await handler.CheckPixivRankingEnableAsync(botCommand, BotConfig.PixivRankingConfig?.Weekly) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Weekly)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
@@ -252,7 +252,7 @@ namespace TheresaBot.Main.Invoker
             new(BotConfig.PixivRankingConfig?.Monthly?.Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
             {
                 PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
-                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
+                if (await handler.CheckPixivRankingEnableAsync(botCommand, BotConfig.PixivRankingConfig?.Monthly) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Monthly)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
@@ -264,7 +264,7 @@ namespace TheresaBot.Main.Invoker
             //version
             new(new List<string>() { "版本", "version" }, CommandType.Version, new(async (botCommand, session, reporter) =>
             {
-                await botCommand.ReplyGroupMessageWithAtAsync($"Theresa3rd-Bot：Version：{BotConfig.BotVersion}");
+                await botCommand.ReplyGroupMessageAsync($"Theresa3rd-Bot {BotConfig.BotVersion}");
                 return false;
             }))
         };

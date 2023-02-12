@@ -87,7 +87,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
             StringBuilder msgBuilder=new StringBuilder();
             msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot {BotConfig.BotVersion}】");
             msgBuilder.AppendLine($"群聊发送【#菜单】可以查看指令");
-            msgBuilder.AppendLine($"部署或者使用教程可以访问");
+            msgBuilder.AppendLine($"部署或者使用教程请访问");
             msgBuilder.Append($"{BotConfig.BotHomepage}");
             IChatMessage welcomeMessage = new PlainMessage(msgBuilder.ToString());
             foreach (var memberId in BotConfig.PermissionsConfig.SuperManagers)

@@ -1,44 +1,62 @@
 ﻿using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.PixivRanking;
 
 namespace TheresaBot.Main.Helper
 {
     public static class PixivRankingDrawHelper
     {
-        private const int margin = 30;
-        private const int fontSize = 18;
-        private const int maxColumn = 5;
-        private const int maxWidth = 280;
-        private const int maxHeight = 400;
-        private const int areaWidth = maxWidth;
-        private const int areaHeight = maxHeight + fontSize;
+        private const int AreaMargin = 30;
+        private const int HeaderMargin = 15;
+        private const int HeaderFontSize = 50;
+        private const int DetailFontSize = 18;
+        private const int RemarkMargin = 10;
+        private const int RemarkFontSize = 25;
+        private const int MaxColumn = 5;
+        private const int IllustWidth = 280;
+        private const int IllustHeight = 400;
+        private const int AreaWidth = IllustWidth;
+        private const int AreaHeight = IllustHeight + DetailFontSize;
 
-        public static FileInfo DrawPreview(List<PixivRankingDetail> datas, string savePath)
+        public static FileInfo DrawPreview(PixivRankingInfo rankingInfo, List<PixivRankingDetail> datas, string savePath)
         {
+            int row = 1;
+            int column = 1;
+            int areaX = 0;
+            int areaY = 0;
+            int startX = 0;
+            int startY = 0;
             int imgNum = datas.Count;
-            int maxRow = MathHelper.getMaxPage(imgNum, maxColumn);
-            int canvasWidth = maxColumn * areaWidth + (maxColumn + 1) * margin;
-            int canvasHeight = maxRow * areaHeight + (maxRow + 1) * margin;
+            int maxRow = MathHelper.getMaxPage(imgNum, MaxColumn);
+
+            int headAreaHeight = HeaderMargin * 2 + DetailFontSize;
+            int workAreaWidth = MaxColumn * AreaWidth + (MaxColumn + 1) * AreaMargin;
+            int workAreaHeight = headAreaHeight + maxRow * AreaHeight + (maxRow + 1) * AreaMargin;
+            int remarkAreaHeight = RemarkMargin * 2 + RemarkFontSize;
+
+            int canvasWidth = workAreaWidth;
+            int canvasHeight = headAreaHeight + workAreaHeight + remarkAreaHeight;
 
             var imgInfo = new SKImageInfo(canvasWidth, canvasHeight);
             using SKSurface surface = SKSurface.Create(imgInfo);
             SKCanvas canvas = surface.Canvas;
             canvas.Clear(SKColors.LightGray);
 
+            DrawHeader(canvas, rankingInfo, AreaMargin, areaY);
+            areaY += HeaderMargin * 2 + HeaderFontSize;
+
+            DrawRemark(canvas, rankingInfo, AreaMargin, areaY);
+            areaY += RemarkMargin * 2 + RemarkFontSize;
+
             for (int i = 0; i < datas.Count; i++)
             {
-                int row = 1 + (i / maxColumn);
-                int column = 1 + (i % maxColumn);
-                int areaX = margin * column + areaWidth * (column - 1);
-                int areaY = margin * row + areaHeight * (row - 1);
-                DrawRankAndPidText(canvas, datas[i], areaX, areaY);
-                DrawImage(canvas, datas[i], areaX, areaY);
+                row = 1 + (i / MaxColumn);
+                column = 1 + (i % MaxColumn);
+                startX = areaX + AreaMargin * column + AreaWidth * (column - 1);
+                startY = areaY + AreaMargin * row + AreaHeight * (row - 1);
+                DrawDetails(canvas, datas[i], startX, startY);
+                DrawImage(canvas, datas[i], startX, startY);
             }
 
             using SKImage image = surface.Snapshot();
@@ -48,10 +66,10 @@ namespace TheresaBot.Main.Helper
             return new FileInfo(savePath);
         }
 
-        private static void DrawRankAndPidText(SKCanvas canvas, PixivRankingDetail detail, int areaX, int areaY)
+        private static void DrawHeader(SKCanvas canvas, PixivRankingInfo rankingInfo, int startX, int startY)
         {
-            int x = areaX;
-            int y = areaY;
+            int x = startX;
+            int y = startY + HeaderMargin + HeaderFontSize;
             var paint = new SKPaint
             {
                 FakeBoldText = true,
@@ -59,29 +77,68 @@ namespace TheresaBot.Main.Helper
                 IsAntialias = true,
                 Style = SKPaintStyle.Fill,
                 TextAlign = SKTextAlign.Left,
-                TextSize = fontSize,
+                TextSize = HeaderFontSize,
+                Typeface = SKTypeface.FromFamilyName("SimSun")
+            };
+            string headerText = $"{rankingInfo.RankingDate} {rankingInfo.RankingMode.Name}";
+            canvas.DrawText(headerText, new SKPoint(x, y), paint);
+        }
+
+        private static void DrawDetails(SKCanvas canvas, PixivRankingDetail detail, int startX, int startY)
+        {
+            int x = startX;
+            int y = startY;
+            var paint = new SKPaint
+            {
+                FakeBoldText = true,
+                Color = SKColors.Black,
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill,
+                TextAlign = SKTextAlign.Left,
+                TextSize = DetailFontSize,
                 Typeface = SKTypeface.FromFamilyName("SimSun")
             };
             PixivRankingContent content = detail.RankingContent;
-            canvas.DrawText($"#{content.rank} PID{content.illust_id} {detail.WorkInfo.likeRate.toPercent()}/{detail.WorkInfo.bookmarkRate.toPercent()}", new SKPoint(x, y), paint);
+            string likeRate = detail.WorkInfo.likeRate.toPercent();
+            string bookRate = detail.WorkInfo.bookmarkRate.toPercent();
+            string detailText = $"#{content.rank} {content.illust_id} {likeRate}/{bookRate}";
+            canvas.DrawText(detailText, new SKPoint(x, y), paint);
         }
 
-        private static void DrawImage(SKCanvas canvas, PixivRankingDetail detail, int areaX, int areaY)
+        private static void DrawImage(SKCanvas canvas, PixivRankingDetail detail, int startX, int startY)
         {
-            int x = areaX;
-            int y = areaY + fontSize;
+            int x = startX;
+            int y = startY + DetailFontSize;
             FileInfo imgFile = GetDrawImg(detail).Result;
             if (imgFile is null) imgFile = FilePath.GetDownErrorImg();
             if (imgFile is null) return;
             using FileStream fileStream = File.OpenRead(imgFile.FullName);
             using SKBitmap originBitmap = SKBitmap.Decode(fileStream);
-            double widthScale = Convert.ToDouble(maxWidth) / originBitmap.Width;
-            double heightScale = Convert.ToDouble(maxHeight) / originBitmap.Height;
+            double widthScale = Convert.ToDouble(IllustWidth) / originBitmap.Width;
+            double heightScale = Convert.ToDouble(IllustHeight) / originBitmap.Height;
             double scale = Math.Min(widthScale, heightScale);
             int imgWidth = (int)(originBitmap.Width * scale);
             int imgHeight = (int)(originBitmap.Height * scale);
             using SKBitmap resizeBitmap = originBitmap.Resize(new SKImageInfo(imgWidth, imgHeight), SKFilterQuality.Low);
             canvas.DrawBitmap(resizeBitmap, new SKPoint(x, y));
+        }
+
+        private static void DrawRemark(SKCanvas canvas, PixivRankingInfo rankingInfo, int startX, int startY)
+        {
+            int x = startX;
+            int y = startY + RemarkMargin + RemarkFontSize;
+            var paint = new SKPaint
+            {
+                FakeBoldText = true,
+                Color = SKColors.Black,
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill,
+                TextAlign = SKTextAlign.Left,
+                TextSize = RemarkFontSize,
+                Typeface = SKTypeface.FromFamilyName("SimSun")
+            };
+            string headerText = $"图片信息：#排名 PID 点赞率%/收藏率%";
+            canvas.DrawText(headerText, new SKPoint(x, y), paint);
         }
 
         private static async Task<FileInfo> GetDrawImg(PixivRankingDetail detail)

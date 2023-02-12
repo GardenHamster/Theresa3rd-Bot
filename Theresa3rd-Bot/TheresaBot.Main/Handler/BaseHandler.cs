@@ -105,6 +105,21 @@ namespace TheresaBot.Main.Handler
             return true;
         }
 
+        public async Task<bool> CheckPixivRankingEnableAsync(GroupCommand command, PixivRankingItem rankingItem)
+        {
+            if (BotConfig.PermissionsConfig.PixivRankingGroups.Contains(command.GroupId) == false)
+            {
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                return false;
+            }
+            if (rankingItem is null || rankingItem.Enable == false)
+            {
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                return false;
+            }
+            return true;
+        }
+
         public async Task<bool> CheckSuperManagersAsync(GroupCommand command)
         {
             if (BotConfig.PermissionsConfig.SuperManagers.Contains(command.MemberId) == false)

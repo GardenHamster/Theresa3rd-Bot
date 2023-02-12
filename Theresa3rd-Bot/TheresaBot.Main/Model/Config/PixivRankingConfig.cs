@@ -9,9 +9,9 @@ namespace TheresaBot.Main.Model.Config
         public int MaxScan { get; set; }
         public int MaxInPage { get; set; }
         public PixivRankingSortType SortType { get; set; }
-        public bool SendMerge { get; set; }
         public int GroupCD { get; set; }
         public int CacheSeconds { get; set; }
+        public int SendDetail { get; set; }
         public PixivRankingItem Daily { get; set; }
         public PixivRankingItem DailyAI { get; set; }
         public PixivRankingItem Male { get; set; }
@@ -22,6 +22,7 @@ namespace TheresaBot.Main.Model.Config
 
     public class PixivRankingItem
     {
+        public bool Enable { get; set; }
         public List<string> Commands { get; set; }
         public int MinRatingCount { get; set; }
         public double MinRatingRate { get; set; }

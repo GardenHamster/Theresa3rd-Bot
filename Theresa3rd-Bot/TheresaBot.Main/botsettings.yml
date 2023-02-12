@@ -47,14 +47,15 @@ Permissions:                                                                    
     SaucenaoGroups:             [284196392]                                         #拥有以图搜图权限的群
     SaucenaoR18Groups:          [284196392]                                         #以图搜图允许发送r18结果的群，图片将使用链接代替
     SubscribeGroups:            [284196392]                                         #拥有订阅权限的群
+    PixivRankingGroups:         [284196392]                                         #拥有查询Pixiv日榜权限的群
 
 Manage:                                                                             #管理相关
-    PixivCookieCommands:         ['pixivcookie','pck']                              #更新pixiv cookie 指令，需要私聊使用
-    SaucenaoCookieCommands:      ['saucenaocookie','sck']                           #更新saucenao cookie 指令，需要私聊使用
-    DisableTagCommands:          ['禁止标签','屏蔽标签']                             #禁止一个涩图关键词，禁止后不允许被搜索
-    EnableTagCommands:           ['解禁标签','解锁标签']                             #解禁一个涩图关键词
-    DisableMemberCommands:       ['禁止成员','拉黑成员']                             #将一个群成员拉入黑名单，所有群生效
-    EnableMemberCommands:        ['解禁成员']                                       #将一个群成员从黑名单移除，所有群生效
+    PixivCookieCommands:        ['pixivcookie','pck']                              #更新pixiv cookie 指令，需要私聊使用
+    SaucenaoCookieCommands:     ['saucenaocookie','sck']                           #更新saucenao cookie 指令，需要私聊使用
+    DisableTagCommands:         ['禁止标签','屏蔽标签']                             #禁止一个涩图关键词，禁止后不允许被搜索
+    EnableTagCommands:          ['解禁标签','解锁标签']                             #解禁一个涩图关键词
+    DisableMemberCommands:      ['禁止成员','拉黑成员']                             #将一个群成员拉入黑名单，所有群生效
+    EnableMemberCommands:       ['解禁成员']                                       #将一个群成员从黑名单移除，所有群生效
     
 Menu:                                                                               #菜单指令
     Enable:                     true                                                #是否启用
@@ -212,34 +213,39 @@ PixivRanking:
     MaxScan:                    500
     MaxInPage:                  30
     SortType:                   2
-    SendMerge:                  true
     GroupCD:                    300
     CacheSeconds:               3600
+    SendDetail:                 10
     Daily:
+        Enable:                 true
         Commands:               ['日榜']
         MinRatingCount:         300
         MinRatingRate:          0.1
         MinBookCount:           500
         MinBookRate:            0.1
     DailyAI:
+        Enable:                 true
         Commands:               ['AI日榜']
         MinRatingCount:         300
         MinRatingRate:          0.1
         MinBookCount:           500
         MinBookRate:            0.1
     Male:
+        Enable:                 true
         Commands:               ['LSP日榜']
         MinRatingCount:         300
         MinRatingRate:          0.18
         MinBookCount:           500
         MinBookRate:            0.24
     Weekly:
+        Enable:                 true
         Commands:               ['周榜']
         MinRatingCount:         1000
         MinRatingRate:          0.18
         MinBookCount:           1500
         MinBookRate:            0.25
     Monthly:
+        Enable:                 true
         Commands:               ['月榜']
         MinRatingCount:         100
         MinRatingRate:          0.01

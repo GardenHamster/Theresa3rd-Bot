@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -174,7 +175,13 @@ namespace TheresaBot.Main.Helper
                 {
                     string json = await GetPixivJsonAsync(url, headerDic, timeout);
                     json = json.Replace("[]", "null");
+                    string error = json?.CheckPixivRankingError();
+                    if (string.IsNullOrEmpty(error) == false) throw new NoRankingException(error);
                     return JsonConvert.DeserializeObject<T>(json);
+                }
+                catch (NoRankingException)
+                {
+                    throw;
                 }
                 catch (Exception ex)
                 {
@@ -183,6 +190,21 @@ namespace TheresaBot.Main.Helper
                 }
             }
             return default(T);
+        }
+
+        private static string CheckPixivRankingError(this string jsonStr)
+        {
+            try
+            {
+                JObject jo = JObject.Parse(jsonStr);
+                if (jo.ContainsKey("error")) return jo["error"]?.ToString() ?? string.Empty;
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                return string.Empty;
+            }
         }
 
         private static async Task<string> GetPixivJsonAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)

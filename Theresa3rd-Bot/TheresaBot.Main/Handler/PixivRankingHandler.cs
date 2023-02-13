@@ -2,6 +2,7 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Mode;
 using TheresaBot.Main.Model.Cache;
@@ -197,6 +198,10 @@ namespace TheresaBot.Main.Handler
                 await sendSetuDetailAsync(pixivRankingInfo, new List<long>() { command.GroupId }, BotConfig.PixivRankingConfig.SendDetail);
                 CoolingCache.SetGroupPixivRankingCooling(rankingMode.Type, command.GroupId);
             }
+            catch (NoRankingException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync($"获取失败，api接口返回：{ex.Message}");
+            }
             catch (Exception ex)
             {
                 string errMsg = $"replyRankingInfo异常";
@@ -215,20 +220,20 @@ namespace TheresaBot.Main.Handler
         private List<string> createPreviewImg(PixivRankingInfo rankingInfo)
         {
             int startIndex = 0;
-            int maxInPage = BotConfig.PixivRankingConfig.MaxInPage;
-            if (maxInPage <= 0) maxInPage = 30;
+            int previewInPage = BotConfig.PixivRankingConfig.PreviewInPage;
+            if (previewInPage <= 0) previewInPage = 30;
             List<string> fileInfos = new List<string>();
             List<PixivRankingDetail> details = rankingInfo.RankingDetails;
             if (details.Count == 0) return fileInfos;
             PixivRankingMode rankingMode = rankingInfo.RankingMode;
             while (startIndex < details.Count)
             {
-                string fileName = $"{rankingMode.Code}_preview_{rankingInfo.RankingDate}_{startIndex}_{startIndex + maxInPage}.jpg";
+                string fileName = $"{rankingMode.Code}_preview_{rankingInfo.RankingDate}_{startIndex}_{startIndex + previewInPage}.jpg";
                 string savePath = Path.Combine(FilePath.GetDownFileSavePath(), fileName);
-                var partList = details.Skip(startIndex).Take(maxInPage).ToList();
+                var partList = details.Skip(startIndex).Take(previewInPage).ToList();
                 var previewFile = createPreviewImg(rankingInfo, partList, savePath);
                 if (previewFile is not null) fileInfos.Add(previewFile.FullName);
-                startIndex += maxInPage;
+                startIndex += previewInPage;
             }
             return fileInfos;
         }

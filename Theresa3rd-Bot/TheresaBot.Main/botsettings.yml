@@ -211,7 +211,7 @@ PixivRanking:
     ProcessingMsg:              '正在获取榜单信息，需要亿点时间...'                    #开始查找前返回的消息
     Template:                   '{Date}{Ranking}精选，数据缓存{CacheSeconds}秒'       #消息模版
     MaxScan:                    500
-    MaxInPage:                  30
+    PreviewInPage:              30
     SortType:                   2
     GroupCD:                    300
     CacheSeconds:               3600

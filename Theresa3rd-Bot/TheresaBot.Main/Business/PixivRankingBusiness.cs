@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
-using TheresaBot.Main.Common;
+﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Mode;
@@ -27,6 +25,10 @@ namespace TheresaBot.Main.Business
                     (List<PixivRankingContent> rankingContents, string ranking_date) = await getRankingDatas(rankingMode, search_date);
                     List<PixivRankingDetail> rankingDetails = await filterContents(rankingItem, rankingContents);
                     return new PixivRankingInfo(rankingDetails, rankingItem, rankingMode, ranking_date, BotConfig.PixivRankingConfig.CacheSeconds);
+                }
+                catch (NoRankingException)
+                {
+                    throw;
                 }
                 catch (Exception)
                 {

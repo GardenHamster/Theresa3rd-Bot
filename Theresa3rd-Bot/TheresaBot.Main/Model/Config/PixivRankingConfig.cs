@@ -7,7 +7,7 @@ namespace TheresaBot.Main.Model.Config
         public string ProcessingMsg { get; set; }
         public string Template { get; set; }
         public int MaxScan { get; set; }
-        public int MaxInPage { get; set; }
+        public int PreviewInPage { get; set; }
         public PixivRankingSortType SortType { get; set; }
         public int GroupCD { get; set; }
         public int CacheSeconds { get; set; }

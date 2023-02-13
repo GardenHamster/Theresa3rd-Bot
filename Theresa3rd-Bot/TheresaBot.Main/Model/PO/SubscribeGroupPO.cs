@@ -1,0 +1,15 @@
+﻿using SqlSugar;
+
+namespace TheresaBot.Main.Model.PO
+{
+    [SugarTable("subscribe_group")]
+    public class SubscribeGroupPO : BasePO
+    {
+        [SugarColumn(IsNullable = false, ColumnDescription = "订阅ID")]
+        public int SubscribeId { get; set; }
+
+        [SugarColumn(IsNullable = false, ColumnDescription = "群ID")]
+        public long GroupId { get; set; }
+
+    }
+}

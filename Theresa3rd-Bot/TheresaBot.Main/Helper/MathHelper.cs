@@ -52,8 +52,7 @@
         /// <returns></returns>
         public static string toPercent(this double number)
         {
-            number = Convert.ToDouble((int)(number * 10000)) / 10000;
-            return (number * 100).ToString() + "%";
+            return (number * 100).ToString("0.000") + "%";
         }
 
     }

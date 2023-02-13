@@ -44,7 +44,6 @@ namespace TheresaBot.Main.Handler
 
         private string getMemberMenu()
         {
-            string prefix = BotConfig.GeneralConfig.Prefix;
             StringBuilder menuBuilder = new StringBuilder();
             menuBuilder.AppendLine($"【{joinCommands(BotConfig.SetuConfig.Pixiv.Commands)}】获取pixiv涩图");
             menuBuilder.AppendLine($"【{joinCommands(BotConfig.SetuConfig.Lolicon.Commands)}】获取Lolicon涩图");
@@ -58,7 +57,6 @@ namespace TheresaBot.Main.Handler
 
         private string getManagerMenu()
         {
-            string prefix = BotConfig.GeneralConfig.Prefix;
             StringBuilder menuBuilder = new StringBuilder();
             menuBuilder.AppendLine($"超级管理员的功能如下：");
             menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.Miyoushe.AddCommands)}】订阅米游社用户");
@@ -77,7 +75,7 @@ namespace TheresaBot.Main.Handler
 
         private string joinCommands(List<string> commands)
         {
-            return $"#{string.Join('/', commands)}";
+            return $"{BotConfig.GeneralConfig.Prefix}{string.Join('/', commands)}";
         }
 
         private string pixivRankingCommands()
@@ -89,7 +87,7 @@ namespace TheresaBot.Main.Handler
             string monthlyCommand = BotConfig.PixivRankingConfig.Monthly?.Commands?.FirstOrDefault();
             List<string> commands = new() { dailyCommand, aiCommand, maleCommand, weeklyCommand, monthlyCommand };
             commands = commands.Where(o => o is not null).Distinct().ToList();
-            return String.Join('/', commands);
+            return $"{BotConfig.GeneralConfig.Prefix}{String.Join('/', commands)}";
         }
 
 

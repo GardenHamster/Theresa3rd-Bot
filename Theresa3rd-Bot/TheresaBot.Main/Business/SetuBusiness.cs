@@ -3,9 +3,5 @@
     public abstract class SetuBusiness
     {
 
-        
-
-
-
     }
 }

@@ -54,8 +54,6 @@ namespace TheresaBot.MiraiHttpApi.Event
                     args.BlockRemainingHandlers = await botCommand.InvokeAsync(miraiSession, miraiReporter);
                     return;
                 }
-
-                await session.SendFriendMessageAsync(args.Sender.Id, new PlainMessage("ヾ(≧∇≦*)ゝ"));
             }
             catch (Exception ex)
             {

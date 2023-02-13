@@ -224,7 +224,7 @@ PixivRanking:                                                                   
         MinBookRate:            0.1                                                 #作品最低实时收藏率，用于对作品进一步过滤
     DailyAI:                                                                        #AI日榜
         Enable:                 true                                                #是否启用
-        Commands:               ['AI日榜']                                          #命令
+        Commands:               ['ai日榜','ai榜','AI日榜','AI榜']                    #命令
         MinRatingCount:         300                                                 #榜单信息中的最低点赞数，用于对作品进行初步过滤
         MinRatingRate:          0.1                                                 #榜单信息中的最低点赞率，用于对作品进行初步过滤
         MinBookCount:           500                                                 #作品最低实时收藏数，用于对作品进一步过滤

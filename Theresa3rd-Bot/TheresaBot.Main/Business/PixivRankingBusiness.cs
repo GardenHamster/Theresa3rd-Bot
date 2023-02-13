@@ -33,7 +33,7 @@ namespace TheresaBot.Main.Business
                 catch (Exception)
                 {
                     if (--retryTimes < 0) throw;
-                    await Task.Delay(10000);
+                    await Task.Delay(2000);
                 }
             }
             return null;
@@ -55,7 +55,7 @@ namespace TheresaBot.Main.Business
                 PixivRankingData rankingData = await PixivHelper.GetPixivRankingData(mode, page, search_date);
                 if (rankingData.contents is null || rankingData.contents.Count == 0) throw new ApiException("无法从api中获取任何排行信息");
                 rankingContents.AddRange(rankingData.contents);
-                await Task.Delay(1000);
+                await Task.Delay(500);
             }
             return (rankingContents, ranking_date);
         }

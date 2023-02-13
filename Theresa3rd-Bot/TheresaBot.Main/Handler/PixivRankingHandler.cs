@@ -16,6 +16,7 @@ namespace TheresaBot.Main.Handler
 {
     public class PixivRankingHandler : SetuHandler
     {
+        private const int DetailEachPage = 10;
         private PixivBusiness pixivBusiness;
         private PixivRankingBusiness rankingBusiness;
 
@@ -98,8 +99,9 @@ namespace TheresaBot.Main.Handler
                 }
 
                 List<SetuContent> setuContents = new List<SetuContent>();
+                setuContents.Add(new SetuContent(templateMsg));
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
-
+                setuContents.AddRange(rankingBusiness.getRankAndPids(pixivRankingInfo, 10));
                 foreach (var groupId in rankingTimer.Groups)
                 {
                     await Session.SendGroupMessageAsync(groupId, templateMsg);
@@ -123,20 +125,26 @@ namespace TheresaBot.Main.Handler
                 if (quantity <= 0) return;
                 if (groupIds is null || groupIds.Count == 0) return;
                 List<SetuContent> setuContents = new List<SetuContent>();
+                SetuContent headerContent = new($"{pixivRankingInfo.RankingDate} {pixivRankingInfo.RankingMode.Name}详情");
                 for (int i = 0; i < pixivRankingInfo.RankingDetails.Count && i < quantity; i++)
                 {
                     PixivRankingDetail detail = pixivRankingInfo.RankingDetails[i];
+                    PixivRankingContent rc = detail.RankingContent;
+                    PixivWorkInfo workInfo = detail.WorkInfo;
                     bool isR18Img = detail.WorkInfo.IsR18;
                     bool isDownImg = groupIds.IsDownSetuImg(isR18Img);
                     List<FileInfo> setuFiles = isDownImg ? await downPixivImgsAsync(detail.WorkInfo) : new();
                     string workMsg = pixivBusiness.getWorkInfo(detail.WorkInfo, BotConfig.PixivConfig.Template);
-                    setuContents.Add(new SetuContent(workMsg, setuFiles));
+                    List<BaseContent> msgContent = new List<BaseContent>();
+                    msgContent.Add(new PlainContent($"#{rc.rank} {workInfo.likeRate.toPercent()}/{workInfo.bookmarkRate.toPercent()}\r\n"));
+                    msgContent.Add(new PlainContent(workMsg));
+                    setuContents.Add(new SetuContent(msgContent, setuFiles));
                 }
                 foreach (var groupId in groupIds)
                 {
                     bool isShowImg = groupId.IsShowSetuImg(false);
                     var sendContents = setuContents.Select(o => isShowImg ? o with { } : o with { SetuImages = new() }).ToList();
-                    await Session.SendGroupSetuAsync(sendContents, groupId, true);
+                    await Session.SendGroupMergeSetuAsync(sendContents, new() { headerContent }, groupId, DetailEachPage);
                     await Task.Delay(1000);
                 }
             }
@@ -180,6 +188,7 @@ namespace TheresaBot.Main.Handler
                 List<SetuContent> setuContents = new List<SetuContent>();
                 setuContents.Add(new SetuContent(templateMsg));
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
+                setuContents.AddRange(rankingBusiness.getRankAndPids(pixivRankingInfo, 10));
 
                 await command.ReplyGroupMessageWithAtAsync(templateMsg);
                 await Task.Delay(1000);

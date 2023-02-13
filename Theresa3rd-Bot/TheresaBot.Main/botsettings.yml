@@ -215,7 +215,7 @@ PixivRanking:
     SortType:                   2
     GroupCD:                    300
     CacheSeconds:               3600
-    SendDetail:                 10
+    SendDetail:                 20
     Daily:
         Enable:                 true
         Commands:               ['日榜']
@@ -256,10 +256,10 @@ PixivRanking:
           Cron:                 '0 30 10 * * ?'
           Groups:               [284196392]
           Contents:             ['Daily','DailyAI']
-          SendDetail:           10
+          SendDetail:           20
 
         - Enable:               false
           Cron:                 '0 35 10 ? * Tue,SAT'
           Groups:               [284196392]
           Contents:             ['Weekly','Monthly']
-          SendDetail:           10
+          SendDetail:           20

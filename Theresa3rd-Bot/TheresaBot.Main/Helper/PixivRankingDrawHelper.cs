@@ -13,6 +13,8 @@ namespace TheresaBot.Main.Helper
         private const int DetailFontSize = 18;
         private const int RemarkMargin = 10;
         private const int RemarkFontSize = 25;
+        private const int WatermarkMargin = 5;
+        private const int WatermarkFontSize = 30;
         private const int MaxColumn = 5;
         private const int IllustWidth = 280;
         private const int IllustHeight = 400;
@@ -30,13 +32,14 @@ namespace TheresaBot.Main.Helper
             int imgNum = datas.Count;
             int maxRow = MathHelper.getMaxPage(imgNum, MaxColumn);
 
-            int headAreaHeight = HeaderMargin * 2 + DetailFontSize;
+            int headAreaHeight = HeaderMargin + HeaderFontSize;
+            int remarkAreaHeight = RemarkMargin + RemarkFontSize;
             int workAreaWidth = MaxColumn * AreaWidth + (MaxColumn + 1) * AreaMargin;
             int workAreaHeight = headAreaHeight + maxRow * AreaHeight + (maxRow + 1) * AreaMargin;
-            int remarkAreaHeight = RemarkMargin * 2 + RemarkFontSize;
+            int watermarkAreaHeight = WatermarkMargin + WatermarkFontSize;
 
             int canvasWidth = workAreaWidth;
-            int canvasHeight = headAreaHeight + workAreaHeight + remarkAreaHeight;
+            int canvasHeight = headAreaHeight + remarkAreaHeight + workAreaHeight + watermarkAreaHeight;
 
             var imgInfo = new SKImageInfo(canvasWidth, canvasHeight);
             using SKSurface surface = SKSurface.Create(imgInfo);
@@ -44,10 +47,10 @@ namespace TheresaBot.Main.Helper
             canvas.Clear(SKColors.LightGray);
 
             DrawHeader(canvas, rankingInfo, AreaMargin, areaY);
-            areaY += HeaderMargin * 2 + HeaderFontSize;
+            areaY += headAreaHeight;
 
             DrawRemark(canvas, rankingInfo, AreaMargin, areaY);
-            areaY += RemarkMargin * 2 + RemarkFontSize;
+            areaY += remarkAreaHeight;
 
             for (int i = 0; i < datas.Count; i++)
             {
@@ -58,6 +61,10 @@ namespace TheresaBot.Main.Helper
                 DrawDetails(canvas, datas[i], startX, startY);
                 DrawImage(canvas, datas[i], startX, startY);
             }
+            areaY += workAreaHeight;
+
+            DrawWatermark(canvas, AreaMargin, areaY);
+            areaY += watermarkAreaHeight;
 
             using SKImage image = surface.Snapshot();
             using SKData data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
@@ -81,6 +88,24 @@ namespace TheresaBot.Main.Helper
                 Typeface = SKTypeface.FromFamilyName("SimSun")
             };
             string headerText = $"{rankingInfo.RankingDate} {rankingInfo.RankingMode.Name}";
+            canvas.DrawText(headerText, new SKPoint(x, y), paint);
+        }
+
+        private static void DrawRemark(SKCanvas canvas, PixivRankingInfo rankingInfo, int startX, int startY)
+        {
+            int x = startX;
+            int y = startY + RemarkMargin + RemarkFontSize;
+            var paint = new SKPaint
+            {
+                FakeBoldText = true,
+                Color = SKColors.Black,
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill,
+                TextAlign = SKTextAlign.Left,
+                TextSize = RemarkFontSize,
+                Typeface = SKTypeface.FromFamilyName("SimSun")
+            };
+            string headerText = $"图片信息：#排名 PID 点赞率%/收藏率%";
             canvas.DrawText(headerText, new SKPoint(x, y), paint);
         }
 
@@ -123,10 +148,10 @@ namespace TheresaBot.Main.Helper
             canvas.DrawBitmap(resizeBitmap, new SKPoint(x, y));
         }
 
-        private static void DrawRemark(SKCanvas canvas, PixivRankingInfo rankingInfo, int startX, int startY)
+        private static void DrawWatermark(SKCanvas canvas, int startX, int startY)
         {
             int x = startX;
-            int y = startY + RemarkMargin + RemarkFontSize;
+            int y = startY + WatermarkMargin;
             var paint = new SKPaint
             {
                 FakeBoldText = true,
@@ -134,11 +159,11 @@ namespace TheresaBot.Main.Helper
                 IsAntialias = true,
                 Style = SKPaintStyle.Fill,
                 TextAlign = SKTextAlign.Left,
-                TextSize = RemarkFontSize,
+                TextSize = WatermarkFontSize,
                 Typeface = SKTypeface.FromFamilyName("SimSun")
             };
-            string headerText = $"图片信息：#排名 PID 点赞率%/收藏率%";
-            canvas.DrawText(headerText, new SKPoint(x, y), paint);
+            string watermarkText = $"Create by Theresa-Bot {BotConfig.BotVersion} Doc {BotConfig.BotHomepage}";
+            canvas.DrawText(watermarkText, new SKPoint(x, y), paint);
         }
 
         private static async Task<FileInfo> GetDrawImg(PixivRankingDetail detail)

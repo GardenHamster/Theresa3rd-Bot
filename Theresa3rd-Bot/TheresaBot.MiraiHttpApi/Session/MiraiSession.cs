@@ -119,6 +119,22 @@ namespace TheresaBot.MiraiHttpApi.Session
             }
         }
 
+        public override async Task<int[]> SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<SetuContent> headerContents, long groupId, int eachPage)
+        {
+            int startIndex = 0;
+            if (eachPage <= 0) return new[] { 0 };
+            List<int> msgIds = new List<int>();
+            while (startIndex < setuContents.Count)
+            {
+                List<SetuContent> pageContents = new List<SetuContent>();
+                pageContents.AddRange(headerContents);
+                pageContents.AddRange(setuContents.Skip(startIndex).Take(eachPage).ToList());
+                msgIds.AddRange(await SendGroupSetuAsync(pageContents, groupId, true));
+                startIndex += eachPage;
+            }
+            return msgIds.ToArray();
+        }
+
         public override async Task<int[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
         {
             return await SendGroupSetuAsync(setuContent.SetuInfos, setuContent.SetuImages, groupId);

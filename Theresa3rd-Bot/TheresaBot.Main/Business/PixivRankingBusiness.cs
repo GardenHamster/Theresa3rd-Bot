@@ -1,9 +1,12 @@
-﻿using TheresaBot.Main.Common;
+﻿using System.Text;
+using System.Text.RegularExpressions;
+using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Mode;
 using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PixivRanking;
 using TheresaBot.Main.Type;
@@ -129,6 +132,22 @@ namespace TheresaBot.Main.Business
         public string getDefaultRankingInfo(string date, string rankingName)
         {
             return $"{date}{rankingName}精选，数据缓存{BotConfig.PixivRankingConfig.CacheSeconds.ToString()}秒";
+        }
+
+        public List<SetuContent> getRankAndPids(PixivRankingInfo pixivRankingInfo, int eachPage)
+        {
+            int startIndex = 0;
+            if (eachPage <= 0) return new();
+            List<SetuContent> rankContents = new List<SetuContent>();
+            var details = pixivRankingInfo.RankingDetails.OrderBy(o => o.RankingContent.rank).ToList();
+            List<string> rankInfos = details.Select(o => $"#{o.RankingContent.rank.ToString().PadRight(3, ' ')} {o.WorkInfo.illustId}").ToList();
+            while (startIndex < rankInfos.Count)
+            {
+                var pageList = rankInfos.Skip(startIndex).Take(eachPage).ToList();
+                rankContents.Add(new(String.Join("\r\n", pageList)));
+                startIndex += eachPage;
+            }
+            return rankContents;
         }
 
         /// <summary>

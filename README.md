@@ -4,7 +4,7 @@
 
 ## 简介
  - 某舰团长利用摸鱼时间写出来的自用的bot，准备移植到 [mirai](https://github.com/mamoe/mirai)
- - 基于 .netcore6.0 和 mirai-api-http，可以在Windows或Linux上运行
+ - 基于 .net core 6.0 和 mirai-api-http，可以在Windows或Linux上运行
  - 开始白嫖前，请在右上角点一下:star:Star
  - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)
 
@@ -24,22 +24,23 @@
 - [x] 自定义定时提醒功能
 
 ### 色图相关
-- [x] 接入 [Lolicon Api](https://api.lolicon.app/#/setu)
-- [x] 接入 [Lolisuki Api](https://github.com/GardenHamster/LoliSuki)
+- [x] [Lolicon](https://api.lolicon.app)随机涩图
+- [x] [Lolisuki](https://lolisuki.cc)随机涩图
 - [x] pixiv免代理 
-- [x] pixiv标签搜索功能(根据标签获取随机的收藏度较高的色图，可多标签搜索)
-- [x] pixiv随机色图功能(随机标签/随机关注画师的作品/随机收藏中的作品/随机订阅中的作品)
-- [x] pixivid搜索功能
+- [x] pixivid搜索
+- [x] pixiv标签搜索(根据标签获取随机的收藏度较高的色图，可多标签搜索)
+- [x] pixiv随机色图(随机标签/随机关注画师的作品/随机收藏中的作品/随机订阅中的作品)
 - [x] pixiv动图转gif功能
 - [x] saucenao搜图功能(如果图片来源于pixiv时，尝试下载并返回原图，并且优先返回来源于pixiv中的原图)
 - [x] ascii2d搜图功能(当saucenao中找不到来源时，继续使用ascii2d搜索)
 - [x] 定时色图功能，包括本地色图，lolicon，lolisuki
-- [ ] Pixiv日榜/周榜/月榜/AI榜/男性向日榜 查询和推送功能
+- [x] Pixiv日榜/周榜/月榜/AI榜/男性向日榜
 
 ### 订阅推送功能
 - [x] pixiv画师最新作品推送功能
 - [x] pixiv标签最新作品推送功能(收藏数较高且每小时新增一定收藏数的最新作品)
 - [x] 米游社用户最新贴子推送功能
+- [x] Pixiv日榜/周榜/月榜/AI榜/男性向榜推送功能
 
 ### 抽卡
 - [x] ~~原神模拟抽卡，在[GenshinGacha](https://github.com/GardenHamster/GenshinGacha)中实现了~~

@@ -311,11 +311,6 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-
-
-
-
-
         private static Dictionary<string, string> GetPixivHeader(string referer)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
@@ -337,7 +332,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         private static async Task<string> GetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            HttpClient client = GetHttpClient();
+            using HttpClient client = GetHttpClient();
             client.BaseAddress = new Uri(url);
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", HttpHelper.GetRandomUserAgent());
@@ -355,10 +350,7 @@ namespace TheresaBot.Main.Helper
         private static HttpClient GetHttpClient()
         {
             HttpClient httpClient = PixivHttpClientFactory.CreateClient(Pixiv_Client_Name);
-            //httpClient.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
             httpClient.DefaultRequestVersion = HttpVersion.Version30;
-            //httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
-            //httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
             return httpClient;
         }
 

@@ -29,7 +29,7 @@ namespace TheresaBot.Main.Handler
 
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
 
-                string localPath = BotConfig.TimingSetuConfig.LocalPath;
+                string localPath = BotConfig.SetuConfig.Local.LocalPath;
                 if (string.IsNullOrWhiteSpace(localPath)) throw new Exception($"未配置LocalPath");
                 if (Directory.Exists(localPath) == false) throw new Exception($"本地涩图路径：{localPath}不存在");
                 
@@ -37,12 +37,12 @@ namespace TheresaBot.Main.Handler
 
                 if (string.IsNullOrEmpty(tagName))
                 {
-                    dataList = localSetuBusiness.loadRandom(localPath, 1, true);
+                    dataList = localSetuBusiness.loadRandomDir(localPath, 1, true);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    dataList = localSetuBusiness.loadInDir(localPath, tagName, 1);
+                    dataList = localSetuBusiness.loadTargetDir(localPath, tagName, 1);
                 }
 
                 if (dataList.Count == 0)
@@ -88,7 +88,7 @@ namespace TheresaBot.Main.Handler
             string localPath = BotConfig.TimingSetuConfig.LocalPath;
             if (string.IsNullOrWhiteSpace(localPath)) throw new Exception($"未配置LocalPath");
             if (Directory.Exists(localPath) == false) throw new Exception($"本地涩图路径：{localPath}不存在");
-            List<LocalSetuInfo> dataList = localSetuBusiness.loadRandom(localPath, timingSetuTimer.Quantity, fromOneDir);
+            List<LocalSetuInfo> dataList = localSetuBusiness.loadRandomDir(localPath, timingSetuTimer.Quantity, fromOneDir);
             if (dataList is null || dataList.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
             string tags = fromOneDir ? dataList[0].DirInfo.Name : "";
             List<SetuContent> setuContents = getSetuContent(dataList);

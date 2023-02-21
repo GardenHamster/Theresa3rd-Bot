@@ -39,6 +39,9 @@ namespace Theresa3rd_Bot
                 LogHelper.Info($"配置文件加载完毕...");
 
                 MiraiHelper.ConnectMirai().Wait();
+                LogHelper.Info($"尝试读取Bot名片...");
+                Task.Delay(1000).Wait();
+                MiraiHelper.LoadBotProfileAsync().Wait();
 
                 LogHelper.Info($"开始初始化数据库...");
                 services.AddSqlSugar(new IocConfig()//注入Sqlsuger

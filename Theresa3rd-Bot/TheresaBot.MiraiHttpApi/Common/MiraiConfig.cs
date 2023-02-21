@@ -14,5 +14,8 @@ namespace TheresaBot.MiraiHttpApi.Common
 
         public static long MiraiBotQQ = 0;
 
+        public static string MiraiBotName = "Bot";
+
+
     }
 }

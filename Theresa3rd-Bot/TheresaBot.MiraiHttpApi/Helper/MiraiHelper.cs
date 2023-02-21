@@ -34,12 +34,6 @@ namespace TheresaBot.MiraiHttpApi.Helper
 
         public static IMiraiHttpSession Session;
 
-        public static IBotProfile BotProfile;
-
-        public static long BotNumber;
-
-        public static string BotName;
-
         public static async Task ConnectMirai()
         {
             try
@@ -72,9 +66,6 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 Session = Services.GetRequiredService<IMiraiHttpSession>();
                 await Session.ConnectAsync(MiraiConfig.MiraiBotQQ);
                 LogHelper.Info("已成功连接到mirai-console...");
-                BotProfile = await GetBotProfileAsync();
-                BotNumber = Session.QQNumber ?? 0;
-                BotName = BotProfile?.Nickname ?? "Bot";
             }
             catch (Exception ex)
             {
@@ -93,6 +84,24 @@ namespace TheresaBot.MiraiHttpApi.Helper
             MiraiConfig.MiraiPort = Convert.ToInt32(configuration["Mirai:port"]);
             MiraiConfig.MiraiAuthKey = configuration["Mirai:authKey"];
             MiraiConfig.MiraiBotQQ = Convert.ToInt64(configuration["Mirai:botQQ"]);
+        }
+
+        /// <summary>
+        /// 获取机器人信息
+        /// </summary>
+        /// <returns></returns>
+        public static async Task LoadBotProfileAsync()
+        {
+            try
+            {
+                IBotProfile profile = await MiraiHelper.Session.GetBotProfileAsync();
+                MiraiConfig.MiraiBotName = profile?.Nickname ?? "Bot";
+                LogHelper.Info($"Bot名片获取完毕，QQNumber={Session.QQNumber}，Nickname={profile?.Nickname ?? ""}");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "Bot名片获取失败");
+            }
         }
 
         public static async Task SendStartUpMessageAsync()
@@ -308,24 +317,6 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 _ => null
             };
         }
-
-        /// <summary>
-        /// 获取机器人信息
-        /// </summary>
-        /// <returns></returns>
-        private static async Task<IBotProfile> GetBotProfileAsync()
-        {
-            try
-            {
-                return await MiraiHelper.Session.GetBotProfileAsync();
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "获取Bot资料失败");
-                return null;
-            }
-        }
-
 
     }
 }

@@ -9,8 +9,6 @@ namespace TheresaBot.Main.Common
     {
         public const string BotVersion = "v0.8.0";
         public const string BotHomepage = "https://www.theresa3rd.cn";
-        public static DBConfig DBConfig = new DBConfig();
-        public static MiraiConfig MiraiConfig = new MiraiConfig();
         public static GeneralConfig GeneralConfig = new GeneralConfig();
         public static PixivConfig PixivConfig = new PixivConfig();
         public static PermissionsConfig PermissionsConfig = new PermissionsConfig();

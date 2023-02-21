@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Mirai.CSharp.Builders;
 using Mirai.CSharp.HttpApi.Builder;
 using Mirai.CSharp.HttpApi.Invoking;
@@ -20,6 +21,7 @@ using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Command;
+using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Event;
 
 namespace TheresaBot.MiraiHttpApi.Helper
@@ -58,9 +60,9 @@ namespace TheresaBot.MiraiHttpApi.Helper
                                                                .Services
                                                                .Configure<MiraiHttpSessionOptions>(options =>
                                                                {
-                                                                   options.Host = BotConfig.MiraiConfig.Host;
-                                                                   options.Port = BotConfig.MiraiConfig.Port;
-                                                                   options.AuthKey = BotConfig.MiraiConfig.AuthKey;
+                                                                   options.Host = MiraiConfig.MiraiHost;
+                                                                   options.Port = MiraiConfig.MiraiPort;
+                                                                   options.AuthKey = MiraiConfig.MiraiAuthKey;
                                                                    options.SuppressAwaitMessageInvoker = true;
                                                                })
                                                                .AddLogging()
@@ -68,7 +70,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 Scope = Services.CreateAsyncScope();
                 Services = Scope.ServiceProvider;
                 Session = Services.GetRequiredService<IMiraiHttpSession>();
-                await Session.ConnectAsync(BotConfig.MiraiConfig.BotQQ);
+                await Session.ConnectAsync(MiraiConfig.MiraiBotQQ);
                 LogHelper.Info("已成功连接到mirai-console...");
                 BotProfile = await GetBotProfileAsync();
                 BotNumber = Session.QQNumber ?? 0;
@@ -79,6 +81,18 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 LogHelper.FATAL(ex, "连接到mirai-console失败");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 加载MiraiHttpApi配置
+        /// </summary>
+        public static void LoadMiraiConfig(IConfiguration configuration)
+        {
+            MiraiConfig.ConnectionString = configuration["Database:ConnectionString"];
+            MiraiConfig.MiraiHost = configuration["Mirai:host"];
+            MiraiConfig.MiraiPort = Convert.ToInt32(configuration["Mirai:port"]);
+            MiraiConfig.MiraiAuthKey = configuration["Mirai:authKey"];
+            MiraiConfig.MiraiBotQQ = Convert.ToInt64(configuration["Mirai:botQQ"]);
         }
 
         public static async Task SendStartUpMessageAsync()

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-
-namespace TheresaBot.Main.Common
+﻿namespace TheresaBot.Main.Common
 {
     public static class HttpUrl
     {

@@ -11,6 +11,7 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Type;
+using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Event
@@ -23,7 +24,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             long memberId = message.Member.Id;
             long groupId = message.Member.Group.Id;
             if (!BusinessHelper.IsHandleMessage(groupId)) return;
-            if (memberId == BotConfig.MiraiConfig.BotQQ) return;
+            if (memberId == MiraiConfig.MiraiBotQQ) return;
 
             WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
             if (welcomeConfig is null || welcomeConfig.Enable == false) return;

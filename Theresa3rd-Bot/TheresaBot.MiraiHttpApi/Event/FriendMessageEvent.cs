@@ -13,6 +13,7 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Command;
+using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Reporter;
 using TheresaBot.MiraiHttpApi.Session;
@@ -27,7 +28,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             try
             {
                 long memberId = args.Sender.Id;
-                if (memberId == BotConfig.MiraiConfig.BotQQ) return;
+                if (memberId == MiraiConfig.MiraiBotQQ) return;
                 string prefix = BotConfig.GeneralConfig.Prefix;
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();

@@ -11,6 +11,7 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Timers;
+using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Reporter;
 using TheresaBot.MiraiHttpApi.Session;
@@ -24,7 +25,6 @@ namespace Theresa3rd_Bot
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            ConfigHelper.setConfiguration(Configuration);
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -34,9 +34,9 @@ namespace Theresa3rd_Bot
                 LogHelper.ConfigureLog();
                 LogHelper.Info($"日志配置完毕...");
 
-                ConfigHelper.LoadMiraiConfig();
+                MiraiHelper.LoadMiraiConfig(Configuration);
                 ConfigHelper.LoadBotConfig();
-                LogHelper.Info($"配置文件读取完毕...");
+                LogHelper.Info($"配置文件加载完毕...");
 
                 MiraiHelper.ConnectMirai().Wait();
 
@@ -44,7 +44,7 @@ namespace Theresa3rd_Bot
                 services.AddSqlSugar(new IocConfig()//注入Sqlsuger
                 {
                     DbType = IocDbType.MySql,
-                    ConnectionString = BotConfig.DBConfig.ConnectionString,
+                    ConnectionString = MiraiConfig.ConnectionString,
                     IsAutoCloseConnection = true//自动释放
                 });
                 new DBClient().CreateDB();

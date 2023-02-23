@@ -209,7 +209,7 @@
         /// <returns></returns>
         public static string getLolisukiApiUrl()
         {
-            return "https://lolisuki.cc/api/setu/v1";
+            return "https://lolisuki.cn/api/setu/v1";
         }
 
         /*---------------------------------------------------------------米游社-----------------------------------------------------------------------*/

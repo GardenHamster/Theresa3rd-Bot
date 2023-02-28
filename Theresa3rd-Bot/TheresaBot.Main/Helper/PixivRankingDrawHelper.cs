@@ -1,6 +1,7 @@
 ﻿using SkiaSharp;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Cache;
+using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PixivRanking;
 
 namespace TheresaBot.Main.Helper
@@ -172,7 +173,8 @@ namespace TheresaBot.Main.Helper
             {
                 string imgSavePath = detail.ImageSavePath;
                 if (File.Exists(imgSavePath)) return new FileInfo(imgSavePath);
-                return await PixivHelper.DownPixivImgAsync(detail.WorkInfo.PixivId, detail.RankingContent.url, imgSavePath);
+                string fullFileName = detail.RankingContent.url.GetPreviewImgSaveName(detail.WorkInfo.illustId);
+                return await PixivHelper.DownPixivImgAsync(detail.WorkInfo.PixivId, detail.RankingContent.url, fullFileName);
             }
             catch (Exception ex)
             {

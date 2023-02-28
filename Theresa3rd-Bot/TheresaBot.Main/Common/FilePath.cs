@@ -7,7 +7,6 @@
         /// <summary>
         /// 获取下载图的保存的绝对路径
         /// </summary>
-        /// <param name="CQApi"></param>
         /// <returns></returns>
         public static string GetDownFileSavePath()
         {

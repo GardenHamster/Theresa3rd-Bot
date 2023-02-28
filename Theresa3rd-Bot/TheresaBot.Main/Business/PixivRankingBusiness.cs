@@ -72,7 +72,8 @@ namespace TheresaBot.Main.Business
                     await Task.Delay(500);
                     if (pixivWorkInfo is null) continue;
                     if (checkWorkIsOk(rankingItem, pixivWorkInfo) == false) continue;
-                    FileInfo previewFile = await PixivHelper.DownPixivImgAsync(rankingContent.illust_id.ToString(), rankingContent.url);
+                    string fullFileName = rankingContent.url.GetPreviewImgSaveName(pixivWorkInfo.illustId);
+                    FileInfo previewFile = await PixivHelper.DownPixivImgAsync(rankingContent.illust_id.ToString(), rankingContent.url, fullFileName);
                     PixivRankingDetail rankingDetail = new PixivRankingDetail(rankingContent, pixivWorkInfo, previewFile?.FullName);
                     rankingDetails.Add(rankingDetail);
                 }

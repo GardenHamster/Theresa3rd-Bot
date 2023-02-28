@@ -6,6 +6,7 @@ using System.Net.Security;
 using System.Net.Sockets;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
+using TheresaBot.Main.Model.File;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PixivRanking;
 
@@ -124,9 +125,10 @@ namespace TheresaBot.Main.Helper
             return await DownPixivImgAsync(downloadUrl, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
         }
 
-        public static async Task<FileInfo> DownPixivImgBySizeAsync(string pixivId, string originUrl, string fullFileName = null)
+        public static async Task<FileInfo> DownPixivImgBySizeAsync(string pixivId, string originUrl)
         {
             string downloadUrl = GetImgUrlBySize(originUrl);
+            string fullFileName = GetImgNameBySize(originUrl);
             string referer = HttpUrl.getPixivArtworksReferer(pixivId);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             return await DownPixivImgAsync(downloadUrl, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
@@ -444,6 +446,18 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 获取保存预览图的文件名
+        /// </summary>
+        /// <param name="downUrl"></param>
+        /// <param name="pixivId"></param>
+        /// <returns></returns>
+        public static string GetPreviewImgSaveName(this string downUrl, string pixivId)
+        {
+            HttpFileInfo httpFileInfo = new HttpFileInfo(downUrl);
+            return $"{pixivId}_p0_preview.{httpFileInfo.FileExtension}";
+        }
+
+        /// <summary>
         /// 根据配置文件设置的图片大小获取图片下载地址
         /// </summary>
         /// <returns></returns>
@@ -456,6 +470,22 @@ namespace TheresaBot.Main.Helper
             if (imgSize == "thumb") return originalUrl.ToThumbUrl();
             return originalUrl.ToThumbUrl();
         }
+
+        /// <summary>
+        /// 根据配置文件设置的图片大小获取图片下载地址
+        /// </summary>
+        /// <returns></returns>
+        private static string GetImgNameBySize(string originalUrl)
+        {
+            string imgSize = BotConfig.PixivConfig.ImgSize?.ToLower();
+            HttpFileInfo httpFileInfo = new HttpFileInfo(originalUrl);
+            if (imgSize == "original") return httpFileInfo.FullFileName;
+            if (imgSize == "regular") return $"{httpFileInfo.FileName}_regular.{httpFileInfo.FileExtension}";
+            if (imgSize == "small") return $"{httpFileInfo.FileName}_small.{httpFileInfo.FileExtension}";
+            if (imgSize == "thumb") return $"{httpFileInfo.FileName}_thumb.{httpFileInfo.FileExtension}";
+            return $"{httpFileInfo.FileName}_thumb.{httpFileInfo.FileExtension}";
+        }
+
 
         /// <summary>
         /// 拆解originalUrl,返回host和文件目录等信息

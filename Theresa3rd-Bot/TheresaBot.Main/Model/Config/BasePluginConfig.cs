@@ -2,6 +2,6 @@
 {
     public class BasePluginConfig
     {
-        public bool Enable { get; private set; }
+        public bool Enable { get; protected set; }
     }
 }

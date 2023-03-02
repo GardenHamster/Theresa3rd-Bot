@@ -187,9 +187,10 @@ namespace TheresaBot.Main.Helper
             string template = BotConfig.GeneralConfig.ErrorMsg;
             if (string.IsNullOrWhiteSpace(template)) template = "出了点小问题，再试一次吧~";
             if (template.StartsWith(" ") == false) template = " " + template;
-            List<BaseContent> contents = template.SplitToChainAsync(sendTarget);
+            List<BaseContent> contents = new();
             if (string.IsNullOrEmpty(message) == false) contents.Add(new PlainContent(message));
             if (string.IsNullOrEmpty(ex.Message) == false) contents.Add(new PlainContent(ex.Message.cutString(200)));
+            contents.AddRange(template.SplitToChainAsync(sendTarget));
             return contents;
         }
 

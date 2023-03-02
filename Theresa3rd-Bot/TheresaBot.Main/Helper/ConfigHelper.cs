@@ -22,7 +22,7 @@ namespace TheresaBot.Main.Helper
             Deserializer deserializer = new Deserializer();
             BotConfigDto botConfig = deserializer.Deserialize<BotConfigDto>(reader);
             BotConfig.GeneralConfig = botConfig.General;
-            BotConfig.PixivConfig = botConfig.Pixiv;
+            BotConfig.PixivConfig = botConfig.Pixiv.FormatConfig();
             BotConfig.PermissionsConfig = botConfig.Permissions;
             BotConfig.ManageConfig = botConfig.Manage;
             BotConfig.MenuConfig = botConfig.Menu;

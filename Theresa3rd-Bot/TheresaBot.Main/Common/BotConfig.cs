@@ -7,7 +7,7 @@ namespace TheresaBot.Main.Common
 {
     public static class BotConfig
     {
-        public const string BotVersion = "v0.8.0";
+        public const string BotVersion = "v0.8.1";
         public const string BotHomepage = "https://www.theresa3rd.cn";
         public static GeneralConfig GeneralConfig = new GeneralConfig();
         public static PixivConfig PixivConfig = new PixivConfig();
@@ -26,6 +26,8 @@ namespace TheresaBot.Main.Common
         public static Dictionary<SubscribeType, List<SubscribeTask>> SubscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
         public static List<BanWordPO> BanSetuTagList = new List<BanWordPO>();
         public static List<BanWordPO> BanMemberList = new List<BanWordPO>();
+
+
 
     }
 }

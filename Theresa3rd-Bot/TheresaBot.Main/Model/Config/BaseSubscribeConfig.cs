@@ -2,12 +2,12 @@
 {
     public class BaseSubscribeConfig : BasePluginConfig
     {
-        public List<string> AddCommands { get; set; }
+        public List<string> AddCommands { get; private set; }
 
-        public List<string> RmCommands { get; set; }
+        public List<string> RmCommands { get; private set; }
 
-        public string Template { get; set; }
+        public string Template { get; private set; }
 
-        public int ScanInterval { get; set; }
+        public int ScanInterval { get; protected set; }
     }
 }

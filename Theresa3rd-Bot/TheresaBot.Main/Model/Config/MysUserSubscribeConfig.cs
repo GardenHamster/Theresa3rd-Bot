@@ -2,7 +2,7 @@
 {
     public class MysUserSubscribeConfig : BaseSubscribeConfig
     {
-        public int ShelfLife { get; set; }
+        public int ShelfLife { get; private set; }
 
         public MysUserSubscribeConfig()
         {

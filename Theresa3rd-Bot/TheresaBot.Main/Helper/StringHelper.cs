@@ -136,6 +136,36 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 格式化url
+        /// </summary>
+        /// <param name="httpUrl"></param>
+        /// <returns></returns>
+        public static string formatHttpUrl(this string httpUrl, bool defaultHttps = true)
+        {
+            if (string.IsNullOrWhiteSpace(httpUrl)) return string.Empty;
+            httpUrl = httpUrl.Trim();
+            string lowerUrl = httpUrl.ToLower();
+            if (lowerUrl.StartsWith("//"))
+            {
+                string header = defaultHttps ? "https:" : "http:";
+                httpUrl = header + httpUrl;
+                lowerUrl = header + lowerUrl;
+            }
+            else if (!lowerUrl.StartsWith("http"))
+            {
+                string header = defaultHttps ? "https://" : "http://";
+                httpUrl = header + httpUrl;
+                lowerUrl = header + lowerUrl;
+            }
+            while (lowerUrl.EndsWith("/"))
+            {
+                httpUrl = httpUrl.Substring(0, httpUrl.Length - 1);
+                lowerUrl = lowerUrl.Substring(0, lowerUrl.Length - 1);
+            }
+            return httpUrl;
+        }
+
+        /// <summary>
         /// 从一个http url中提取文件名
         /// </summary>
         /// <param name="httpUrl"></param>

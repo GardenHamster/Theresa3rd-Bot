@@ -99,6 +99,7 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
+                int margeEachPage = 5;
                 bool isShowAI = groupId.IsShowAISetu();
                 bool isShowR18 = groupId.IsShowR18Setu();
                 string levelStr = getLevelStr(isShowR18);
@@ -112,7 +113,7 @@ namespace TheresaBot.Main.Handler
                 List<SetuContent> setuContents = await getSetuContent(dataList, groupId);
                 await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
                 await Task.Delay(2000);
-                await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge);
+                await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
             }
             catch (Exception ex)
             {

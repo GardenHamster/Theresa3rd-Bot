@@ -22,6 +22,8 @@ namespace TheresaBot.Main.Session
 
         public abstract Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge);
 
+        public abstract Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 0);
+
         public abstract Task<int[]> SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<SetuContent> headerContents, long groupId, int eachPage);
 
         public abstract Task<int[]> SendGroupSetuAsync(List<BaseContent> workMsgs, List<FileInfo> setuFiles, long groupId);

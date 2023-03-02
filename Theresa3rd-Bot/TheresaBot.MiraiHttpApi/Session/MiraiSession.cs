@@ -93,6 +93,24 @@ namespace TheresaBot.MiraiHttpApi.Session
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, new ForwardMessage(nodeList.ToArray()));
         }
 
+        public override async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 0)
+        {
+            if (sendMerge == false || margeEachPage <= 0)
+            {
+                return await SendGroupSetuAsync(setuContents, groupId, sendMerge);
+            }
+
+            int startIndex = 0;
+            List<int> msgIds = new List<int>();
+            while (startIndex < setuContents.Count)
+            {
+                List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(margeEachPage).ToList();
+                msgIds.AddRange(await SendGroupSetuAsync(pageContents, groupId, sendMerge));
+                startIndex += margeEachPage;
+            }
+            return msgIds.ToArray();
+        }
+
         public override async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge)
         {
             if (sendMerge)

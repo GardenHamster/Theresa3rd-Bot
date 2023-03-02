@@ -83,6 +83,7 @@ namespace TheresaBot.Main.Handler
 
         public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
+            int margeEachPage = 5;
             bool sendMerge = timingSetuTimer.SendMerge;
             bool fromOneDir = BotConfig.TimingSetuConfig.FromOneDir;
             string localPath = BotConfig.TimingSetuConfig.LocalPath;
@@ -94,7 +95,7 @@ namespace TheresaBot.Main.Handler
             List<SetuContent> setuContents = getSetuContent(dataList);
             await sendTimingSetuMessageAsync(timingSetuTimer, tags, groupId);
             await Task.Delay(2000);
-            await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge);
+            await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
         }
 
         private List<SetuContent> getSetuContent(List<LocalSetuInfo> datas)

@@ -20,7 +20,7 @@ namespace TheresaBot.Main.Model.File
             FullFileName = splitArr.Last().Trim();
             int pointIndex = FullFileName.IndexOf('.');
             FileName = FullFileName.Substring(0, pointIndex);
-            FileExtension = FullFileName.Substring(pointIndex, FullFileName.Length - pointIndex - 1);
+            FileExtension = FullFileName.Substring(pointIndex, FullFileName.Length - pointIndex);
         }
 
     }

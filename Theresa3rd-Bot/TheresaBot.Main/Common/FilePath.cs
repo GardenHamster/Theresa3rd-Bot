@@ -97,7 +97,7 @@ namespace TheresaBot.Main.Common
         private static string GetPixivImgDir(int pixivId)
         {
             //105866144
-            if (pixivId > 100000000) return $"{(pixivId / 10000) * 10000}";
+            if (pixivId > 100000000) return $"{(pixivId / 100000) * 100000}";
             if (pixivId > 80000000) return $"{(pixivId / 5000000) * 5000000}";
             if (pixivId > 50000000) return $"{(pixivId / 10000000) * 10000000}";
             return "50000000";

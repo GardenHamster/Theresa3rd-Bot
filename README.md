@@ -1,21 +1,21 @@
 # Theresa3rd-Bot
 [![release](https://img.shields.io/github/v/release/GardenHamster/Theresa3rd-Bot)](https://github.com/GardenHamster/Theresa3rd-Bot/releases) [![download](https://img.shields.io/github/downloads/GardenHamster/Theresa3rd-Bot/total)](https://github.com/GardenHamster/Theresa3rd-Bot/releases)
 
-
 ## 简介
  - 某舰团长利用摸鱼时间写出来的自用的bot，准备移植到 [mirai](https://github.com/mamoe/mirai)
  - 基于 .net core 6.0 和 mirai-api-http，可以在Windows或Linux上运行
  - 开始白嫖前，请在右上角点一下:star:Star
- - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)
-
+ - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)，或者查看[GitHub Pages](https://gardenhamster.github.io/TheresaBotDoc)
+ 
 ## 声明
- - 本项目为个人自娱自乐写出来的项目，并没有任何收益，并不负责由于使用本项目所产生的任何问题，不得将项目用于任何商业用途
- - 如果有建议问题或者bug请发Issues
+ - **本项目为个人自娱自乐写出来的项目，并没有任何收益，并不对使用本项目产生的任何问题负责，不得将项目用于任何商业用途**
 
 ## 其他
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
+ - Issuse请贴出相关的报错信息，mirai-http-api和本插件版本，botsettings.yml相关配置，必要的聊天记录截图
+ - 只发一句`没有反应`，`无法运行`之类的Issuse不予解答
 
 ## 功能和进度
 ### 基本
@@ -50,10 +50,7 @@
 
 ### 其他摆烂中的功能，~~反正也已经有dalao写好类似的插件了~~
 - [ ] 小游戏 - 狼人杀
-- [ ] 关键词自动回复/禁言/撤回功能
 - [ ] 词云功能 - 每日/周/月词云
-- [ ] Bili用户最新动态推送功能
-- [ ] Bili直播推送功能
 
 ## 致谢
 - [mamoe/mirai](https://github.com/mamoe/mirai)
@@ -73,3 +70,6 @@
 ![image](https://user-images.githubusercontent.com/89188316/177739246-0002d3e8-3554-4b65-adfc-54aaf440611f.png)
 
 ![image](https://user-images.githubusercontent.com/89188316/197740246-9850327e-3cd1-4dd5-9ade-402ce613bf7d.png)
+
+![image](https://user-images.githubusercontent.com/89188316/222678926-469e27f6-1efe-426d-9646-9d2821e9904d.png)
+

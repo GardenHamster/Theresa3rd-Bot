@@ -309,6 +309,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <returns></returns>
         private static async Task<IChatMessage> UploadPictureAsync(LocalImageContent imageContent)
         {
+            if (imageContent?.FileInfo == null) return null;
             return imageContent.SendTarget switch
             {
                 SendTarget.Group => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Group, imageContent.FileInfo.FullName),

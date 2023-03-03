@@ -207,21 +207,22 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
         /// <returns></returns>
-        protected async Task<FileInfo> downAndComposeGifAsync(string pixivId)
+        protected async Task<FileInfo> downAndComposeGifAsync(string pixivIdStr)
         {
             try
             {
-                string fullGifSavePath = Path.Combine(FilePath.GetDownFileSavePath(), $"{pixivId}.gif");
+                int pixivId = Convert.ToInt32(pixivIdStr);
+                string fullGifSavePath = Path.Combine(FilePath.GetPixivImgSavePath(pixivId), $"{pixivId}.gif");
                 if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
-                PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId);
+                PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivIdStr);
                 string zipHttpUrl = pixivUgoiraMetaDto.src;
 
-                string fullZipSavePath = Path.Combine(FilePath.GetDownFileSavePath(), $"{pixivId}.zip");
-                FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivId, zipHttpUrl, fullZipSavePath);
+                string fullZipSavePath = Path.Combine(FilePath.GetTempSavePath(), $"{pixivId}.zip");
+                FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivIdStr, zipHttpUrl, fullZipSavePath);
                 if (zipFile == null) return null;
 
-                string unZipDirPath = Path.Combine(FilePath.GetDownFileSavePath(), pixivId);
+                string unZipDirPath = Path.Combine(FilePath.GetTempSavePath(), pixivIdStr);
                 ZipHelper.ZipToFile(zipFile.FullName, unZipDirPath);
 
                 DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);

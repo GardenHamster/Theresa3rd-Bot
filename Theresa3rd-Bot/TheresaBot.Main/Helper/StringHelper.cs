@@ -201,52 +201,6 @@ namespace TheresaBot.Main.Helper
             return cookieBuilder.ToString();
         }
 
-
-        public static string isContainsWord(this string str, List<string> containWords)
-        {
-            foreach (string word in containWords)
-            {
-                if (str.Contains(word)) return word;
-            }
-            return null;
-        }
-
-        public static string isContainsWord(this string str, string[] containWords)
-        {
-            foreach (string word in containWords)
-            {
-                if (str.Contains(word)) return word;
-            }
-            return null;
-        }
-
-        public static string[] isContainsWord(this string str, string[][] containWords)
-        {
-            foreach (string[] words in containWords)
-            {
-                foreach (string word in words)
-                {
-                    if (str.Contains(word)) return words;
-                }
-            }
-            return null;
-        }
-
-        public static string removePunctuation(this string str)
-        {
-            string[] punctuation = new string[] { " ", "：", ":", "·", ",", ".", "•", "，", "。", "(", ")", "（", "）", "-", "—", "☆", "Δ" };
-            foreach (string item in punctuation) str = str.Replace(item, "");
-            return str;
-        }
-
-        public static string getHttpUrlWithoutParam(this string url)
-        {
-            if (string.IsNullOrEmpty(url)) return url;
-            int questionMarkIndex = url.IndexOf("?");
-            if (questionMarkIndex < 0) return url;
-            return url.Substring(0, questionMarkIndex);
-        }
-
         public static string getSuffixByUrl(this string url)
         {
             int lastPointIndex = url.LastIndexOf(".");

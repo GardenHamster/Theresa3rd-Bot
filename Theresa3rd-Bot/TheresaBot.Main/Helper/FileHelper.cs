@@ -4,11 +4,6 @@ namespace TheresaBot.Main.Helper
 {
     public static class FileHelper
     {
-        public static void clearHistoryImg()
-        {
-            clearDownloadImg();
-        }
-
         public static bool IsFilesExists(this List<string> fullFilePaths)
         {
             if (fullFilePaths is null || fullFilePaths.Count == 0) return false;
@@ -17,21 +12,6 @@ namespace TheresaBot.Main.Helper
                 if (File.Exists(fullFilePath) == false) return false;
             }
             return true;
-        }
-
-        public static void clearDownloadImg()
-        {
-            try
-            {
-                string path = FilePath.GetDownFileSavePath();
-                DirectoryInfo directoryInfo = new DirectoryInfo(path);
-                FileInfo[] fileInfoArr = directoryInfo.GetFiles();
-                foreach (FileInfo fileInfo in fileInfoArr) deleteFile(fileInfo);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex);
-            }
         }
 
         public static void deleteFile(string fullFilePath)

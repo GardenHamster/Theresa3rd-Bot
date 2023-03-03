@@ -118,20 +118,22 @@ namespace TheresaBot.Main.Helper
             return await GetPixivRankingAsync<PixivRankingData>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
-        public static async Task<FileInfo> DownPixivImgAsync(string pixivId, string downloadUrl, string fullFileName = null)
+        public static async Task<FileInfo> DownPixivImgAsync(string pixivIdStr, string downloadUrl, string fullFileName = null)
         {
-            string referer = HttpUrl.getPixivArtworksReferer(pixivId);
+            int pixivId = Convert.ToInt32(pixivIdStr);
+            string referer = HttpUrl.getPixivArtworksReferer(pixivIdStr);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            return await DownPixivImgAsync(downloadUrl, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
+            return await DownPixivImgAsync(downloadUrl, pixivId, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
         }
 
-        public static async Task<FileInfo> DownPixivImgBySizeAsync(string pixivId, string originUrl)
+        public static async Task<FileInfo> DownPixivImgBySizeAsync(string pixivIdStr, string originUrl)
         {
+            int pixivId = Convert.ToInt32(pixivIdStr);
             string downloadUrl = GetImgUrlBySize(originUrl);
             string fullFileName = GetImgNameBySize(originUrl);
-            string referer = HttpUrl.getPixivArtworksReferer(pixivId);
+            string referer = HttpUrl.getPixivArtworksReferer(pixivIdStr);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            return await DownPixivImgAsync(downloadUrl, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
+            return await DownPixivImgAsync(downloadUrl, pixivId, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
         }
 
         public static async Task<FileInfo> DownPixivFileAsync(string pixivId, string downloadUrl, string fullFileName = null)
@@ -225,7 +227,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        private static async Task<FileInfo> DownPixivImgAsync(string url, Dictionary<string, string> headerDic = null, string fullFileName = null, int retryTimes = 0, int timeout = 60000)
+        private static async Task<FileInfo> DownPixivImgAsync(string url, int pixivId, Dictionary<string, string> headerDic = null, string fullFileName = null, int retryTimes = 0, int timeout = 60000)
         {
             if (retryTimes < 0) retryTimes = 0;
             while (retryTimes >= 0)
@@ -233,7 +235,7 @@ namespace TheresaBot.Main.Helper
                 try
                 {
                     if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = url.getHttpFileName();
-                    string fullImgSavePath = Path.Combine(FilePath.GetDownFileSavePath(), fullFileName);
+                    string fullImgSavePath = Path.Combine(FilePath.GetPixivImgSavePath(pixivId), fullFileName);
                     return await DownPixivImgAsync(url, fullImgSavePath, headerDic, timeout);
                 }
                 catch (Exception ex)
@@ -277,7 +279,7 @@ namespace TheresaBot.Main.Helper
                 try
                 {
                     if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = url.getHttpFileName();
-                    string fullImgSavePath = Path.Combine(FilePath.GetDownFileSavePath(), fullFileName);
+                    string fullImgSavePath = Path.Combine(FilePath.GetTempSavePath(), fullFileName);
                     return await DownPixivFileAsync(url, fullImgSavePath, headerDic, timeout);
                 }
                 catch (Exception ex)
@@ -297,7 +299,7 @@ namespace TheresaBot.Main.Helper
         {
             if (BotConfig.PixivConfig.FreeProxy)
             {
-                 return await HttpHelper.DownFileAsync(url.ToProxyUrl(), fullImgSavePath);
+                return await HttpHelper.DownFileAsync(url.ToProxyUrl(), fullImgSavePath);
             }
             else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
             {

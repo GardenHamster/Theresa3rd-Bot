@@ -162,12 +162,8 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="imgUrl"></param>
         /// <returns></returns>
-        public static async Task<FileInfo> DownImgAsync(string imgUrl, Dictionary<string, string> headerDic = null, int timeout = 120000)
+        public static async Task<FileInfo> DownImgAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
-            string suffix = StringHelper.getSuffixByUrl(imgUrl);
-            if (string.IsNullOrEmpty(suffix)) suffix = "jpg";
-            string fullFileName = StringHelper.get16UUID() + "." + suffix;
-            string fullImageSavePath = Path.Combine(FilePath.GetDownFileSavePath(), fullFileName);
             return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic, timeout);
         }
 

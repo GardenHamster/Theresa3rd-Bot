@@ -85,8 +85,15 @@ namespace TheresaBot.Main.Handler
                 chailList.Add(new PlainContent($"目标群：{Enum.GetName(typeof(SubscribeGroupType), groupType)}\r\n"));
                 chailList.Add(new PlainContent($"uid：{dbSubscribe.SubscribeCode}\r\n"));
                 chailList.Add(new PlainContent($"签名：{dbSubscribe.SubscribeDescription}\r\n"));
-                FileInfo fileInfo = string.IsNullOrEmpty(userInfoDto.data.user_info.avatar_url) ? null : await HttpHelper.DownImgAsync(userInfoDto.data.user_info.avatar_url);
-                if (fileInfo != null) chailList.Add(new LocalImageContent(SendTarget.Group, fileInfo));
+
+                string avatar_url = userInfoDto.data.user_info.avatar_url;
+                if (string.IsNullOrWhiteSpace(avatar_url) == false)
+                {
+                    string fullImgSavePath = FilePath.GetFullMysImgSavePath(avatar_url);
+                    FileInfo fileInfo = await HttpHelper.DownImgAsync(avatar_url, fullImgSavePath);
+                    if (fileInfo != null) chailList.Add(new LocalImageContent(SendTarget.Group, fileInfo));
+                }
+
                 await command.ReplyGroupMessageWithAtAsync(chailList);
                 ConfigHelper.LoadSubscribeTask();
             }
@@ -181,20 +188,17 @@ namespace TheresaBot.Main.Handler
         {
             foreach (MysSubscribe mysSubscribe in mysSubscribeList)
             {
-                FileInfo fileInfo = null;
                 string coverUrl = mysSubscribe.SubscribeRecord.CoverUrl;
                 if (subscribeTask.GroupIdList is null || subscribeTask.GroupIdList.Count == 0) continue;
 
                 List<BaseContent> msgList = new List<BaseContent>();
                 msgList.Add(new PlainContent(mysBusiness.getPostInfoAsync(mysSubscribe, BotConfig.SubscribeConfig.Miyoushe.Template)));
 
-                if (string.IsNullOrEmpty(coverUrl) == false)
+                if (string.IsNullOrWhiteSpace(coverUrl) == false)
                 {
-                    fileInfo = await HttpHelper.DownImgAsync(mysSubscribe.SubscribeRecord.CoverUrl);
-                }
-                if (fileInfo != null)
-                {
-                    msgList.Add(new LocalImageContent(SendTarget.Group, fileInfo));
+                    string fullImgSavePath = FilePath.GetFullMysImgSavePath(coverUrl);
+                    FileInfo fileInfo = await HttpHelper.DownImgAsync(coverUrl, fullImgSavePath);
+                    if (fileInfo != null) msgList.Add(new LocalImageContent(SendTarget.Group, fileInfo));
                 }
 
                 foreach (long groupId in subscribeTask.GroupIdList)

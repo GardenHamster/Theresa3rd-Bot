@@ -10,6 +10,8 @@
 
         public string ErrorMsg { get; private set; }
 
+        public string DownPathCleanCron { get; set; }
+
         public string DownErrorImgPath { get; private set; }
 
         public string DisableMsg { get; private set; }

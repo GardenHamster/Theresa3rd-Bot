@@ -2,11 +2,11 @@
 {
     public class LocalSetuConfig : BasePluginConfig
     {
-        public List<string> Commands { get; set; }
+        public List<string> Commands { get; private set; }
 
-        public string LocalPath { get; set; }
+        public string LocalPath { get; private set; }
 
-        public string Template { get; set; }
+        public string Template { get; private set; }
 
     }
 }

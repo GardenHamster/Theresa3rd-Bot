@@ -5,7 +5,7 @@
 		<RootNamespace>TheresaBot.MiraiHttpApi</RootNamespace>
 		<StartupObject></StartupObject>
 		<BaseOutputPath></BaseOutputPath>
-		<Version>0.8.0</Version>
+		<Version>0.8.1</Version>
 		<Nullable>disable</Nullable>
 		<WarningLevel>3</WarningLevel>
 	</PropertyGroup>
@@ -18,9 +18,6 @@
 	<ItemGroup>
 		<PackageReference Include="Mirai-CSharp" Version="2.1.9" />
 		<PackageReference Include="Mirai-CSharp.HttpApi" Version="2.1.9" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-		<PackageReference Include="YamlDotNet" Version="12.3.1" />
 	</ItemGroup>
 
 	<ItemGroup>

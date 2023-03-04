@@ -229,9 +229,9 @@ namespace TheresaBot.Main.Handler
             while (startIndex < details.Count)
             {
                 string fileName = $"{rankingMode.Code}_preview_{rankingInfo.RankingDate}_{startIndex}_{startIndex + previewInPage}.jpg";
-                string savePath = Path.Combine(FilePath.GetDownFileSavePath(), fileName);
+                string fullSavePath = Path.Combine(FilePath.GetPixivPreviewSavePath(), fileName);
                 var partList = details.Skip(startIndex).Take(previewInPage).ToList();
-                var previewFile = createPreviewImg(rankingInfo, partList, savePath);
+                var previewFile = createPreviewImg(rankingInfo, partList, fullSavePath);
                 if (previewFile is not null) fileInfos.Add(previewFile.FullName);
                 startIndex += previewInPage;
             }

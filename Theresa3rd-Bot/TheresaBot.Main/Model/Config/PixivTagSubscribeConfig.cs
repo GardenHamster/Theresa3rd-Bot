@@ -2,13 +2,13 @@
 {
     public class PixivTagSubscribeConfig : BaseSubscribeConfig
     {
-        public int ShelfLife { get; set; }
+        public int ShelfLife { get; private set; }
 
-        public int MinBookmark { get; set; }
+        public int MinBookmark { get; private set; }
 
-        public int MinBookPerHour { get; set; }
+        public int MinBookPerHour { get; private set; }
 
-        public int MaxScan { get; set; }
+        public int MaxScan { get; private set; }
 
         public PixivTagSubscribeConfig()
         {

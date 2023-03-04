@@ -51,7 +51,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static async Task<string> GetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            HttpClient client = DefaultHttpClientFactory.CreateClient();
+            using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.BaseAddress = new Uri(url);
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
@@ -70,7 +70,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static async Task<string> GetWithProxyAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
+            using HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
             client.BaseAddress = new Uri(url);
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
@@ -92,7 +92,7 @@ namespace TheresaBot.Main.Helper
         {
             HttpContent content = new StringContent(postJsonStr);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            HttpClient client = DefaultHttpClientFactory.CreateClient();
+            using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
@@ -111,7 +111,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static async Task<HttpResponseMessage> PostFormForHtml(string url, Dictionary<string, string> paramDic, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            HttpClient client = DefaultHttpClientFactory.CreateClient();
+            using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
@@ -128,7 +128,7 @@ namespace TheresaBot.Main.Helper
         public static async Task<string> PostImageAsync(string postUrl, FileInfo imageFile, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             using FileStream fs = new FileStream(imageFile.FullName, FileMode.Open, FileAccess.Read);
-            HttpClient client = DefaultHttpClientFactory.CreateClient();
+            using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
@@ -150,7 +150,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static async Task<string> GetHtmlAsync(string httpUrl, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            HttpClient client = DefaultHttpClientFactory.CreateClient();
+            using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
@@ -162,12 +162,8 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="imgUrl"></param>
         /// <returns></returns>
-        public static async Task<FileInfo> DownImgAsync(string imgUrl, Dictionary<string, string> headerDic = null, int timeout = 120000)
+        public static async Task<FileInfo> DownImgAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
-            string suffix = StringHelper.getSuffixByUrl(imgUrl);
-            if (string.IsNullOrEmpty(suffix)) suffix = "jpg";
-            string fullFileName = StringHelper.get16UUID() + "." + suffix;
-            string fullImageSavePath = Path.Combine(FilePath.GetDownFileSavePath(), fullFileName);
             return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic, timeout);
         }
 
@@ -181,7 +177,7 @@ namespace TheresaBot.Main.Helper
         public static async Task<FileInfo> DownFileAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
             if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
-            HttpClient client = DefaultHttpClientFactory.CreateClient();
+            using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
@@ -203,7 +199,7 @@ namespace TheresaBot.Main.Helper
         public static async Task<FileInfo> DownFileWithProxyAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
             if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
-            HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
+            using HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
             client.addHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());

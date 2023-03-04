@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Text;
+﻿using System.Text;
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Config;
@@ -11,25 +10,6 @@ namespace TheresaBot.Main.Helper
 {
     public class ConfigHelper
     {
-        private static IConfiguration Configuration;
-
-        public static void setConfiguration(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        /// <summary>
-        /// 加载MiraiHttpApi配置
-        /// </summary>
-        public static void LoadMiraiConfig()
-        {
-            BotConfig.DBConfig.ConnectionString = Configuration["Database:ConnectionString"];
-            BotConfig.MiraiConfig.Host = Configuration["Mirai:host"];
-            BotConfig.MiraiConfig.Port = Convert.ToInt32(Configuration["Mirai:port"]);
-            BotConfig.MiraiConfig.AuthKey = Configuration["Mirai:authKey"];
-            BotConfig.MiraiConfig.BotQQ = Convert.ToInt64(Configuration["Mirai:botQQ"]);
-        }
-
         /// <summary>
         /// 加载botsetting.yml配置
         /// </summary>
@@ -42,7 +22,7 @@ namespace TheresaBot.Main.Helper
             Deserializer deserializer = new Deserializer();
             BotConfigDto botConfig = deserializer.Deserialize<BotConfigDto>(reader);
             BotConfig.GeneralConfig = botConfig.General;
-            BotConfig.PixivConfig = botConfig.Pixiv;
+            BotConfig.PixivConfig = botConfig.Pixiv.FormatConfig();
             BotConfig.PermissionsConfig = botConfig.Permissions;
             BotConfig.ManageConfig = botConfig.Manage;
             BotConfig.MenuConfig = botConfig.Menu;

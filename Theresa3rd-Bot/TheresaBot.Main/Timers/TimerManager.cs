@@ -100,7 +100,8 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                string clearCron = "0 0 4 * * ?";
+                string clearCron = BotConfig.GeneralConfig.DownPathCleanCron;
+                if (string.IsNullOrWhiteSpace(clearCron)) return;
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(clearCron).Build();
                 IJobDetail jobDetail = JobBuilder.Create<ClearJob>().WithIdentity("ClearJob", "ClearJob").Build();//创建作业
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();

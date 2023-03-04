@@ -78,7 +78,7 @@ namespace TheresaBot.Main.Handler
                 if (BotConfig.SaucenaoConfig.RevokeSearched)
                 {
                     await Task.Delay(1000);
-                    await command.RevokeGroupMessageAsync(revokeMsgId, command.MsgId);
+                    await command.RevokeGroupMessageAsync(revokeMsgId, command.GroupId);
                 }
 
                 if (notFoundList.Count > 0 && await CheckContinueAscii2d(command, notFoundList))

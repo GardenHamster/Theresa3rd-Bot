@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Mirai.CSharp.Builders;
 using Mirai.CSharp.HttpApi.Builder;
 using Mirai.CSharp.HttpApi.Invoking;
@@ -20,6 +21,7 @@ using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Command;
+using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Event;
 
 namespace TheresaBot.MiraiHttpApi.Helper
@@ -31,12 +33,6 @@ namespace TheresaBot.MiraiHttpApi.Helper
         public static IServiceScope Scope;
 
         public static IMiraiHttpSession Session;
-
-        public static IBotProfile BotProfile;
-
-        public static long BotNumber;
-
-        public static string BotName;
 
         public static async Task ConnectMirai()
         {
@@ -58,9 +54,9 @@ namespace TheresaBot.MiraiHttpApi.Helper
                                                                .Services
                                                                .Configure<MiraiHttpSessionOptions>(options =>
                                                                {
-                                                                   options.Host = BotConfig.MiraiConfig.Host;
-                                                                   options.Port = BotConfig.MiraiConfig.Port;
-                                                                   options.AuthKey = BotConfig.MiraiConfig.AuthKey;
+                                                                   options.Host = MiraiConfig.MiraiHost;
+                                                                   options.Port = MiraiConfig.MiraiPort;
+                                                                   options.AuthKey = MiraiConfig.MiraiAuthKey;
                                                                    options.SuppressAwaitMessageInvoker = true;
                                                                })
                                                                .AddLogging()
@@ -68,11 +64,8 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 Scope = Services.CreateAsyncScope();
                 Services = Scope.ServiceProvider;
                 Session = Services.GetRequiredService<IMiraiHttpSession>();
-                await Session.ConnectAsync(BotConfig.MiraiConfig.BotQQ);
+                await Session.ConnectAsync(MiraiConfig.MiraiBotQQ);
                 LogHelper.Info("已成功连接到mirai-console...");
-                BotProfile = await GetBotProfileAsync();
-                BotNumber = Session.QQNumber ?? 0;
-                BotName = BotProfile?.Nickname ?? "Bot";
             }
             catch (Exception ex)
             {
@@ -81,8 +74,39 @@ namespace TheresaBot.MiraiHttpApi.Helper
             }
         }
 
+        /// <summary>
+        /// 加载MiraiHttpApi配置
+        /// </summary>
+        public static void LoadMiraiConfig(IConfiguration configuration)
+        {
+            MiraiConfig.ConnectionString = configuration["Database:ConnectionString"];
+            MiraiConfig.MiraiHost = configuration["Mirai:host"];
+            MiraiConfig.MiraiPort = Convert.ToInt32(configuration["Mirai:port"]);
+            MiraiConfig.MiraiAuthKey = configuration["Mirai:authKey"];
+            MiraiConfig.MiraiBotQQ = Convert.ToInt64(configuration["Mirai:botQQ"]);
+        }
+
+        /// <summary>
+        /// 获取机器人信息
+        /// </summary>
+        /// <returns></returns>
+        public static async Task LoadBotProfileAsync()
+        {
+            try
+            {
+                IBotProfile profile = await MiraiHelper.Session.GetBotProfileAsync();
+                MiraiConfig.MiraiBotName = profile?.Nickname ?? "Bot";
+                LogHelper.Info($"Bot名片获取完毕，QQNumber={Session.QQNumber}，Nickname={profile?.Nickname ?? ""}");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "Bot名片获取失败");
+            }
+        }
+
         public static async Task SendStartUpMessageAsync()
         {
+            await Task.Delay(3000);
             List<IChatMessage> msgList = new List<IChatMessage>();
             StringBuilder msgBuilder=new StringBuilder();
             msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot {BotConfig.BotVersion}】");
@@ -95,10 +119,13 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 try
                 {
                     await Session.SendFriendMessageAsync(memberId, welcomeMessage);
-                    await Task.Delay(1000);
                 }
                 catch (Exception)
                 {
+                }
+                finally
+                {
+                    await Task.Delay(1000);
                 }
             }
         }
@@ -286,6 +313,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <returns></returns>
         private static async Task<IChatMessage> UploadPictureAsync(LocalImageContent imageContent)
         {
+            if (imageContent?.FileInfo == null) return null;
             return imageContent.SendTarget switch
             {
                 SendTarget.Group => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Group, imageContent.FileInfo.FullName),
@@ -294,24 +322,6 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 _ => null
             };
         }
-
-        /// <summary>
-        /// 获取机器人信息
-        /// </summary>
-        /// <returns></returns>
-        private static async Task<IBotProfile> GetBotProfileAsync()
-        {
-            try
-            {
-                return await MiraiHelper.Session.GetBotProfileAsync();
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "获取Bot资料失败");
-                return null;
-            }
-        }
-
 
     }
 }

@@ -14,6 +14,7 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Command;
+using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Relay;
 using TheresaBot.MiraiHttpApi.Reporter;
@@ -32,7 +33,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 long groupId = args.Sender.Group.Id;
                 long botId = session.QQNumber ?? 0;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
-                if (memberId == BotConfig.MiraiConfig.BotQQ) return;
+                if (memberId == MiraiConfig.MiraiBotQQ) return;
                 if (BusinessHelper.IsBanMember(memberId)) return; //黑名单成员
 
                 string prefix = BotConfig.GeneralConfig.Prefix;

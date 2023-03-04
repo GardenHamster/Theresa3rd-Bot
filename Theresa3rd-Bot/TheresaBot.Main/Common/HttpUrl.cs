@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-
-namespace TheresaBot.Main.Common
+﻿namespace TheresaBot.Main.Common
 {
     public static class HttpUrl
     {
@@ -211,7 +209,7 @@ namespace TheresaBot.Main.Common
         /// <returns></returns>
         public static string getLolisukiApiUrl()
         {
-            return "https://lolisuki.cc/api/setu/v1";
+            return "https://lolisuki.cn/api/setu/v1";
         }
 
         /*---------------------------------------------------------------米游社-----------------------------------------------------------------------*/

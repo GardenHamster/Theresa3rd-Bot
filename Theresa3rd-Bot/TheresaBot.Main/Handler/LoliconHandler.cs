@@ -95,6 +95,7 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
+                int margeEachPage = 5;
                 bool sendMerge = timingSetuTimer.SendMerge;
                 int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
                 bool excludeAI = groupId.IsShowAISetu() == false;
@@ -105,7 +106,7 @@ namespace TheresaBot.Main.Handler
                 List<SetuContent> setuContents = await getSetuContent(dataList, groupId);
                 await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
                 await Task.Delay(2000);
-                await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge);
+                await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
             }
             catch (Exception ex)
             {

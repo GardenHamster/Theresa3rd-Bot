@@ -6,16 +6,17 @@ namespace TheresaBot.Main.Business
 {
     public class LocalSetuBusiness : SetuBusiness
     {
-        public List<LocalSetuInfo> loadRandom(string localPath, int count, bool fromOneDir = false)
+        public List<LocalSetuInfo> loadRandomDir(string localPath, int count, bool fromOneDir = false)
         {
             List<LocalSetuInfo> setuList = new List<LocalSetuInfo>();
             DirectoryInfo localDir = new DirectoryInfo(localPath);
             DirectoryInfo[] directoryInfos = localDir.GetDirectories();
-            int randomDirIndex = new Random().Next(0, directoryInfos.Length);
+            if (directoryInfos.Length == 0) throw new Exception($"localPath路径下不存在子文件夹，请在子文件夹下存放图片");
+            int singleDirIndex = new Random().Next(0, directoryInfos.Length);
             for (int i = 0; i < count; i++)
             {
-                randomDirIndex = fromOneDir ? randomDirIndex : new Random().Next(0, directoryInfos.Length);
-                DirectoryInfo randomDir = directoryInfos[randomDirIndex];
+                int dirIndex = fromOneDir ? singleDirIndex : new Random().Next(0, directoryInfos.Length);
+                DirectoryInfo randomDir = directoryInfos[dirIndex];
                 FileInfo[] fileInfos = randomDir.GetFiles();
                 if (fileInfos.Length == 0) continue;
                 int randomFileIndex = new Random().Next(0, fileInfos.Length);
@@ -25,11 +26,12 @@ namespace TheresaBot.Main.Business
             return setuList;
         }
 
-        public List<LocalSetuInfo> loadInDir(string localPath, string dirName, int count)
+        public List<LocalSetuInfo> loadTargetDir(string localPath, string dirName, int count)
         {
             List<LocalSetuInfo> setuList = new List<LocalSetuInfo>();
             DirectoryInfo localDir = new DirectoryInfo(localPath);
             DirectoryInfo[] directoryInfos = localDir.GetDirectories();
+            if (directoryInfos is null || directoryInfos.Length == 0) return setuList;
             DirectoryInfo directoryInfo = directoryInfos.Where(o => o.Name.ToLower() == dirName.ToLower()).FirstOrDefault();
             if (directoryInfo is null) return setuList;
             FileInfo[] fileInfos = directoryInfo.GetFiles();

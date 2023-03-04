@@ -1,6 +1,7 @@
 ﻿General:                                                                            #基础设置
     Prefix:                     '#'                                                 #指令前缀
     DownloadPath:               'C:\BotImg\download'                                #下载文件的存放目录
+    DownPathCleanCron:          '0 0 4 * * ?'                                       #下载目录清理定时器，Cron表达式，空值表示不清理，格式：0 0 4 * * ?
     DownErrorImgPath:           'C:\BotImg\face\downError.png'                      #图片下载失败时的替代图片
     ErrorGroups:                [284196392]                                         #错误日志群，发生错误时会将日志发送到这些群
     ErrorMsg:                   |                                                   #处理异常时返回的消息
@@ -119,7 +120,7 @@ Setu:                                                                           
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
     
-    Lolisuki:                                                                       #Lolisuki图床 https://lolisuki.cc
+    Lolisuki:                                                                       #Lolisuki图床 https://lolisuki.cn
         Enable:                 true                                                #是否启用
         Commands:               ['setu']                                            #命令
         Level:                  '0-6'                                               #Level范围，数字越大表示越涩，最小为0，最大为6，5-6为R18

@@ -1,26 +1,37 @@
-﻿namespace TheresaBot.Main.Model.Config
+﻿using TheresaBot.Main.Helper;
+
+namespace TheresaBot.Main.Model.Config
 {
     public class PixivConfig
     {
-        public bool FreeProxy { get; set; }
-        public string HttpProxy { get; set; }
-        public string ImgProxy { get; set; }
-        public int ImgShowMaximum { get; set; }
-        public int TagShowMaximum { get; set; }
-        public int UrlShowMaximum { get; set; }
-        public string ImgSize { get; set; }
-        public string OriginUrlProxy { get; set; }
-        public bool SendImgBehind { get; set; }
-        public int ImgRetryTimes { get; set; }
-        public int ErrRetryTimes { get; set; }
-        public int CookieExpire { get; set; }
-        public string CookieExpireMsg { get; set; }
-        public string Template { get; set; }
+        public bool FreeProxy { get; private set; }
+        public string HttpProxy { get; private set; }
+        public string ImgProxy { get; private set; }
+        public int ImgShowMaximum { get; private set; }
+        public int TagShowMaximum { get; private set; }
+        public int UrlShowMaximum { get; private set; }
+        public string ImgSize { get; private set; }
+        public string OriginUrlProxy { get; private set; }
+        public bool SendImgBehind { get; private set; }
+        public int ImgRetryTimes { get; private set; }
+        public int ErrRetryTimes { get; private set; }
+        public int CookieExpire { get; private set; }
+        public string CookieExpireMsg { get; private set; }
+        public string Template { get; private set; }
         public PixivConfig()
         {
             this.ImgShowMaximum = 1;
             this.TagShowMaximum = 3;
             this.UrlShowMaximum = 3;
         }
+
+        public PixivConfig FormatConfig()
+        {
+            this.ImgProxy = StringHelper.formatHttpUrl(ImgProxy);
+            this.HttpProxy = StringHelper.formatHttpUrl(HttpProxy, false);
+            this.OriginUrlProxy = StringHelper.formatHttpUrl(OriginUrlProxy);
+            return this;
+        }
+
     }
 }

@@ -1,17 +1,15 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.Models;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Session;
+using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Session
@@ -77,7 +75,7 @@ namespace TheresaBot.MiraiHttpApi.Session
             List<IForwardMessageNode> nodeList = new();
             foreach (var contentList in contentLists)
             {
-                nodeList.Add(new ForwardMessageNode(MiraiHelper.BotName, MiraiHelper.BotNumber, DateTime.Now, await contentList.ToMiraiMessageAsync()));
+                nodeList.Add(new ForwardMessageNode(MiraiConfig.MiraiBotName, MiraiConfig.MiraiBotQQ, DateTime.Now, await contentList.ToMiraiMessageAsync()));
             }
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, new ForwardMessage(nodeList.ToArray()));
         }
@@ -90,9 +88,27 @@ namespace TheresaBot.MiraiHttpApi.Session
                 List<IChatMessage> msgList = new List<IChatMessage>();
                 msgList.AddRange(await content.SetuInfos.ToMiraiMessageAsync());
                 msgList.AddRange(await content.SetuImages.UploadPictureAsync(UploadTarget.Group));
-                nodeList.Add(new ForwardMessageNode(MiraiHelper.BotName, MiraiHelper.BotNumber, DateTime.Now, msgList.ToArray()));
+                nodeList.Add(new ForwardMessageNode(MiraiConfig.MiraiBotName, MiraiConfig.MiraiBotQQ, DateTime.Now, msgList.ToArray()));
             }
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, new ForwardMessage(nodeList.ToArray()));
+        }
+
+        public override async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 0)
+        {
+            if (sendMerge == false || margeEachPage <= 0)
+            {
+                return await SendGroupSetuAsync(setuContents, groupId, sendMerge);
+            }
+
+            int startIndex = 0;
+            List<int> msgIds = new List<int>();
+            while (startIndex < setuContents.Count)
+            {
+                List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(margeEachPage).ToList();
+                msgIds.AddRange(await SendGroupSetuAsync(pageContents, groupId, sendMerge));
+                startIndex += margeEachPage;
+            }
+            return msgIds.ToArray();
         }
 
         public override async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge)

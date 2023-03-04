@@ -106,6 +106,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
 
         public static async Task SendStartUpMessageAsync()
         {
+            await Task.Delay(3000);
             List<IChatMessage> msgList = new List<IChatMessage>();
             StringBuilder msgBuilder=new StringBuilder();
             msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot {BotConfig.BotVersion}】");
@@ -118,10 +119,13 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 try
                 {
                     await Session.SendFriendMessageAsync(memberId, welcomeMessage);
-                    await Task.Delay(1000);
                 }
                 catch (Exception)
                 {
+                }
+                finally
+                {
+                    await Task.Delay(1000);
                 }
             }
         }

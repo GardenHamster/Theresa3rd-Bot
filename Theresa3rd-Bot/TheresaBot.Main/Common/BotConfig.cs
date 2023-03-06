@@ -7,7 +7,7 @@ namespace TheresaBot.Main.Common
 {
     public static class BotConfig
     {
-        public const string BotVersion = "v0.8.1";
+        public const string BotVersion = "v0.8.2";
         public const string BotHomepage = "https://www.theresa3rd.cn";
         public static GeneralConfig GeneralConfig = new GeneralConfig();
         public static PixivConfig PixivConfig = new PixivConfig();

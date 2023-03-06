@@ -54,7 +54,6 @@ namespace TheresaBot.Main.Helper
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.BaseAddress = new Uri(url);
             client.addHeaders(headerDic);
-            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             HttpResponseMessage response = await client.GetAsync(url);
             //response.EnsureSuccessStatusCode();
@@ -73,7 +72,6 @@ namespace TheresaBot.Main.Helper
             using HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
             client.BaseAddress = new Uri(url);
             client.addHeaders(headerDic);
-            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             HttpResponseMessage response = await client.GetAsync(url);
             //response.EnsureSuccessStatusCode();
@@ -94,7 +92,6 @@ namespace TheresaBot.Main.Helper
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
-            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             HttpResponseMessage response = await client.PostAsync(url, content);
             //response.EnsureSuccessStatusCode();
@@ -113,7 +110,6 @@ namespace TheresaBot.Main.Helper
         {
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
-            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             return await client.PostAsync(url, new FormUrlEncodedContent(paramDic));
         }
@@ -131,7 +127,6 @@ namespace TheresaBot.Main.Helper
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             MultipartFormDataContent formData = new MultipartFormDataContent();//表单
             StreamContent fileContent = new StreamContent(fs);//图片stream
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
@@ -153,7 +148,6 @@ namespace TheresaBot.Main.Helper
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             return await client.GetStringAsync(httpUrl);
         }
 
@@ -180,7 +174,6 @@ namespace TheresaBot.Main.Helper
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.addHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
             using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
             fileStream.Write(urlContents, 0, urlContents.Length);
@@ -202,7 +195,6 @@ namespace TheresaBot.Main.Helper
             using HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
             client.addHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
             byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
             using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
             fileStream.Write(urlContents, 0, urlContents.Length);
@@ -219,8 +211,17 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static void addHeaders(this HttpClient client, Dictionary<string, string> headerDic)
         {
-            if (headerDic is null) return;
-            foreach (var item in headerDic) client.DefaultRequestHeaders.Add(item.Key, item.Value);
+            if (headerDic is null) headerDic = new Dictionary<string, string>();
+            foreach (var item in headerDic)
+            {
+                if (string.IsNullOrWhiteSpace(item.Value)) continue;
+                client.DefaultRequestHeaders.Add(item.Key, item.Value);
+            }
+            var headerKeys = headerDic.Keys.Select(o => o.ToLower().Trim()).ToList();
+            if (!headerKeys.Contains("user-agent"))
+            {
+                client.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
+            }
         }
 
         /// <summary>

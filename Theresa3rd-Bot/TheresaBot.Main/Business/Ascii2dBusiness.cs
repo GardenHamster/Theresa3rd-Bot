@@ -18,7 +18,8 @@ namespace TheresaBot.Main.Business
             DateTime startTime = DateTime.Now;
             string colorUrl = await GetColorUrlAsync(imgHttpUrl);
             string bovwUrl = colorUrl.Replace("/color/", "/bovw/");
-            string ascii2dHtml = await HttpHelper.GetHtmlAsync(bovwUrl);
+            var headerDic = new Dictionary<string, string>() { { "User-Agent", "Mozilla/5.0" } };
+            string ascii2dHtml = await HttpHelper.GetHtmlAsync(bovwUrl, headerDic);
             HtmlParser htmlParser = new HtmlParser();
             IHtmlDocument document = await htmlParser.ParseDocumentAsync(ascii2dHtml);
             IEnumerable<IElement> domList = document.All.Where(m => m.ClassList.Contains("detail-box"));
@@ -102,7 +103,7 @@ namespace TheresaBot.Main.Business
         private async static Task<string> GetColorUrlAsync(string imgHttpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "uri", imgHttpUrl } };
-            Dictionary<string, string> headerDic = new Dictionary<string, string>();
+            Dictionary<string, string> headerDic = new Dictionary<string, string>() { { "User-Agent", "Mozilla/5.0" } };
             HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.Ascii2dUrl, paramDic, headerDic);
             if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Redirect)
             {

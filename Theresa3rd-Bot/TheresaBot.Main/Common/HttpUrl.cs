@@ -15,7 +15,7 @@
         /// <summary>
         /// Ascii2d搜索地址
         /// </summary>
-        public const string Ascii2dUrl = "https://ascii2d.net/search/uri";
+        public const string Ascii2dUrl = "http://140.227.126.56/search/uri";
 
         /// <summary>
         /// 默认pixiv图片代理地址

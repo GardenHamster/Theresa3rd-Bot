@@ -43,10 +43,19 @@ namespace TheresaBot.Main.Common
             string suffix = StringHelper.getSuffixByUrl(imgUrl);
             if (string.IsNullOrEmpty(suffix)) suffix = "jpg";
             string fullFileName = StringHelper.get16UUID() + "." + suffix;
-            string downFilePath = GetDownFileSavePath();
-            string savePath = Path.Combine(downFilePath, MiyousheDir);
-            if (!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
-            return Path.Combine(savePath, fullFileName);
+            string mysFilePath = GetMysImgSavePath();
+            return Path.Combine(mysFilePath, fullFileName);
+        }
+
+        /// <summary>
+        /// 获取米游社图片存放路径
+        /// </summary>
+        /// <returns></returns>
+        public static string GetFullTempJpgSavePath()
+        {
+            string fullFileName = StringHelper.get16UUID() + ".jpg";
+            string tempFilePath = GetTempSavePath();
+            return Path.Combine(tempFilePath, fullFileName);
         }
 
         /// <summary>
@@ -72,6 +81,19 @@ namespace TheresaBot.Main.Common
         {
             string downFilePath = GetDownFileSavePath();
             string savePath = Path.Combine(downFilePath, PixivPreviewDir);
+            if (!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
+            return savePath;
+        }
+
+        /// <summary>
+        /// 获取米游社存放路径
+        /// </summary>
+        /// <param name="pixivId"></param>
+        /// <returns></returns>
+        public static string GetMysImgSavePath()
+        {
+            string downFilePath = GetDownFileSavePath();
+            string savePath = Path.Combine(downFilePath, MiyousheDir);
             if (!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
             return savePath;
         }

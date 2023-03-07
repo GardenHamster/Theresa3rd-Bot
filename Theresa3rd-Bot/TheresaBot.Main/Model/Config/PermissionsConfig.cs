@@ -16,6 +16,8 @@
 
         public List<long> SetuShowR18Groups { get; private set; }
 
+        public List<long> SetuShowR18ImgGroups { get; private set; }
+
         public List<long> SetuCustomGroups { get; private set; }
 
         public List<long> SetuNoneCDGroups { get; private set; }

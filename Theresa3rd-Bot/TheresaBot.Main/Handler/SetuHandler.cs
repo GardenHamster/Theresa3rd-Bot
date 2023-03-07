@@ -20,6 +20,28 @@ namespace TheresaBot.Main.Handler
         {
         }
 
+        public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, long groupId)
+        {
+            bool isR18Img = workInfo.IsR18;
+            bool isShowImg = groupId.IsShowSetuImg(isR18Img);
+            float sigma = BotConfig.PixivConfig.R18ImgBlur;
+            string fullSavePath = FilePath.GetFullTempJpgSavePath();
+            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
+            if (isR18Img) setuFiles = setuFiles.ReduceAndBlur(sigma, 300, fullSavePath);
+            return setuFiles;
+        }
+
+        public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, List<long> groupIds)
+        {
+            bool isR18Img = workInfo.IsR18;
+            bool isShowImg = groupIds.IsShowSetuImg(isR18Img);
+            float sigma = BotConfig.PixivConfig.R18ImgBlur;
+            string fullSavePath = FilePath.GetFullTempJpgSavePath();
+            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
+            if (isR18Img) setuFiles = setuFiles.ReduceAndBlur(sigma, 300, fullSavePath);
+            return setuFiles;
+        }
+
         /// <summary>
         /// 检查是否拥有自定义涩图权限
         /// </summary>
@@ -174,23 +196,23 @@ namespace TheresaBot.Main.Handler
         /// <summary>
         /// 根据配置使用代理或者直连下载图片
         /// </summary>
-        /// <param name="pixivWorkInfo"></param>
+        /// <param name="workInfo"></param>
         /// <returns></returns>
-        public async Task<List<FileInfo>> downPixivImgsAsync(BaseWorkInfo pixivWorkInfo)
+        public async Task<List<FileInfo>> downPixivImgsAsync(BaseWorkInfo workInfo)
         {
             try
             {
-                if (pixivWorkInfo.IsGif)
+                if (workInfo.IsGif)
                 {
-                    FileInfo gifFile = await downAndComposeGifAsync(pixivWorkInfo.PixivId);
+                    FileInfo gifFile = await downAndComposeGifAsync(workInfo.PixivId);
                     return gifFile is null ? new() : new() { gifFile };
                 }
                 List<FileInfo> imgList = new List<FileInfo>();
-                List<string> originUrls = pixivWorkInfo.getOriginalUrls();
+                List<string> originUrls = workInfo.getOriginalUrls();
                 int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
                 for (int i = 0; i < maxCount && i < originUrls.Count; i++)
                 {
-                    imgList.Add(await PixivHelper.DownPixivImgBySizeAsync(pixivWorkInfo.PixivId, originUrls[i]));
+                    imgList.Add(await PixivHelper.DownPixivImgBySizeAsync(workInfo.PixivId, originUrls[i]));
                 }
                 return imgList;
             }

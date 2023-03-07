@@ -1,7 +1,6 @@
 ﻿using SkiaSharp;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Cache;
-using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PixivRanking;
 
 namespace TheresaBot.Main.Helper

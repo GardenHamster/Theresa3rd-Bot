@@ -63,16 +63,14 @@ namespace TheresaBot.Main.Handler
                 LolisukiData lolisukiData = dataList.First();
                 if (await CheckSetuSendable(command, lolisukiData, isShowR18, isShowAI) == false) return;
 
-                bool isShowImg = command.GroupId.IsShowSetuImg(lolisukiData.IsR18);
                 long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
-                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(lolisukiData) : new();
+                List<FileInfo> setuFiles = await GetSetuFilesAsync(lolisukiData, command.GroupId);
 
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 workMsgs.Add(new PlainContent(lolisukiBusiness.getWorkInfo(lolisukiData, startDateTime, todayLeftCount, template)));
 
                 Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(workMsgs, setuFiles, BotConfig.SetuConfig.RevokeInterval, true);
-
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
@@ -131,10 +129,8 @@ namespace TheresaBot.Main.Handler
 
         private async Task<SetuContent> getSetuContent(LolisukiData data, long groupId)
         {
-            bool isR18Img = data.IsR18;
-            bool isShowImg = groupId.IsShowSetuImg(isR18Img);
             string setuInfo = lolisukiBusiness.getDefaultWorkInfo(data);
-            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(data) : new();
+            List<FileInfo> setuFiles = await GetSetuFilesAsync(data, groupId);
             return new SetuContent(setuInfo, setuFiles);
         }
 

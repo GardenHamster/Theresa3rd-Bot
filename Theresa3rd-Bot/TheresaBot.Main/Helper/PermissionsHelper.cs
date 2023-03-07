@@ -4,31 +4,7 @@ namespace TheresaBot.Main.Helper
 {
     public static class PermissionsHelper
     {
-        /// <summary>
-        /// 判断是否存在其中一个群需要下载图片
-        /// </summary>
-        /// <param name="groupIds"></param>
-        /// <param name="isR18Img"></param>
-        /// <returns></returns>
-        public static bool IsDownSetuImg(this List<long> groupIds, bool isR18Img)
-        {
-            foreach (long groupId in groupIds)
-            {
-                if (groupId.IsShowSetuImg(isR18Img)) return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 判断某一个群是否需要下载图片
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="isR18Img"></param>
-        /// <returns></returns>
-        public static bool IsDownSetuImg(this long groupId, bool isR18Img)
-        {
-            return groupId.IsShowSetuImg(isR18Img);
-        }
+        
 
         /// <summary>
         /// 判断是否存在其中一个群需要显示AI图
@@ -56,17 +32,44 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 判断某一个群是否可以显示一张涩图
+        /// 判断是否存在其中一个群需要显示图片
+        /// </summary>
+        /// <param name="groupIds"></param>
+        /// <param name="isR18Img"></param>
+        /// <returns></returns>
+        public static bool IsShowSetuImg(this List<long> groupIds, bool isR18Img)
+        {
+            foreach (long groupId in groupIds)
+            {
+                if (groupId.IsShowSetuImg(isR18Img)) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 判断某一个群是否可以显示图片
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="isR18Img"></param>
         /// <returns></returns>
         public static bool IsShowSetuImg(this long groupId, bool isR18Img)
         {
-            List<long> SetuShowImgGroups = BotConfig.PermissionsConfig?.SetuShowImgGroups;
-            if (SetuShowImgGroups is null) return false;
-            if (SetuShowImgGroups.Contains(groupId) == false) return false;
-            if (isR18Img) return false;
+            List<long> ShowImgGroups = BotConfig.PermissionsConfig?.SetuShowImgGroups ?? new();
+            if (ShowImgGroups.Contains(groupId) == false) return false;
+            if (isR18Img && groupId.IsShowR18SetuImg() == false) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// 判断某一个群是否可以显示R18图片
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="isR18Img"></param>
+        /// <returns></returns>
+        public static bool IsShowR18SetuImg(this long groupId)
+        {
+            List<long> ShowR18ImgGroups = BotConfig.PermissionsConfig?.SetuShowR18ImgGroups ?? new();
+            if (ShowR18ImgGroups.Contains(groupId) == false) return false;
             return true;
         }
 

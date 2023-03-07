@@ -4,7 +4,7 @@ using TheresaBot.Main.Invoker;
 
 namespace TheresaBot.Main.Helper
 {
-    public class CommandHelper
+    public static class CommandHelper
     {
         public static string GetSimilarGroupCommandStrs(string keyword)
         {

@@ -132,9 +132,7 @@ namespace TheresaBot.Main.Handler
                     PixivRankingDetail detail = pixivRankingInfo.RankingDetails[i];
                     PixivRankingContent rc = detail.RankingContent;
                     PixivWorkInfo workInfo = detail.WorkInfo;
-                    bool isR18Img = detail.WorkInfo.IsR18;
-                    bool isDownImg = groupIds.IsDownSetuImg(isR18Img);
-                    List<FileInfo> setuFiles = isDownImg ? await downPixivImgsAsync(detail.WorkInfo) : new();
+                    List<FileInfo> setuFiles = await GetSetuFilesAsync(workInfo, groupIds);
                     string workMsg = pixivBusiness.getWorkInfo(detail.WorkInfo, BotConfig.PixivConfig.Template);
                     List<BaseContent> msgContent = new List<BaseContent>();
                     msgContent.Add(new PlainContent($"#{rc.rank} {workInfo.likeRate.toPercent()}/{workInfo.bookmarkRate.toPercent()}\r\n"));

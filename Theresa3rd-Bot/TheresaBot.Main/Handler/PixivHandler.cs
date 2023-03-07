@@ -82,8 +82,7 @@ namespace TheresaBot.Main.Handler
                 if (await CheckSetuSendable(command, pixivWorkInfo, isShowR18, isShowAI) == false) return;
 
                 long todayLeft = GetSetuLeftToday(command.GroupId, command.MemberId);
-                bool isShowImg = command.GroupId.IsShowSetuImg(pixivWorkInfo.IsR18);
-                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
+                List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
 
                 string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
@@ -510,11 +509,10 @@ namespace TheresaBot.Main.Handler
 
                 bool isAISetu = pixivWorkInfo.IsAI;
                 bool isR18Img = pixivWorkInfo.IsR18;
-                bool isDownImg = groupIds.IsDownSetuImg(isR18Img);
                 string tagName = subscribeTask.SubscribeName;
                 string remindTemplate = BotConfig.SubscribeConfig.PixivTag.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
-                List<FileInfo> setuFiles = isDownImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
+                List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, groupIds);
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 if (string.IsNullOrWhiteSpace(remindTemplate))
@@ -615,10 +613,9 @@ namespace TheresaBot.Main.Handler
 
                 bool isAISetu = pixivWorkInfo.IsAI;
                 bool isR18Img = pixivWorkInfo.IsR18;
-                bool isDownImg = groupIds.IsDownSetuImg(isR18Img);
                 string remindTemplate = BotConfig.SubscribeConfig.PixivUser.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
-                List<FileInfo> setuFiles = isDownImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
+                List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, groupIds);
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 if (string.IsNullOrWhiteSpace(remindTemplate))

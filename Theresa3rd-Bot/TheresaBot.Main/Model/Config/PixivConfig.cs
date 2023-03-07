@@ -11,6 +11,8 @@ namespace TheresaBot.Main.Model.Config
         public int TagShowMaximum { get; private set; }
         public int UrlShowMaximum { get; private set; }
         public string ImgSize { get; private set; }
+        public int ImgResend { get; private set; }
+        public float R18ImgBlur { get; private set; }
         public string OriginUrlProxy { get; private set; }
         public bool SendImgBehind { get; private set; }
         public int ImgRetryTimes { get; private set; }
@@ -23,6 +25,7 @@ namespace TheresaBot.Main.Model.Config
             this.ImgShowMaximum = 1;
             this.TagShowMaximum = 3;
             this.UrlShowMaximum = 3;
+            this.R18ImgBlur = 10;
         }
 
         public PixivConfig FormatConfig()
@@ -30,6 +33,7 @@ namespace TheresaBot.Main.Model.Config
             this.ImgProxy = StringHelper.formatHttpUrl(ImgProxy);
             this.HttpProxy = StringHelper.formatHttpUrl(HttpProxy, false);
             this.OriginUrlProxy = StringHelper.formatHttpUrl(OriginUrlProxy);
+            if (this.R18ImgBlur < 10) this.R18ImgBlur = 10;
             return this;
         }
 

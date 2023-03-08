@@ -4,8 +4,6 @@ namespace TheresaBot.Main.Helper
 {
     public static class PermissionsHelper
     {
-        
-
         /// <summary>
         /// 判断是否存在其中一个群需要显示AI图
         /// </summary>
@@ -70,21 +68,6 @@ namespace TheresaBot.Main.Helper
         {
             List<long> ShowR18ImgGroups = BotConfig.PermissionsConfig?.SetuShowR18ImgGroups ?? new();
             if (ShowR18ImgGroups.Contains(groupId) == false) return false;
-            return true;
-        }
-
-        /// <summary>
-        /// 判断某一个群是否可以显示一张Saucenao的搜索结果图
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="isR18Img"></param>
-        /// <returns></returns>
-        public static bool IsShowSaucenaoImg(this long groupId, bool isR18Img)
-        {
-            List<long> SetuShowImgGroups = BotConfig.PermissionsConfig?.SetuShowImgGroups;
-            if (SetuShowImgGroups is null) return false;
-            if (SetuShowImgGroups.Contains(groupId) == false) return false;
-            if (isR18Img) return false;
             return true;
         }
 

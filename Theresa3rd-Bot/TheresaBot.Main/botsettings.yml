@@ -49,7 +49,7 @@ Permissions:                                                                    
     SetuNoneCDGroups:           [284196392]                                         #涩图没有CD的群
     SetuLimitlessGroups:        [284196392]                                         #涩图每日次数无限制的群
     SaucenaoGroups:             [284196392]                                         #拥有以图搜图权限的群
-    SaucenaoR18Groups:          [284196392]                                         #以图搜图允许发送r18结果的群，图片将使用链接代替
+    SaucenaoR18Groups:          [284196392]                                         #以图搜图允许发送r18结果的群
     SubscribeGroups:            [284196392]                                         #拥有订阅权限的群
     PixivRankingGroups:         [284196392]                                         #拥有查询Pixiv日榜权限的群
 

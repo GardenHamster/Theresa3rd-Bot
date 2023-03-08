@@ -6,6 +6,7 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.Lolisuki;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Model.Step;
@@ -159,8 +160,7 @@ namespace TheresaBot.Main.Handler
                 if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
                     PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
-                    bool isShowImg = command.GroupId.IsShowSaucenaoImg(pixivWorkInfo.IsR18);
-                    List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
+                    List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, command.GroupId, command.MemberId));
                     workMsgs.AddRange(getPixivMessageAsync(command, saucenaoItem));

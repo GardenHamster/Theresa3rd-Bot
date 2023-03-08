@@ -72,7 +72,8 @@ namespace Theresa3rd_Bot
                 TimerManager.initSubscribeTimers(session, reporter);
                 TimerManager.initTimingRankingJobAsync(session, reporter);
                 TimerManager.initCookieJobAsync(session, reporter);
-                TimerManager.initClearJobAsync(session, reporter);
+                TimerManager.initTempClearJobAsync(session, reporter);
+                TimerManager.initDownloadClearJobAsync(session, reporter);
                 LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£º{BotConfig.BotVersion}");
                 Task welcomeTask = MiraiHelper.SendStartUpMessageAsync();
             }

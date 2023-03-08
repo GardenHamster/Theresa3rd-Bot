@@ -8,7 +8,7 @@ using TheresaBot.Main.Session;
 namespace TheresaBot.Main.Timers
 {
     [DisallowConcurrentExecution]
-    public class ClearJob : IJob
+    public class TempClearJob : IJob
     {
         private BaseReporter reporter;
 
@@ -19,34 +19,34 @@ namespace TheresaBot.Main.Timers
                 JobDataMap dataMap = context.MergedJobDataMap;
                 reporter = (BaseReporter)dataMap["BaseReporter"];
                 BaseSession session = (BaseSession)dataMap["BaseSession"];
-                ClearDownload();
+                ClearTempDir();
                 ClearUploadTemp();
                 await Task.Delay(1000);
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "ClearJob异常");
-                reporter.SendError(ex, "ClearJob异常");
+                LogHelper.Error(ex, "TempClearJob异常");
+                reporter.SendError(ex, "TempClearJob异常");
             }
         }
 
         /// <summary>
         /// 清理下载目录
         /// </summary>
-        private void ClearDownload()
+        private void ClearTempDir()
         {
             try
             {
-                string path = FilePath.GetDownFileSavePath();
+                string path = FilePath.GetTempSavePath();
                 if (Directory.Exists(path) == false) return;
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
                 directoryInfo.Delete(true);
-                LogHelper.Info("图片下载目录清理完毕...");
+                LogHelper.Info("临时文件目录清理完毕...");
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "图片下载目录清理失败");
-                reporter.SendError(ex, "图片下载目录清理失败");
+                LogHelper.Error(ex, "临时文件目录清理失败");
+                reporter.SendError(ex, "临时文件目录清理失败");
             }
         }
 

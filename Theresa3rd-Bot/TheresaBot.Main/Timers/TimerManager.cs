@@ -96,14 +96,36 @@ namespace TheresaBot.Main.Timers
         /// <summary>
         /// 初始化清理任务
         /// </summary>
-        public static async void initClearJobAsync(BaseSession session, BaseReporter reporter)
+        public static async void initTempClearJobAsync(BaseSession session, BaseReporter reporter)
         {
             try
             {
-                string clearCron = BotConfig.GeneralConfig.DownPathCleanCron;
-                if (string.IsNullOrWhiteSpace(clearCron)) return;
-                ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(clearCron).Build();
-                IJobDetail jobDetail = JobBuilder.Create<ClearJob>().WithIdentity("ClearJob", "ClearJob").Build();//创建作业
+                string tempClearCron = "0 0 4 * * ?";
+                ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(tempClearCron).Build();
+                IJobDetail jobDetail = JobBuilder.Create<TempClearJob>().WithIdentity("TempClearJob", "TempClearJob").Build();
+                IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+                jobDetail.JobDataMap.Put("BaseSession", session);
+                jobDetail.JobDataMap.Put("BaseReporter", reporter);
+                await scheduler.ScheduleJob(jobDetail, trigger);
+                await scheduler.Start();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
+        }
+
+        /// <summary>
+        /// 初始化清理任务
+        /// </summary>
+        public static async void initDownloadClearJobAsync(BaseSession session, BaseReporter reporter)
+        {
+            try
+            {
+                string downloadClearCron = BotConfig.GeneralConfig.DownPathCleanCron;
+                if (string.IsNullOrWhiteSpace(downloadClearCron)) return;
+                ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(downloadClearCron).Build();
+                IJobDetail jobDetail = JobBuilder.Create<DownloadClearJob>().WithIdentity("DownloadClearJob", "DownloadClearJob").Build();
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
                 jobDetail.JobDataMap.Put("BaseSession", session);
                 jobDetail.JobDataMap.Put("BaseReporter", reporter);
@@ -113,7 +135,7 @@ namespace TheresaBot.Main.Timers
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"清定时清理任务初始化失败");
+                LogHelper.Error(ex, $"定时清理任务初始化失败");
             }
         }
 
@@ -128,7 +150,7 @@ namespace TheresaBot.Main.Timers
             {
                 string cookieCron = "0 0 9 * * ?";
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(cookieCron).Build();
-                IJobDetail jobDetail = JobBuilder.Create<CookieJob>().WithIdentity("CookieJob", "CookieJob").Build();//创建作业
+                IJobDetail jobDetail = JobBuilder.Create<CookieJob>().WithIdentity("CookieJob", "CookieJob").Build();
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
                 jobDetail.JobDataMap.Put("BaseSession", session);
                 jobDetail.JobDataMap.Put("BaseReporter", reporter);

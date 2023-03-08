@@ -482,7 +482,7 @@ namespace TheresaBot.Main.Handler
                     scanReport.ScanTag++;
                     List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivTagSubscribeAsync(subscribeTask, scanReport, maxScan);
                     if (pixivSubscribeList is null || pixivSubscribeList.Count == 0) continue;
-                    await sendGroupSubscribeAsync(subscribeTask, pixivSubscribeList);
+                    await sendTagSubscribeAsync(subscribeTask, pixivSubscribeList);
                 }
                 catch (Exception ex)
                 {
@@ -497,7 +497,7 @@ namespace TheresaBot.Main.Handler
             return scanReport;
         }
 
-        private async Task sendGroupSubscribeAsync(SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList)
+        private async Task sendTagSubscribeAsync(SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList)
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
@@ -564,7 +564,7 @@ namespace TheresaBot.Main.Handler
                     scanReport.ScanUser++;
                     List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserSubscribeAsync(subscribeTask, scanReport);
                     if (pixivSubscribeList is null || pixivSubscribeList.Count == 0) continue;
-                    await sendGroupSubscribeAsync(pixivSubscribeList, subscribeTask.GroupIdList);
+                    await sendUserSubscribeAsync(pixivSubscribeList, subscribeTask.GroupIdList);
                 }
                 catch (Exception ex)
                 {
@@ -590,7 +590,7 @@ namespace TheresaBot.Main.Handler
             {
                 List<PixivSubscribe> pixivFollowLatestList = await pixivBusiness.getPixivFollowLatestAsync(scanReport);
                 if (pixivFollowLatestList is null || pixivFollowLatestList.Count == 0) return scanReport;
-                await sendGroupSubscribeAsync(pixivFollowLatestList, BotConfig.PermissionsConfig.SubscribeGroups);
+                await sendUserSubscribeAsync(pixivFollowLatestList, BotConfig.PermissionsConfig.SubscribeGroups);
             }
             catch (Exception ex)
             {
@@ -602,7 +602,7 @@ namespace TheresaBot.Main.Handler
         }
 
 
-        private async Task sendGroupSubscribeAsync(List<PixivSubscribe> pixivSubscribeList, List<long> groupIds)
+        private async Task sendUserSubscribeAsync(List<PixivSubscribe> pixivSubscribeList, List<long> groupIds)
         {
             foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
             {
@@ -675,8 +675,7 @@ namespace TheresaBot.Main.Handler
                 if (await CheckSetuSendable(command, pixivWorkInfo, isShowR18, isShowAI) == false) return;
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                bool isShowImg = command.GroupId.IsShowSetuImg(pixivWorkInfo.IsR18);
-                List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(pixivWorkInfo) : new();
+                List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
                 workMsgs.Add(new PlainContent($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
                 workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, BotConfig.PixivConfig.Template)));
                 await Session.SendGroupSetuAsync(workMsgs, setuFiles, command.GroupId);

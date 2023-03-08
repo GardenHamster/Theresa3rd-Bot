@@ -24,22 +24,22 @@ namespace TheresaBot.Main.Handler
         {
             bool isR18Img = workInfo.IsR18;
             bool isShowImg = groupId.IsShowSetuImg(isR18Img);
+            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
+            if (isR18Img == false) return setuFiles;
             float sigma = BotConfig.PixivConfig.R18ImgBlur;
             string fullSavePath = FilePath.GetFullTempJpgSavePath();
-            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
-            if (isR18Img) setuFiles = setuFiles.ReduceAndBlur(sigma, 300, fullSavePath);
-            return setuFiles;
+            return setuFiles.ReduceAndBlur(sigma, 300, fullSavePath);
         }
 
         public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, List<long> groupIds)
         {
             bool isR18Img = workInfo.IsR18;
             bool isShowImg = groupIds.IsShowSetuImg(isR18Img);
+            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
+            if (isR18Img == false) return setuFiles;
             float sigma = BotConfig.PixivConfig.R18ImgBlur;
             string fullSavePath = FilePath.GetFullTempJpgSavePath();
-            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
-            if (isR18Img) setuFiles = setuFiles.ReduceAndBlur(sigma, 300, fullSavePath);
-            return setuFiles;
+            return setuFiles.ReduceAndBlur(sigma, 300, fullSavePath);
         }
 
         /// <summary>

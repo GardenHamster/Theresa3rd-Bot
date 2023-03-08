@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using TheresaBot.Main.Common;
 
 namespace TheresaBot.Main.Helper
 {
@@ -11,9 +12,9 @@ namespace TheresaBot.Main.Helper
         /// <param name="sigma"></param>
         /// <param name="fullSavePath"></param>
         /// <returns></returns>
-        public static List<FileInfo> Blur(this List<FileInfo> fileInfos, float sigma, string fullSavePath)
+        public static List<FileInfo> Blur(this List<FileInfo> fileInfos, float sigma)
         {
-            return fileInfos.Select(o => Blur(o, sigma, fullSavePath)).ToList();
+            return fileInfos.Select(o => Blur(o, sigma)).ToList();
         }
 
         /// <summary>
@@ -23,9 +24,9 @@ namespace TheresaBot.Main.Helper
         /// <param name="width"></param>
         /// <param name="fullSavePath"></param>
         /// <returns></returns>
-        public static List<FileInfo> Reduce(this List<FileInfo> fileInfos, int width, string fullSavePath)
+        public static List<FileInfo> Reduce(this List<FileInfo> fileInfos, int width)
         {
-            return fileInfos.Select(o => Reduce(o, width, fullSavePath)).ToList();
+            return fileInfos.Select(o => Reduce(o, width)).ToList();
         }
 
         /// <summary>
@@ -36,9 +37,9 @@ namespace TheresaBot.Main.Helper
         /// <param name="width"></param>
         /// <param name="fullSavePath"></param>
         /// <returns></returns>
-        public static List<FileInfo> ReduceAndBlur(this List<FileInfo> fileInfos, float sigma, int width, string fullSavePath)
+        public static List<FileInfo> ReduceAndBlur(this List<FileInfo> fileInfos, float sigma, int width)
         {
-            return fileInfos.Select(o => ReduceAndBlur(o, width, sigma, fullSavePath)).ToList();
+            return fileInfos.Select(o => ReduceAndBlur(o, width, sigma)).ToList();
         }
 
         /// <summary>
@@ -48,10 +49,11 @@ namespace TheresaBot.Main.Helper
         /// <param name="sigma"></param>
         /// <param name="fullSavePath"></param>
         /// <returns></returns>
-        public static FileInfo Blur(this FileInfo fileInfo, float sigma, string fullSavePath)
+        public static FileInfo Blur(this FileInfo fileInfo, float sigma)
         {
             if (fileInfo == null) return null;
             if (sigma <= 0) return fileInfo;
+            string fullSavePath = FilePath.GetFullTempJpgSavePath();
             using FileStream orginStream = File.OpenRead(fileInfo.FullName);
             using SKBitmap orginBitmap = SKBitmap.Decode(orginStream);
             using SKImage image = Blur(orginBitmap, sigma);
@@ -68,9 +70,10 @@ namespace TheresaBot.Main.Helper
         /// <param name="width"></param>
         /// <param name="fullSavePath"></param>
         /// <returns></returns>
-        public static FileInfo Reduce(this FileInfo fileInfo, int width, string fullSavePath)
+        public static FileInfo Reduce(this FileInfo fileInfo, int width)
         {
             if (fileInfo == null) return null;
+            string fullSavePath = FilePath.GetFullTempJpgSavePath();
             using FileStream orginStream = File.OpenRead(fileInfo.FullName);
             using SKBitmap orginBitmap = SKBitmap.Decode(orginStream);
             if (orginBitmap.Width <= width) return fileInfo;
@@ -89,10 +92,11 @@ namespace TheresaBot.Main.Helper
         /// <param name="width"></param>
         /// <param name="fullSavePath"></param>
         /// <returns></returns>
-        public static FileInfo ReduceAndBlur(this FileInfo fileInfo, int width, float sigma, string fullSavePath)
+        public static FileInfo ReduceAndBlur(this FileInfo fileInfo, int width, float sigma)
         {
             if (fileInfo == null) return null;
             if (sigma <= 0) return fileInfo;
+            string fullSavePath = FilePath.GetFullTempJpgSavePath();
             using FileStream fileStream = File.OpenRead(fileInfo.FullName);
             using SKBitmap orginBitmap = SKBitmap.Decode(fileStream);
             using SKImage reduceImg = Reduce(orginBitmap, width);

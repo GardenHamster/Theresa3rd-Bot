@@ -2,21 +2,14 @@
 {
     public class PixivTagSubscribeConfig : BaseSubscribeConfig
     {
-        public int ShelfLife { get; private set; }
+        public int ShelfLife { get; private set; } = 24 * 60 * 60;
 
-        public int MinBookmark { get; private set; }
+        public int MaxScan { get; private set; } = 300;
 
-        public int MinBookPerHour { get; private set; }
+        public int MinBookmark { get; private set; } = 300;
 
-        public int MaxScan { get; private set; }
+        public int MinBookPerHour { get; private set; } = 50;
 
-        public PixivTagSubscribeConfig()
-        {
-            this.ScanInterval = 30 * 60;
-            this.ShelfLife = 24 * 60 * 60;
-            this.MinBookmark = 300;
-            this.MinBookPerHour = 60;
-            this.MaxScan = 300;
-        }
+        public double MinBookRate { get; private set; } = 0.05;
     }
 }

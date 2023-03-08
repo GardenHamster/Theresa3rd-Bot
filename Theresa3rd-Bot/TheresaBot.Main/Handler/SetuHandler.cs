@@ -27,8 +27,7 @@ namespace TheresaBot.Main.Handler
             List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
             if (isR18Img == false) return setuFiles;
             float sigma = BotConfig.PixivConfig.R18ImgBlur;
-            string fullSavePath = FilePath.GetFullTempJpgSavePath();
-            return setuFiles.ReduceAndBlur(sigma, 300, fullSavePath);
+            return setuFiles.ReduceAndBlur(sigma, 300);
         }
 
         public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, List<long> groupIds)
@@ -38,8 +37,7 @@ namespace TheresaBot.Main.Handler
             List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
             if (isR18Img == false) return setuFiles;
             float sigma = BotConfig.PixivConfig.R18ImgBlur;
-            string fullSavePath = FilePath.GetFullTempJpgSavePath();
-            return setuFiles.ReduceAndBlur(sigma, 300, fullSavePath);
+            return setuFiles.ReduceAndBlur(sigma, 300);
         }
 
         /// <summary>

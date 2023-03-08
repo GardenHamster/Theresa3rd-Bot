@@ -292,10 +292,11 @@ namespace TheresaBot.Main.Business
         public bool checkRandomWorkIsOk(PixivWorkInfo pixivWorkInfo)
         {
             if (pixivWorkInfo is null) return false;
-            bool isNotBantTag = pixivWorkInfo.hasBanTag() is null;
-            bool isPopularity = pixivWorkInfo.bookmarkCount >= BotConfig.SetuConfig.Pixiv.MinBookmark;
-            bool isBookProportional = Convert.ToDouble(pixivWorkInfo.bookmarkCount) / pixivWorkInfo.viewCount >= BotConfig.SetuConfig.Pixiv.MinBookRate;
-            return isPopularity && isBookProportional && isNotBantTag;
+            double target = getTargetByWorkType(pixivWorkInfo);
+            bool isNotBanTag = pixivWorkInfo.hasBanTag() is null;
+            bool isBookmarkOk = pixivWorkInfo.bookmarkCount >= BotConfig.SetuConfig.Pixiv.MinBookmark * target;
+            bool isBookRateOk = pixivWorkInfo.bookmarkRate >= BotConfig.SetuConfig.Pixiv.MinBookRate * target;
+            return isNotBanTag && isBookmarkOk && isBookRateOk;
         }
 
         /// <summary>
@@ -306,11 +307,25 @@ namespace TheresaBot.Main.Business
         public bool checkTagWorkIsOk(PixivWorkInfo pixivWorkInfo)
         {
             if (pixivWorkInfo is null) return false;
-            bool isPopularity = pixivWorkInfo.bookmarkCount >= BotConfig.SubscribeConfig.PixivTag.MinBookmark;
+            double target = getTargetByWorkType(pixivWorkInfo);
             TimeSpan timeSpan = DateTime.Now.Subtract(pixivWorkInfo.createDate);
-            int totalHours = (int)(timeSpan.TotalHours + 1 > 0 ? timeSpan.TotalHours + 1 : 0);
-            bool isBookProportional = pixivWorkInfo.bookmarkCount > totalHours * BotConfig.SubscribeConfig.PixivTag.MinBookPerHour;
-            return isPopularity && isBookProportional && totalHours > 0;
+            int totalHours = (int)Math.Ceiling(timeSpan.TotalHours);
+            bool isBookmarkOk = pixivWorkInfo.bookmarkCount >= BotConfig.SubscribeConfig.PixivTag.MinBookmark * target;
+            bool isBookPerHourOk = pixivWorkInfo.bookmarkCount >= totalHours * BotConfig.SubscribeConfig.PixivTag.MinBookPerHour * target;
+            bool isBookRateOk = pixivWorkInfo.bookmarkRate >= BotConfig.SubscribeConfig.PixivTag.MinBookRate * target;
+            return isBookmarkOk && isBookPerHourOk && isBookRateOk && totalHours > 0;
+        }
+
+        /// <summary>
+        /// 通过作品类型获取不同的指标
+        /// </summary>
+        /// <param name="pixivWorkInfo"></param>
+        /// <returns></returns>
+        private double getTargetByWorkType(PixivWorkInfo pixivWorkInfo)
+        {
+            if (pixivWorkInfo.IsAI) return BotConfig.PixivConfig.AITarget;
+            if (pixivWorkInfo.IsR18) return BotConfig.PixivConfig.R18Target;
+            return BotConfig.PixivConfig.GeneralTarget;
         }
 
         /// <summary>

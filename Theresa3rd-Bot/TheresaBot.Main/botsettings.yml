@@ -35,6 +35,9 @@ Pixiv:
                                 标签图片：{RelevantCount}张，作品图片:{PageCount}张
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
+    GeneralTarget:              1.0                                                 #普通作品指标，比如：一张合格的涩图的最低收藏率需要达到(MinBookmark*GeneralTarget)，MinBookPerHour和MinBookRate同理
+    AITarget:                   0.5                                                 #AI作品指标(同上)
+    R18Target:                  1.5                                                 #R18作品指标(同上)
 
 Permissions:                                                                        #权限设置
     SuperManagers:              [123456789]                                         #超级管理员列表,可以使用管理指令
@@ -187,11 +190,12 @@ Subscribe:                                                                      
         RmCommands:             ['退订标签']                                        #退订命令，需要管理员执行
         Template:               'pixiv标签[{TagName}]出现了新作品：'                #消息模版，值为空时将使用默认模版
         ScanInterval:           1800                                                #扫描间隔(秒)
-        ShelfLife:              86400                                               #保质期(秒，超过保质期将不会推送，0表示永不过期
-        MinBookmark:            300                                                 #最低收藏数，用于判断涩图是否合格
-        MinBookPerHour:         60                                                  #距离作品发布每小时至少新增收藏数量，用于判断涩图是否合格
+        ShelfLife:              86400                                               #保质期(秒)，距离发布时间超过该值的作品将不会推送，0表示永不过期
         MaxScan:                300                                                 #最多扫描前N个作品
-
+        MinBookmark:            300                                                 #最低收藏数，用于判断涩图是否合格
+        MinBookPerHour:         50                                                  #距离作品发布每小时至少新增收藏数量，用于判断涩图是否合格
+        MinBookRate:            0.05                                                #最低收藏率，收藏数/浏览数(标签搜索时适用)
+        
 TimingSetu:                                                                         #定时涩图，某个时间点自动发送一定数量的涩图
     Enable:                     false                                               #是否启用
     LocalPath:                  'C:\BotImg\localSetu'                               #本地图片文件夹路径，图片需要分类放在子目录下，Source为0时可用

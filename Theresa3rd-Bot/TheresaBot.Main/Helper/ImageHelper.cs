@@ -117,6 +117,7 @@ namespace TheresaBot.Main.Helper
             var imgInfo = new SKImageInfo(bitmap.Width, bitmap.Height);
             using SKSurface surface = SKSurface.Create(imgInfo);
             using SKCanvas canvas = surface.Canvas;
+            canvas.Clear(SKColors.White);
 
             SKRect rect = new SKRect(0, 0, bitmap.Width, bitmap.Height);
             canvas.DrawBitmap(bitmap, rect, rect, paint);
@@ -136,6 +137,7 @@ namespace TheresaBot.Main.Helper
             var imgInfo = new SKImageInfo(width, height);
             using SKSurface surface = SKSurface.Create(imgInfo);
             using SKCanvas canvas = surface.Canvas;
+            canvas.Clear(SKColors.Transparent);
 
             SKRect rect = new SKRect(0, 0, width, height);
             canvas.DrawBitmap(bitmap, rect);

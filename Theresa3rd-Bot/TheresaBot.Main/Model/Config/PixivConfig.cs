@@ -33,7 +33,8 @@ namespace TheresaBot.Main.Model.Config
             this.ImgProxy = StringHelper.formatHttpUrl(ImgProxy);
             this.HttpProxy = StringHelper.formatHttpUrl(HttpProxy, false);
             this.OriginUrlProxy = StringHelper.formatHttpUrl(OriginUrlProxy);
-            if (this.R18ImgBlur < 10) this.R18ImgBlur = 10;
+            if (this.R18ImgBlur < 5) this.R18ImgBlur = 5;
+            if (this.R18ImgBlur > 100) this.R18ImgBlur = 100;
             return this;
         }
 

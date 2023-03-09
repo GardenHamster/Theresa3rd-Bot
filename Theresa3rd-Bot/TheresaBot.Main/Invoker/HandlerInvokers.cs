@@ -129,7 +129,7 @@ namespace TheresaBot.Main.Invoker
             //Pixiv
             new(BotConfig.SetuConfig?.Pixiv?.Commands, CommandType.Setu, new(async (botCommand, session, reporter) =>
             {
-                PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
+                PixivHandler handler = new PixivHandler(session, reporter);
                 if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
                 if (await handler.CheckMemberSetuCoolingAsync(botCommand)) return false;

@@ -13,7 +13,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
-    public class LolisukiHandler : SetuHandler
+    internal class LolisukiHandler : SetuHandler
     {
         private LolisukiBusiness lolisukiBusiness;
 

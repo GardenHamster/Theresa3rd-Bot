@@ -11,7 +11,7 @@ using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
 {
-    public class LocalSetuHandler : SetuHandler
+    internal class LocalSetuHandler : SetuHandler
     {
         private LocalSetuBusiness localSetuBusiness;
 

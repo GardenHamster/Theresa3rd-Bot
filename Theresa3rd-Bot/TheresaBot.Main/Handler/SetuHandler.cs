@@ -14,7 +14,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
-    public abstract class SetuHandler : BaseHandler
+    internal abstract class SetuHandler : BaseHandler
     {
         public SetuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {

@@ -17,7 +17,7 @@ using TheresaBot.Main.Type.StepOption;
 
 namespace TheresaBot.Main.Handler
 {
-    public class MYSHandler : BaseHandler
+    internal class MYSHandler : BaseHandler
     {
         private MYSBusiness mysBusiness;
         private SubscribeBusiness subscribeBusiness;

@@ -11,7 +11,7 @@ using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
 {
-    public class LoliconHandler : SetuHandler
+    internal class LoliconHandler : SetuHandler
     {
         private LoliconBusiness loliconBusiness;
 

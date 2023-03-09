@@ -9,7 +9,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
-    public class CookieHandler : BaseHandler
+    internal class CookieHandler : BaseHandler
     {
         private WebsiteBusiness websiteBusiness;
 

@@ -12,7 +12,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
-    public abstract class BaseHandler
+    internal abstract class BaseHandler
     {
         protected BaseSession Session;
         protected BaseReporter Reporter;

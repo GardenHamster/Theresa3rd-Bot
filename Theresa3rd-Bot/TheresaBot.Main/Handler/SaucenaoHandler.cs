@@ -17,7 +17,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
-    public class SaucenaoHandler : SetuHandler
+    internal class SaucenaoHandler : SetuHandler
     {
         private PixivBusiness pixivBusiness;
         private SaucenaoBusiness saucenaoBusiness;

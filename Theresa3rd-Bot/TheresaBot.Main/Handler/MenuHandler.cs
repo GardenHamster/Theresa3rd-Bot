@@ -9,7 +9,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
-    public class MenuHandler : BaseHandler
+    internal class MenuHandler : BaseHandler
     {
         public MenuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {

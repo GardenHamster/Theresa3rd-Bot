@@ -38,7 +38,7 @@ namespace TheresaBot.Main.Invoker
             //订阅pixiv画师
             new(BotConfig.SubscribeConfig?.PixivUser?.AddCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
-                PixivHandler handler = new PixivHandler(session, reporter);
+                PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivUser) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
@@ -49,7 +49,7 @@ namespace TheresaBot.Main.Invoker
             //订阅pixiv关注画师列表
             new(BotConfig.SubscribeConfig?.PixivUser?.SyncCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
-                PixivHandler handler = new PixivHandler(session, reporter);
+                PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivUser) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
@@ -60,7 +60,7 @@ namespace TheresaBot.Main.Invoker
             //退订pixiv画师
             new(BotConfig.SubscribeConfig?.PixivUser?.RmCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
-                PixivHandler handler = new PixivHandler(session, reporter);
+                PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivUser) == false) return false;
                 await handler.cancleSubscribeUserAsync(botCommand);
@@ -70,7 +70,7 @@ namespace TheresaBot.Main.Invoker
             //订阅pixiv标签
             new(BotConfig.SubscribeConfig?.PixivTag?.AddCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
-                PixivHandler handler = new PixivHandler(session, reporter);
+                PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivTag) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
@@ -81,7 +81,7 @@ namespace TheresaBot.Main.Invoker
             //退订pixiv标签
             new(BotConfig.SubscribeConfig?.PixivTag?.RmCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
-                PixivHandler handler = new PixivHandler(session, reporter);
+                PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivTag) == false) return false;
                 await handler.cancleSubscribeTagAsync(botCommand);
@@ -129,7 +129,7 @@ namespace TheresaBot.Main.Invoker
             //Pixiv
             new(BotConfig.SetuConfig?.Pixiv?.Commands, CommandType.Setu, new(async (botCommand, session, reporter) =>
             {
-                PixivHandler handler = new PixivHandler(session, reporter);
+                PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
                 if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.Pixiv) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
                 if (await handler.CheckMemberSetuCoolingAsync(botCommand)) return false;

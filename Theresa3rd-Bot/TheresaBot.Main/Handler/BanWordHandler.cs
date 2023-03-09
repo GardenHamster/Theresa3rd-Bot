@@ -9,7 +9,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
-    public class BanWordHandler : BaseHandler
+    internal class BanWordHandler : BaseHandler
     {
         private BanWordBusiness banWordBusiness;
 

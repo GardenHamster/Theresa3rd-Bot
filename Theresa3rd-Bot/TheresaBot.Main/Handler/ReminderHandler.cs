@@ -7,7 +7,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
-    public class ReminderHandler : BaseHandler
+    internal class ReminderHandler : BaseHandler
     {
         public ReminderHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {

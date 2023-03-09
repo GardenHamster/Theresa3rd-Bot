@@ -15,7 +15,7 @@ using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
 {
-    public class PixivRankingHandler : SetuHandler
+    internal class PixivRankingHandler : SetuHandler
     {
         private const int DetailEachPage = 10;
         private PixivBusiness pixivBusiness;

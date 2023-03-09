@@ -40,11 +40,11 @@ namespace TheresaBot.Main.Timers
                 LogHelper.Info($"开始扫描pixiv画师最新作品...");
                 if (BotConfig.SubscribeConfig.PixivUser.ScanMode == PixivScanType.ScanSubscribe)
                 {
-                    report = new PixivHandler(Session, Reporter).HandleUserSubscribeAsync().Result;
+                    report = new PixivSubscribeHandler(Session, Reporter).HandleUserSubscribeAsync().Result;
                 }
                 else
                 {
-                    report = new PixivHandler(Session, Reporter).HandleFollowSubscribeAsync().Result;
+                    report = new PixivSubscribeHandler(Session, Reporter).HandleFollowSubscribeAsync().Result;
                 }
                 LogHelper.Info($"pixiv画师扫描完毕，扫描画师/扫描作品/失败画师/失败作品={report.ScanUser}/{report.ScanWork}/{report.ErrorUser}/{report.ErrorWork}");
             }

@@ -41,7 +41,7 @@ namespace TheresaBot.Main.Model.Pixiv
 
         public override List<string> getTags() => tags?.getTags() ?? new List<string>();
 
-        public override string hasBanTag() => getTags()?.hasBanTags();
+        public override string hasBanTag() => tags?.getFullTags()?.hasBanTags();
 
         public override List<string> getOriginalUrls()
         {

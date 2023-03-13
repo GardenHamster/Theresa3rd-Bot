@@ -57,15 +57,15 @@ namespace TheresaBot.MiraiHttpApi.Session
 
         public override async Task<int[]> SendGroupMessageAsync(long groupId, SetuContent setuContent, bool sendImgBehind)
         {
+            List<int> msgIds = new List<int>();
             List<BaseContent> setuInfos = setuContent.SetuInfos ?? new();
             List<FileInfo> setuFiles = setuContent.SetuImages ?? new();
 
-            List<int> msgIds = new List<int>();
-            if (sendImgBehind && setuFiles.Count > 0)
+            if (sendImgBehind)
             {
-                List<IChatMessage> imgMsgs = await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Group);
                 int workMsgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, await setuInfos.ToMiraiMessageAsync());
                 await Task.Delay(1000);
+                List<IChatMessage> imgMsgs = await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Group);
                 int imgMsgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, imgMsgs.ToArray());
                 msgIds.Add(workMsgId);
                 msgIds.Add(imgMsgId);

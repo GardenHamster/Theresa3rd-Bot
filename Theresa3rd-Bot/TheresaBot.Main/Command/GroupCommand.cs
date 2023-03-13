@@ -34,13 +34,13 @@ namespace TheresaBot.Main.Command
 
         public abstract Task<int> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "");
 
+        public abstract Task<int[]> ReplyGroupMessageAndRevokeAsync(SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false);
+
+        public abstract Task<int[]> ReplyTempMessageAsync(SetuContent setuContent, bool sendImgBehind);
+
         public abstract Task RevokeGroupMessageAsync(int messageId, long groupId);
 
-        public abstract Task RevokeGroupMessageAsync(List<int> messageIds, long groupId);
-
-        public abstract Task ReplyGroupSetuAndRevokeAsync(List<BaseContent> workMsgs, List<FileInfo> setuFiles, int revokeInterval, bool isAt = false);
-
-        public abstract Task SendTempSetuAsync(List<BaseContent> workMsgs, List<FileInfo> setuFiles = null);
+        public abstract Task RevokeGroupMessageAsync(List<int> messageIds, long groupId, int revokeInterval = 0);
 
         public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
         {

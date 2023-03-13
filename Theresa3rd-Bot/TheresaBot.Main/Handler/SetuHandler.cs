@@ -84,7 +84,7 @@ namespace TheresaBot.Main.Handler
             if (msgIdArr.Where(o => o < 0).Any())
             {
                 await Task.Delay(1000);
-                SetuContent resendContent = GetResendContent(setuContent, BotConfig.PixivConfig.ImgResend);
+                SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);
                 msgIdArr = await Session.SendGroupMessageAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
             }
             return msgIdArr;
@@ -108,24 +108,7 @@ namespace TheresaBot.Main.Handler
             if (setuContents.Count == 0) return new();
             ResendType resendType = BotConfig.PixivConfig.ImgResend;
             if (resendType == ResendType.None) return new();
-            return setuContents.Select(o => GetResendContent(o, resendType)).ToList();
-        }
-
-        private SetuContent GetResendContent(SetuContent setuContents, ResendType resendType)
-        {
-            if (resendType == ResendType.WithoutImg)
-            {
-                return setuContents with { SetuImages = new() };
-            }
-            if (resendType == ResendType.Rotate180)
-            {
-                return setuContents with { SetuImages = setuContents.SetuImages.Rotate180() };
-            }
-            if (resendType == ResendType.Blur)
-            {
-                return setuContents with { SetuImages = setuContents.SetuImages.Blur(5) };
-            }
-            return null;
+            return setuContents.Select(o => o.ToResendContent(resendType)).ToList();
         }
 
         public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, long groupId)
@@ -213,12 +196,6 @@ namespace TheresaBot.Main.Handler
             if (setuInfo.IsR18 && isShowR18 == false)
             {
                 await command.ReplyGroupMessageWithAtAsync("该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限");
-                return false;
-            }
-
-            if (setuInfo.IsAI && isShowAI == false)
-            {
-                await command.ReplyGroupMessageWithAtAsync("该作品为AI生成作品，不显示相关内容，如需显示请在配置文件中修改权限");
                 return false;
             }
             return true;

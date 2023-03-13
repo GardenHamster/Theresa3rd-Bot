@@ -1,11 +1,24 @@
 ﻿using System.Text;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Invoker;
+using TheresaBot.Main.Model.Content;
 
 namespace TheresaBot.Main.Helper
 {
     public static class CommandHelper
     {
+        public static async Task ReplyGroupSetuAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
+        {
+            int[] msgIdArr = await command.ReplyGroupMessageAndRevokeAsync(setuContent, revokeInterval, sendImgBehind, isAt);
+            if (msgIdArr.Where(o => o < 0).Any())
+            {
+                await Task.Delay(1000);
+                SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);
+                msgIdArr = await command.ReplyGroupMessageAndRevokeAsync(resendContent, revokeInterval, sendImgBehind, isAt);
+            }
+        }
+
         public static string GetSimilarGroupCommandStrs(string keyword)
         {
             List<string> groupCommands = GetSimilarGroupCommands(keyword);

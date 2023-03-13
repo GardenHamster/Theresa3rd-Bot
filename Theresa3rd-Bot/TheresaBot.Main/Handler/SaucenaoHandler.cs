@@ -146,7 +146,8 @@ namespace TheresaBot.Main.Handler
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, firstItem, command.GroupId, command.MemberId));
                     workMsgs.AddRange(getSimpleMessage(firstItem));
-                    Task sendTask = sendAndRevokeMessage(command, workMsgs);
+                    SetuContent setuContent = new SetuContent(workMsgs, null);
+                    Task sendTask = sendAndRevokeMessage(command, setuContent);
                     return false;
                 }
 
@@ -164,7 +165,8 @@ namespace TheresaBot.Main.Handler
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, command.GroupId, command.MemberId));
                     workMsgs.AddRange(getPixivMessageAsync(command, saucenaoItem));
-                    Task sendTask = sendAndRevokeMessage(command, workMsgs, setuFiles);
+                    SetuContent setuContent = new SetuContent(workMsgs, setuFiles);
+                    Task sendTask = sendAndRevokeMessage(command, setuContent);
                     return false;
                 }
                 else
@@ -172,7 +174,8 @@ namespace TheresaBot.Main.Handler
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, command.GroupId, command.MemberId));
                     workMsgs.AddRange(getSimpleMessage(saucenaoItem));
-                    Task sendTask = sendAndRevokeMessage(command, workMsgs);
+                    SetuContent setuContent = new SetuContent(workMsgs, null);
+                    Task sendTask = sendAndRevokeMessage(command, setuContent);
                     return false;
                 }
             }
@@ -207,7 +210,8 @@ namespace TheresaBot.Main.Handler
                     List<BaseContent> simpleList = new List<BaseContent>();
                     simpleList.Add(new PlainContent($" ascii2d中搜索到的前{readCount}条结果如下：\r\n"));
                     simpleList.AddRange(getSimpleMessage(ascii2dItems));
-                    Task sendSimpleTask = sendAndRevokeMessage(command, simpleList);
+                    SetuContent setuContent = new SetuContent(simpleList, null);
+                    Task sendSimpleTask = sendAndRevokeMessage(command, setuContent);
                     return;
                 }
 
@@ -239,7 +243,7 @@ namespace TheresaBot.Main.Handler
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 workMsgs.Add(new PlainContent(resultBuilder.ToString()));
-                Task sendTask = sendAndRevokeMessage(command, workMsgs);
+                Task sendTask = sendAndRevokeMessage(command, new SetuContent(workMsgs, null));
             }
             catch (Exception ex)
             {
@@ -317,13 +321,13 @@ namespace TheresaBot.Main.Handler
         /// <param name="args"></param>
         /// <param name="saucenaoMessage"></param>
         /// <returns></returns>
-        private async Task sendAndRevokeMessage(GroupCommand command, List<BaseContent> workMsgs, List<FileInfo> setuFiles = null)
+        private async Task sendAndRevokeMessage(GroupCommand command, SetuContent setuContent)
         {
-            Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(workMsgs, setuFiles, BotConfig.SaucenaoConfig.RevokeInterval, true);
+            Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(setuContent, BotConfig.SaucenaoConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);
-                Task sendTempTask = command.SendTempSetuAsync(workMsgs, setuFiles);
+                Task sendTempTask = command.ReplyTempMessageAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
             }
         }
 

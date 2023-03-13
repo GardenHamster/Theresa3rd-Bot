@@ -8,7 +8,7 @@ using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Timers
 {
-    public static class PixivTagTimer
+    internal static class PixivTagTimer
     {
         private static BaseSession Session;
         private static BaseReporter Reporter;

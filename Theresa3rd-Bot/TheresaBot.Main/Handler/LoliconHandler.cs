@@ -103,7 +103,7 @@ namespace TheresaBot.Main.Handler
                 List<SetuContent> setuContents = await getSetuContent(dataList, groupId);
                 await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
                 await Task.Delay(2000);
-                await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
+                await SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
             }
             catch (Exception ex)
             {

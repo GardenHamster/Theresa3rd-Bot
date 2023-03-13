@@ -10,7 +10,7 @@ using TheresaBot.Main.Type;
 namespace TheresaBot.Main.Timers
 {
     [DisallowConcurrentExecution]
-    public class TimingSetuJob : IJob
+    internal class TimingSetuJob : IJob
     {
         private BaseReporter reporter;
 

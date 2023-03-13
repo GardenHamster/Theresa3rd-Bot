@@ -12,7 +12,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business
 {
-    public class SaucenaoBusiness
+    internal class SaucenaoBusiness
     {
         public async Task<SaucenaoResult> getSaucenaoResultAsync(string imgHttpUrl)
         {

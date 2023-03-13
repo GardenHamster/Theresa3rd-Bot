@@ -95,7 +95,7 @@ namespace TheresaBot.Main.Handler
             List<SetuContent> setuContents = getSetuContent(dataList);
             await sendTimingSetuMessageAsync(timingSetuTimer, tags, groupId);
             await Task.Delay(2000);
-            await Session.SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
+            await SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
         }
 
         private List<SetuContent> getSetuContent(List<LocalSetuInfo> datas)

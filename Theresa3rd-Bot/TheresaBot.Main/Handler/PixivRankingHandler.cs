@@ -107,7 +107,7 @@ namespace TheresaBot.Main.Handler
                 {
                     await Session.SendGroupMessageAsync(groupId, templateMsg);
                     await Task.Delay(1000);
-                    await Session.SendGroupSetuAsync(setuContents, groupId, true);
+                    await SendGroupSetuAsync(setuContents, groupId, true);
                     await Task.Delay(1000);
                 }
             }
@@ -143,7 +143,7 @@ namespace TheresaBot.Main.Handler
                 {
                     bool isShowImg = groupId.IsShowSetuImg(false);
                     var sendContents = setuContents.Select(o => isShowImg ? o with { } : o with { SetuImages = new() }).ToList();
-                    await Session.SendGroupMergeSetuAsync(sendContents, new() { headerContent }, groupId, DetailEachPage);
+                    await SendGroupSetuAsync(sendContents, new() { headerContent }, groupId, DetailEachPage);
                     await Task.Delay(1000);
                 }
             }
@@ -191,7 +191,7 @@ namespace TheresaBot.Main.Handler
 
                 await command.ReplyGroupMessageWithAtAsync(templateMsg);
                 await Task.Delay(1000);
-                await Session.SendGroupSetuAsync(setuContents, command.GroupId, true);
+                await SendGroupSetuAsync(setuContents, command.GroupId, true);
                 await Task.Delay(1000);
                 await sendSetuDetailAsync(pixivRankingInfo, new List<long>() { command.GroupId }, BotConfig.PixivRankingConfig.SendDetail);
                 CoolingCache.SetGroupPixivRankingCooling(rankingMode.Type, command.GroupId);

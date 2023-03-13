@@ -5,7 +5,7 @@ using TheresaBot.Main.Model.PixivRanking;
 
 namespace TheresaBot.Main.Helper
 {
-    public static class PixivRankingDrawHelper
+    internal static class PixivRankingDrawHelper
     {
         private const int AreaMargin = 30;
         private const int HeaderMargin = 15;

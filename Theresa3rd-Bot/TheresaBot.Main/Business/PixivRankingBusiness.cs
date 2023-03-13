@@ -11,7 +11,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business
 {
-    public class PixivRankingBusiness : SetuBusiness
+    internal class PixivRankingBusiness : SetuBusiness
     {
         private const int eachPage = 50;
 

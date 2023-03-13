@@ -1,6 +1,5 @@
 ﻿using Quartz;
 using Quartz.Impl;
-using System.Linq;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;

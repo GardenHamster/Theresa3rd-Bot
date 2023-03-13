@@ -9,7 +9,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Timers
 {
-    public static class PixivUserTimer
+    internal static class PixivUserTimer
     {
         private static BaseSession Session;
         private static BaseReporter Reporter;

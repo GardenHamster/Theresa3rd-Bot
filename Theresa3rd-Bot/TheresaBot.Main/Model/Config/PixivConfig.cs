@@ -1,4 +1,5 @@
 ﻿using TheresaBot.Main.Helper;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Config
 {
@@ -11,7 +12,7 @@ namespace TheresaBot.Main.Model.Config
         public int TagShowMaximum { get; private set; } = 5;
         public int UrlShowMaximum { get; private set; } = 3;
         public string ImgSize { get; private set; }
-        public int ImgResend { get; private set; }
+        public ResendType ImgResend { get; private set; }
         public float R18ImgBlur { get; private set; } = 10;
         public string OriginUrlProxy { get; private set; }
         public bool SendImgBehind { get; private set; }

@@ -4,7 +4,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business
 {
-    public class RequestRecordBusiness
+    internal class RequestRecordBusiness
     {
         private RequestRecordDao requestRecordDao;
 

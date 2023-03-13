@@ -4,7 +4,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business
 {
-    public class BanWordBusiness
+    internal class BanWordBusiness
     {
         private BanWordDao banWordDao;
 

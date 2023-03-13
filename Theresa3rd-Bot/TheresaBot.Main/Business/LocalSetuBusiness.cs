@@ -4,7 +4,7 @@ using TheresaBot.Main.Model.LocalSetu;
 
 namespace TheresaBot.Main.Business
 {
-    public class LocalSetuBusiness : SetuBusiness
+    internal class LocalSetuBusiness : SetuBusiness
     {
         public List<LocalSetuInfo> loadRandomDir(string localPath, int count, bool fromOneDir = false)
         {

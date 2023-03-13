@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Business
 {
-    public abstract class SetuBusiness
+    internal abstract class SetuBusiness
     {
 
     }

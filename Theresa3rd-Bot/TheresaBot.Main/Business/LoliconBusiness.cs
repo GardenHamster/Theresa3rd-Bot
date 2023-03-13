@@ -7,7 +7,7 @@ using TheresaBot.Main.Model.Lolicon;
 
 namespace TheresaBot.Main.Business
 {
-    public class LoliconBusiness : SetuBusiness
+    internal class LoliconBusiness : SetuBusiness
     {
         private const int eachPage = 5;
 

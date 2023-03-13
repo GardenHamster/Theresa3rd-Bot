@@ -3,7 +3,7 @@ using TheresaBot.Main.Model.PO;
 
 namespace TheresaBot.Main.Business
 {
-    public class WebsiteBusiness
+    internal class WebsiteBusiness
     {
         private WebsiteDao websiteDao;
 

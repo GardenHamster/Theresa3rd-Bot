@@ -9,7 +9,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business
 {
-    public class SubscribeBusiness
+    internal class SubscribeBusiness
     {
         private SubscribeDao subscribeDao;
         private SubscribeGroupDao subscribeGroupDao;

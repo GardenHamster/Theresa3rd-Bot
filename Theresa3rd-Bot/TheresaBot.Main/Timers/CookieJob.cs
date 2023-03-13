@@ -8,7 +8,7 @@ using TheresaBot.Main.Session;
 namespace TheresaBot.Main.Timers
 {
     [DisallowConcurrentExecution]
-    public class CookieJob : IJob
+    internal class CookieJob : IJob
     {
         private BaseReporter reporter;
 

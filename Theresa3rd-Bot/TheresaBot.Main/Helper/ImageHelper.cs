@@ -10,7 +10,6 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="fileInfos"></param>
         /// <param name="sigma"></param>
-        /// <param name="fullSavePath"></param>
         /// <returns></returns>
         public static List<FileInfo> Blur(this List<FileInfo> fileInfos, float sigma)
         {
@@ -22,7 +21,6 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="fileInfos"></param>
         /// <param name="width"></param>
-        /// <param name="fullSavePath"></param>
         /// <returns></returns>
         public static List<FileInfo> Reduce(this List<FileInfo> fileInfos, int width)
         {
@@ -35,7 +33,6 @@ namespace TheresaBot.Main.Helper
         /// <param name="fileInfos"></param>
         /// <param name="sigma"></param>
         /// <param name="width"></param>
-        /// <param name="fullSavePath"></param>
         /// <returns></returns>
         public static List<FileInfo> ReduceAndBlur(this List<FileInfo> fileInfos, float sigma, int width)
         {
@@ -43,11 +40,20 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 图片旋转180度
+        /// </summary>
+        /// <param name="fileInfos"></param>
+        /// <returns></returns>
+        public static List<FileInfo> Rotate180(this List<FileInfo> fileInfos)
+        {
+            return fileInfos.Select(o => Rotate180(o)).ToList();
+        }
+
+        /// <summary>
         /// 高斯模糊处理图片
         /// </summary>
         /// <param name="fileInfo"></param>
         /// <param name="sigma"></param>
-        /// <param name="fullSavePath"></param>
         /// <returns></returns>
         public static FileInfo Blur(this FileInfo fileInfo, float sigma)
         {
@@ -68,7 +74,6 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="fileInfo"></param>
         /// <param name="width"></param>
-        /// <param name="fullSavePath"></param>
         /// <returns></returns>
         public static FileInfo Reduce(this FileInfo fileInfo, int width)
         {
@@ -88,9 +93,8 @@ namespace TheresaBot.Main.Helper
         /// 压缩并模糊处理图片
         /// </summary>
         /// <param name="fileInfo"></param>
-        /// <param name="sigma"></param>
         /// <param name="width"></param>
-        /// <param name="fullSavePath"></param>
+        /// <param name="sigma"></param>
         /// <returns></returns>
         public static FileInfo ReduceAndBlur(this FileInfo fileInfo, int width, float sigma)
         {
@@ -109,9 +113,28 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 高斯模糊处理图片
+        /// 图片旋转180度
         /// </summary>
         /// <param name="fileInfo"></param>
+        /// <returns></returns>
+        public static FileInfo Rotate180(this FileInfo fileInfo)
+        {
+            if (fileInfo == null) return null;
+            string fullSavePath = FilePath.GetFullTempJpgSavePath();
+            using FileStream orginStream = File.OpenRead(fileInfo.FullName);
+            using SKBitmap orginBitmap = SKBitmap.Decode(orginStream);
+            using SKImage image = Rotate180(orginBitmap);
+            using SKData data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
+            using FileStream outputStream = File.OpenWrite(fullSavePath);
+            data.SaveTo(outputStream);
+            return new FileInfo(fullSavePath);
+        }
+
+        /// <summary>
+        /// 高斯模糊处理图片
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="sigma"></param>
         /// <returns></returns>
         private static SKImage Blur(this SKBitmap bitmap, float sigma)
         {
@@ -147,6 +170,26 @@ namespace TheresaBot.Main.Helper
             canvas.DrawBitmap(bitmap, rect);
             return surface.Snapshot();
         }
+
+        /// <summary>
+        /// 图片旋转180度
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <returns></returns>
+        private static SKImage Rotate180(this SKBitmap bitmap)
+        {
+            var imgInfo = new SKImageInfo(bitmap.Width, bitmap.Height);
+            using SKSurface surface = SKSurface.Create(imgInfo);
+            using SKCanvas canvas = surface.Canvas;
+            canvas.Clear(SKColors.Transparent);
+
+            SKRect rect = new SKRect(0, 0, bitmap.Width, bitmap.Height);
+            canvas.RotateDegrees(180);
+            canvas.DrawBitmap(bitmap, rect);
+            return surface.Snapshot();
+        }
+
+
 
     }
 }

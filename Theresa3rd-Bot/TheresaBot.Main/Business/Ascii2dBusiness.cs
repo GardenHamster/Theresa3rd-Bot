@@ -11,7 +11,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business
 {
-    public class Ascii2dBusiness
+    internal class Ascii2dBusiness
     {
         public async Task<Ascii2dResult> getAscii2dResultAsync(string imgHttpUrl)
         {

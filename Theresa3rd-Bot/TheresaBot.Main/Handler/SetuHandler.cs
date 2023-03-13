@@ -20,6 +20,114 @@ namespace TheresaBot.Main.Handler
         {
         }
 
+        public async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, List<SetuContent> headerContents, long groupId, int eachPage = 5)
+        {
+            int startIndex = 0;
+            if (eachPage <= 0) return new[] { 0 };
+            List<int> msgIds = new List<int>();
+            while (startIndex < setuContents.Count)
+            {
+                List<SetuContent> pageContents = new List<SetuContent>();
+                pageContents.AddRange(headerContents);
+                pageContents.AddRange(setuContents.Skip(startIndex).Take(eachPage).ToList());
+                msgIds.AddRange(await SendGroupMergeSetuAsync(pageContents, groupId));
+                startIndex += eachPage;
+            }
+            return msgIds.ToArray();
+        }
+
+        public async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 0)
+        {
+            if (sendMerge == false || margeEachPage <= 0)
+            {
+                return await SendGroupSetuAsync(setuContents, groupId, sendMerge);
+            }
+
+            int startIndex = 0;
+            List<int> msgIds = new List<int>();
+            while (startIndex < setuContents.Count)
+            {
+                List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(margeEachPage).ToList();
+                msgIds.AddRange(await SendGroupSetuAsync(pageContents, groupId, sendMerge));
+                startIndex += margeEachPage;
+            }
+            return msgIds.ToArray();
+        }
+
+        public async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge)
+        {
+            if (sendMerge)
+            {
+                return await SendGroupMergeSetuAsync(setuContents, groupId);
+            }
+            else
+            {
+                return await SendGroupSetuAsync(setuContents, groupId);
+            }
+        }
+
+        private async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId)
+        {
+            List<int> msgIdList = new List<int>();
+            foreach (var content in setuContents)
+            {
+                msgIdList.AddRange(await SendGroupSetuAsync(content, groupId));
+                await Task.Delay(1000);
+            }
+            return msgIdList.ToArray();
+        }
+
+
+        public async Task<int[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
+        {
+            int[] msgIdArr = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
+            if (msgIdArr.Where(o => o < 0).Any())
+            {
+                await Task.Delay(1000);
+                SetuContent resendContent = GetResendContent(setuContent, BotConfig.PixivConfig.ImgResend);
+                msgIdArr = await Session.SendGroupMessageAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
+            }
+            return msgIdArr;
+        }
+
+        private async Task<int[]> SendGroupMergeSetuAsync(List<SetuContent> setuContents, long groupId)
+        {
+            int msgId = await Session.SendGroupMergeAsync(groupId, setuContents);
+            if (msgId < 0)
+            {
+                await Task.Delay(1000);
+                List<SetuContent> resendContents = GetResendContent(setuContents);
+                msgId = await Session.SendGroupMergeAsync(groupId, resendContents);
+            }
+            return new[] { msgId };
+        }
+
+        private List<SetuContent> GetResendContent(List<SetuContent> setuContents)
+        {
+            if (setuContents is null) return new();
+            if (setuContents.Count == 0) return new();
+            ResendType resendType = BotConfig.PixivConfig.ImgResend;
+            if (resendType == ResendType.None) return new();
+            return setuContents.Select(o => GetResendContent(o, resendType)).ToList();
+        }
+
+        private SetuContent GetResendContent(SetuContent setuContents, ResendType resendType)
+        {
+            if (resendType == ResendType.WithoutImg)
+            {
+                return setuContents with { SetuImages = new() };
+            }
+            if (resendType == ResendType.Rotate180)
+            {
+                return setuContents with { SetuImages = setuContents.SetuImages.Rotate180() };
+            }
+            if (resendType == ResendType.Blur)
+            {
+                return setuContents with { SetuImages = setuContents.SetuImages.Blur(5) };
+            }
+            return null;
+        }
+
         public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, long groupId)
         {
             bool isR18Img = workInfo.IsR18;

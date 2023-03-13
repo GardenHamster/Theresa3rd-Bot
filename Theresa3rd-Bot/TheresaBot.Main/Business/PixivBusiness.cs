@@ -9,7 +9,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business
 {
-    public class PixivBusiness : SetuBusiness
+    internal class PixivBusiness : SetuBusiness
     {
         private SubscribeDao subscribeDao;
         private SubscribeRecordDao subscribeRecordDao;

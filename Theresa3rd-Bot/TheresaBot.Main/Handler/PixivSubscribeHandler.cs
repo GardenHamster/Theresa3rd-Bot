@@ -446,7 +446,8 @@ namespace TheresaBot.Main.Handler
                         if (isAISetu && groupId.IsShowAISetu() == false) continue;
                         bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                         List<FileInfo> imgList = isShowImg ? setuFiles : new();
-                        await Session.SendGroupSetuAsync(workMsgs, imgList, groupId);
+                        SetuContent setuContent = new SetuContent(workMsgs, imgList);
+                        await SendGroupSetuAsync(setuContent, groupId);
                     }
                     catch (Exception ex)
                     {
@@ -548,7 +549,8 @@ namespace TheresaBot.Main.Handler
                         if (isAISetu && groupId.IsShowAISetu() == false) continue;
                         bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                         List<FileInfo> imgList = isShowImg ? setuFiles : new();
-                        await Session.SendGroupSetuAsync(workMsgs, imgList, groupId);
+                        SetuContent setuContent = new SetuContent(workMsgs, imgList);
+                        await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
                     }
                     catch (Exception ex)
                     {
@@ -589,7 +591,8 @@ namespace TheresaBot.Main.Handler
                 List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
                 workMsgs.Add(new PlainContent($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
                 workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, BotConfig.PixivConfig.Template)));
-                await Session.SendGroupSetuAsync(workMsgs, setuFiles, command.GroupId);
+                SetuContent setuContent = new SetuContent(workMsgs, setuFiles);
+                await Session.SendGroupMessageAsync(command.GroupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
             }
             catch (Exception ex)
             {

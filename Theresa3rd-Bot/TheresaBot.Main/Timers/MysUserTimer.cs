@@ -6,7 +6,7 @@ using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Timers
 {
-    public static class MysUserTimer
+    internal static class MysUserTimer
     {
         private static BaseSession Session;
         private static BaseReporter Reporter;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheresaBot.Main.Model.Content;
+﻿using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Helper
@@ -14,6 +9,10 @@ namespace TheresaBot.Main.Helper
         {
             if (resendType == ResendType.WithoutImg)
             {
+                return null;
+            }
+            if (resendType == ResendType.WithoutImg)
+            {
                 return setuContents with { SetuImages = new() };
             }
             if (resendType == ResendType.Rotate180)
@@ -22,7 +21,7 @@ namespace TheresaBot.Main.Helper
             }
             if (resendType == ResendType.Blur)
             {
-                return setuContents with { SetuImages = setuContents.SetuImages.Blur(5) };
+                return setuContents with { SetuImages = setuContents.SetuImages.Blur(2) };
             }
             throw new Exception($"未能将SetuContent转换为{resendType}");
         }

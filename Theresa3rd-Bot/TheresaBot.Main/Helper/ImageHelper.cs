@@ -184,7 +184,7 @@ namespace TheresaBot.Main.Helper
             canvas.Clear(SKColors.Transparent);
 
             SKRect rect = new SKRect(0, 0, bitmap.Width, bitmap.Height);
-            canvas.RotateDegrees(180);
+            canvas.RotateDegrees(180, bitmap.Width / 2, bitmap.Height / 2);
             canvas.DrawBitmap(bitmap, rect);
             return surface.Snapshot();
         }

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Session;
 using TheresaBot.MiraiHttpApi.Common;
@@ -57,6 +56,7 @@ namespace TheresaBot.MiraiHttpApi.Session
 
         public override async Task<int[]> SendGroupMessageAsync(long groupId, SetuContent setuContent, bool sendImgBehind)
         {
+            if (setuContent is null) return new int[0];
             List<int> msgIds = new List<int>();
             List<BaseContent> setuInfos = setuContent.SetuInfos ?? new();
             List<FileInfo> setuFiles = setuContent.SetuImages ?? new();

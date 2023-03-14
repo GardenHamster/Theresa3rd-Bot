@@ -81,7 +81,7 @@ namespace TheresaBot.Main.Handler
         public async Task<int[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
         {
             int[] msgIdArr = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
-            if (msgIdArr.Where(o => o < 0).Any())
+            if (msgIdArr.Where(o => o < 0).Any() && BotConfig.PixivConfig.ImgResend != ResendType.None)
             {
                 await Task.Delay(1000);
                 SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);

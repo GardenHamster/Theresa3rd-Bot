@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TheresaBot.Main.Command;
-using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
@@ -87,6 +86,7 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             try
             {
+                if (setuContent is null) return new int[0];
                 List<int> msgIds = new List<int>();
                 List<BaseContent> setuInfos = setuContent.SetuInfos ?? new();
                 List<FileInfo> setuFiles = setuContent.SetuImages ?? new();
@@ -126,6 +126,7 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             try
             {
+                if (setuContent is null) return new int[0];
                 List<int> msgIds = new List<int>();
                 List<BaseContent> setuInfos = setuContent.SetuInfos ?? new();
                 List<FileInfo> setuFiles = setuContent.SetuImages ?? new();

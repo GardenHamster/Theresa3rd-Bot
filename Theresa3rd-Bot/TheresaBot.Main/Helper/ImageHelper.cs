@@ -58,8 +58,10 @@ namespace TheresaBot.Main.Helper
         public static FileInfo Blur(this FileInfo fileInfo, float sigma)
         {
             if (fileInfo == null) return null;
-            if (sigma <= 0) return fileInfo;
-            string fullSavePath = FilePath.GetFullTempJpgSavePath();
+            if (sigma <= 0) sigma = 5;
+            string fullFileName = $"{fileInfo.GetFileName()}_blur_{sigma}.jpg";
+            string fullSavePath = Path.Combine(FilePath.GetTempSavePath(), fullFileName);
+            if (File.Exists(fullSavePath)) return new FileInfo(fullSavePath);
             using FileStream orginStream = File.OpenRead(fileInfo.FullName);
             using SKBitmap orginBitmap = SKBitmap.Decode(orginStream);
             using SKImage image = Blur(orginBitmap, sigma);
@@ -78,7 +80,9 @@ namespace TheresaBot.Main.Helper
         public static FileInfo Reduce(this FileInfo fileInfo, int width)
         {
             if (fileInfo == null) return null;
-            string fullSavePath = FilePath.GetFullTempJpgSavePath();
+            string fullFileName = $"{fileInfo.GetFileName()}_reduce_{width}.jpg";
+            string fullSavePath = Path.Combine(FilePath.GetTempSavePath(), fullFileName);
+            if (File.Exists(fullSavePath)) return new FileInfo(fullSavePath);
             using FileStream orginStream = File.OpenRead(fileInfo.FullName);
             using SKBitmap orginBitmap = SKBitmap.Decode(orginStream);
             if (orginBitmap.Width <= width) return fileInfo;
@@ -99,8 +103,10 @@ namespace TheresaBot.Main.Helper
         public static FileInfo ReduceAndBlur(this FileInfo fileInfo, int width, float sigma)
         {
             if (fileInfo == null) return null;
-            if (sigma <= 0) return fileInfo;
-            string fullSavePath = FilePath.GetFullTempJpgSavePath();
+            if (sigma <= 0) sigma = 5;
+            string fullFileName = $"{fileInfo.GetFileName()}_reduce_{width}_blur_{sigma}.jpg";
+            string fullSavePath = Path.Combine(FilePath.GetTempSavePath(), fullFileName);
+            if (File.Exists(fullSavePath)) return new FileInfo(fullSavePath);
             using FileStream fileStream = File.OpenRead(fileInfo.FullName);
             using SKBitmap orginBitmap = SKBitmap.Decode(fileStream);
             using SKImage reduceImg = Reduce(orginBitmap, width);
@@ -120,7 +126,9 @@ namespace TheresaBot.Main.Helper
         public static FileInfo Rotate180(this FileInfo fileInfo)
         {
             if (fileInfo == null) return null;
-            string fullSavePath = FilePath.GetFullTempJpgSavePath();
+            string fullFileName = $"{fileInfo.GetFileName()}_rotate_180.jpg";
+            string fullSavePath = Path.Combine(FilePath.GetTempSavePath(), fullFileName);
+            if (File.Exists(fullSavePath)) return new FileInfo(fullSavePath);
             using FileStream orginStream = File.OpenRead(fileInfo.FullName);
             using SKBitmap orginBitmap = SKBitmap.Decode(orginStream);
             using SKImage image = Rotate180(orginBitmap);

@@ -234,7 +234,7 @@ namespace TheresaBot.Main.Helper
             {
                 try
                 {
-                    if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = url.getHttpFileName();
+                    if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = new HttpFileInfo(url).FullFileName;
                     string fullImgSavePath = Path.Combine(FilePath.GetPixivImgSavePath(pixivId), fullFileName);
                     return await DownPixivImgAsync(url, fullImgSavePath, headerDic, timeout);
                 }
@@ -278,7 +278,7 @@ namespace TheresaBot.Main.Helper
             {
                 try
                 {
-                    if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = url.getHttpFileName();
+                    if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = new HttpFileInfo(url).FullFileName;
                     string fullImgSavePath = Path.Combine(FilePath.GetTempSavePath(), fullFileName);
                     return await DownPixivFileAsync(url, fullImgSavePath, headerDic, timeout);
                 }

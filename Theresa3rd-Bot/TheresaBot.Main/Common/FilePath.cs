@@ -1,4 +1,5 @@
 ﻿using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.File;
 
 namespace TheresaBot.Main.Common
 {
@@ -40,22 +41,12 @@ namespace TheresaBot.Main.Common
         /// <returns></returns>
         public static string GetFullMysImgSavePath(string imgUrl)
         {
-            string suffix = StringHelper.getSuffixByUrl(imgUrl);
-            if (string.IsNullOrEmpty(suffix)) suffix = "jpg";
-            string fullFileName = StringHelper.get16UUID() + "." + suffix;
+            var fileInfo = new HttpFileInfo(imgUrl);
+            string extension = fileInfo.FileExtension;
+            if (string.IsNullOrEmpty(extension)) extension = "jpg";
+            string fullFileName = StringHelper.get16UUID() + "." + extension;
             string mysFilePath = GetMysImgSavePath();
             return Path.Combine(mysFilePath, fullFileName);
-        }
-
-        /// <summary>
-        /// 获取米游社图片存放路径
-        /// </summary>
-        /// <returns></returns>
-        public static string GetFullTempJpgSavePath()
-        {
-            string fullFileName = StringHelper.get16UUID() + ".jpg";
-            string tempFilePath = GetTempSavePath();
-            return Path.Combine(tempFilePath, fullFileName);
         }
 
         /// <summary>

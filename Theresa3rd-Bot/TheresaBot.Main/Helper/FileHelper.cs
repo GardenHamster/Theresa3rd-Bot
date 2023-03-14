@@ -4,6 +4,13 @@ namespace TheresaBot.Main.Helper
 {
     public static class FileHelper
     {
+        public static string GetFileName(this FileInfo fileInfo)
+        {
+            string fullFileName = fileInfo.Name;
+            var splitArr = fullFileName.Split('.');
+            return splitArr.Length > 0 ? splitArr[0] : string.Empty;
+        }
+
         public static bool IsFilesExists(this List<string> fullFilePaths)
         {
             if (fullFilePaths is null || fullFilePaths.Count == 0) return false;
@@ -14,7 +21,7 @@ namespace TheresaBot.Main.Helper
             return true;
         }
 
-        public static void deleteFile(string fullFilePath)
+        public static void DeleteFile(string fullFilePath)
         {
             try
             {
@@ -26,7 +33,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        public static void deleteFile(FileInfo fileInfo)
+        public static void DeleteFile(FileInfo fileInfo)
         {
             try
             {
@@ -38,7 +45,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        public static void deleteDirectory(string directoryPath)
+        public static void DeleteDirectory(string directoryPath)
         {
             try
             {
@@ -55,7 +62,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="downTask"></param>
         /// <returns></returns>
-        public static FileInfo[] searchFiles(string dirPath, string searchPattern)
+        public static FileInfo[] SearchFiles(string dirPath, string searchPattern)
         {
             if (Directory.Exists(dirPath) == false) return null;
             DirectoryInfo searchFolder = new DirectoryInfo(dirPath);
@@ -67,7 +74,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        public static List<FileInfo> getRandomFileInList(string dirPath, int count)
+        public static List<FileInfo> GetRandomFileInList(string dirPath, int count)
         {
             List<FileInfo> stList = new List<FileInfo>();
             DirectoryInfo sourceDirectory = new DirectoryInfo(dirPath);

@@ -76,9 +76,9 @@ namespace TheresaBot.Main.Timers
         private void ClearWindowsUploadTemp()
         {
             string dirPath = System.IO.Path.GetTempPath();
-            FileInfo[] fileList = FileHelper.searchFiles(dirPath, "file-upload*.tmp");
+            FileInfo[] fileList = FileHelper.SearchFiles(dirPath, "file-upload*.tmp");
             if (fileList is null || fileList.Length == 0) return;
-            foreach (var item in fileList) FileHelper.deleteFile(item);
+            foreach (var item in fileList) FileHelper.DeleteFile(item);
             LogHelper.Info($"上传临时文件清理完毕，共计清理 {fileList.Length} 个临时文件...");
         }
 

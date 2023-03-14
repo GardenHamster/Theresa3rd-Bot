@@ -348,8 +348,8 @@ namespace TheresaBot.Main.Handler
                 }
                 gif.SaveAsGif(fullGifSavePath);
 
-                FileHelper.deleteFile(fullZipSavePath);
-                FileHelper.deleteDirectory(unZipDirPath);
+                FileHelper.DeleteFile(fullZipSavePath);
+                FileHelper.DeleteDirectory(unZipDirPath);
                 return new FileInfo(fullGifSavePath);
             }
             catch (Exception ex)

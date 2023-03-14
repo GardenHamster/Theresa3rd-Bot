@@ -6,7 +6,6 @@ namespace TheresaBot.Main.Helper
 {
     public static class StringHelper
     {
-
         /// <summary>
         /// 获取32长度的UUID
         /// </summary>
@@ -166,26 +165,6 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 从一个http url中提取文件名
-        /// </summary>
-        /// <param name="httpUrl"></param>
-        /// <returns></returns>
-        public static string getHttpFileName(this string httpUrl)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(httpUrl)) return null;
-                string splitStr = httpUrl.Split('?')[0].Trim();
-                string[] splitArr = splitStr.Split('/');
-                return splitArr.Last().Trim();
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
         /// 将键值对重新连接为cookie
         /// </summary>
         /// <param name="cookie"></param>
@@ -199,17 +178,6 @@ namespace TheresaBot.Main.Helper
                 cookieBuilder.Append($"{item.Key}={item.Value};");
             }
             return cookieBuilder.ToString();
-        }
-
-        public static string getSuffixByUrl(this string url)
-        {
-            int lastPointIndex = url.LastIndexOf(".");
-            int lastSlashIndex = url.LastIndexOf("/");
-            if (lastPointIndex < 0) return "";
-            if (lastPointIndex < lastSlashIndex) return "";
-            string fileSuffix = url.Substring(lastPointIndex + 1, url.Length - lastPointIndex - 1);
-            if (fileSuffix is null || fileSuffix.Trim().Length == 0) return "";
-            return fileSuffix;
         }
 
         /// <summary>
@@ -237,35 +205,6 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-
-        /// <summary>
-        /// 判断str2是否和str1相似
-        /// </summary>
-        /// <param name="str1"></param>
-        /// <param name="str2"></param>
-        /// <returns></returns>
-        public static bool checkStrSimilar(string str1, string str2)
-        {
-            int matchCount = 0;
-            int previousIndex = -1;
-            if (str1 is null || str2 is null) return false;
-            str1 = str1.Replace(" ", "").Trim().ToLower();
-            str2 = str2.Replace(" ", "").Trim().ToLower();
-            if (str1.Length == 0 || str2.Length == 0) return false;
-            if (str1.Length <= 3) return str2 == str1;
-            char[] charArray = str2.ToCharArray();
-            foreach (char item in charArray)
-            {
-                int wordIndex = str1.IndexOf(item, previousIndex < 0 ? 0 : previousIndex);
-                if (wordIndex > -1 && wordIndex > previousIndex)
-                {
-                    matchCount++;
-                    previousIndex = wordIndex;
-                }
-            }
-            return matchCount >= str1.Length * 0.75;
-        }
-
         // <summary>
         /// MD5加密(32位)
         /// </summary>
@@ -282,19 +221,6 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 获取str的关键词word后面的全部内容
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="word"></param>
-        /// <returns></returns>
-        public static string getStrAfterWord(this string str, string word)
-        {
-            int index = str.IndexOf(word);
-            return str.Substring(index + word.Length, str.Length - index - word.Length);
-        }
-
-
-        /// <summary>
         /// 判断字符串是否纯数字
         /// </summary>
         /// <param name="str"></param>
@@ -302,18 +228,6 @@ namespace TheresaBot.Main.Helper
         public static bool isPureNumber(this string str)
         {
             return Regex.IsMatch(str, @"^\d+$");
-        }
-
-
-        public static string getSupplyNameWithoutSymbol(this string itemName)
-        {
-            if (itemName is null) return "";
-            itemName = itemName.Replace("(", "");
-            itemName = itemName.Replace(")", "");
-            itemName = itemName.Replace("（", "");
-            itemName = itemName.Replace("）", "");
-            itemName = itemName.Replace("☆", "");
-            return itemName.Trim();
         }
 
         /// <summary>
@@ -332,19 +246,6 @@ namespace TheresaBot.Main.Helper
                 stringBuilder.Append(randomStringTemplate[pos]);
             }
             return stringBuilder.ToString();
-        }
-
-        /// <summary>
-        /// 判断聊天记录中是否含有分享内容
-        /// </summary>
-        /// <returns></returns>
-        public static bool isShareChar(this string message)
-        {
-            if (message is null) return false;
-            string messageLower = message.ToLower();
-            if (messageLower.Contains("xml")) return true;
-            if (messageLower.Contains("http")) return true;
-            return false;
         }
 
 

@@ -2,9 +2,7 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
-using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
-using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -85,6 +83,21 @@ namespace TheresaBot.Main.Handler
             if (pluginConfig is null || pluginConfig.Enable == false)
             {
                 await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> CheckR18ImgEnableAsync(GroupCommand command)
+        {
+            if (BotConfig.PermissionsConfig.SetuShowR18Groups.Contains(command.GroupId) == false)
+            {
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "当前群未配置R18权限");
+                return false;
+            }
+            if (BotConfig.PermissionsConfig.SetuShowR18ImgGroups.Contains(command.GroupId) == false)
+            {
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "当前群未配置R18图片权限");
                 return false;
             }
             return true;

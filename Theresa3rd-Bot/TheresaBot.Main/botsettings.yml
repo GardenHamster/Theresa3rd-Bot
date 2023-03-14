@@ -21,7 +21,7 @@ Pixiv:
     TagShowMaximum:             5                                                   #同一个作品最多显示N个标签，0表示无限制
     UrlShowMaximum:             3                                                   #同一个作品最多显示N条原图链接，0表示无限制
     ImgSize:                    'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb
-    ImgResend:                  1                                                   #涩图发送失败后：0:不重发，1:不带图片重发，2:旋转180°后重发，3:模糊处理后重发
+    ImgResend:                  3                                                   #涩图发送失败后：0:不重发，1:不带图片重发，2:旋转180°后重发，3:模糊处理后重发
     R18ImgBlur:                 5                                                  #R18图片高斯模糊处理程度，范围：5~100
     OriginUrlProxy:             'https://i.pixiv.re'                                #pixiv原图链接的代理地址，默认：https://i.pixiv.re(有频率限制)
     SendImgBehind:              false                                               #将涩图信息和图片分开发送，先发送作品信息，后发送图片，可以开启此项避免消息被吞
@@ -223,9 +223,11 @@ PixivRanking:                                                                   
     GroupCD:                    300                                                 #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
     CacheSeconds:               3600                                                #每个榜单数据缓存时间
     SendDetail:                 10                                                  #同时发送前N个作品的图片和详情
+    R18Target:                  1.5                                                 #同Pixiv.R18Target
     Daily:                                                                          #日榜
         Enable:                 true                                                #是否启用
         Commands:               ['日榜']                                            #命令
+        R18Commands:            ['R18日榜']                                         #R18命令
         MinRatingCount:         300                                                 #榜单信息中的最低点赞数，用于对作品进行初步过滤
         MinRatingRate:          0.1                                                 #榜单信息中的最低点赞率，用于对作品进行初步过滤
         MinBookCount:           500                                                 #作品最低实时收藏数，用于对作品进一步过滤
@@ -233,6 +235,7 @@ PixivRanking:                                                                   
     DailyAI:                                                                        #AI日榜
         Enable:                 true                                                #是否启用
         Commands:               ['ai榜','ai日榜']                                   #命令
+        R18Commands:            ['R18AI榜','R18AI榜']                               #R18命令
         MinRatingCount:         300                                                 #榜单信息中的最低点赞数，用于对作品进行初步过滤
         MinRatingRate:          0.1                                                 #榜单信息中的最低点赞率，用于对作品进行初步过滤
         MinBookCount:           500                                                 #作品最低实时收藏数，用于对作品进一步过滤
@@ -240,6 +243,7 @@ PixivRanking:                                                                   
     Male:                                                                           #男性向(受男性欢迎)日榜
         Enable:                 true                                                #是否启用
         Commands:               ['LSP日榜']                                         #命令
+        R18Commands:            ['R18LSP日榜']                                      #命令
         MinRatingCount:         300                                                 #榜单信息中的最低点赞数，用于对作品进行初步过滤
         MinRatingRate:          0.18                                                #榜单信息中的最低点赞率，用于对作品进行初步过滤
         MinBookCount:           500                                                 #作品最低实时收藏数，用于对作品进一步过滤
@@ -247,6 +251,7 @@ PixivRanking:                                                                   
     Weekly:                                                                         #周榜
         Enable:                 true                                                #是否启用
         Commands:               ['周榜']                                            #命令
+        R18Commands:            ['R18周榜']                                         #R18命令
         MinRatingCount:         1000                                                #榜单信息中的最低点赞数，用于对作品进行初步过滤
         MinRatingRate:          0.18                                                #榜单信息中的最低点赞率，用于对作品进行初步过滤
         MinBookCount:           1500                                                #作品最低实时收藏数，用于对作品进一步过滤
@@ -262,11 +267,11 @@ PixivRanking:                                                                   
         - Enable:               false                                               #是否启用
           Cron:                 '0 30 10 * * ?'                                     #cron表达式(需要自行百度cron格式)
           Groups:               [284196392]                                         #推送到群
-          Contents:             ['Daily','DailyAI']                                 #推送内容，可选Daily/DailyAI/Male/Weekly/Monthly
+          Contents:             ['Daily','DailyAI']                                 #推送内容，可选Daily/DailyAI/Male/Weekly/Monthly/DailyR18/DailyAIR18/MaleR18/WeeklyR18
           SendDetail:           10                                                  #同时发送前N个作品的图片和详情
 
         - Enable:               false                                               #是否启用
           Cron:                 '0 35 10 ? * SUN'                                   #cron表达式(需要自行百度cron格式)
           Groups:               [284196392]                                         #推送到群
-          Contents:             ['Weekly','Monthly']                                #推送内容，可选Daily/DailyAI/Male/Weekly/Monthly
+          Contents:             ['Weekly','Monthly']                                #推送内容，可选Daily/DailyAI/Male/Weekly/Monthly/DailyR18/DailyAIR18/MaleR18/WeeklyR18
           SendDetail:           10                                                  #同时发送前N个作品的图片和详情

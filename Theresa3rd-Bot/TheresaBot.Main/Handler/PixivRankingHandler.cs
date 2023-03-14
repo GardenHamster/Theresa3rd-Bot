@@ -61,6 +61,34 @@ namespace TheresaBot.Main.Handler
             await replyRankingInfo(command, rankingMode, rankingItem);
         }
 
+        public async Task sendDailyR18Ranking(GroupCommand command)
+        {
+            PixivRankingMode rankingMode = PixivRankingMode.Daily_R18;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Daily;
+            await replyRankingInfo(command, rankingMode, rankingItem);
+        }
+
+        public async Task sendDailyAIR18Ranking(GroupCommand command)
+        {
+            PixivRankingMode rankingMode = PixivRankingMode.DailyAI_R18;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.DailyAI;
+            await replyRankingInfo(command, rankingMode, rankingItem);
+        }
+
+        public async Task sendMaleR18Ranking(GroupCommand command)
+        {
+            PixivRankingMode rankingMode = PixivRankingMode.Male_R18;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Male;
+            await replyRankingInfo(command, rankingMode, rankingItem);
+        }
+
+        public async Task sendWeeklyR18Ranking(GroupCommand command)
+        {
+            PixivRankingMode rankingMode = PixivRankingMode.Weekly_R18;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Weekly;
+            await replyRankingInfo(command, rankingMode, rankingItem);
+        }
+
         public async Task handleRankingSubscribeAsync(PixivRankingTimer rankingTimer, PixivRankingItem rankingItem, PixivRankingMode rankingMode)
         {
             try

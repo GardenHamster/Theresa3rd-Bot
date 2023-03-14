@@ -261,6 +261,62 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
+            //R18日榜
+            new(BotConfig.PixivRankingConfig?.Daily?.R18Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
+            {
+                PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
+                if (await handler.CheckPixivRankingEnableAsync(botCommand, BotConfig.PixivRankingConfig?.Daily) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckR18ImgEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Daily)) return false;
+                if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.sendDailyR18Ranking(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //R18AI日榜
+            new(BotConfig.PixivRankingConfig?.DailyAI?.R18Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
+            {
+                PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
+                if (await handler.CheckPixivRankingEnableAsync(botCommand, BotConfig.PixivRankingConfig?.DailyAI) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckR18ImgEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.DailyAI)) return false;
+                if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.sendDailyAIR18Ranking(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //R18受男性欢迎日榜
+            new(BotConfig.PixivRankingConfig?.Male?.R18Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
+            {
+                PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
+                if (await handler.CheckPixivRankingEnableAsync(botCommand, BotConfig.PixivRankingConfig?.Male) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckR18ImgEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Male)) return false;
+                if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.sendMaleR18Ranking(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //R18周榜
+            new(BotConfig.PixivRankingConfig?.Weekly?.R18Commands, CommandType.PixivRanking, new(async (botCommand, session, reporter) =>
+            {
+                PixivRankingHandler handler = new PixivRankingHandler(session, reporter);
+                if (await handler.CheckPixivRankingEnableAsync(botCommand, BotConfig.PixivRankingConfig?.Weekly) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckR18ImgEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Weekly)) return false;
+                if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.sendWeeklyR18Ranking(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
             //version
             new(new List<string>() { "版本", "version" }, CommandType.Version, new(async (botCommand, session, reporter) =>
             {

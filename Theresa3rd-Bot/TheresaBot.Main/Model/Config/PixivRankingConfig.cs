@@ -12,6 +12,7 @@ namespace TheresaBot.Main.Model.Config
         public int GroupCD { get; private set; }
         public int CacheSeconds { get; private set; }
         public int SendDetail { get; private set; }
+        public double R18Target { get; set; }
         public PixivRankingItem Daily { get; private set; }
         public PixivRankingItem DailyAI { get; private set; }
         public PixivRankingItem Male { get; private set; }
@@ -24,6 +25,7 @@ namespace TheresaBot.Main.Model.Config
     {
         public bool Enable { get; private set; }
         public List<string> Commands { get; private set; }
+        public List<string> R18Commands { get; private set; }
         public int MinRatingCount { get; private set; }
         public double MinRatingRate { get; private set; }
         public int MinBookCount { get; private set; }

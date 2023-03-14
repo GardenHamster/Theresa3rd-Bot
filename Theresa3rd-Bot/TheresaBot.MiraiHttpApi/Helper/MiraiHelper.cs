@@ -172,7 +172,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
         private static MiraiGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, string command, long groupId, long memberId)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
-            if (instruction.StartsWith(command) == false) return null;
+            if (instruction.ToLower().StartsWith(command.ToLower()) == false) return null;
             return new(handler, session, args, instruction, command, groupId, memberId);
         }
 

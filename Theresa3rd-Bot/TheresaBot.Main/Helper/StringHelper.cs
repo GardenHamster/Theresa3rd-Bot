@@ -48,10 +48,12 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static string splitKeyWord(this string message, string command)
         {
-            string[] splitArr = message.Trim().Split(new string[] { command }, StringSplitOptions.RemoveEmptyEntries);
-            if (splitArr.Length < 1) return String.Empty;
-            if (message.StartsWith(command)) return splitArr[0]?.Trim() ?? String.Empty;
-            return splitArr[splitArr.Length - 1]?.Trim() ?? String.Empty;
+            command = command.Trim();
+            message = message.Trim();
+            string commandLower = command.ToLower();
+            string messageLower = message.ToLower();
+            if (messageLower.StartsWith(commandLower) == false) return String.Empty;
+            return message.Substring(command.Length, message.Length - command.Length);
         }
 
         /// <summary>
@@ -63,7 +65,6 @@ namespace TheresaBot.Main.Helper
         public static string[] splitKeyParams(this string message, string command)
         {
             string paramStr = message.Trim().splitKeyWord(command);
-            if (paramStr is null) return new string[0];
             string[] paramArr = paramStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             return paramArr.Where(o => string.IsNullOrWhiteSpace(o) == false).Select(o => o.Trim()).ToArray();
         }

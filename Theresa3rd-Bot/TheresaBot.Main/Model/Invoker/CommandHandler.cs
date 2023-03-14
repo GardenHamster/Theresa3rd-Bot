@@ -15,7 +15,7 @@ namespace TheresaBot.Main.Model.Invoker
 
         public CommandHandler(List<string> commands, CommandType commandType, Func<T, BaseSession, BaseReporter, Task<bool>> handleMethod)
         {
-            Commands = commands ?? new();
+            Commands = commands?.Select(o => o.Trim()).Where(o => o.Length > 0).ToList() ?? new();
             CommandType = commandType;
             HandleMethod = handleMethod;
         }

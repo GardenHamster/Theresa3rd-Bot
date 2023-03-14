@@ -37,7 +37,7 @@ namespace TheresaBot.Main.Model.Lolisuki
 
         public override bool IsGif
         {
-            get { return gif; }
+            get { return tags != null && tags.IsGif(); }
         }
 
         public override bool IsAI

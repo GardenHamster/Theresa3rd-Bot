@@ -198,10 +198,10 @@ namespace TheresaBot.Main.Business
             }
             else
             {
-                isRatingCountOk = workInfo.likeCount >= rankingItem.MinRatingCount;
-                isRatingRateOk = workInfo.likeRate >= rankingItem.MinRatingRate;
-                isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount;
-                isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate;
+                isRatingCountOk = workInfo.likeCount >= rankingItem.MinRatingCount * BotConfig.PixivConfig.GeneralTarget;
+                isRatingRateOk = workInfo.likeRate >= rankingItem.MinRatingRate * BotConfig.PixivConfig.GeneralTarget;
+                isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount * BotConfig.PixivConfig.GeneralTarget;
+                isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate * BotConfig.PixivConfig.GeneralTarget;
             }
             return (isRatingCountOk && isRatingRateOk) && (isBookmarkCountOk && isBookmarkRateOk);
         }

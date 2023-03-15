@@ -288,7 +288,8 @@ namespace TheresaBot.Main.Handler
                 if (workInfo.IsGif)
                 {
                     FileInfo gifFile = await downAndComposeGifAsync(workInfo.PixivId);
-                    return gifFile is null ? new() : new() { gifFile };
+                    List<FileInfo> setuFiles = gifFile is null ? new() : new() { gifFile };
+                    return workInfo.IsR18 ? setuFiles.Blur(BotConfig.PixivConfig.R18ImgBlur) : setuFiles;
                 }
                 List<FileInfo> imgList = new List<FileInfo>();
                 List<string> originUrls = workInfo.getOriginalUrls();

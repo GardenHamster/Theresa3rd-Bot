@@ -145,7 +145,8 @@ namespace TheresaBot.Main.Helper
             int imgWidth = (int)(originBitmap.Width * scale);
             int imgHeight = (int)(originBitmap.Height * scale);
             using SKBitmap resizeBitmap = originBitmap.Resize(new SKImageInfo(imgWidth, imgHeight), SKFilterQuality.Low);
-            canvas.DrawBitmap(resizeBitmap, new SKPoint(x, y));
+            using SKBitmap drawBitmap = detail.WorkInfo.IsR18 ? resizeBitmap.Blur() : resizeBitmap;
+            canvas.DrawBitmap(drawBitmap, new SKPoint(x, y));
         }
 
         private static void DrawWatermark(SKCanvas canvas, int startX, int startY)
@@ -180,6 +181,12 @@ namespace TheresaBot.Main.Helper
                 LogHelper.Error(ex);
                 return null;
             }
+        }
+
+        private static SKBitmap Blur(this SKBitmap bitmap)
+        {
+            using SKImage blurImage = bitmap.Blur(BotConfig.PixivConfig.R18ImgBlur);
+            return SKBitmap.FromImage(blurImage);
         }
 
     }

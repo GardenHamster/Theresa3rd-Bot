@@ -164,8 +164,16 @@ namespace TheresaBot.Main.Business
             if (rankingContent.isImproper()) return false;
             if (rankingContent.hasBanTag()) return false;
             if (rankingContent.isIllust() == false) return false;
-            if (rankingContent.rating_count < rankingItem.MinRatingCount) return false;
-            if (rankingContent.rating_rate < rankingItem.MinRatingRate) return false;
+            if (rankingContent.isR18())
+            {
+                if (rankingContent.rating_count < rankingItem.MinRatingCount * BotConfig.PixivRankingConfig.R18Target) return false;
+                if (rankingContent.rating_rate < rankingItem.MinRatingRate * BotConfig.PixivRankingConfig.R18Target) return false;
+            }
+            else
+            {
+                if (rankingContent.rating_count < rankingItem.MinRatingCount) return false;
+                if (rankingContent.rating_rate < rankingItem.MinRatingRate) return false;
+            }
             return true;
         }
 
@@ -180,10 +188,22 @@ namespace TheresaBot.Main.Business
             if (workInfo.IsImproper) return false;
             if (workInfo.hasBanTag() is not null) return false;
             if (workInfo.IsIllust == false) return false;
-            bool isRatingCountOk = workInfo.likeCount >= rankingItem.MinRatingCount;
-            bool isRatingRateOk = workInfo.likeRate >= rankingItem.MinRatingRate;
-            bool isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount;
-            bool isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate;
+            bool isRatingCountOk, isRatingRateOk, isBookmarkCountOk, isBookmarkRateOk;
+
+            if (workInfo.IsR18)
+            {
+                isRatingCountOk = workInfo.likeCount >= rankingItem.MinRatingCount * BotConfig.PixivRankingConfig.R18Target;
+                isRatingRateOk = workInfo.likeRate >= rankingItem.MinRatingRate * BotConfig.PixivRankingConfig.R18Target;
+                isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount * BotConfig.PixivRankingConfig.R18Target;
+                isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate * BotConfig.PixivRankingConfig.R18Target;
+            }
+            else
+            {
+                isRatingCountOk = workInfo.likeCount >= rankingItem.MinRatingCount;
+                isRatingRateOk = workInfo.likeRate >= rankingItem.MinRatingRate;
+                isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount;
+                isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate;
+            }
             return (isRatingCountOk && isRatingRateOk) && (isBookmarkCountOk && isBookmarkRateOk);
         }
 

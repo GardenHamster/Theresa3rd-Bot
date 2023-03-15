@@ -144,7 +144,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="bitmap"></param>
         /// <param name="sigma"></param>
         /// <returns></returns>
-        private static SKImage Blur(this SKBitmap bitmap, float sigma)
+        public static SKImage Blur(this SKBitmap bitmap, float sigma)
         {
             using SKPaint paint = new SKPaint();
             paint.ImageFilter = SKImageFilter.CreateBlur(sigma, sigma);
@@ -165,7 +165,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="bitmap"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private static SKImage Reduce(this SKBitmap bitmap, int width)
+        public static SKImage Reduce(this SKBitmap bitmap, int width)
         {
             if (bitmap.Width < width) return SKImage.FromBitmap(bitmap);
             int height = (int)((Convert.ToDouble(width) / bitmap.Width) * bitmap.Height);
@@ -184,7 +184,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        private static SKImage Rotate180(this SKBitmap bitmap)
+        public static SKImage Rotate180(this SKBitmap bitmap)
         {
             var imgInfo = new SKImageInfo(bitmap.Width, bitmap.Height);
             using SKSurface surface = SKSurface.Create(imgInfo);

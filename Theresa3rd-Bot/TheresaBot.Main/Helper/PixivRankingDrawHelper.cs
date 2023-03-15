@@ -163,7 +163,7 @@ namespace TheresaBot.Main.Helper
                 TextSize = WatermarkFontSize,
                 Typeface = SKTypeface.FromFamilyName("SimSun")
             };
-            string watermarkText = $"Create by Theresa-Bot {BotConfig.BotVersion} Doc {BotConfig.BotHomepage}";
+            string watermarkText = $"Create by Theresa-Bot {BotConfig.BotVersion}";
             canvas.DrawText(watermarkText, new SKPoint(x, y), paint);
         }
 

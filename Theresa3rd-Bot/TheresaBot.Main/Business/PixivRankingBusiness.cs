@@ -23,7 +23,7 @@ namespace TheresaBot.Main.Business
                 try
                 {
                     (List<PixivRankingContent> rankingContents, string ranking_date) = await getRankingDatas(rankingMode, search_date);
-                    List<PixivRankingDetail> rankingDetails = await filterContents(rankingItem, rankingContents);
+                    List<PixivRankingDetail> rankingDetails = await filterContents(rankingItem, rankingContents, rankingMode);
                     return new PixivRankingInfo(rankingDetails, rankingItem, rankingMode, ranking_date, BotConfig.PixivRankingConfig.CacheSeconds);
                 }
                 catch (NoRankingException)
@@ -60,14 +60,14 @@ namespace TheresaBot.Main.Business
             return (rankingContents, ranking_date);
         }
 
-        public async Task<List<PixivRankingDetail>> filterContents(PixivRankingItem rankingItem, List<PixivRankingContent> rankingContents)
+        public async Task<List<PixivRankingDetail>> filterContents(PixivRankingItem rankingItem, List<PixivRankingContent> rankingContents, PixivRankingMode rankingMode)
         {
             List<PixivRankingDetail> rankingDetails = new List<PixivRankingDetail>();
             foreach (var rankingContent in rankingContents)
             {
                 try
                 {
-                    if (checkContentIsOk(rankingItem, rankingContent) == false) continue;
+                    if (checkContentIsOk(rankingItem, rankingContent, rankingMode) == false) continue;
                     PixivWorkInfo pixivWorkInfo = await getRankingWork(rankingContent);
                     await Task.Delay(500);
                     if (pixivWorkInfo is null) continue;
@@ -159,21 +159,13 @@ namespace TheresaBot.Main.Business
         /// <param name="rankingItem"></param>
         /// <param name="rankingContent"></param>
         /// <returns></returns>
-        private bool checkContentIsOk(PixivRankingItem rankingItem, PixivRankingContent rankingContent)
+        private bool checkContentIsOk(PixivRankingItem rankingItem, PixivRankingContent rankingContent, PixivRankingMode rankingMode)
         {
             if (rankingContent.isImproper()) return false;
             if (rankingContent.hasBanTag()) return false;
             if (rankingContent.isIllust() == false) return false;
-            if (rankingContent.isR18())
-            {
-                if (rankingContent.rating_count < rankingItem.MinRatingCount * BotConfig.PixivRankingConfig.R18Target) return false;
-                if (rankingContent.rating_rate < rankingItem.MinRatingRate * BotConfig.PixivRankingConfig.R18Target) return false;
-            }
-            else
-            {
-                if (rankingContent.rating_count < rankingItem.MinRatingCount) return false;
-                if (rankingContent.rating_rate < rankingItem.MinRatingRate) return false;
-            }
+            if (rankingContent.rating_count < rankingItem.MinRatingCount) return false;
+            if (rankingContent.rating_rate < rankingItem.MinRatingRate) return false;
             return true;
         }
 
@@ -190,12 +182,19 @@ namespace TheresaBot.Main.Business
             if (workInfo.IsIllust == false) return false;
             bool isRatingCountOk, isRatingRateOk, isBookmarkCountOk, isBookmarkRateOk;
 
-            if (workInfo.IsR18)
+            if (workInfo.IsAI)
             {
-                isRatingCountOk = workInfo.likeCount >= rankingItem.MinRatingCount * BotConfig.PixivRankingConfig.R18Target;
-                isRatingRateOk = workInfo.likeRate >= rankingItem.MinRatingRate * BotConfig.PixivRankingConfig.R18Target;
-                isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount * BotConfig.PixivRankingConfig.R18Target;
-                isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate * BotConfig.PixivRankingConfig.R18Target;
+                isRatingCountOk = workInfo.likeCount >= rankingItem.MinRatingCount * BotConfig.PixivConfig.AITarget;
+                isRatingRateOk = workInfo.likeRate >= rankingItem.MinRatingRate * BotConfig.PixivConfig.AITarget;
+                isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount * BotConfig.PixivConfig.AITarget;
+                isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate * BotConfig.PixivConfig.AITarget;
+            }
+            else if (workInfo.IsR18)
+            {
+                isRatingCountOk = workInfo.likeCount >= rankingItem.MinRatingCount * BotConfig.PixivConfig.R18Target;
+                isRatingRateOk = workInfo.likeRate >= rankingItem.MinRatingRate * BotConfig.PixivConfig.R18Target;
+                isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount * BotConfig.PixivConfig.R18Target;
+                isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate * BotConfig.PixivConfig.R18Target;
             }
             else
             {

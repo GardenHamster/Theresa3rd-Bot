@@ -92,12 +92,12 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.PermissionsConfig.SetuShowR18Groups.Contains(command.GroupId) == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "当前群未配置R18权限");
+                await command.ReplyGroupTemplateWithAtAsync("当前群未配置R18权限");
                 return false;
             }
             if (BotConfig.PermissionsConfig.SetuShowR18ImgGroups.Contains(command.GroupId) == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "当前群未配置R18图片权限");
+                await command.ReplyGroupTemplateWithAtAsync("当前群未配置R18图片权限");
                 return false;
             }
             return true;

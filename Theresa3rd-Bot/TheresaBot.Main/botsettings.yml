@@ -37,7 +37,7 @@ Pixiv:
                                 {Urls}
     GeneralTarget:              1.0                                                 #普通作品指标，比如：一张合格的涩图的最低收藏率需要达到(MinBookmark*GeneralTarget)，MinBookPerHour和MinBookRate同理
     AITarget:                   0.5                                                 #AI作品指标(同上)
-    R18Target:                  1.5                                                 #R18作品指标(同上)
+    R18Target:                  1.2                                                 #R18作品指标(同上)
 
 Permissions:                                                                        #权限设置
     SuperManagers:              [123456789]                                         #超级管理员列表,可以使用管理指令
@@ -223,7 +223,6 @@ PixivRanking:                                                                   
     GroupCD:                    300                                                 #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
     CacheSeconds:               3600                                                #每个榜单数据缓存时间
     SendDetail:                 10                                                  #同时发送前N个作品的图片和详情
-    R18Target:                  1.5                                                 #同Pixiv.R18Target
     Daily:                                                                          #日榜
         Enable:                 true                                                #是否启用
         Commands:               ['日榜']                                            #命令

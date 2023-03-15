@@ -69,6 +69,27 @@ namespace TheresaBot.Main.Timers
                 await rankingHandler.handleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Monthly, PixivRankingMode.Monthly);
                 return;
             }
+            if (rankingName == "dailyr18")
+            {
+                await rankingHandler.handleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Daily, PixivRankingMode.Daily_R18);
+                return;
+            }
+            if (rankingName == "dailyair18")
+            {
+                await rankingHandler.handleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.DailyAI, PixivRankingMode.DailyAI_R18);
+                return;
+            }
+            if (rankingName == "maler18")
+            {
+                await rankingHandler.handleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Male, PixivRankingMode.Male_R18);
+                return;
+            }
+            if (rankingName == "weeklyr18")
+            {
+                await rankingHandler.handleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Weekly, PixivRankingMode.Weekly_R18);
+                return;
+            }
+
         }
 
     }

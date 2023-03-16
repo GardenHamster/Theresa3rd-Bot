@@ -17,6 +17,17 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 高斯模糊处理图片
+        /// </summary>
+        /// <param name="fileInfos"></param>
+        /// <param name="sigma"></param>
+        /// <returns></returns>
+        public static List<FileInfo> Blur(this List<FileInfo> fileInfos, float sigma, string saveDirPath = "")
+        {
+            return fileInfos.Select(o => Blur(o, sigma, saveDirPath)).ToList();
+        }
+
+        /// <summary>
         /// 压缩图片
         /// </summary>
         /// <param name="fileInfos"></param>
@@ -55,12 +66,13 @@ namespace TheresaBot.Main.Helper
         /// <param name="fileInfo"></param>
         /// <param name="sigma"></param>
         /// <returns></returns>
-        public static FileInfo Blur(this FileInfo fileInfo, float sigma)
+        public static FileInfo Blur(this FileInfo fileInfo, float sigma, string saveDirPath = "")
         {
             if (fileInfo == null) return null;
             if (sigma <= 0) sigma = 5;
+            if (string.IsNullOrEmpty(saveDirPath)) saveDirPath = FilePath.GetTempSavePath();
             string fullFileName = $"{fileInfo.GetFileName()}_blur_{sigma}.jpg";
-            string fullSavePath = Path.Combine(FilePath.GetTempSavePath(), fullFileName);
+            string fullSavePath = Path.Combine(saveDirPath, fullFileName);
             if (File.Exists(fullSavePath)) return new FileInfo(fullSavePath);
             using FileStream orginStream = File.OpenRead(fileInfo.FullName);
             using SKBitmap orginBitmap = SKBitmap.Decode(orginStream);

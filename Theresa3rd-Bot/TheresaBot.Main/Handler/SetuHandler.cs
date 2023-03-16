@@ -1,4 +1,5 @@
 ﻿using SixLabors.ImageSharp;
+using System.Text.RegularExpressions;
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -112,20 +113,23 @@ namespace TheresaBot.Main.Handler
 
         public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, long groupId)
         {
-            bool isR18Img = workInfo.IsR18;
-            bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
-            if (isR18Img == false) return setuFiles;
-            float sigma = BotConfig.PixivConfig.R18ImgBlur;
-            return setuFiles.ReduceAndBlur(sigma, 300);
+            bool isShowImg = groupId.IsShowSetuImg(workInfo.IsR18);
+            if (isShowImg == false) return new List<FileInfo>();
+            return await GetSetuFilesAsync(workInfo);
         }
 
         public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, List<long> groupIds)
         {
-            bool isR18Img = workInfo.IsR18;
-            bool isShowImg = groupIds.IsShowSetuImg(isR18Img);
-            List<FileInfo> setuFiles = isShowImg ? await downPixivImgsAsync(workInfo) : new();
-            if (isR18Img == false) return setuFiles;
+            bool isShowImg = groupIds.IsShowSetuImg(workInfo.IsR18);
+            if (isShowImg == false) return new List<FileInfo>();
+            return await GetSetuFilesAsync(workInfo);
+        }
+
+        protected async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo)
+        {
+            if (workInfo.IsGif) return new() { await downAndComposeGifAsync(workInfo) };
+            List<FileInfo> setuFiles = await downPixivImgsAsync(workInfo);
+            if (workInfo.IsR18 == false) return setuFiles;
             float sigma = BotConfig.PixivConfig.R18ImgBlur;
             return setuFiles.ReduceAndBlur(sigma, 300);
         }
@@ -280,16 +284,10 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="workInfo"></param>
         /// <returns></returns>
-        public async Task<List<FileInfo>> downPixivImgsAsync(BaseWorkInfo workInfo)
+        protected async Task<List<FileInfo>> downPixivImgsAsync(BaseWorkInfo workInfo)
         {
             try
             {
-                if (workInfo.IsGif)
-                {
-                    FileInfo gifFile = await downAndComposeGifAsync(workInfo.PixivId);
-                    List<FileInfo> setuFiles = gifFile is null ? new() : new() { gifFile };
-                    return workInfo.IsR18 ? setuFiles.Blur(BotConfig.PixivConfig.R18ImgBlur) : setuFiles;
-                }
                 List<FileInfo> imgList = new List<FileInfo>();
                 List<string> originUrls = workInfo.getOriginalUrls();
                 int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
@@ -312,10 +310,13 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
         /// <returns></returns>
-        protected async Task<FileInfo> downAndComposeGifAsync(string pixivIdStr)
+        protected async Task<FileInfo> downAndComposeGifAsync(BaseWorkInfo workInfo)
         {
             try
             {
+                int gifSigma = 15;
+                bool isR18 = workInfo.IsR18;
+                string pixivIdStr = workInfo.PixivId;
                 int pixivId = Convert.ToInt32(pixivIdStr);
                 string fullGifSavePath = Path.Combine(FilePath.GetPixivImgSavePath(pixivId), $"{pixivId}.gif");
                 if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
@@ -331,15 +332,16 @@ namespace TheresaBot.Main.Handler
                 ZipHelper.ZipToFile(zipFile.FullName, unZipDirPath);
 
                 DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
-                FileInfo[] files = directoryInfo.GetFiles();
-                if (files.Length == 0) return null;
+                List<FileInfo> files = directoryInfo.GetFiles().ToList();
+                if (files.Count == 0) return null;
+                if (isR18) files = files.Blur(gifSigma, unZipDirPath);
 
                 FileInfo firstFile = files.First();
                 using Image gif = await Image.LoadAsync(firstFile.FullName);
                 PixivUgoiraMetaFrames firstFrame = pixivUgoiraMetaDto.frames.Where(o => o.file.Trim() == firstFile.Name).FirstOrDefault();
                 gif.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay = firstFrame is null ? 6 : firstFrame.delay / 10;
 
-                for (int i = 1; i < files.Length; i++)
+                for (int i = 1; i < files.Count; i++)
                 {
                     using var image = await Image.LoadAsync(files[i].FullName);
                     PixivUgoiraMetaFrames frame = pixivUgoiraMetaDto.frames.Where(o => o.file.Trim() == files[i].Name).FirstOrDefault();

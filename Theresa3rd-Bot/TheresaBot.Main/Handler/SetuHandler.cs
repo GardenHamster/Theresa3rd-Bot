@@ -77,7 +77,6 @@ namespace TheresaBot.Main.Handler
             return msgIdList.ToArray();
         }
 
-
         public async Task<int[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
         {
             int[] msgIdArr = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);

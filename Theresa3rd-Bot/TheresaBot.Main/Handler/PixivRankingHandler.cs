@@ -94,12 +94,13 @@ namespace TheresaBot.Main.Handler
             try
             {
                 CoolingCache.SetPixivRankingHanding();
+                if (rankingMode.IsR18 && rankingTimer.Groups.IsShowR18SetuImg() == false) return;
                 PixivRankingInfo rankingInfo = await rankingBusiness.getRankingInfo(rankingItem, rankingMode, String.Empty);
                 PixivRankingCache.AddCache(rankingMode, rankingInfo, String.Empty);
                 if (rankingInfo.RankingDetails.Count == 0) return;
                 await sendPreviewFileAsync(rankingTimer, rankingInfo, rankingMode);
                 await Task.Delay(2000);
-                await sendSetuDetailAsync(rankingInfo, rankingTimer.Groups, rankingTimer.SendDetail);
+                await sendSetuDetailAsync(rankingInfo, rankingMode, rankingTimer.Groups, rankingTimer.SendDetail);
             }
             catch (Exception ex)
             {
@@ -133,6 +134,7 @@ namespace TheresaBot.Main.Handler
                 setuContents.AddRange(rankingBusiness.getRankAndPids(pixivRankingInfo, 10));
                 foreach (var groupId in rankingTimer.Groups)
                 {
+                    if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
                     await Session.SendGroupMessageAsync(groupId, templateMsg);
                     await Task.Delay(1000);
                     await SendGroupSetuAsync(setuContents, groupId, true);
@@ -147,7 +149,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task sendSetuDetailAsync(PixivRankingInfo pixivRankingInfo, List<long> groupIds, int quantity)
+        private async Task sendSetuDetailAsync(PixivRankingInfo pixivRankingInfo, PixivRankingMode rankingMode, List<long> groupIds, int quantity)
         {
             try
             {
@@ -169,6 +171,7 @@ namespace TheresaBot.Main.Handler
                 }
                 foreach (var groupId in groupIds)
                 {
+                    if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
                     bool isShowImg = groupId.IsShowSetuImg(false);
                     var sendContents = setuContents.Select(o => isShowImg ? o with { } : o with { SetuImages = new() }).ToList();
                     await SendGroupSetuAsync(sendContents, new() { headerContent }, groupId, DetailEachPage);
@@ -221,7 +224,7 @@ namespace TheresaBot.Main.Handler
                 await Task.Delay(1000);
                 await SendGroupSetuAsync(setuContents, command.GroupId, true);
                 await Task.Delay(1000);
-                await sendSetuDetailAsync(pixivRankingInfo, new List<long>() { command.GroupId }, BotConfig.PixivRankingConfig.SendDetail);
+                await sendSetuDetailAsync(pixivRankingInfo, rankingMode, new List<long>() { command.GroupId }, BotConfig.PixivRankingConfig.SendDetail);
                 CoolingCache.SetGroupPixivRankingCooling(rankingMode.Type, command.GroupId);
             }
             catch (NoRankingException ex)

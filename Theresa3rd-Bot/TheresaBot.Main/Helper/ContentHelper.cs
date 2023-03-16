@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Helper
             }
             if (resendType == ResendType.Blur)
             {
-                return setuContents with { SetuImages = setuContents.SetuImages.Blur(2) };
+                return setuContents with { SetuImages = setuContents.SetuImages.Blur(5) };
             }
             throw new Exception($"未能将SetuContent转换为{resendType}");
         }

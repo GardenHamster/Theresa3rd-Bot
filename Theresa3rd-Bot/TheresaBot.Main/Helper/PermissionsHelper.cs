@@ -11,11 +11,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static bool IsShowAISetu(this List<long> groupIds)
         {
-            foreach (long groupId in groupIds)
-            {
-                if (groupId.IsShowAISetu()) return true;
-            }
-            return false;
+            return groupIds.Where(o => o.IsShowAISetu()).Any();
         }
 
         /// <summary>
@@ -37,11 +33,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static bool IsShowSetuImg(this List<long> groupIds, bool isR18Img)
         {
-            foreach (long groupId in groupIds)
-            {
-                if (groupId.IsShowSetuImg(isR18Img)) return true;
-            }
-            return false;
+            return groupIds.Where(o => o.IsShowSetuImg(isR18Img)).Any();
         }
 
         /// <summary>
@@ -59,14 +51,25 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 判断是否存在其中一个群可以显示R18图片
+        /// </summary>
+        /// <param name="groupIds"></param>
+        /// <returns></returns>
+        public static bool IsShowR18SetuImg(this List<long> groupIds)
+        {
+            return groupIds.Where(o => o.IsShowR18SetuImg()).Any();
+        }
+
+        /// <summary>
         /// 判断某一个群是否可以显示R18图片
         /// </summary>
         /// <param name="groupId"></param>
-        /// <param name="isR18Img"></param>
         /// <returns></returns>
         public static bool IsShowR18SetuImg(this long groupId)
         {
+            List<long> ShowR18Groups = BotConfig.PermissionsConfig?.SetuShowR18Groups ?? new();
             List<long> ShowR18ImgGroups = BotConfig.PermissionsConfig?.SetuShowR18ImgGroups ?? new();
+            if (ShowR18Groups.Contains(groupId) == false) return false;
             if (ShowR18ImgGroups.Contains(groupId) == false) return false;
             return true;
         }

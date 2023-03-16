@@ -55,8 +55,8 @@ namespace TheresaBot.Main.Handler
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要订阅用户的id，多个id之间可以用逗号或者换行隔开", CheckPixivUserIdsAsync);
-                    StepDetail groupStep = new StepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
+                    StepDetail uidStep = new StepDetail(60, "请在60秒内发送要订阅用户的id，多个id之间可以用逗号或者换行隔开", CheckPixivUserIdsAsync);
+                    StepDetail groupStep = new StepDetail(60, $"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                     stepInfo.AddStep(uidStep);
                     stepInfo.AddStep(groupStep);
                     if (await stepInfo.HandleStep() == false) return;
@@ -141,8 +141,8 @@ namespace TheresaBot.Main.Handler
                 StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                 if (stepInfo is null) return;
 
-                StepDetail modeStep = new StepDetail(60, $" 请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncModeOption()}", CheckSyncModeAsync);
-                StepDetail groupStep = new StepDetail(60, $" 请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
+                StepDetail modeStep = new StepDetail(60, $"请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncModeOption()}", CheckSyncModeAsync);
+                StepDetail groupStep = new StepDetail(60, $"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
                 stepInfo.AddStep(modeStep);
                 stepInfo.AddStep(groupStep);
                 if (await stepInfo.HandleStep() == false) return;
@@ -223,7 +223,7 @@ namespace TheresaBot.Main.Handler
                 {
                     StepInfo stepInfo = await StepCache.CreateStepAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail uidStep = new StepDetail(60, " 请在60秒内发送要退订用户的id，多个id之间可以用逗号或者换行隔开", CheckPixivUserIdsAsync);
+                    StepDetail uidStep = new StepDetail(60, "请在60秒内发送要退订用户的id，多个id之间可以用逗号或者换行隔开", CheckPixivUserIdsAsync);
                     stepInfo.AddStep(uidStep);
                     if (await stepInfo.HandleStep() == false) return;
                     pixivUserIds = uidStep.Answer;
@@ -364,7 +364,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 subscribeBusiness.delSubscribeGroup(dbSubscribe.Id);
-                await command.ReplyGroupMessageWithAtAsync($" 已为所有群退订了pixiv标签[{pixivTag}]~");
+                await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv标签[{pixivTag}]~");
                 ConfigHelper.LoadSubscribeTask();
             }
             catch (Exception ex)
@@ -374,194 +374,6 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
                 Reporter.SendError(ex, errMsg);
-            }
-        }
-
-
-        public async Task<PixivTagScanReport> HandleTagSubscribeAsync()
-        {
-            int maxScan = BotConfig.SubscribeConfig.PixivTag.MaxScan;
-            SubscribeType subscribeType = SubscribeType.P站标签;
-            PixivTagScanReport scanReport = new PixivTagScanReport();
-            if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return scanReport;
-            List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];
-            if (subscribeTaskList is null || subscribeTaskList.Count == 0) return scanReport;
-            foreach (SubscribeTask subscribeTask in subscribeTaskList)
-            {
-                try
-                {
-                    if (subscribeTask.SubscribeSubType != 0) continue;
-                    scanReport.ScanTag++;
-                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivTagSubscribeAsync(subscribeTask, scanReport, maxScan);
-                    if (pixivSubscribeList is null || pixivSubscribeList.Count == 0) continue;
-                    await sendTagSubscribeAsync(subscribeTask, pixivSubscribeList);
-                }
-                catch (Exception ex)
-                {
-                    scanReport.ErrorTag++;
-                    LogHelper.Error(ex, $"扫描pixiv标签[{subscribeTask.SubscribeCode}]订阅失败");
-                }
-                finally
-                {
-                    await Task.Delay(2000);
-                }
-            }
-            return scanReport;
-        }
-
-        private async Task sendTagSubscribeAsync(SubscribeTask subscribeTask, List<PixivSubscribe> pixivSubscribeList)
-        {
-            foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
-            {
-                List<long> groupIds = subscribeTask.GroupIdList;
-                PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfo;
-                if (pixivWorkInfo is null || pixivWorkInfo.IsImproper || pixivWorkInfo.hasBanTag() != null) continue;
-                if (groupIds is null || groupIds.Count == 0) continue;
-                if (pixivWorkInfo.IsAI && groupIds.IsShowAISetu() == false) continue;
-
-                bool isAISetu = pixivWorkInfo.IsAI;
-                bool isR18Img = pixivWorkInfo.IsR18;
-                string tagName = subscribeTask.SubscribeName;
-                string remindTemplate = BotConfig.SubscribeConfig.PixivTag.Template;
-                string pixivTemplate = BotConfig.PixivConfig.Template;
-                List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, groupIds);
-
-                List<BaseContent> workMsgs = new List<BaseContent>();
-                if (string.IsNullOrWhiteSpace(remindTemplate))
-                {
-                    workMsgs.Add(new PlainContent($"pixiv标签[{tagName}]发布了新作品："));
-                }
-                else
-                {
-                    workMsgs.Add(new PlainContent(pixivBusiness.getTagPushRemindMsg(remindTemplate, tagName)));
-                }
-
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, pixivTemplate)));
-
-                foreach (long groupId in groupIds)
-                {
-                    try
-                    {
-                        if (isR18Img && groupId.IsShowR18Setu() == false) continue;
-                        if (isAISetu && groupId.IsShowAISetu() == false) continue;
-                        bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-                        List<FileInfo> imgList = isShowImg ? setuFiles : new();
-                        SetuContent setuContent = new SetuContent(workMsgs, imgList);
-                        await SendGroupSetuAsync(setuContent, groupId);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogHelper.Error(ex, "pixiv标签订阅消息发送失败");
-                    }
-                    finally
-                    {
-                        await Task.Delay(1000);
-                    }
-                }
-            }
-        }
-
-        public async Task<PixivUserScanReport> HandleUserSubscribeAsync()
-        {
-            SubscribeType subscribeType = SubscribeType.P站画师;
-            PixivUserScanReport scanReport = new PixivUserScanReport();
-            if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return scanReport;
-            List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];
-            if (subscribeTaskList is null || subscribeTaskList.Count == 0) return scanReport;
-            foreach (SubscribeTask subscribeTask in subscribeTaskList)
-            {
-                try
-                {
-                    if (subscribeTask.SubscribeSubType != 0) continue;
-                    scanReport.ScanUser++;
-                    List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserSubscribeAsync(subscribeTask, scanReport);
-                    if (pixivSubscribeList is null || pixivSubscribeList.Count == 0) continue;
-                    await sendUserSubscribeAsync(pixivSubscribeList, subscribeTask.GroupIdList);
-                }
-                catch (Exception ex)
-                {
-                    scanReport.ErrorWork++;
-                    string message = $"扫描pixiv用户[{subscribeTask.SubscribeCode}]订阅失败";
-                    LogHelper.Error(ex, message);
-                    Reporter.SendError(ex, message);
-                }
-                finally
-                {
-                    await Task.Delay(2000);
-                }
-            }
-            return scanReport;
-        }
-
-
-        public async Task<PixivUserScanReport> HandleFollowSubscribeAsync()
-        {
-            PixivUserScanReport scanReport = new PixivUserScanReport();
-
-            try
-            {
-                List<PixivSubscribe> pixivFollowLatestList = await pixivBusiness.getPixivFollowLatestAsync(scanReport);
-                if (pixivFollowLatestList is null || pixivFollowLatestList.Count == 0) return scanReport;
-                await sendUserSubscribeAsync(pixivFollowLatestList, BotConfig.PermissionsConfig.SubscribeGroups);
-            }
-            catch (Exception ex)
-            {
-                string message = $"扫描pixiv关注用户最新作品失败";
-                LogHelper.Error(ex, message);
-                Reporter.SendError(ex, message);
-            }
-            return scanReport;
-        }
-
-
-        private async Task sendUserSubscribeAsync(List<PixivSubscribe> pixivSubscribeList, List<long> groupIds)
-        {
-            foreach (PixivSubscribe pixivSubscribe in pixivSubscribeList)
-            {
-                PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfo;
-                if (pixivWorkInfo is null || pixivWorkInfo.IsImproper || pixivWorkInfo.hasBanTag() != null) continue;
-                if (groupIds is null || groupIds.Count == 0) continue;
-                if (pixivWorkInfo.IsAI && groupIds.IsShowAISetu() == false) continue;
-
-                bool isAISetu = pixivWorkInfo.IsAI;
-                bool isR18Img = pixivWorkInfo.IsR18;
-                string remindTemplate = BotConfig.SubscribeConfig.PixivUser.Template;
-                string pixivTemplate = BotConfig.PixivConfig.Template;
-                List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, groupIds);
-
-                List<BaseContent> workMsgs = new List<BaseContent>();
-                if (string.IsNullOrWhiteSpace(remindTemplate))
-                {
-                    workMsgs.Add(new PlainContent($"pixiv画师[{pixivWorkInfo.userName}]发布了新作品："));
-                }
-                else
-                {
-                    workMsgs.Add(new PlainContent(pixivBusiness.getUserPushRemindMsg(remindTemplate, pixivWorkInfo.userName)));
-                }
-
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, pixivTemplate)));
-
-                foreach (long groupId in groupIds)
-                {
-                    try
-                    {
-                        if (isR18Img && groupId.IsShowR18Setu() == false) continue;
-                        if (isAISetu && groupId.IsShowAISetu() == false) continue;
-                        bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-                        List<FileInfo> imgList = isShowImg ? setuFiles : new();
-                        SetuContent setuContent = new SetuContent(workMsgs, imgList);
-                        await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogHelper.Error(ex, "pixiv画师订阅消息发送失败");
-                    }
-                    finally
-                    {
-                        await Task.Delay(1000);
-                    }
-                }
-
             }
         }
 

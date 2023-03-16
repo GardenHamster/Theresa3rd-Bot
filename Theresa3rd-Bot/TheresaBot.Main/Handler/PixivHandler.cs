@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Handler
 
                 if (pixivWorkInfo is null)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, " 找不到这类型的图片或者收藏比过低，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片或者收藏比过低，换个标签试试吧~");
                     return;
                 }
 

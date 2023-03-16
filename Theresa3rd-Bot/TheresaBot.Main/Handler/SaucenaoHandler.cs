@@ -136,7 +136,7 @@ namespace TheresaBot.Main.Handler
                 SaucenaoResult saucenaoResult = await saucenaoBusiness.getSaucenaoResultAsync(imgUrl);
                 if (saucenaoResult is null || saucenaoResult.Items.Count == 0)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.NotFoundMsg, $" 找不到与第{index}张图片相似的图");
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.NotFoundMsg, $"找不到与第{index}张图片相似的图");
                     return true;
                 }
 
@@ -154,7 +154,7 @@ namespace TheresaBot.Main.Handler
                 SaucenaoItem saucenaoItem = await saucenaoBusiness.getBestMatchAsync(saucenaoResult);
                 if (saucenaoItem is null)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.NotFoundMsg, $" 找不到与第{index}张图片相似的图");
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SaucenaoConfig.NotFoundMsg, $"找不到与第{index}张图片相似的图");
                     return true;
                 }
 
@@ -208,7 +208,7 @@ namespace TheresaBot.Main.Handler
                 if (BotConfig.SaucenaoConfig.PullOrigin == false)
                 {
                     List<BaseContent> simpleList = new List<BaseContent>();
-                    simpleList.Add(new PlainContent($" ascii2d中搜索到的前{readCount}条结果如下：\r\n"));
+                    simpleList.Add(new PlainContent($"ascii2d中搜索到的前{readCount}条结果如下：\r\n"));
                     simpleList.AddRange(getSimpleMessage(ascii2dItems));
                     SetuContent setuContent = new SetuContent(simpleList, null);
                     Task sendSimpleTask = sendAndRevokeMessage(command, setuContent);
@@ -223,7 +223,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 StringBuilder resultBuilder = new StringBuilder();
-                resultBuilder.AppendLine($" ascii2d中搜索到的前{readCount}条结果如下");
+                resultBuilder.AppendLine($"ascii2d中搜索到的前{readCount}条结果如下");
                 foreach (Ascii2dItem ascii2dItem in matchList)
                 {
                     if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
@@ -293,20 +293,20 @@ namespace TheresaBot.Main.Handler
 
             if (pixivWorkInfo.IsImproper)
             {
-                msgList.Add(new PlainContent($" 该作品含有R18G等内容，不显示相关内容"));
+                msgList.Add(new PlainContent($"该作品含有R18G等内容，不显示相关内容"));
                 return msgList;
             }
 
             string banTagStr = pixivWorkInfo.hasBanTag();
             if (banTagStr != null)
             {
-                msgList.Add(new PlainContent($" 该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
+                msgList.Add(new PlainContent($"该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容"));
                 return msgList;
             }
 
             if (pixivWorkInfo.IsR18 && command.GroupId.IsShowR18Saucenao() == false)
             {
-                msgList.Add(new PlainContent($" 该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
+                msgList.Add(new PlainContent($"该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限"));
                 return msgList;
             }
 

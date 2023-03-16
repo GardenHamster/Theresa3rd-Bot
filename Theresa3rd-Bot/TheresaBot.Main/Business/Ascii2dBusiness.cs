@@ -104,7 +104,8 @@ namespace TheresaBot.Main.Business
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "uri", imgHttpUrl } };
             Dictionary<string, string> headerDic = new Dictionary<string, string>() { { "User-Agent", "Mozilla/5.0" } };
-            HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.Ascii2dUrl, paramDic, headerDic);
+            string ascii2dUrl = BotConfig.SaucenaoConfig.Ascii2dWithIp ? HttpUrl.Ascii2dIpUrl : HttpUrl.Ascii2dDomainUrl;
+            HttpResponseMessage response = await HttpHelper.PostFormForHtml(ascii2dUrl, paramDic, headerDic);
             if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Redirect)
             {
                 string contentString = await response.GetContentStringAsync();

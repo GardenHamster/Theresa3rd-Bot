@@ -161,6 +161,7 @@ Saucenao:                                                                       
     RevokeInterval:             0                                                   #N秒后撤回，0表示不撤回
     RevokeSearched:             false                                               #是否撤回被查找的图片
     ContinueAscii2d:            1                                                   #Saucenao没有匹配结果时是否继续使用Ascii2d搜索，0：否，1：是，2：询问
+    Ascii2dWithIp:              false                                               #使用IP请求Ascii2d，遇到403等错误时可以尝试将该值改为true
     Ascii2dReadCount:           3                                                   #从Ascii2d的搜索结果中读取前N条，0表示无限制
 
 Subscribe:                                                                          #订阅相关

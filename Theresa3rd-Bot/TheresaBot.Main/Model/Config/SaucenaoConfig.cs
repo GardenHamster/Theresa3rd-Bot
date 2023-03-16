@@ -17,6 +17,7 @@ namespace TheresaBot.Main.Model.Config
         public int RevokeInterval { get; private set; }
         public bool RevokeSearched { get; private set; }
         public YNAType ContinueAscii2d { get; private set; }
+        public bool Ascii2dWithIp { get; set; }
         public int Ascii2dReadCount { get; private set; }
     }
 }

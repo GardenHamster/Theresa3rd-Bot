@@ -9,5 +9,11 @@ namespace TheresaBot.Main.Model.Subscribe
 
         public PixivWorkInfo PixivWorkInfo { get; set; }
 
+        public PixivSubscribe(SubscribeRecordPO record, PixivWorkInfo workInfo)
+        {
+            this.SubscribeRecord = record;
+            this.PixivWorkInfo = workInfo;
+        }
+
     }
 }

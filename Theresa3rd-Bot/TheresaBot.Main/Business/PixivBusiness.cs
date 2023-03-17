@@ -366,7 +366,7 @@ namespace TheresaBot.Main.Business
         }
 
 
-        /*-------------------------------------------------------------获取最新订阅--------------------------------------------------------------------------*/
+        /*-------------------------------------------------------------获取最新作品--------------------------------------------------------------------------*/
 
         /// <summary>
         /// 获取画师的最新作品
@@ -375,7 +375,7 @@ namespace TheresaBot.Main.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivUserNewestAsync(string userId, int subscribeId, int getCount = 1)
+        public async Task<List<PixivSubscribe>> getUserNewestAsync(string userId, int subscribeId, int getCount = 1)
         {
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             PixivUserInfo pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(userId);
@@ -383,22 +383,14 @@ namespace TheresaBot.Main.Business
             Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo.illusts;
             if (illusts is null || illusts.Count == 0) return pixivSubscribeList;
             List<PixivUserWorkInfo> workInfoList = illusts.Select(o => o.Value).OrderByDescending(o => o.createDate).ToList();
-            foreach (PixivUserWorkInfo workInfo in workInfoList)
+            foreach (PixivUserWorkInfo userWork in workInfoList)
             {
                 if (pixivSubscribeList.Count >= getCount) break;
-                if (workInfo is null) continue;
-                PixivWorkInfo pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id);
-                if (pixivWorkInfoDto is null) continue;
-                SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.illustTitle);
-                subscribeRecord.Content = subscribeRecord.Title;
-                subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.id);
-                subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.id);
-                subscribeRecord.DynamicCode = pixivWorkInfoDto.illustId;
-                subscribeRecord.DynamicType = SubscribeDynamicType.插画;
-                PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                pixivSubscribe.SubscribeRecord = subscribeRecord;
-                pixivSubscribe.PixivWorkInfo = pixivWorkInfoDto;
+                if (userWork is null) continue;
+                PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(userWork.id);
+                if (pixivWorkInfo is null) continue;
+                SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
+                PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo);
                 pixivSubscribeList.Add(pixivSubscribe);
             }
             return pixivSubscribeList;
@@ -411,16 +403,16 @@ namespace TheresaBot.Main.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivUserSubscribeAsync(SubscribeTask subscribeTask, PixivUserScanReport scanReport, int getCount = 5)
+        public async Task scanAndPushUserAsync(SubscribeTask subscribeTask, PixivUserScanReport scanReport, Func<PixivSubscribe, List<long>, Task> pushAsync)
         {
             int index = 0;
+            int getCount = 5;
             string userId = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
-            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             PixivUserInfo pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(userId);
-            if (pixivUserInfo is null) return pixivSubscribeList;
+            if (pixivUserInfo is null) return;
             Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo?.illusts;
-            if (illusts is null || illusts.Count == 0) return pixivSubscribeList;
+            if (illusts is null || illusts.Count == 0) return;
             int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
             List<PixivUserWorkInfo> workInfoList = illusts.Select(o => o.Value).OrderByDescending(o => o.createDate).ToList();
             foreach (PixivUserWorkInfo workInfo in workInfoList)
@@ -432,20 +424,12 @@ namespace TheresaBot.Main.Business
                     if (shelfLife > 0 && workInfo.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, workInfo.id)) continue;
                     scanReport.ScanWork++;
-                    PixivWorkInfo pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id, 0);
-                    if (pixivWorkInfoDto is null) continue;
-                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                    subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.illustTitle);
-                    subscribeRecord.Content = subscribeRecord.Title;
-                    subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.id);
-                    subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.id);
-                    subscribeRecord.DynamicCode = workInfo.id;
-                    subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id, 0);
+                    if (pixivWorkInfo is null) continue;
+                    SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
                     subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                    PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                    pixivSubscribe.SubscribeRecord = subscribeRecord;
-                    pixivSubscribe.PixivWorkInfo = pixivWorkInfoDto;
-                    pixivSubscribeList.Add(pixivSubscribe);
+                    PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo);
+                    await pushAsync(pixivSubscribe, subscribeTask.GroupIdList);
                 }
                 catch (Exception ex)
                 {
@@ -457,7 +441,6 @@ namespace TheresaBot.Main.Business
                     await Task.Delay(1000);
                 }
             }
-            return pixivSubscribeList;
         }
 
         /// <summary>
@@ -466,14 +449,14 @@ namespace TheresaBot.Main.Business
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivTagSubscribeAsync(SubscribeTask subscribeTask, PixivTagScanReport scanReport, int maxScan)
+        public async Task scanAndPushTagAsync(SubscribeTask subscribeTask, PixivTagScanReport scanReport, Func<SubscribeTask, PixivSubscribe, Task> pushAsync)
         {
             string tagNames = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
             string searchWord = toPixivSearchWord(tagNames);
+            int maxScan = BotConfig.SubscribeConfig.PixivTag.MaxScan;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
             List<PixivIllust> illutsList = await getTagIllustListAsync(searchWord, maxScan, shelfLife);
-            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             foreach (PixivIllust item in illutsList)
             {
                 try
@@ -482,21 +465,13 @@ namespace TheresaBot.Main.Business
                     if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, item.id)) continue;
                     scanReport.ScanWork++;
-                    PixivWorkInfo pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(item.id, 0);
-                    if (pixivWorkInfoDto is null) continue;
-                    if (checkTagWorkIsOk(pixivWorkInfoDto) == false) continue;
-                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                    subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.illustTitle);
-                    subscribeRecord.Content = subscribeRecord.Title;
-                    subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.illustId);
-                    subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.illustId);
-                    subscribeRecord.DynamicCode = item.id;
-                    subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(item.id, 0);
+                    if (pixivWorkInfo is null) continue;
+                    if (checkTagWorkIsOk(pixivWorkInfo) == false) continue;
+                    SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
                     subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                    PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                    pixivSubscribe.SubscribeRecord = subscribeRecord;
-                    pixivSubscribe.PixivWorkInfo = pixivWorkInfoDto;
-                    pixivSubscribeList.Add(pixivSubscribe);
+                    PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo);
+                    await pushAsync(subscribeTask, pixivSubscribe);
                 }
                 catch (Exception ex)
                 {
@@ -508,7 +483,6 @@ namespace TheresaBot.Main.Business
                     await Task.Delay(1000);
                 }
             }
-            return pixivSubscribeList;
         }
 
         /// <summary>
@@ -518,12 +492,11 @@ namespace TheresaBot.Main.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> getPixivFollowLatestAsync(PixivUserScanReport scanReport)
+        public async Task scanAndPushFollowAsync(PixivUserScanReport scanReport, Func<PixivSubscribe, List<long>, Task> pushAsync)
         {
             int pageIndex = 1;
             PixivFollowLatest pageOne = await PixivHelper.GetPixivFollowLatestAsync(pageIndex);
-            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            if (pageOne?.page?.ids is null) return pixivSubscribeList;
+            if (pageOne?.page?.ids is null) return;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
             List<int> wordIdList = pageOne.page.ids.OrderByDescending(o => o).ToList();
             foreach (int workId in wordIdList)
@@ -533,22 +506,14 @@ namespace TheresaBot.Main.Business
                     if (workId <= 0) continue;
                     if (subscribeRecordDao.checkExists(SubscribeType.P站画师, workId.ToString())) continue;
                     scanReport.ScanWork++;
-                    PixivWorkInfo pixivWorkInfoDto = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString(), 0);
-                    if (pixivWorkInfoDto is null) continue;
-                    if (shelfLife > 0 && pixivWorkInfoDto.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
-                    SubscribePO dbSubscribe = getOrInsertUserSubscribe(pixivWorkInfoDto);
-                    SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(dbSubscribe.Id);
-                    subscribeRecord.Title = StringHelper.filterEmoji(pixivWorkInfoDto.illustTitle);
-                    subscribeRecord.Content = subscribeRecord.Title;
-                    subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.illustId);
-                    subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(pixivWorkInfoDto.illustId);
-                    subscribeRecord.DynamicCode = pixivWorkInfoDto.illustId;
-                    subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString(), 0);
+                    if (pixivWorkInfo is null) continue;
+                    if (shelfLife > 0 && pixivWorkInfo.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
+                    SubscribePO dbSubscribe = getOrInsertUserSubscribe(pixivWorkInfo);
+                    SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, dbSubscribe.Id);
                     subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                    PixivSubscribe pixivSubscribe = new PixivSubscribe();
-                    pixivSubscribe.SubscribeRecord = subscribeRecord;
-                    pixivSubscribe.PixivWorkInfo = pixivWorkInfoDto;
-                    pixivSubscribeList.Add(pixivSubscribe);
+                    PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo);
+                    await pushAsync(pixivSubscribe, BotConfig.PermissionsConfig.SubscribeGroups);
                 }
                 catch (Exception ex)
                 {
@@ -560,7 +525,6 @@ namespace TheresaBot.Main.Business
                     await Task.Delay(1000);
                 }
             }
-            return pixivSubscribeList;
         }
 
         /// <summary>
@@ -608,7 +572,17 @@ namespace TheresaBot.Main.Business
             return subscribeDao.Insert(dbSubscribe);
         }
 
-
+        private SubscribeRecordPO toSubscribeRecord(PixivWorkInfo workInfo, int subscribeId)
+        {
+            SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
+            subscribeRecord.Title = StringHelper.filterEmoji(workInfo.illustTitle);
+            subscribeRecord.Content = subscribeRecord.Title;
+            subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId);
+            subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId);
+            subscribeRecord.DynamicCode = workInfo.illustId;
+            subscribeRecord.DynamicType = SubscribeDynamicType.插画;
+            return subscribeRecord;
+        }
 
         /*-------------------------------------------------------------获取关注列表--------------------------------------------------------------------------*/
         /// <summary>

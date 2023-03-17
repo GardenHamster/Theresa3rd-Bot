@@ -96,7 +96,7 @@ namespace TheresaBot.Main.Handler
                         await command.ReplyGroupMessageWithAtAsync($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~");
 
                         await Task.Delay(1000);
-                        await sendPixivUserNewestWorkAsync(command, dbSubscribe, command.GroupId.IsShowR18Setu(), command.GroupId.IsShowAISetu());
+                        await sendUserNewestAsync(command, dbSubscribe, command.GroupId.IsShowR18Setu(), command.GroupId.IsShowAISetu());
                     }
                     catch (Exception ex)
                     {
@@ -380,15 +380,16 @@ namespace TheresaBot.Main.Handler
         /// <summary>
         /// 发送画师的最新作品
         /// </summary>
-        /// <param name="session"></param>
-        /// <param name="userId"></param>
-        /// <param name="subscribeId"></param>
+        /// <param name="command"></param>
+        /// <param name="dbSubscribe"></param>
+        /// <param name="isShowR18"></param>
+        /// <param name="isShowAI"></param>
         /// <returns></returns>
-        private async Task sendPixivUserNewestWorkAsync(GroupCommand command, SubscribePO dbSubscribe, bool isShowR18, bool isShowAI)
+        private async Task sendUserNewestAsync(GroupCommand command, SubscribePO dbSubscribe, bool isShowR18, bool isShowAI)
         {
             try
             {
-                List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getPixivUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, 1);
+                List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, 1);
                 if (pixivSubscribeList is null || pixivSubscribeList.Count == 0)
                 {
                     await command.ReplyGroupMessageAsync($"画师[{dbSubscribe.SubscribeName}]还没有发布任何作品~");

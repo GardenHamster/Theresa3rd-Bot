@@ -37,11 +37,14 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                string path = FilePath.GetTempSavePath();
-                if (Directory.Exists(path) == false) return;
-                DirectoryInfo directoryInfo = new DirectoryInfo(path);
-                directoryInfo.Delete(true);
-                LogHelper.Info("临时文件目录清理完毕...");
+                lock (TimerManager.ClearLock)
+                {
+                    string path = FilePath.GetTempSavePath();
+                    if (Directory.Exists(path) == false) return;
+                    DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                    directoryInfo.Delete(true);
+                    LogHelper.Info("临时文件目录清理完毕...");
+                }
             }
             catch (Exception ex)
             {
@@ -57,13 +60,16 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                lock (TimerManager.ClearLock)
                 {
-                    ClearWindowsUploadTemp();
-                }
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    ClearLinuxUploadTemp();
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        ClearWindowsUploadTemp();
+                    }
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        ClearLinuxUploadTemp();
+                    }
                 }
             }
             catch (Exception ex)
@@ -76,6 +82,7 @@ namespace TheresaBot.Main.Timers
         private void ClearWindowsUploadTemp()
         {
             string dirPath = System.IO.Path.GetTempPath();
+            if (Directory.Exists(dirPath) == false) return;
             FileInfo[] fileList = FileHelper.SearchFiles(dirPath, "file-upload*.tmp");
             if (fileList is null || fileList.Length == 0) return;
             foreach (var item in fileList) FileHelper.DeleteFile(item);
@@ -86,9 +93,6 @@ namespace TheresaBot.Main.Timers
         {
 
         }
-
-
-
 
     }
 }

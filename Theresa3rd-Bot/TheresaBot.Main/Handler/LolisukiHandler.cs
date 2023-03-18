@@ -42,7 +42,7 @@ namespace TheresaBot.Main.Handler
                 List<LolisukiData> dataList;
                 int r18Mode = isShowR18 ? 2 : 0;
                 int aiMode = isShowAI ? 2 : 0;
-                string levelStr = getLevelStr(isShowR18);
+                string levelStr = getLevelStr(isShowR18, BotConfig.SetuConfig?.Lolisuki?.Level);
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
@@ -101,7 +101,7 @@ namespace TheresaBot.Main.Handler
                 int margeEachPage = 5;
                 bool isShowAI = groupId.IsShowAISetu();
                 bool isShowR18 = groupId.IsShowR18Setu();
-                string levelStr = getLevelStr(isShowR18);
+                string levelStr = getLevelStr(isShowR18, BotConfig.TimingSetuConfig?.LolisukiLevel);
                 bool sendMerge = timingSetuTimer.SendMerge;
                 int aiMode = isShowAI ? 2 : 0;
                 int r18Mode = isShowR18 ? 2 : 0;
@@ -135,14 +135,12 @@ namespace TheresaBot.Main.Handler
             return new SetuContent(setuInfo, setuFiles);
         }
 
-        private string getLevelStr(bool isShowR18)
+        private string getLevelStr(bool isShowR18, string settingLevel)
         {
             try
             {
-                string levelStr = BotConfig.SetuConfig.Lolisuki.Level;
-                if (string.IsNullOrWhiteSpace(levelStr)) return $"{(int)LolisukiLevel.Level0}-{(int)LolisukiLevel.Level3}";
-
-                string[] levelArr = levelStr.Split('-', StringSplitOptions.RemoveEmptyEntries);
+                if (string.IsNullOrWhiteSpace(settingLevel)) return $"{(int)LolisukiLevel.Level0}-{(int)LolisukiLevel.Level2}";
+                string[] levelArr = settingLevel.Split('-', StringSplitOptions.RemoveEmptyEntries);
                 string minLevelStr = levelArr[0].Trim();
                 string maxLevelStr = levelArr.Length > 1 ? levelArr[1].Trim() : levelArr[0].Trim();
                 int minLevel = int.Parse(minLevelStr);

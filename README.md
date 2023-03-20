@@ -2,15 +2,15 @@
 [![release](https://img.shields.io/github/v/release/GardenHamster/Theresa3rd-Bot)](https://github.com/GardenHamster/Theresa3rd-Bot/releases) [![download](https://img.shields.io/github/downloads/GardenHamster/Theresa3rd-Bot/total)](https://github.com/GardenHamster/Theresa3rd-Bot/releases)
 
 ## 简介
- - 某舰团长利用摸鱼时间写出来的自用的bot，准备移植到 [mirai](https://github.com/mamoe/mirai)
+ - 某舰团长利用~~摸鱼时间~~业余时间写出来的自用的Bot，基于Mirai平台(通过[Mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)与之交互)
  - 基于 .net core 6.0 和 mirai-api-http，可以在Windows或Linux上运行
  - 开始白嫖前，请在右上角点一下:star:Star
- - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)，或者查看[GitHub Pages](https://gardenhamster.github.io/TheresaBotDoc)
+ - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)，如果链接失效可以访问 [GitHub Pages](https://gardenhamster.github.io/TheresaBotDoc)
  
 ## 声明
  - **本项目为个人自娱自乐写出来的项目，并没有任何收益，并不对使用本项目产生的任何问题负责，不得将项目用于任何商业用途**
 
-## 其他
+## 提问
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
@@ -45,12 +45,14 @@
 ### 抽卡
 - [x] ~~原神模拟抽卡，在[GenshinGacha](https://github.com/GardenHamster/GenshinGacha)中实现了~~
 
-### Web UI
-- [ ] 计划用vue写一个可在外网访问的bot管理页面，用于查询和管理订阅列表和黑名单数据等
+### TODO
+- [ ] 写一个可在外网访问的Web UI，用于查询和管理订阅列表和黑名单数据等
+- [ ] 做一个涩图收藏功能(包括添加到Pixiv收藏，记录到数据库，保存到本地文件夹)
 
-### 其他摆烂中的功能，~~反正也已经有dalao写好类似的插件了~~
+### 其他摆烂中的功能
 - [ ] 小游戏 - 狼人杀
 - [ ] 词云功能 - 每日/周/月词云
+- [ ] ~~反正也已经有dalao写好类似的插件了~~
 
 ## 致谢
 - [mamoe/mirai](https://github.com/mamoe/mirai)

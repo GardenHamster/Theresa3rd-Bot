@@ -132,11 +132,17 @@ namespace TheresaBot.Main.Handler
                 setuContents.Add(new SetuContent(templateMsg));
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
                 setuContents.AddRange(rankingBusiness.getRankAndPids(pixivRankingInfo, 10));
+
                 foreach (var groupId in rankingTimer.Groups)
                 {
                     if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
                     await Session.SendGroupMessageAsync(groupId, templateMsg);
                     await Task.Delay(1000);
+                }
+
+                foreach (var groupId in rankingTimer.Groups)
+                {
+                    if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
                     await SendGroupSetuAsync(setuContents, groupId, true);
                     await Task.Delay(1000);
                 }

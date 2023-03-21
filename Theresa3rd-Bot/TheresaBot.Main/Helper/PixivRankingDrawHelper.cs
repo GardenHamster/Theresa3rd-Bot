@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Helper
         private const int AreaWidth = IllustWidth;
         private const int AreaHeight = IllustHeight + DetailFontSize;
 
-        public static FileInfo DrawPreview(PixivRankingInfo rankingInfo, List<PixivRankingDetail> datas, string savePath)
+        public static FileInfo DrawPreview(PixivRankingInfo rankingInfo, List<PixivRankingDetail> datas, string fullSavePath)
         {
             int row = 1;
             int column = 1;
@@ -68,9 +68,9 @@ namespace TheresaBot.Main.Helper
 
             using SKImage image = surface.Snapshot();
             using SKData data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
-            using FileStream outputStream = File.OpenWrite(savePath);
+            using FileStream outputStream = File.OpenWrite(fullSavePath);
             data.SaveTo(outputStream);
-            return new FileInfo(savePath);
+            return new FileInfo(fullSavePath);
         }
 
         private static void DrawHeader(SKCanvas canvas, PixivRankingInfo rankingInfo, int startX, int startY)
@@ -163,7 +163,7 @@ namespace TheresaBot.Main.Helper
                 TextSize = WatermarkFontSize,
                 Typeface = SKTypeface.FromFamilyName("SimSun")
             };
-            string watermarkText = $"Create by Theresa-Bot {BotConfig.BotVersion}";
+            string watermarkText = $"Create by Theresa-Bot {BotConfig.BotVersion} Doc {BotConfig.BotHomepage}";
             canvas.DrawText(watermarkText, new SKPoint(x, y), paint);
         }
 

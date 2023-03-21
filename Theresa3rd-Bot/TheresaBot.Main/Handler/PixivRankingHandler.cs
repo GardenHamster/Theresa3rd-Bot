@@ -273,11 +273,11 @@ namespace TheresaBot.Main.Handler
             return fileInfos;
         }
 
-        private FileInfo createPreviewImg(PixivRankingInfo rankingInfo, List<PixivRankingDetail> datas, string savePath)
+        private FileInfo createPreviewImg(PixivRankingInfo rankingInfo, List<PixivRankingDetail> datas, string fullSavePath)
         {
             try
             {
-                return PixivRankingDrawHelper.DrawPreview(rankingInfo, datas, savePath);
+                return PixivRankingDrawHelper.DrawPreview(rankingInfo, datas, fullSavePath);
             }
             catch (Exception ex)
             {

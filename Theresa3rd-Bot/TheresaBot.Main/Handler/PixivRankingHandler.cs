@@ -124,7 +124,7 @@ namespace TheresaBot.Main.Handler
                 List<string> PreviewFilePaths = pixivRankingInfo.PreviewFilePaths;
                 if (PreviewFilePaths is null || PreviewFilePaths.IsFilesExists() == false)
                 {
-                    PreviewFilePaths = createPreviewImg(pixivRankingInfo);
+                    PreviewFilePaths = await createPreviewImgAsync(pixivRankingInfo);
                     pixivRankingInfo.PreviewFilePaths = PreviewFilePaths;
                 }
 
@@ -217,7 +217,7 @@ namespace TheresaBot.Main.Handler
                 List<string> PreviewFilePaths = pixivRankingInfo.PreviewFilePaths;
                 if (PreviewFilePaths is null || PreviewFilePaths.IsFilesExists() == false)
                 {
-                    PreviewFilePaths = createPreviewImg(pixivRankingInfo);
+                    PreviewFilePaths = await createPreviewImgAsync(pixivRankingInfo);
                     pixivRankingInfo.PreviewFilePaths = PreviewFilePaths;
                 }
 
@@ -252,7 +252,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private List<string> createPreviewImg(PixivRankingInfo rankingInfo)
+        private async Task<List<string>> createPreviewImgAsync(PixivRankingInfo rankingInfo)
         {
             int startIndex = 0;
             int previewInPage = BotConfig.PixivRankingConfig.PreviewInPage;
@@ -266,18 +266,18 @@ namespace TheresaBot.Main.Handler
                 string fileName = $"{rankingMode.Code}_preview_{rankingInfo.RankingDate}_{startIndex}_{startIndex + previewInPage}.jpg";
                 string fullSavePath = Path.Combine(FilePath.GetPixivPreviewSavePath(), fileName);
                 var partList = details.Skip(startIndex).Take(previewInPage).ToList();
-                var previewFile = createPreviewImg(rankingInfo, partList, fullSavePath);
+                var previewFile = await createPreviewImgAsync(rankingInfo, partList, fullSavePath);
                 if (previewFile is not null) fileInfos.Add(previewFile.FullName);
                 startIndex += previewInPage;
             }
             return fileInfos;
         }
 
-        private FileInfo createPreviewImg(PixivRankingInfo rankingInfo, List<PixivRankingDetail> datas, string fullSavePath)
+        private async Task<FileInfo> createPreviewImgAsync(PixivRankingInfo rankingInfo, List<PixivRankingDetail> datas, string fullSavePath)
         {
             try
             {
-                return PixivRankingDrawHelper.DrawPreview(rankingInfo, datas, fullSavePath);
+                return await PixivRankingDrawHelper.DrawPreview(rankingInfo, datas, fullSavePath);
             }
             catch (Exception ex)
             {
@@ -286,7 +286,6 @@ namespace TheresaBot.Main.Handler
                 return null;
             }
         }
-
 
     }
 }

@@ -8,12 +8,13 @@ namespace TheresaBot.Main.Helper
 {
     internal static class PixivRankingDrawHelper
     {
+        private const string FontDir = "Font";
         private const int CellMargin = 40;
         private const int HeaderMargin = 15;
         private const int HeaderFontSize = 50;
         private const int RemarkMargin = 20;
         private const int RemarkFontSize = 25;
-        private const int TitleFontSize = 18;
+        private const int TitleFontSize = 20;
         private const int WatermarkMargin = 0;
         private const int WatermarkFontSize = 30;
         private const int MaxColumn = 5;
@@ -21,10 +22,11 @@ namespace TheresaBot.Main.Helper
         private const int IllustHeight = 400;
         private const int CellWidth = IllustWidth;
         private const int CellHeight = IllustHeight + TitleFontSize;
+        private static readonly SKTypeface Typeface = GetTypeface();
 
         public static async Task<FileInfo> DrawPreview(PixivRankingInfo rankingInfo, List<PixivRankingDetail> details, string fullSavePath)
         {
-            
+
             int areaX = 0;
             int areaY = 0;
             int startX = 0;
@@ -108,11 +110,6 @@ namespace TheresaBot.Main.Helper
             return arrageList;
         }
 
-        private static bool IsHorizontal(this SKBitmap originBitmap)
-        {
-            return Convert.ToDouble(originBitmap.Width) / originBitmap.Height > 1.2;
-        }
-
         private static void DrawHeader(SKCanvas canvas, PixivRankingInfo rankingInfo, int startX, int startY)
         {
             int x = startX;
@@ -125,7 +122,7 @@ namespace TheresaBot.Main.Helper
                 Style = SKPaintStyle.Fill,
                 TextAlign = SKTextAlign.Left,
                 TextSize = HeaderFontSize,
-                Typeface = SKTypeface.FromFamilyName("SimSun")
+                Typeface = Typeface
             };
             string headerText = $"{rankingInfo.RankingDate} {rankingInfo.RankingMode.Name}";
             canvas.DrawText(headerText, new SKPoint(x, y), paint);
@@ -143,7 +140,7 @@ namespace TheresaBot.Main.Helper
                 Style = SKPaintStyle.Fill,
                 TextAlign = SKTextAlign.Left,
                 TextSize = RemarkFontSize,
-                Typeface = SKTypeface.FromFamilyName("SimSun")
+                Typeface = Typeface
             };
             string headerText = $"#排名 PID 点赞率%/收藏率%";
             canvas.DrawText(headerText, new SKPoint(x, y), paint);
@@ -161,7 +158,7 @@ namespace TheresaBot.Main.Helper
                 Style = SKPaintStyle.Fill,
                 TextAlign = SKTextAlign.Left,
                 TextSize = TitleFontSize,
-                Typeface = SKTypeface.FromFamilyName("SimSun")
+                Typeface = Typeface
             };
             PixivRankingContent content = detail.RankingContent;
             string likeRate = detail.WorkInfo.likeRate.toPercent();
@@ -201,7 +198,7 @@ namespace TheresaBot.Main.Helper
                 Style = SKPaintStyle.Fill,
                 TextAlign = SKTextAlign.Left,
                 TextSize = WatermarkFontSize,
-                Typeface = SKTypeface.FromFamilyName("SimSun")
+                Typeface = Typeface
             };
             string watermarkText = $"Create by Theresa-Bot {BotConfig.BotVersion} Doc {BotConfig.BotHomepage}";
             canvas.DrawText(watermarkText, new SKPoint(x, y), paint);
@@ -223,6 +220,29 @@ namespace TheresaBot.Main.Helper
                 LogHelper.Error(ex);
                 return null;
             }
+        }
+
+        private static SKTypeface GetTypeface()
+        {
+            try
+            {
+                if (Directory.Exists(FontDir) == false) return null;
+                var fontDirectory = new DirectoryInfo(FontDir);
+                var fontFiles = fontDirectory.GetFiles();
+                if (fontFiles.Length == 0) return null;
+                var firstFont = fontFiles.First();
+                return SKTypeface.FromFile(firstFont.FullName);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                return null;
+            }
+        }
+
+        private static bool IsHorizontal(this SKBitmap originBitmap)
+        {
+            return Convert.ToDouble(originBitmap.Width) / originBitmap.Height > 1.2;
         }
 
         private static SKBitmap Blur(this SKBitmap bitmap)

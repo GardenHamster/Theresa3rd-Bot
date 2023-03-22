@@ -46,4 +46,10 @@
 		</Content>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="Font\simsun.ttc">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

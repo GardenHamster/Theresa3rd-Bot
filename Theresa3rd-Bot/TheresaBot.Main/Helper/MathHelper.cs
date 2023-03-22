@@ -52,7 +52,7 @@
         /// <returns></returns>
         public static string toPercent(this double number)
         {
-            return (number * 100).ToString("0.000") + "%";
+            return (number * 100).ToString("0.00") + "%";
         }
 
     }

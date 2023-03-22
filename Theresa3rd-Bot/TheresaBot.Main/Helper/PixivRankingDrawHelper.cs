@@ -169,6 +169,7 @@ namespace TheresaBot.Main.Helper
 
         private static void DrawImage(SKCanvas canvas, SKBitmap originBitmap, int startX, int startY, bool isR18, bool isHorizontal)
         {
+            if (originBitmap is null) return;
             int x = startX;
             int y = startY + TitleFontSize / 2;
             int drawWidth = isHorizontal ? CellWidth + CellMargin + CellWidth : IllustWidth;

@@ -1,13 +1,14 @@
 ﻿using SkiaSharp;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Cache;
+using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PixivRanking;
 
 namespace TheresaBot.Main.Helper
 {
     internal static class PixivRankingDrawHelper
     {
-        private const int CellMargin = 30;
+        private const int CellMargin = 40;
         private const int HeaderMargin = 15;
         private const int HeaderFontSize = 50;
         private const int RemarkMargin = 20;
@@ -23,15 +24,13 @@ namespace TheresaBot.Main.Helper
 
         public static async Task<FileInfo> DrawPreview(PixivRankingInfo rankingInfo, List<PixivRankingDetail> details, string fullSavePath)
         {
-            int row = 1;
-            int column = 1;
+            
             int areaX = 0;
             int areaY = 0;
             int startX = 0;
             int startY = 0;
-            int imgNum = details.Count;
-            int maxRow = MathHelper.getMaxPage(imgNum, MaxColumn);
-
+            var drawingList = await ArrangeDrawingAsync(details);
+            int maxRow = drawingList.Max(o => o.Row);
             int headAreaHeight = HeaderMargin + HeaderFontSize;
             int remarkAreaHeight = RemarkMargin + RemarkFontSize;
             int workAreaWidth = MaxColumn * CellWidth + (MaxColumn + 1) * CellMargin;
@@ -52,27 +51,18 @@ namespace TheresaBot.Main.Helper
             DrawRemark(canvas, rankingInfo, CellMargin, areaY);
             areaY += remarkAreaHeight;
 
-            for (int i = 0; i < details.Count; i++)
+            for (int i = 0; i < drawingList.Count; i++)
             {
-                var detail = details[i];
-                bool isHorizontal = false;
-                var imgFile = await GetDrawImg(detail);
-                if (imgFile is not null)
-                {
-                    using FileStream fileStream = File.OpenRead(imgFile.FullName);
-                    using SKBitmap originBitmap = SKBitmap.Decode(fileStream);
-                    isHorizontal = originBitmap.IsHorizontal();
-                    startX = areaX + CellMargin * column + CellWidth * (column - 1);
-                    startY = areaY + CellMargin * row + CellHeight * (row - 1);
-                    DrawImage(canvas, originBitmap, startX, startY, detail.WorkInfo.IsR18, isHorizontal);
-                }
+                var drawing = drawingList[i];
+                int row = drawing.Row, column = drawing.Column;
+                bool isHorizontal = drawing.IsHorizontal;
+                SKBitmap originBitmap = drawing.OriginBitmap;
+                PixivRankingDetail detail = drawing.RankingDetail;
+                PixivWorkInfo WorkInfo = drawing.RankingDetail.WorkInfo;
+                startX = areaX + CellMargin * column + CellWidth * (column - 1);
+                startY = areaY + CellMargin * row + CellHeight * (row - 1);
+                DrawImage(canvas, originBitmap, startX, startY, WorkInfo.IsR18, isHorizontal);
                 DrawTitle(canvas, detail, startX, startY, isHorizontal);
-                column += isHorizontal ? 2 : 1;
-                if (column > MaxColumn)
-                {
-                    column = column % MaxColumn;
-                    row++;
-                }
             }
             areaY += workAreaHeight;
 
@@ -84,6 +74,38 @@ namespace TheresaBot.Main.Helper
             using FileStream outputStream = File.OpenWrite(fullSavePath);
             data.SaveTo(outputStream);
             return new FileInfo(fullSavePath);
+        }
+
+        private static async Task<List<PixivRnakingDrawing>> ArrangeDrawingAsync(List<PixivRankingDetail> details)
+        {
+            int row = 1, column = 1;
+            var arrageList = new List<PixivRnakingDrawing>();
+            for (int i = 0; i < details.Count; i++)
+            {
+                bool isHorizontal = false;
+                SKBitmap originBitmap = null;
+                var detail = details[i];
+                var imgFile = await GetDrawImgAsync(detail);
+                if (imgFile is not null)
+                {
+                    using FileStream fileStream = File.OpenRead(imgFile.FullName);
+                    originBitmap = SKBitmap.Decode(fileStream);
+                    isHorizontal = originBitmap.IsHorizontal();
+                }
+                int colSpan = isHorizontal ? 2 : 1;
+                if (column + colSpan > MaxColumn)
+                {
+                    column = 1;
+                    row++;
+                }
+                else
+                {
+                    if (i > 0) column++;
+                }
+                arrageList.Add(new PixivRnakingDrawing(detail, originBitmap, isHorizontal, row, column));
+                if (colSpan > 1) column = column + colSpan - 1;
+            }
+            return arrageList;
         }
 
         private static bool IsHorizontal(this SKBitmap originBitmap)
@@ -185,7 +207,7 @@ namespace TheresaBot.Main.Helper
             canvas.DrawText(watermarkText, new SKPoint(x, y), paint);
         }
 
-        private static async Task<FileInfo> GetDrawImg(PixivRankingDetail detail)
+        private static async Task<FileInfo> GetDrawImgAsync(PixivRankingDetail detail)
         {
             try
             {

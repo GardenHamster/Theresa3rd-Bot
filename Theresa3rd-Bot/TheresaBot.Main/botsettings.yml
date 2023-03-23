@@ -217,7 +217,7 @@ PixivRanking:                                                                   
     Enable:                     true                                                #是否启用
     ProcessingMsg:              '正在获取榜单信息，需要亿点时间...'                 #开始执行前返回的消息
     Template:                   '{Date}{Ranking}精选，数据缓存{CacheSeconds}秒'     #消息模版
-    MaxScan:                    300                                                 #每个排行榜最多扫描前N个作品
+    MaxScan:                    500                                                 #每个排行榜最多扫描前N个作品
     PreviewInPage:              30                                                  #合成一览图中，每张一览图最多显示多少个作品
     SortType:                   2                                                   #排序方式，0榜单排名，1收藏数排序，2收藏率排序，3点赞数排序，4点赞率排序
     GroupCD:                    300                                                 #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能

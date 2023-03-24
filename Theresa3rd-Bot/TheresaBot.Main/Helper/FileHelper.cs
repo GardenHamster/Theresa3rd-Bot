@@ -25,6 +25,7 @@ namespace TheresaBot.Main.Helper
         {
             try
             {
+                if (!File.Exists(fullFilePath)) return;
                 File.Delete(fullFilePath);
             }
             catch (Exception ex)
@@ -37,6 +38,7 @@ namespace TheresaBot.Main.Helper
         {
             try
             {
+                if (fileInfo is null) return;
                 fileInfo.Delete();
             }
             catch (Exception ex)
@@ -49,6 +51,7 @@ namespace TheresaBot.Main.Helper
         {
             try
             {
+                if (!Directory.Exists(directoryPath)) return;
                 Directory.Delete(directoryPath, true);
             }
             catch (Exception ex)

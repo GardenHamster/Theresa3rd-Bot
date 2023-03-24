@@ -11,6 +11,11 @@ namespace TheresaBot.Main.Timers
     public static class TimerManager
     {
         /// <summary>
+        /// 清理任务线程锁
+        /// </summary>
+        internal static readonly object ClearLock = new object();
+
+        /// <summary>
         /// 初始化定时提醒任务
         /// </summary>
         public static void initReminderJob(BaseSession session, BaseReporter reporter)

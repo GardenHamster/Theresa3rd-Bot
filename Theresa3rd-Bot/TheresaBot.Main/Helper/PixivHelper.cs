@@ -279,8 +279,8 @@ namespace TheresaBot.Main.Helper
                 try
                 {
                     if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = new HttpFileInfo(url).FullFileName;
-                    string fullImgSavePath = Path.Combine(FilePath.GetTempSavePath(), fullFileName);
-                    return await DownPixivFileAsync(url, fullImgSavePath, headerDic, timeout);
+                    string fullFileSavePath = Path.Combine(FilePath.GetTempSavePath(), fullFileName);
+                    return await DownPixivFileAsync(url, fullFileSavePath, headerDic, timeout);
                 }
                 catch (Exception ex)
                 {

@@ -7,7 +7,7 @@ namespace TheresaBot.Main.Helper
     {
         public static SetuContent ToResendContent(this SetuContent setuContents, ResendType resendType)
         {
-            if (resendType == ResendType.WithoutImg)
+            if (resendType == ResendType.None)
             {
                 return null;
             }

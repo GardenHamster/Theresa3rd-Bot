@@ -3,6 +3,7 @@ using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Session;
@@ -93,9 +94,10 @@ namespace TheresaBot.MiraiHttpApi.Session
 
         public override async Task<int> SendGroupMergeAsync(long groupId, List<SetuContent> setuContents)
         {
-            if (setuContents.Count == 0) return 0;
+            var sendContents = setuContents.Where(o => o is not null).ToList();
+            if (sendContents.Count == 0) return 0;
             List<IForwardMessageNode> nodeList = new();
-            foreach (var content in setuContents)
+            foreach (var content in sendContents)
             {
                 List<IChatMessage> msgList = new List<IChatMessage>();
                 msgList.AddRange(await content.SetuInfos.ToMiraiMessageAsync());

@@ -1,12 +1,12 @@
 ﻿General:                                                                            #基础设置
     Prefix:                     '#'                                                 #指令前缀
-    DownloadPath:               'C:\BotImg\download'                                #下载文件的存放目录
+    DownloadPath:               'BotImg/download'                                   #下载文件的存放目录
     DownPathCleanCron:          '0 0 4 * * ?'                                       #下载目录清理定时器，Cron表达式，空值表示不清理，格式：0 0 4 * * ?
-    DownErrorImgPath:           'C:\BotImg\face\downError.png'                      #图片下载失败时的替代图片
+    DownErrorImgPath:           'BotImg/face/error.jpg'                             #图片下载失败时的替代图片
     ErrorGroups:                [284196392]                                         #错误日志群，发生错误时会将日志发送到这些群
     ErrorMsg:                   |                                                   #处理异常时返回的消息
                                 出了点小问题，稍后再试吧
-                                [image:C:\BotImg\face\emmm.jpg]
+                                [image:BotImg/face/emmm.jpg]
     DisableMsg:                 '该功能未开启'                                      #功能未启用时返回的消息
     NoPermissionsMsg:           '该功能未授权'                                      #功能未授权时返回的消息
     ManagersRequiredMsg:        '该功能需要管理员执行'                              #需要管理员权限时返回的消息
@@ -81,7 +81,7 @@ Welcome:                                                                        
         - GroupId:              284196392                                           #群id(群号)，这里只能填一个
           Template:             |                                                   #入群欢迎模版
                                 欢迎萌新
-                                [image:C:\BotImg\face\welcome.png]
+                                [image:BotImg/face/welcome.gif]
                                 请认真阅读群内的相关公告
                                 
 Reminder:                                                                           #定时消息
@@ -95,7 +95,7 @@ Reminder:                                                                       
           AtMembers:            []                                                  #艾特群员QQ号列表
           Template:             |                                                   #消息模版
                                 今天是深渊结算的日子，旅行者打穿红莲了没？
-                                [image:C:\BotImg\face\shenyuanjiesuan.png]
+                                [image:BotImg/face/shenyuanjiesuan.png]
 
 Setu:                                                                               #色图相关
     GroupCD:                    5                                                   #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
@@ -109,29 +109,29 @@ Setu:                                                                           
 
     Pixiv:                                                                          #Pixiv图床https://www.pixiv.net
         Enable:                 true                                                #是否启用
-        Commands:               ['涩图']                                            #命令
+        Commands:               ['涩图','pixiv']                                    #命令
         RandomMode:             1                                                   #没有指定标签时获取图片的模式，1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品，3：随机获取一个关注中画师的作品，4：随机获取一个收藏中的作品
         RandomTags:             ['德丽莎','テレサ・アポカリプス']                    #RandomMode=1时查找的标签
-        Template:               '本条数据来源于Pixiv，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~'
+        Template:               '本条数据来源于Pixiv，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回'
         MaxScreen:              60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
         MinBookmark:            900                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时适用)
         MinBookRate:            0.08                                                #最低收藏率，收藏数/浏览数(标签搜索时适用)
     
     Lolicon:                                                                        #Lolicon图床 https://api.lolicon.app
         Enable:                 true                                                #是否启用
-        Commands:               ['瑟图']                                            #命令
+        Commands:               ['瑟图','lolicon']                                  #命令
         Template:               |                                                   #消息模版，值为空时将使用默认模版
-                                本条数据来源于Lolicon Api，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
+                                本条数据来源于Lolicon Api，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回
                                 PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
     
     Lolisuki:                                                                       #Lolisuki图床 https://lolisuki.cn
         Enable:                 true                                                #是否启用
-        Commands:               ['setu']                                            #命令
+        Commands:               ['setu','lolisuki']                                 #命令
         Level:                  '0-6'                                               #Level范围，数字越大表示越涩，最小为0，最大为6，5-6为R18
         Template:               |                                                   #消息模版，值为空时将使用默认模版
-                                本条数据来源于Lolisuki Api，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
+                                本条数据来源于Lolisuki Api，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回
                                 PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，Level：{Level}，分类：{Taste}
                                 标签：{Tags}，点击下方链接可以查看原图
                                 {Urls}
@@ -139,17 +139,16 @@ Setu:                                                                           
     Local:                                                                          #本地涩图
         Enable:                 true                                                #是否启用
         Commands:               ['本地涩图','群主珍藏']                             #命令
-        LocalPath:              'C:\BotImg\localSetu'                               #图片文件夹路径，该路径下需要包含存有涩图的子文件夹
+        LocalPath:              'BotImg/localSetu'                                  #图片文件夹路径，该路径下需要包含存有涩图的子文件夹
         Template:               |                                                   #消息模版，值为空时将使用默认模版
-                                本条数据来源于本地图库，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，私发需要给本bot发送任意消息开启临时会话哦~
+                                本条数据来源于本地图库，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回
                                 文件名：{FileName}，大小：{SizeMB}MB
 
 Saucenao:                                                                           #Saucenao以图搜图，查找原图功能
     Enable:                     true                                                #是否启用
-    Commands:                   ['原图','搜图']                                     #命令
+    Commands:                   ['原图','搜图','saucenao']                          #命令
     NotFoundMsg:                |                                                   #找不到相应原图时返回的消息
-                                找不到相似的图，请换一张图片重试。
-                                tips：如果通过截图获取搜索图片时，请只截取包含图片的部分，多余的色块只会影响搜索结果
+                                找不到相似的图，请换一张完整的图片试试吧~
     ProcessingMsg:              '正在通过saucenao尝试搜索原图...'                   #开始查找前返回的消息
     Template:                   '共找到 {MatchCount} 条匹配信息，相似度：{Similarity}%，来源：{SourceType}，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，CD{MemberCD}秒'
     MemberCD:                   30                                                  #独立CD(秒)，单个群员使用命令后需要等待的CD
@@ -199,7 +198,7 @@ Subscribe:                                                                      
         
 TimingSetu:                                                                         #定时涩图，某个时间点自动发送一定数量的涩图
     Enable:                     false                                               #是否启用
-    LocalPath:                  'C:\BotImg\localSetu'                               #本地图片文件夹路径，图片需要分类放在子目录下，Source为0时可用
+    LocalPath:                  'BotImg/localSetu'                                  #本地图片文件夹路径，图片需要分类放在子目录下，Source为0时可用
     FromOneDir:                 false                                               #true：从一个随机目录读取涩图，false：从不同的随机目录读取涩图，Source为0时可用
     LolisukiLevel:              '0-3'                                               #Lolisuki的Level，Source为2时可用
     Timers:                                                                         #定时列表
@@ -218,7 +217,7 @@ PixivRanking:                                                                   
     Enable:                     true                                                #是否启用
     ProcessingMsg:              '正在获取榜单信息，需要亿点时间...'                 #开始执行前返回的消息
     Template:                   '{Date}{Ranking}精选，数据缓存{CacheSeconds}秒'     #消息模版
-    MaxScan:                    300                                                 #每个排行榜最多扫描前N个作品
+    MaxScan:                    500                                                 #每个排行榜最多扫描前N个作品
     PreviewInPage:              30                                                  #合成一览图中，每张一览图最多显示多少个作品
     SortType:                   2                                                   #排序方式，0榜单排名，1收藏数排序，2收藏率排序，3点赞数排序，4点赞率排序
     GroupCD:                    300                                                 #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能

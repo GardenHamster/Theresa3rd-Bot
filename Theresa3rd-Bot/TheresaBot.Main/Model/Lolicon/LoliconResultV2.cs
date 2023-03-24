@@ -25,26 +25,12 @@ namespace TheresaBot.Main.Model.Lolicon
         public string ext { get; set; }
         public long uploadDate { get; set; }
         public LoliconUrlsV2 urls { get; set; }
-        public override bool IsR18
-        {
-            get { return r18; }
-        }
-        public override bool IsGif
-        {
-            get { return tags != null && tags.IsGif(); }
-        }
-        public override bool IsAI
-        {
-            get { return aiType > 1; }
-        }
-        public override bool IsImproper
-        {
-            get { return tags != null && tags.IsImproper(); }
-        }
-        public override string PixivId
-        {
-            get { return pid.ToString(); }
-        }
+
+        public override bool IsR18 => r18;
+        public override bool IsGif => tags != null && tags.IsGif();
+        public override bool IsAI => aiType > 1;
+        public override bool IsImproper => tags != null && tags.IsImproper();
+        public override string PixivId => pid.ToString();
 
         public override List<string> getTags() => tags ?? new List<string>();
 

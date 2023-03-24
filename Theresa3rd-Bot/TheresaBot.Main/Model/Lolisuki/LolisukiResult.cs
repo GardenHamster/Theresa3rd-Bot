@@ -35,20 +35,9 @@ namespace TheresaBot.Main.Model.Lolisuki
         public List<string> tags { get; set; }
         public List<string> extags { get; set; }
 
-        public override bool IsGif
-        {
-            get { return tags != null && tags.IsGif(); }
-        }
-
-        public override bool IsAI
-        {
-            get { return aiType > 1; }
-        }
-
-        public override string PixivId
-        {
-            get { return pid.ToString(); }
-        }
+        public override bool IsGif => gif;
+        public override bool IsAI => aiType > 1;
+        public override string PixivId => pid.ToString();
 
         public override bool IsR18
         {

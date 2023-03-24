@@ -1,5 +1,4 @@
 ﻿using Quartz;
-using System.Runtime.InteropServices;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Reporter;
@@ -36,11 +35,14 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                string path = FilePath.GetDownFileSavePath();
-                if (Directory.Exists(path) == false) return;
-                DirectoryInfo directoryInfo = new DirectoryInfo(path);
-                directoryInfo.Delete(true);
-                LogHelper.Info("图片下载目录清理完毕...");
+                lock (TimerManager.ClearLock)
+                {
+                    string path = FilePath.GetDownFileSavePath();
+                    if (Directory.Exists(path) == false) return;
+                    DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                    directoryInfo.Delete(true);
+                    LogHelper.Info("图片下载目录清理完毕...");
+                }
             }
             catch (Exception ex)
             {

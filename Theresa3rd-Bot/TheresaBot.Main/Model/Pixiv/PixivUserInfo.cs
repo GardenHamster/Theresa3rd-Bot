@@ -19,10 +19,11 @@ namespace TheresaBot.Main.Model.Pixiv
         public DateTime createDate { get; set; }
         public int xRestrict { get; set; }
         public int aiType { get; set; }
-        public bool IsImproper() => xRestrict > 1 || (tags != null && tags.IsImproper());
-        public bool isR18() => xRestrict > 0 || (tags != null && tags.IsR18());
-        public bool isAI() => aiType > 1 || (tags != null && tags.IsAI());
-        public string hasBanTag() => tags?.hasBanTags();
+        public bool IsImproper => xRestrict > 1 || getTags().IsImproper();
+        public bool IsR18 => xRestrict > 0 || getTags().IsR18();
+        public bool IsAI => aiType > 1 || getTags().IsAI();
+        public string hasBanTag() => getTags().hasBanTags();
+        public List<string> getTags() => tags ?? new List<string>();
     }
 
     public class PixivUserExtraData

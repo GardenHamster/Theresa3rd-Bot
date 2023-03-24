@@ -324,8 +324,7 @@ namespace TheresaBot.Main.Handler
                 PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivIdStr);
                 string zipHttpUrl = pixivUgoiraMetaDto.src;
 
-                string fullZipSavePath = Path.Combine(FilePath.GetTempSavePath(), $"{pixivId}.zip");
-                FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivIdStr, zipHttpUrl, fullZipSavePath);
+                FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivIdStr, zipHttpUrl);
                 if (zipFile == null) return null;
 
                 string unZipDirPath = Path.Combine(FilePath.GetTempSavePath(), pixivIdStr);
@@ -350,7 +349,7 @@ namespace TheresaBot.Main.Handler
                 }
                 gif.SaveAsGif(fullGifSavePath);
 
-                FileHelper.DeleteFile(fullZipSavePath);
+                FileHelper.DeleteFile(zipFile);
                 FileHelper.DeleteDirectory(unZipDirPath);
                 return new FileInfo(fullGifSavePath);
             }

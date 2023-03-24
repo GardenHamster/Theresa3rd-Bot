@@ -75,6 +75,16 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 判断是否存在其中一个群可以显示R18内容
+        /// </summary>
+        /// <param name="groupIds"></param>
+        /// <returns></returns>
+        public static bool IsShowR18Setu(this List<long> groupIds)
+        {
+            return groupIds.Where(o => o.IsShowR18Setu()).Any();
+        }
+
+        /// <summary>
         /// 判断某一个群是否可以显示R18内容
         /// </summary>
         /// <param name="groupId"></param>

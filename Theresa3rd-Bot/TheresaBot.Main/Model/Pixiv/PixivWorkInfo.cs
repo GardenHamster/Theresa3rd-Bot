@@ -31,7 +31,7 @@ namespace TheresaBot.Main.Model.Pixiv
         //xRestrict=1为R18,xRestrict=2为R18G
         public override bool IsR18 => xRestrict > 0 || getTags().IsR18();
 
-        public override bool IsGif => getTags().IsGif();
+        public override bool IsGif => illustType == 2;
 
         public override bool IsAI => aiType > 1 || getTags().IsAI();
 

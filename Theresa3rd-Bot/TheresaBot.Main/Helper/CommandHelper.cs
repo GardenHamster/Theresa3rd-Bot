@@ -3,6 +3,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Invoker;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Helper
 {
@@ -11,7 +12,7 @@ namespace TheresaBot.Main.Helper
         public static async Task ReplyGroupSetuAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
         {
             int[] msgIdArr = await command.ReplyGroupMessageAndRevokeAsync(setuContent, revokeInterval, sendImgBehind, isAt);
-            if (msgIdArr.Where(o => o < 0).Any())
+            if (msgIdArr.Where(o => o < 0).Any() && BotConfig.PixivConfig.ImgResend != ResendType.None)
             {
                 await Task.Delay(1000);
                 SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);

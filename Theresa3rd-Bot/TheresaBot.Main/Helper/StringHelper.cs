@@ -53,7 +53,7 @@ namespace TheresaBot.Main.Helper
             string commandLower = command.ToLower();
             string messageLower = message.ToLower();
             if (messageLower.StartsWith(commandLower) == false) return String.Empty;
-            return message.Substring(command.Length, message.Length - command.Length);
+            return message.Substring(command.Length, message.Length - command.Length).Trim();
         }
 
         /// <summary>

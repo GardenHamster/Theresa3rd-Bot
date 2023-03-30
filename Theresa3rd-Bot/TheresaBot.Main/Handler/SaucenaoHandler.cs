@@ -4,6 +4,7 @@ using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Base;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
@@ -138,23 +139,24 @@ namespace TheresaBot.Main.Handler
             {
                 SaucenaoResult saucenaoResult = await saucenaoBusiness.getSaucenaoResultAsync(imgUrl);
                 if (saucenaoResult is null || saucenaoResult.Items.Count == 0) return false;
+                List<SaucenaoItem> sortList = saucenaoBusiness.sortSaucenaoItem(saucenaoResult.Items);
 
                 if (BotConfig.SaucenaoConfig.PullOrigin == false)
                 {
-                    SaucenaoItem firstItem = saucenaoResult.Items[0];
                     List<BaseContent> workMsgs = new List<BaseContent>();
-                    workMsgs.AddRange(getRemindMessage(saucenaoResult, firstItem, command.GroupId, command.MemberId));
-                    workMsgs.AddRange(getSimpleMessage(firstItem));
+                    workMsgs.AddRange(getRemindMessage(saucenaoResult, command.GroupId, command.MemberId));
+                    workMsgs.AddRange(getSimpleMessage(sortList.Take(BotConfig.SaucenaoConfig.MaxShow).ToList()));
                     SetuContent setuContent = new SetuContent(workMsgs, null);
                     Task sendSimpleTask = sendSetuAndRevoke(command, setuContent);
                     return true;
                 }
 
                 int maxShow = BotConfig.SaucenaoConfig.MaxShow;
-                var saucenaoItems = await saucenaoBusiness.getBestMatchAsync(saucenaoResult, maxShow);
+                var saucenaoItems = await saucenaoBusiness.getBestMatchAsync(sortList, maxShow);
                 if (saucenaoItems is null || saucenaoItems.Count == 0) return false;
 
                 List<SetuContent> setuContents = new List<SetuContent>();
+                setuContents.Add(new SetuContent(getRemindMessage(saucenaoResult, command.GroupId, command.MemberId)));
                 for (int i = 0; i < saucenaoItems.Count; i++)
                 {
                     setuContents.Add(await getSaucenaoContentAsync(command, saucenaoResult, saucenaoItems[i]));
@@ -174,6 +176,31 @@ namespace TheresaBot.Main.Handler
             }
         }
 
+        public List<BaseContent> getSimpleMessage(List<Ascii2dItem> ascii2dItems)
+        {
+            return ascii2dItems.Select(o => getSimpleMessage(o)).ToList();
+        }
+
+        public List<BaseContent> getSimpleMessage(List<SaucenaoItem> saucenaoItems)
+        {
+            return saucenaoItems.Select(o => getSimpleMessage(o)).ToList();
+        }
+
+        public BaseContent getSourceMessage(SaucenaoItem saucenaoItem)
+        {
+            return new PlainContent($"相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}");
+        }
+
+        public BaseContent getSimpleMessage(SaucenaoItem saucenaoItem)
+        {
+            return new PlainContent($"相似度：{saucenaoItem.Similarity}%，来源:{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}，链接：{saucenaoItem.SourceUrl}");
+        }
+
+        public BaseContent getSimpleMessage(Ascii2dItem ascii2dItem)
+        {
+            return new PlainContent($"来源:{Enum.GetName(typeof(SetuSourceType), ascii2dItem.SourceType)}，链接：{ascii2dItem.SourceUrl}");
+        }
+
         private async Task<SetuContent> getSaucenaoContentAsync(GroupCommand command, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem)
         {
             int minSimilarity = 80;
@@ -185,17 +212,41 @@ namespace TheresaBot.Main.Handler
                 if (string.IsNullOrWhiteSpace(sendableMsg) == false) return new(sendableMsg);
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 List<FileInfo> setuFiles = saucenaoItem.Similarity < minSimilarity ? new() : await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
-                workMsgs.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, command.GroupId, command.MemberId));
-                workMsgs.AddRange(getPixivMessageAsync(command, saucenaoItem));
+                workMsgs.Add(getSourceMessage(saucenaoItem));
+                workMsgs.AddRange(getPixivMessageAsync(saucenaoItem));
                 return new(workMsgs, setuFiles);
             }
             else
             {
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.AddRange(getRemindMessage(saucenaoResult, saucenaoItem, command.GroupId, command.MemberId));
-                workMsgs.AddRange(getSimpleMessage(saucenaoItem));
+                workMsgs.Add(getSimpleMessage(saucenaoItem));
                 return new(workMsgs);
             }
+        }
+
+
+        public List<BaseContent> getPixivMessageAsync(SaucenaoItem saucenaoItem)
+        {
+            List<BaseContent> msgList = new List<BaseContent>();
+            PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
+            msgList.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, BotConfig.PixivConfig.Template)));
+            return msgList;
+        }
+
+        public List<BaseContent> getRemindMessage(SaucenaoResult saucenaoResult, long groupId, long memberId)
+        {
+            List<BaseContent> msgList = new List<BaseContent>();
+            string remindTemplate = BotConfig.SaucenaoConfig.Template;
+            long todayLeft = GetSaucenaoLeftToday(groupId, memberId);
+            if (string.IsNullOrWhiteSpace(remindTemplate))
+            {
+                msgList.Add(new PlainContent(saucenaoBusiness.getDefaultRemindMessage(saucenaoResult, todayLeft)));
+            }
+            else
+            {
+                msgList.Add(new PlainContent(saucenaoBusiness.getSaucenaoRemindMessage(saucenaoResult, remindTemplate, todayLeft)));
+            }
+            return msgList;
         }
 
         private async Task searchWithAscii2d(GroupCommand command, string imgUrl)
@@ -261,45 +312,6 @@ namespace TheresaBot.Main.Handler
                 await Task.Delay(1000);
                 Reporter.SendError(ex, errMsg);
             }
-        }
-
-        public List<BaseContent> getRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, long groupId, long memberId)
-        {
-            List<BaseContent> msgList = new List<BaseContent>();
-            string remindTemplate = BotConfig.SaucenaoConfig.Template;
-            long todayLeft = GetSaucenaoLeftToday(groupId, memberId);
-            if (string.IsNullOrWhiteSpace(remindTemplate))
-            {
-                msgList.Add(new PlainContent(saucenaoBusiness.getDefaultRemindMessage(saucenaoResult, saucenaoItem, todayLeft)));
-            }
-            else
-            {
-                msgList.Add(new PlainContent(saucenaoBusiness.getSaucenaoRemindMessage(saucenaoResult, saucenaoItem, remindTemplate, todayLeft)));
-            }
-            return msgList;
-        }
-
-        public List<BaseContent> getSimpleMessage(SaucenaoItem saucenaoItem)
-        {
-            return new() { new PlainContent($"链接：{saucenaoItem.SourceUrl}") };
-        }
-
-        public List<BaseContent> getSimpleMessage(List<Ascii2dItem> saucenaoItems)
-        {
-            List<BaseContent> msgList = new List<BaseContent>();
-            foreach (var saucenaoItem in saucenaoItems)
-            {
-                msgList.Add(new PlainContent($"来源:{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}，链接：{saucenaoItem.SourceUrl}"));
-            }
-            return msgList;
-        }
-
-        public List<BaseContent> getPixivMessageAsync(GroupCommand command, SaucenaoItem saucenaoItem)
-        {
-            List<BaseContent> msgList = new List<BaseContent>();
-            PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
-            msgList.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, BotConfig.PixivConfig.Template)));
-            return msgList;
         }
 
         /// <summary>

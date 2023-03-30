@@ -1,16 +1,11 @@
-﻿using TheresaBot.Main.Model.Pixiv;
+﻿using TheresaBot.Main.Model.Base;
+using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Saucenao
 {
-    public class Ascii2dItem
+    public record Ascii2dItem : BaseSourceItem
     {
-        public SetuSourceType SourceType { get; set; }
-
-        public string SourceUrl { get; set; }
-
-        public string SourceId { get; set; }
-
         public PixivWorkInfo PixivWorkInfo { get; set; }
 
         public Ascii2dItem(SetuSourceType sourceType, string sourceUrl, string sourceId)
@@ -19,7 +14,5 @@ namespace TheresaBot.Main.Model.Saucenao
             this.SourceUrl = sourceUrl;
             this.SourceId = sourceId;
         }
-
-
     }
 }

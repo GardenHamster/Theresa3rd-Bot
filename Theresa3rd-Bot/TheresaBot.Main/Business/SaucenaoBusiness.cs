@@ -6,6 +6,8 @@ using System.Text;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Base;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Type;
@@ -127,10 +129,9 @@ namespace TheresaBot.Main.Business
             return null;
         }
 
-        public async Task<List<SaucenaoItem>> getBestMatchAsync(SaucenaoResult saucenaoResult, int count)
+        public async Task<List<SaucenaoItem>> getBestMatchAsync(List<SaucenaoItem> sortList, int count)
         {
             List<SaucenaoItem> resultList = new List<SaucenaoItem>();
-            List<SaucenaoItem> sortList = sortSaucenaoItem(saucenaoResult.Items);
             for (int i = 0; i < sortList.Count && resultList.Count < count; i++)
             {
                 SaucenaoItem saucenaoItem = sortList[i];
@@ -162,11 +163,10 @@ namespace TheresaBot.Main.Business
             return resultList;
         }
 
-
-        public string getDefaultRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, long todayLeft)
+        public string getDefaultRemindMessage(SaucenaoResult saucenaoResult, long todayLeft)
         {
             StringBuilder warnBuilder = new StringBuilder();
-            warnBuilder.Append($" 共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}");
+            warnBuilder.Append($"共找到 {saucenaoResult.MatchCount} 条匹配信息");
             if (BotConfig.SaucenaoConfig.MaxDaily > 0)
             {
                 if (warnBuilder.Length > 0) warnBuilder.Append("，");
@@ -185,11 +185,9 @@ namespace TheresaBot.Main.Business
             return warnBuilder.ToString();
         }
 
-        public string getSaucenaoRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, string template, long todayLeft)
+        public string getSaucenaoRemindMessage(SaucenaoResult saucenaoResult, string template, long todayLeft)
         {
             template = template.Replace("{MatchCount}", saucenaoResult.MatchCount.ToString());
-            template = template.Replace("{Similarity}", saucenaoItem.Similarity.ToString());
-            template = template.Replace("{SourceType}", Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType));
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SaucenaoConfig.RevokeInterval.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
@@ -201,7 +199,7 @@ namespace TheresaBot.Main.Business
         /// </summary>
         /// <param name="itemList"></param>
         /// <returns></returns>
-        private List<SaucenaoItem> sortSaucenaoItem(List<SaucenaoItem> itemList)
+        public List<SaucenaoItem> sortSaucenaoItem(List<SaucenaoItem> itemList)
         {
             if (itemList is null) return new List<SaucenaoItem>();
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();

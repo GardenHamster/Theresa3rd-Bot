@@ -149,7 +149,7 @@ Saucenao:                                                                       
     Commands:                   ['原图','搜图','saucenao']                          #命令
     NotFoundMsg:                '找不到相似的图，换一张完整的图片试试吧~'            #找不到相应原图时返回的消息
     ProcessingMsg:              '正在通过saucenao尝试搜索原图...'                   #开始查找前返回的消息
-    Template:                   '共找到 {MatchCount} 条匹配信息，相似度：{Similarity}%，来源：{SourceType}，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，CD{MemberCD}秒'
+    Template:                   '共找到 {MatchCount} 条匹配信息，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，CD{MemberCD}秒'
     MemberCD:                   30                                                  #独立CD(秒)，单个群员使用命令后需要等待的CD
     MaxDaily:                   0                                                   #每人每日最大使用次数，0表示无限制
     MaxReceive:                 10                                                  #每次最多接收并查询多少张图片，0表示无限制

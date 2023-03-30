@@ -208,8 +208,12 @@ namespace TheresaBot.Main.Handler
             {
                 bool isShowR18 = command.GroupId.IsShowR18Saucenao();
                 PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
-                string sendableMsg = IsSetuSendable(command, saucenaoItem.PixivWorkInfo, isShowR18);
-                if (string.IsNullOrWhiteSpace(sendableMsg) == false) return new(sendableMsg);
+                string notSendableMsg = IsSetuSendable(command, saucenaoItem.PixivWorkInfo, isShowR18);
+                if (string.IsNullOrWhiteSpace(notSendableMsg) == false)
+                {
+                    List<BaseContent> notSendableContent = new() { getSourceMessage(saucenaoItem), new PlainContent(notSendableMsg) };
+                    return new(notSendableContent);
+                }
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 List<FileInfo> setuFiles = saucenaoItem.Similarity < minSimilarity ? new() : await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
                 workMsgs.Add(getSourceMessage(saucenaoItem));
@@ -223,7 +227,6 @@ namespace TheresaBot.Main.Handler
                 return new(workMsgs);
             }
         }
-
 
         public List<BaseContent> getPixivMessageAsync(SaucenaoItem saucenaoItem)
         {

@@ -232,6 +232,20 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 判断字符串是否为空行
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool isEmptyLine(this string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return true;
+            str = str.Trim().ToLower();
+            str = str.Replace("\r", string.Empty);
+            str = str.Replace("\n", string.Empty);
+            return string.IsNullOrWhiteSpace(str);
+        }
+
+        /// <summary>
         /// 获取随机字符串
         /// </summary>
         /// <param name="length"></param>

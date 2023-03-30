@@ -158,8 +158,9 @@ namespace TheresaBot.Main.Helper
             List<string> splitList = SplitImageCode(template);
             foreach (var item in splitList)
             {
-                string code = item.Trim();
-                if (string.IsNullOrEmpty(item)) continue;
+                string code = item?.Trim();
+                if (string.IsNullOrEmpty(code)) continue;
+                if (code.isEmptyLine()) continue;
                 if (Regex.Match(code, ImageCodeRegex).Success)
                 {
                     string path = code.Substring(ImageCodeHeader.Length, code.Length - ImageCodeHeader.Length - 1);
@@ -183,13 +184,13 @@ namespace TheresaBot.Main.Helper
         public static List<BaseContent> GetErrorContents(this Exception ex, string message = "")
         {
             string template = BotConfig.GeneralConfig.ErrorMsg;
-            if (string.IsNullOrWhiteSpace(template)) template = "出了点小问题，再试一次吧~";
+            if (string.IsNullOrWhiteSpace(template)) template = "出了点小问题，稍后再试吧~";
             if (template.StartsWith(" ") == false) template = " " + template;
             string errorMsg = ex is BaseException ? ex.Message : message;
             if (string.IsNullOrWhiteSpace(errorMsg)) errorMsg = message;
             List<BaseContent> contents = new List<BaseContent>();
             contents.AddRange(template.SplitToChainAsync());
-            contents.Add(new PlainContent(errorMsg, true));
+            contents.Add(new PlainContent(errorMsg, false));
             return contents;
         }
 

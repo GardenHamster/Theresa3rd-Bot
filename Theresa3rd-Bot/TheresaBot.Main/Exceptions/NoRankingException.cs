@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace TheresaBot.Main.Exceptions
 {
-    public class NoRankingException : Exception
+    public class NoRankingException : ApiException
     {
-        public NoRankingException(string message) : base(message)
-        {
-        }
+        public NoRankingException(string message) : base(message) { }
     }
 }

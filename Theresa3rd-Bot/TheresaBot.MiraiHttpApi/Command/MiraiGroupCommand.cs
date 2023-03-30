@@ -44,7 +44,7 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             if (isAt) msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await chainList.ToMiraiMessageAsync());
+            msgList.AddRange(await chainList.ToMiraiMessageAsync(UploadTarget.Group));
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
@@ -61,7 +61,7 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await new List<BaseContent>(chainArr).ToMiraiMessageAsync());
+            msgList.AddRange(await new List<BaseContent>(chainArr).ToMiraiMessageAsync(UploadTarget.Group));
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
@@ -69,7 +69,7 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await chainList.ToMiraiMessageAsync());
+            msgList.AddRange(await chainList.ToMiraiMessageAsync(UploadTarget.Group));
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
@@ -78,83 +78,27 @@ namespace TheresaBot.MiraiHttpApi.Command
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
             if (string.IsNullOrWhiteSpace(template)) return 0;
             if (template.StartsWith(" ") == false) template = " " + template;
-            IChatMessage[] msgList = await template.SplitToChainAsync(SendTarget.Group).ToMiraiMessageAsync();
+            IChatMessage[] msgList = await template.SplitToChainAsync().ToMiraiMessageAsync(UploadTarget.Group);
             return await Session.SendGroupMessageAsync(GroupId, msgList);
         }
 
-        public override async Task<int[]> ReplyGroupMessageAndRevokeAsync(SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
+        public override async Task<int> ReplyGroupMessageAndRevokeAsync(List<BaseContent> contentList, int revokeInterval, bool isAt = false)
         {
-            try
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            if (isAt) msgList.Add(new AtMessage(MemberId));
+            msgList.AddRange(await contentList.ToMiraiMessageAsync(UploadTarget.Group));
+            int msgId = await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
+            if (revokeInterval > 0)
             {
-                if (setuContent is null) return new int[0];
-                List<int> msgIds = new List<int>();
-                List<BaseContent> setuInfos = setuContent.SetuInfos ?? new();
-                List<FileInfo> setuFiles = setuContent.SetuImages ?? new();
-                
-                if (sendImgBehind)
-                {
-                    int workMsgId = await ReplyGroupMessageAsync(setuInfos, isAt);
-                    await Task.Delay(1000);
-                    List<IChatMessage> imgMsgs = await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Group);
-                    int imgMsgId = await Session.SendGroupMessageAsync(GroupId, imgMsgs.ToArray());
-                    msgIds.Add(workMsgId);
-                    msgIds.Add(imgMsgId);
-                }
-                else
-                {
-                    List<IChatMessage> msgList = new List<IChatMessage>();
-                    if (isAt) msgList.Add(new AtMessage(MemberId));
-                    msgList.AddRange(await setuInfos.ToMiraiMessageAsync());
-                    msgList.AddRange(await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Group));
-                    msgIds.Add(await Session.SendGroupMessageAsync(GroupId, msgList.ToArray()));
-                }
-
-                if (revokeInterval > 0)
-                {
-                    Task revokeTask = RevokeGroupMessageAsync(msgIds, GroupId, revokeInterval);
-                }
-                return msgIds.ToArray();
+                Task revokeTask = RevokeGroupMessageAsync(new() { msgId }, GroupId, revokeInterval);
             }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "ReplyGroupMessageAndRevokeAsync异常");
-                return new[] { 0 };
-            }
+            return msgId;
         }
 
-        public override async Task<int[]> ReplyTempMessageAsync(SetuContent setuContent, bool sendImgBehind)
+        public override async Task<int> ReplyTempMessageAsync(List<BaseContent> contentList)
         {
-            try
-            {
-                if (setuContent is null) return new int[0];
-                List<int> msgIds = new List<int>();
-                List<BaseContent> setuInfos = setuContent.SetuInfos ?? new();
-                List<FileInfo> setuFiles = setuContent.SetuImages ?? new();
-                
-                if (sendImgBehind)
-                {
-                    IChatMessage[] workMsgs = await setuInfos.ToMiraiMessageAsync();
-                    int workMsgId = await Session.SendTempMessageAsync(MemberId, GroupId, workMsgs);
-                    await Task.Delay(500);
-                    List<IChatMessage> imgMsgs = await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Temp);
-                    int imgMsgId = await Session.SendTempMessageAsync(MemberId, GroupId, imgMsgs.ToArray());
-                    msgIds.Add(workMsgId);
-                    msgIds.Add(imgMsgId);
-                }
-                else
-                {
-                    List<IChatMessage> msgList = new List<IChatMessage>();
-                    msgList.AddRange(await setuInfos.ToMiraiMessageAsync());
-                    msgList.AddRange(await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Temp));
-                    msgIds.Add(await Session.SendTempMessageAsync(MemberId, GroupId, msgList.ToArray()));
-                }
-                return msgIds.ToArray();
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "SendTempSetuAsync异常");
-                return new[] { 0 };
-            }
+            IChatMessage[] msgArr = await contentList.ToMiraiMessageAsync(UploadTarget.Group);
+            return await Session.SendTempMessageAsync(MemberId, GroupId, msgArr);
         }
 
         public override async Task RevokeGroupMessageAsync(int messageId, long groupId)

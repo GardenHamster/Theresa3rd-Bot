@@ -4,9 +4,12 @@
     {
         public string Content { get; set; }
 
-        public PlainContent(string content)
+        public bool NewLine { get; set; }
+
+        public PlainContent(string content, bool newLine = true)
         {
-            Content = content;
+            this.Content = content;
+            this.NewLine = newLine;
         }
 
     }

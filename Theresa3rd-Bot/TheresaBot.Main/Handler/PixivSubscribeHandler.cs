@@ -398,7 +398,7 @@ namespace TheresaBot.Main.Handler
 
                 PixivSubscribe pixivSubscribe = pixivSubscribeList.First();
                 PixivWorkInfo pixivWorkInfo = pixivSubscribe.PixivWorkInfo;
-                if (await CheckSetuSendable(command, pixivWorkInfo, isShowR18, isShowAI) == false) return;
+                if (await CheckSetuSendable(command, pixivWorkInfo, isShowR18) == false) return;
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);

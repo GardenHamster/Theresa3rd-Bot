@@ -24,6 +24,12 @@ namespace TheresaBot.Main.Model.Content
             this.SetuImages = new() { image };
         }
 
+        public SetuContent(List<BaseContent> setuInfos)
+        {
+            this.SetuInfos = setuInfos;
+            this.SetuImages = new();
+        }
+
         public SetuContent(BaseContent setuInfo, List<FileInfo> images)
         {
             this.SetuInfos = new() { setuInfo };

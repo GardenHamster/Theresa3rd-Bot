@@ -2,7 +2,6 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
-using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
@@ -61,7 +60,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 LolisukiData lolisukiData = dataList.First();
-                if (await CheckSetuSendable(command, lolisukiData, isShowR18, isShowAI) == false) return;
+                if (await CheckSetuSendable(command, lolisukiData, isShowR18) == false) return;
 
                 long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
                 List<FileInfo> setuFiles = await GetSetuFilesAsync(lolisukiData, command.GroupId);

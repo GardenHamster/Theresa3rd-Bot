@@ -71,7 +71,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                if (await CheckSetuSendable(command, pixivWorkInfo, isShowR18, isShowAI) == false) return;
+                if (await CheckSetuSendable(command, pixivWorkInfo, isShowR18) == false) return;
 
                 long todayLeft = GetSetuLeftToday(command.GroupId, command.MemberId);
                 List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
@@ -98,10 +98,11 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"pixivSearchAsync异常");
+                string errMsg = $"pixivSearchAsync异常";
+                LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, $"pixivSearchAsync异常");
+                Reporter.SendError(ex, errMsg);
             }
             finally
             {

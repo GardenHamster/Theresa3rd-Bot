@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Helper
 {
@@ -119,7 +119,7 @@ namespace TheresaBot.Main.Helper
                 List<BanWordPO> banList = BotConfig.BanSetuTagList.Where(o => tag.Trim().ToUpper().Contains(o.KeyWord.Trim().ToUpper())).ToList();
                 if (banList.Count > 0) banTags.AddRange(banList.Select(o => o.KeyWord).ToList());
             }
-            return banTags.Count > 0 ? String.Join('，', banTags) : null;
+            return banTags.Count > 0 ? String.Join('，', banTags.Distinct()) : null;
         }
 
         /// <summary>
@@ -150,9 +150,8 @@ namespace TheresaBot.Main.Helper
         /// 将模版转换为消息链
         /// </summary>
         /// <param name="session"></param>
-        /// <param name="template"></param>
         /// <returns></returns>
-        public static List<BaseContent> SplitToChainAsync(this string template, SendTarget sendTarget)
+        public static List<BaseContent> SplitToChainAsync(this string template)
         {
             if (string.IsNullOrWhiteSpace(template)) return new();
             List<BaseContent> chatContents = new List<BaseContent>();
@@ -165,7 +164,7 @@ namespace TheresaBot.Main.Helper
                 {
                     string path = code.Substring(ImageCodeHeader.Length, code.Length - ImageCodeHeader.Length - 1);
                     if (File.Exists(path) == false) continue;
-                    chatContents.Add(new LocalImageContent(sendTarget, new FileInfo(path)));
+                    chatContents.Add(new LocalImageContent(new FileInfo(path)));
                 }
                 else
                 {
@@ -179,16 +178,18 @@ namespace TheresaBot.Main.Helper
         /// 处理错误后返回的提示内容
         /// </summary>
         /// <param name="ex"></param>
-        /// <param name="sendTarget"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static List<BaseContent> GetErrorContents(this Exception ex, SendTarget sendTarget, string message = "")
+        public static List<BaseContent> GetErrorContents(this Exception ex, string message = "")
         {
             string template = BotConfig.GeneralConfig.ErrorMsg;
             if (string.IsNullOrWhiteSpace(template)) template = "出了点小问题，再试一次吧~";
             if (template.StartsWith(" ") == false) template = " " + template;
+            string errorMsg = ex is BaseException ? ex.Message : message;
+            if (string.IsNullOrWhiteSpace(errorMsg)) errorMsg = message;
             List<BaseContent> contents = new List<BaseContent>();
-            contents.AddRange(template.SplitToChainAsync(sendTarget));
+            contents.AddRange(template.SplitToChainAsync());
+            contents.Add(new PlainContent(errorMsg, true));
             return contents;
         }
 

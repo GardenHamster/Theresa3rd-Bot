@@ -11,7 +11,9 @@ namespace TheresaBot.Main.Model.Config
         public int MemberCD { get; private set; }
         public int MaxDaily { get; private set; }
         public int MaxReceive { get; private set; }
+        public int MaxShow { get; set; }
         public decimal MinSimilarity { get; private set; }
+        public decimal PixivPriority { get; private set; }
         public bool PullOrigin { get; private set; }
         public bool SendPrivate { get; private set; }
         public int RevokeInterval { get; private set; }

@@ -57,7 +57,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 LoliconDataV2 loliconData = dataList.First();
-                if (await CheckSetuSendable(command, loliconData, isShowR18, isShowAI) == false) return;
+                if (await CheckSetuSendable(command, loliconData, isShowR18) == false) return;
 
                 long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
                 List<FileInfo> setuFiles = await GetSetuFilesAsync(loliconData, command.GroupId);

@@ -171,7 +171,7 @@ namespace TheresaBot.Main.Handler
                     List<FileInfo> setuFiles = await GetSetuFilesAsync(workInfo, groupIds);
                     string workMsg = pixivBusiness.getWorkInfo(detail.WorkInfo, BotConfig.PixivConfig.Template);
                     List<BaseContent> msgContent = new List<BaseContent>();
-                    msgContent.Add(new PlainContent($"#{rc.rank} {workInfo.likeRate.toPercent()}/{workInfo.bookmarkRate.toPercent()}\r\n"));
+                    msgContent.Add(new PlainContent($"#{rc.rank} {workInfo.likeRate.toPercent()}/{workInfo.bookmarkRate.toPercent()}"));
                     msgContent.Add(new PlainContent(workMsg));
                     setuContents.Add(new SetuContent(msgContent, setuFiles));
                 }

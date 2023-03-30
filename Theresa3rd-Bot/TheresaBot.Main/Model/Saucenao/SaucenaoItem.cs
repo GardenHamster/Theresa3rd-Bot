@@ -3,7 +3,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Saucenao
 {
-    public class SaucenaoItem
+    public record SaucenaoItem
     {
         public SetuSourceType SourceType { get; set; }
 

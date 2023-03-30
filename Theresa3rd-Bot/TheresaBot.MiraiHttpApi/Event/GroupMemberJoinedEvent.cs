@@ -4,6 +4,7 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
+using Mirai.CSharp.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,13 +33,11 @@ namespace TheresaBot.MiraiHttpApi.Event
             WelcomeSpecial welcomeSpecial = welcomeConfig.Special?.Where(m => m.GroupId == groupId).FirstOrDefault();
             if (welcomeSpecial != null) template = welcomeSpecial.Template;
             if (string.IsNullOrEmpty(template)) return;
-            IChatMessage[] templateList = await BusinessHelper.SplitToChainAsync(template, SendTarget.Group).ToMiraiMessageAsync();
-            List<IChatMessage> atList = new List<IChatMessage>()
-            {
-                new AtMessage(memberId),new PlainMessage("\n")
-            };
-            List<IChatMessage> msgList = atList.Concat(templateList).ToList();
-            await session.SendGroupMessageAsync(groupId, msgList.ToArray());
+            List<IChatMessage> welcomeMsgs = new List<IChatMessage>();
+            welcomeMsgs.Add(new AtMessage(memberId));
+            welcomeMsgs.Add(new PlainMessage("\r\n"));
+            welcomeMsgs.AddRange(await template.SplitToChainAsync().ToMiraiMessageAsync(UploadTarget.Group));
+            await session.SendGroupMessageAsync(groupId, welcomeMsgs.ToArray());
             message.BlockRemainingHandlers = true;
         }
     }

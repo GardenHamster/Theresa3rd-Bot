@@ -33,7 +33,7 @@ namespace TheresaBot.Main.Command
 
         public override async Task ReplyError(Exception ex, string message = "")
         {
-            List<BaseContent> contents = ex.GetErrorContents( SendTarget.Friend, message);
+            List<BaseContent> contents = ex.GetErrorContents(message);
             await ReplyFriendMessageAsync(contents);
         }
 

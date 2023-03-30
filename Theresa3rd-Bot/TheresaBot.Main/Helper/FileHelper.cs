@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Common;
-
-namespace TheresaBot.Main.Helper
+﻿namespace TheresaBot.Main.Helper
 {
     public static class FileHelper
     {

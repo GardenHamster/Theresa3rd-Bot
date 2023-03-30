@@ -637,19 +637,19 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
-            return template + "\r\n";
+            return template;
         }
 
         public string getUserPushRemindMsg(string template, string userName)
         {
             template = template.Replace("{UserName}", userName);
-            return template + "\r\n";
+            return template;
         }
 
         public string getTagPushRemindMsg(string template, string tagName)
         {
             template = template.Replace("{TagName}", tagName);
-            return template + "\r\n";
+            return template;
         }
 
         public string getWorkInfo(PixivWorkInfo pixivWorkInfo, string template)

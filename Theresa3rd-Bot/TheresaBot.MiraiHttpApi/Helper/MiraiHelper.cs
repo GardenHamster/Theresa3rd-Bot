@@ -248,12 +248,14 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// </summary>
         /// <param name="chatContents"></param>
         /// <returns></returns>
-        public static async Task<IChatMessage[]> ToMiraiMessageAsync(this List<BaseContent> chatContents)
+        public static async Task<IChatMessage[]> ToMiraiMessageAsync(this List<BaseContent> chatContents, UploadTarget uploadTarget)
         {
             List<IChatMessage> chatList = new List<IChatMessage>();
-            foreach (BaseContent content in chatContents)
+            for (int i = 0; i < chatContents.Count; i++)
             {
-                IChatMessage chatMessage = await content.ToMiraiMessageAsync();
+                BaseContent content = chatContents[i];
+                bool isLast = i == chatContents.Count - 1;
+                IChatMessage chatMessage = await content.ToMiraiMessageAsync(uploadTarget, isLast);
                 if (chatMessage is not null) chatList.Add(chatMessage);
             }
             return chatList.ToArray();
@@ -264,15 +266,16 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// </summary>
         /// <param name="chatContent"></param>
         /// <returns></returns>
-        public static async Task<IChatMessage> ToMiraiMessageAsync(this BaseContent chatContent)
+        public static async Task<IChatMessage> ToMiraiMessageAsync(this BaseContent chatContent, UploadTarget uploadTarget, bool isLast)
         {
             if (chatContent is PlainContent plainContent)
             {
-                return string.IsNullOrEmpty(plainContent.Content) ? null : new PlainMessage(plainContent.Content);
+                string message = plainContent.Content + (isLast == false && plainContent.NewLine ? "\r\n" : string.Empty);
+                return string.IsNullOrEmpty(plainContent.Content) ? null : new PlainMessage(message);
             }
             if (chatContent is LocalImageContent localImageContent)
             {
-                return await UploadPictureAsync(localImageContent);
+                return await UploadPictureAsync(localImageContent, uploadTarget);
             }
             if (chatContent is WebImageContent webImageContent)
             {
@@ -311,16 +314,10 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// </summary>
         /// <param name="imageContent"></param>
         /// <returns></returns>
-        private static async Task<IChatMessage> UploadPictureAsync(LocalImageContent imageContent)
+        private static async Task<IChatMessage> UploadPictureAsync(LocalImageContent imageContent, UploadTarget uploadTarget)
         {
             if (imageContent?.FileInfo == null) return null;
-            return imageContent.SendTarget switch
-            {
-                SendTarget.Group => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Group, imageContent.FileInfo.FullName),
-                SendTarget.Friend => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Friend, imageContent.FileInfo.FullName),
-                SendTarget.Temp => (IImageMessage)await Session.UploadPictureAsync(UploadTarget.Temp, imageContent.FileInfo.FullName),
-                _ => null
-            };
+            return (IImageMessage)await Session.UploadPictureAsync(uploadTarget, imageContent.FileInfo.FullName);
         }
 
     }

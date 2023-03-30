@@ -146,7 +146,7 @@ namespace TheresaBot.Main.Handler
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, command.GroupId, command.MemberId));
                     workMsgs.AddRange(getSimpleMessage(sortList.Take(BotConfig.SaucenaoConfig.MaxShow).ToList()));
-                    SetuContent setuContent = new SetuContent(workMsgs, null);
+                    SetuContent setuContent = new SetuContent(workMsgs);
                     Task sendSimpleTask = sendSetuAndRevoke(command, setuContent);
                     return true;
                 }
@@ -272,7 +272,7 @@ namespace TheresaBot.Main.Handler
                     List<BaseContent> simpleList = new List<BaseContent>();
                     simpleList.Add(new PlainContent($"ascii2d中搜索到的前{readCount}条结果如下："));
                     simpleList.AddRange(getSimpleMessage(ascii2dItems));
-                    SetuContent setuContent = new SetuContent(simpleList, null);
+                    SetuContent setuContent = new SetuContent(simpleList);
                     Task sendSimpleTask = sendSetuAndRevoke(command, setuContent);
                     return;
                 }
@@ -305,7 +305,7 @@ namespace TheresaBot.Main.Handler
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 workMsgs.Add(new PlainContent(resultBuilder.ToString()));
-                Task sendTask = sendSetuAndRevoke(command, new SetuContent(workMsgs, null));
+                Task sendTask = sendSetuAndRevoke(command, new SetuContent(workMsgs));
             }
             catch (Exception ex)
             {

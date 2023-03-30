@@ -22,39 +22,30 @@ namespace TheresaBot.Main.Helper
 
         public static async Task<int[]> ReplyGroupMessageAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
         {
-            try
+            List<int> msgIds = new List<int>();
+            List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
+            List<BaseContent> imgContents = setuContent.SetuImages.ToLocalImageContent().Cast<BaseContent>().ToList();
+
+            if (sendImgBehind)
             {
-                if (setuContent is null) return new int[0];
-                List<int> msgIds = new List<int>();
-                List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
-                List<BaseContent> imgContents = setuContent.SetuImages.ToLocalImageContent().Cast<BaseContent>().ToList();
-
-                if (sendImgBehind)
-                {
-                    int workMsgId = await command.ReplyGroupMessageAsync(msgContents, isAt);
-                    await Task.Delay(1000);
-                    int imgMsgId = await command.ReplyGroupMessageAsync(imgContents, false);
-                    msgIds.Add(workMsgId);
-                    msgIds.Add(imgMsgId);
-                }
-                else
-                {
-                    var contentList = msgContents.Concat(imgContents).ToList();
-                    msgIds.Add(await command.ReplyGroupMessageAsync(contentList, isAt));
-                }
-
-                if (revokeInterval > 0)
-                {
-                    Task revokeTask = command.RevokeGroupMessageAsync(msgIds, command.GroupId, revokeInterval);
-                }
-
-                return msgIds.ToArray();
+                int workMsgId = await command.ReplyGroupMessageAsync(msgContents, isAt);
+                await Task.Delay(1000);
+                int imgMsgId = await command.ReplyGroupMessageAsync(imgContents, false);
+                msgIds.Add(workMsgId);
+                msgIds.Add(imgMsgId);
             }
-            catch (Exception ex)
+            else
             {
-                LogHelper.Error(ex, "ReplyGroupMessageAndRevokeAsync异常");
-                return new[] { 0 };
+                var contentList = msgContents.Concat(imgContents).ToList();
+                msgIds.Add(await command.ReplyGroupMessageAsync(contentList, isAt));
             }
+
+            if (revokeInterval > 0)
+            {
+                Task revokeTask = command.RevokeGroupMessageAsync(msgIds, command.GroupId, revokeInterval);
+            }
+
+            return msgIds.ToArray();
         }
 
         public static async Task<int[]> ReplyTempMessageAsync(this GroupCommand command, SetuContent setuContent, bool sendImgBehind)

@@ -168,7 +168,7 @@ namespace TheresaBot.Main.Helper
                 }
                 else
                 {
-                    chatContents.Add(new PlainContent(item));
+                    chatContents.Add(new PlainContent(item, false));
                 }
             }
             return chatContents;

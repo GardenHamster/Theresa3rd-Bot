@@ -250,12 +250,14 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <returns></returns>
         public static async Task<IChatMessage[]> ToMiraiMessageAsync(this List<BaseContent> chatContents, UploadTarget uploadTarget)
         {
+            BaseContent lastPlainContent = chatContents.Where(o => o is PlainContent).LastOrDefault();
+            int lastPlainIndex = lastPlainContent is null ? -1 : chatContents.LastIndexOf(lastPlainContent);
             List<IChatMessage> chatList = new List<IChatMessage>();
             for (int i = 0; i < chatContents.Count; i++)
             {
                 BaseContent content = chatContents[i];
-                bool isLast = i == chatContents.Count - 1;
-                IChatMessage chatMessage = await content.ToMiraiMessageAsync(uploadTarget, isLast);
+                bool isNewLine = lastPlainIndex > 0 && i < lastPlainIndex;
+                IChatMessage chatMessage = await content.ToMiraiMessageAsync(uploadTarget, isNewLine);
                 if (chatMessage is not null) chatList.Add(chatMessage);
             }
             return chatList.ToArray();
@@ -266,11 +268,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// </summary>
         /// <param name="chatContent"></param>
         /// <returns></returns>
-        public static async Task<IChatMessage> ToMiraiMessageAsync(this BaseContent chatContent, UploadTarget uploadTarget, bool isLast)
+        public static async Task<IChatMessage> ToMiraiMessageAsync(this BaseContent chatContent, UploadTarget uploadTarget, bool isNewLine)
         {
             if (chatContent is PlainContent plainContent)
             {
-                string message = plainContent.Content + (isLast == false && plainContent.NewLine ? "\r\n" : string.Empty);
+                string message = plainContent.Content + (isNewLine && plainContent.NewLine ? "\r\n" : string.Empty);
                 return string.IsNullOrEmpty(plainContent.Content) ? null : new PlainMessage(message);
             }
             if (chatContent is LocalImageContent localImageContent)

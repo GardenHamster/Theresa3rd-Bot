@@ -142,8 +142,10 @@ namespace TheresaBot.Main.Handler
                 string[] levelArr = settingLevel.Split('-', StringSplitOptions.RemoveEmptyEntries);
                 string minLevelStr = levelArr[0].Trim();
                 string maxLevelStr = levelArr.Length > 1 ? levelArr[1].Trim() : levelArr[0].Trim();
-                int minLevel = int.Parse(minLevelStr);
-                int maxLevel = int.Parse(maxLevelStr);
+                int minLevelTemp = int.Parse(minLevelStr);
+                int maxLevelTemp = int.Parse(maxLevelStr);
+                int minLevel = Math.Min(minLevelTemp, maxLevelTemp);
+                int maxLevel = Math.Max(minLevelTemp, maxLevelTemp);
                 if (minLevel < (int)LolisukiLevel.Level0) minLevel = (int)LolisukiLevel.Level0;
                 if (maxLevel > (int)LolisukiLevel.Level6) maxLevel = (int)LolisukiLevel.Level6;
                 if (maxLevel > (int)LolisukiLevel.Level4 && isShowR18 == false) maxLevel = (int)LolisukiLevel.Level4;

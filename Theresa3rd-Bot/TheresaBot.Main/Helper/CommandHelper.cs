@@ -39,10 +39,8 @@ namespace TheresaBot.Main.Helper
                 }
                 else
                 {
-                    var contentList = new List<BaseContent>();
-                    contentList.AddRange(msgContents);
-                    contentList.AddRange(imgContents);
-                    msgIds.Add(await command.ReplyGroupMessageAsync(msgContents, isAt));
+                    var contentList = msgContents.Concat(imgContents).ToList();
+                    msgIds.Add(await command.ReplyGroupMessageAsync(contentList, isAt));
                 }
 
                 if (revokeInterval > 0)
@@ -77,8 +75,6 @@ namespace TheresaBot.Main.Helper
                 else
                 {
                     var contentList = msgContents.Concat(imgContents).ToList();
-                    contentList.AddRange(msgContents);
-                    contentList.AddRange(imgContents);
                     msgIds.Add(await command.ReplyTempMessageAsync(contentList));
                 }
                 return msgIds.ToArray();

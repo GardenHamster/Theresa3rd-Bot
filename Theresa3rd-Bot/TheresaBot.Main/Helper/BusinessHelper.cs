@@ -153,6 +153,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static List<BaseContent> SplitToChainAsync(this string template)
         {
+            template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return new();
             List<BaseContent> chatContents = new List<BaseContent>();
             List<string> splitList = SplitImageCode(template);

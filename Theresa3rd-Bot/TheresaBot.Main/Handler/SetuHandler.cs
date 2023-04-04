@@ -228,7 +228,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 List<BaseContent> chainList = new List<BaseContent>();
-                string template = timingSetuTimer.TimingMsg;
+                string template = timingSetuTimer.TimingMsg?.Trim()?.TrimLine();
                 if (string.IsNullOrWhiteSpace(template))
                 {
                     if (chainList.Count == 0) return;

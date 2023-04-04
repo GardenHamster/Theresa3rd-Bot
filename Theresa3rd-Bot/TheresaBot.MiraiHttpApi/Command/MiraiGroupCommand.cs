@@ -75,6 +75,7 @@ namespace TheresaBot.MiraiHttpApi.Command
 
         public override async Task<int> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "")
         {
+            template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
             if (string.IsNullOrWhiteSpace(template)) return 0;
             if (template.StartsWith(" ") == false) template = " " + template;

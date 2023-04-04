@@ -36,11 +36,6 @@ namespace TheresaBot.Main.Helper
             var contentList = new List<BaseContent>();
             foreach (SetuContent setuContent in setuContents)
             {
-                if (contentList.Count > 0)
-                {
-                    contentList.Add(new PlainContent(string.Empty, true));
-                    contentList.Add(new PlainContent(string.Empty, true));
-                }
                 contentList.AddRange(setuContent.SetuInfos);
                 contentList.AddRange(setuContent.SetuImages.ToLocalImageContent());
             }

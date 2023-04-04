@@ -634,6 +634,7 @@ namespace TheresaBot.Main.Business
 
         public string getSetuRemindMsg(string template, long todayLeft)
         {
+            template = template?.Trim()?.TrimLine();
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
@@ -642,18 +643,21 @@ namespace TheresaBot.Main.Business
 
         public string getUserPushRemindMsg(string template, string userName)
         {
+            template = template?.Trim()?.TrimLine();
             template = template.Replace("{UserName}", userName);
             return template;
         }
 
         public string getTagPushRemindMsg(string template, string tagName)
         {
+            template = template?.Trim()?.TrimLine();
             template = template.Replace("{TagName}", tagName);
             return template;
         }
 
         public string getWorkInfo(PixivWorkInfo pixivWorkInfo, string template)
         {
+            template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(pixivWorkInfo);
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());

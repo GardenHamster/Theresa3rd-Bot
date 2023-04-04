@@ -125,6 +125,7 @@ namespace TheresaBot.Main.Business
 
         public string getRankingMsg(string date, string rankingName, string template)
         {
+            template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultRankingInfo(date, rankingName);
             template = template.Replace("{Date}", date);
             template = template.Replace("{Ranking}", rankingName);

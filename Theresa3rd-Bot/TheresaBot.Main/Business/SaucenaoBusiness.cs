@@ -187,6 +187,7 @@ namespace TheresaBot.Main.Business
 
         public string getSaucenaoRemindMessage(SaucenaoResult saucenaoResult, string template, long todayLeft)
         {
+            template = template?.Trim()?.TrimLine();
             template = template.Replace("{MatchCount}", saucenaoResult.MatchCount.ToString());
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SaucenaoConfig.RevokeInterval.ToString());

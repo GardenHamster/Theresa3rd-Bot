@@ -246,6 +246,22 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 去除字符串头部和尾部的空行
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string TrimLine(this string str)
+        {
+            str = str?.Trim();
+            if (string.IsNullOrEmpty(str)) return string.Empty;
+            while (str.StartsWith("\r")) str = str.Substring(2, str.Length - 2).Trim();
+            while (str.StartsWith("\n")) str = str.Substring(2, str.Length - 2).Trim();
+            while (str.EndsWith("\r")) str = str.Substring(0, str.Length - 2).Trim();
+            while (str.EndsWith("\n")) str = str.Substring(0, str.Length - 2).Trim();
+            return str;
+        }
+
+        /// <summary>
         /// 获取随机字符串
         /// </summary>
         /// <param name="length"></param>

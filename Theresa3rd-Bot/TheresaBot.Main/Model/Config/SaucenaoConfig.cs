@@ -11,15 +11,19 @@ namespace TheresaBot.Main.Model.Config
         public int MemberCD { get; private set; }
         public int MaxDaily { get; private set; }
         public int MaxReceive { get; private set; }
-        public int MaxShow { get; set; }
-        public decimal MinSimilarity { get; private set; }
-        public decimal PixivPriority { get; private set; }
-        public bool PullOrigin { get; private set; }
-        public bool SendPrivate { get; private set; }
+        public decimal MinSimilarity { get; private set; } = 60;
+        public int SaucenaoReadCount { get; set; } = 3;
+        public decimal PixivPriority { get; private set; } = 80;
+        public decimal SinglePriority { get; private set; } = 85;
+        public decimal ImagePriority { get; private set; } = 80;
+        public bool PullOrigin { get; private set; } = true;
+        public bool SendPrivate { get; private set; } = true;
         public int RevokeInterval { get; private set; }
         public bool RevokeSearched { get; private set; }
-        public YNAType ContinueAscii2d { get; private set; }
+        public YNAType ContinueAscii2d { get; private set; } = YNAType.Yes;
         public bool Ascii2dWithIp { get; set; }
-        public int Ascii2dReadCount { get; private set; }
+        public int Ascii2dReadCount { get; private set; } = 3;
+
+
     }
 }

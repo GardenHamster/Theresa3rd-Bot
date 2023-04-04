@@ -13,6 +13,7 @@ namespace TheresaBot.Main.Business
 
         public string getWorkInfo(LolisukiData lolisukiData, DateTime startTime, long todayLeft, string template = "")
         {
+            template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(lolisukiData);
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());

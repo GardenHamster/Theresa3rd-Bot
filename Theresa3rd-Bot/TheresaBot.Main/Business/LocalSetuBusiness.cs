@@ -48,6 +48,7 @@ namespace TheresaBot.Main.Business
 
         public string getSetuInfo(LocalSetuInfo setuInfo, long todayLeft, string template = "")
         {
+            template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultSetuInfo(setuInfo);
             template = template.Replace("{FileName}", setuInfo.FileInfo.Name);
             template = template.Replace("{SizeMB}", MathHelper.getMbWithByte(setuInfo.FileInfo.Length).ToString());

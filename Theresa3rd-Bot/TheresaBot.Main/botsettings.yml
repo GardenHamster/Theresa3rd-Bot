@@ -153,10 +153,12 @@ Saucenao:                                                                       
     MemberCD:                   30                                                  #独立CD(秒)，单个群员使用命令后需要等待的CD
     MaxDaily:                   0                                                   #每人每日最大使用次数，0表示无限制
     MaxReceive:                 10                                                  #每次最多接收并查询多少张图片，0表示无限制
-    MaxShow:                    3                                                   #最多展示前N个匹配结果
-    MinSimilarity:              60.00                                               #最低相似度(百分比)
+    MinSimilarity:              60                                                  #最低相似度，范围0~100(%)
+    SaucenaoReadCount:          3                                                   #最多展示前N个Saucenao中的匹配结果
     PixivPriority:              80                                                  #优先返回相似度高于该值的Pixiv中的结果，范围0~100(%)
-    PullOrigin:                 true                                                #尝试从源网站中获取原图
+    SinglePriority:             85                                                  #相似度高于该值时，只返回第一个匹配度最高的结果，范围0~100(%)
+    ImagePriority:              80                                                  #相似度高于该值时，才显示图片，范围0~100(%)
+    PullOrigin:                 true                                                #尝试从源网站中获取图片和详细信息
     SendPrivate:                true                                                #同时私聊发送结果
     RevokeInterval:             0                                                   #N秒后撤回，0表示不撤回
     RevokeSearched:             false                                               #是否撤回被查找的图片

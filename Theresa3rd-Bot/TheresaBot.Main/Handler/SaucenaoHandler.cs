@@ -147,13 +147,16 @@ namespace TheresaBot.Main.Handler
                 {
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, command.GroupId, command.MemberId));
-                    workMsgs.AddRange(getSimpleMessage(sortList.Take(BotConfig.SaucenaoConfig.MaxShow).ToList()));
+                    workMsgs.AddRange(getSimpleMessage(sortList.Take(BotConfig.SaucenaoConfig.SaucenaoReadCount).ToList()));
                     SetuContent setuContent = new SetuContent(workMsgs);
                     Task sendSimpleTask = sendSetuAndRevoke(command, setuContent);
                     return true;
                 }
 
-                int maxShow = BotConfig.SaucenaoConfig.MaxShow;
+                decimal maxSimilarity = sortList.Max(o => o.Similarity);
+                decimal singlePriority = BotConfig.SaucenaoConfig.SinglePriority;
+                int readCount = BotConfig.SaucenaoConfig.SaucenaoReadCount;
+                int maxShow = maxSimilarity >= singlePriority ? 1 : readCount;
                 var saucenaoItems = await saucenaoBusiness.getBestMatchAsync(sortList, maxShow);
                 if (saucenaoItems is null || saucenaoItems.Count == 0) return false;
 
@@ -161,7 +164,7 @@ namespace TheresaBot.Main.Handler
                 setuContents.Add(new SetuContent(getRemindMessage(saucenaoResult, command.GroupId, command.MemberId)));
                 for (int i = 0; i < saucenaoItems.Count; i++)
                 {
-                    setuContents.Add(await getSaucenaoContentAsync(command, saucenaoResult, saucenaoItems[i]));
+                    setuContents.Add(await getSaucenaoContentAsync(command, saucenaoItems[i]));
                 }
 
                 Task sendDetailTask = sendSaucenaoAndRevoke(command, setuContents);
@@ -203,9 +206,9 @@ namespace TheresaBot.Main.Handler
             return new PlainContent($"来源:{Enum.GetName(typeof(SetuSourceType), ascii2dItem.SourceType)}，链接：{ascii2dItem.SourceUrl}");
         }
 
-        private async Task<SetuContent> getSaucenaoContentAsync(GroupCommand command, SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem)
+        private async Task<SetuContent> getSaucenaoContentAsync(GroupCommand command, SaucenaoItem saucenaoItem)
         {
-            int minSimilarity = 80;
+            decimal minSimilarity = BotConfig.SaucenaoConfig.ImagePriority;
             if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
             {
                 bool isShowR18 = command.GroupId.IsShowR18Saucenao();

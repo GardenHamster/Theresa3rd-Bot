@@ -6,6 +6,8 @@
 
         public List<string> RmCommands { get; protected set; }
 
+        public List<string> ListCommands { get; protected set; }
+
         public string Template { get; protected set; }
 
         public int ScanInterval { get; protected set; }

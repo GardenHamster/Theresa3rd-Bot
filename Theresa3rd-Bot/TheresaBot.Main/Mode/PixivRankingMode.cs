@@ -1,5 +1,4 @@
-﻿using TheresaBot.Main.Model.Type;
-using TheresaBot.Main.Type;
+﻿using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Mode
 {

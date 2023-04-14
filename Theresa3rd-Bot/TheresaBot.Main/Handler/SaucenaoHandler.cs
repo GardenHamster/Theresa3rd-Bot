@@ -4,6 +4,7 @@ using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Ascii2d;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
@@ -296,7 +297,7 @@ namespace TheresaBot.Main.Handler
                     if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
                     {
                         PixivWorkInfo workInfo = ascii2dItem.PixivWorkInfo;
-                        resultBuilder.AppendLine($"来源：Pixiv，标题：{workInfo.illustTitle}，pid：{workInfo.illustId}，链接：{workInfo.urls.original.ToOrginProxyUrl()}");
+                        resultBuilder.AppendLine($"来源：Pixiv，标题：{workInfo.illustTitle}，pid：{workInfo.illustId}，链接：{workInfo.urls.original.ToOriginProxyUrl()}");
                     }
                     else if (ascii2dItem.SourceType == SetuSourceType.Twitter)
                     {

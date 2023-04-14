@@ -80,7 +80,7 @@ namespace TheresaBot.Main.Handler
                         if (dbSubscribe is null)
                         {
                             //添加订阅
-                            PixivUserInfo pixivUserInfo = await PixivHelper.GetPixivUserInfoAsync(pixivUserId);
+                            PixivUserProfileTop pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(pixivUserId);
                             dbSubscribe = subscribeBusiness.insertSurscribe(pixivUserInfo, pixivUserId);
                         }
 

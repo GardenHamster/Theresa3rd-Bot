@@ -106,6 +106,17 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 判断标签中是否包含动图标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static bool IsGif(this List<string> tags)
+        {
+            if (tags is null || tags.Count == 0) return false;
+            return tags.Where(o => o == "うごイラ" || o == "动图" || o == "動圖" || o.ToLower() == "ugoira").Any();
+        }
+
+        /// <summary>
         /// 判断标签中是否包含被禁止的标签，有则返回内容，否则返回null
         /// </summary>
         /// <param name="tags"></param>
@@ -120,17 +131,6 @@ namespace TheresaBot.Main.Helper
                 if (banList.Count > 0) banTags.AddRange(banList.Select(o => o.KeyWord).ToList());
             }
             return banTags.Count > 0 ? String.Join('，', banTags.Distinct()) : null;
-        }
-
-        /// <summary>
-        /// 判断标签中是否包含动图标签
-        /// </summary>
-        /// <param name="tags"></param>
-        /// <returns></returns>
-        public static bool IsGif(this List<string> tags)
-        {
-            if (tags is null || tags.Count == 0) return false;
-            return tags.Where(o => o == "うごイラ" || o == "动图" || o == "動圖" || o.ToLower() == "ugoira").Any();
         }
 
         /// <summary>
@@ -229,13 +229,13 @@ namespace TheresaBot.Main.Helper
         /// <param name="pixivWorkInfo"></param>
         /// <param name="maxShowCount"></param>
         /// <returns></returns>
-        public static string JoinPixivImgOrginUrls(PixivWorkInfo pixivWorkInfo)
+        public static string JoinPixivImgOriginUrls(PixivWorkInfo pixivWorkInfo)
         {
             StringBuilder LinkBuilder = new StringBuilder();
             int maxCount = BotConfig.PixivConfig.UrlShowMaximum > 0 ? BotConfig.PixivConfig.UrlShowMaximum : pixivWorkInfo.pageCount;
             for (int i = 0; i < maxCount && i < pixivWorkInfo.pageCount; i++)
             {
-                string imgUrl = pixivWorkInfo.urls.original.ToOrginProxyUrl();
+                string imgUrl = pixivWorkInfo.urls.original.ToOriginProxyUrl();
                 if (i > 0) imgUrl = imgUrl.Replace("_p0.", $"_p{i}.");
                 if (LinkBuilder.Length > 0) LinkBuilder.AppendLine();
                 LinkBuilder.Append(imgUrl);

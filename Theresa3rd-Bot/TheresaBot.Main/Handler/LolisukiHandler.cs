@@ -136,28 +136,19 @@ namespace TheresaBot.Main.Handler
 
         private string getLevelStr(bool isShowR18, string settingLevel)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(settingLevel)) return $"{(int)LolisukiLevel.Level0}-{(int)LolisukiLevel.Level2}";
-                string[] levelArr = settingLevel.Split('-', StringSplitOptions.RemoveEmptyEntries);
-                string minLevelStr = levelArr[0].Trim();
-                string maxLevelStr = levelArr.Length > 1 ? levelArr[1].Trim() : levelArr[0].Trim();
-                int minLevelTemp = int.Parse(minLevelStr);
-                int maxLevelTemp = int.Parse(maxLevelStr);
-                int minLevel = Math.Min(minLevelTemp, maxLevelTemp);
-                int maxLevel = Math.Max(minLevelTemp, maxLevelTemp);
-                if (minLevel < (int)LolisukiLevel.Level0) minLevel = (int)LolisukiLevel.Level0;
-                if (maxLevel > (int)LolisukiLevel.Level6) maxLevel = (int)LolisukiLevel.Level6;
-                if (maxLevel > (int)LolisukiLevel.Level4 && isShowR18 == false) maxLevel = (int)LolisukiLevel.Level4;
-                return minLevel == maxLevel ? $"{minLevel}" : $"{minLevel}-{maxLevel}";
-            }
-            catch (Exception)
-            {
-                return $"{(int)LolisukiLevel.Level0}-{(int)(isShowR18 ? LolisukiLevel.Level6 : LolisukiLevel.Level3)}";
-            }
+            if (string.IsNullOrWhiteSpace(settingLevel)) return $"{(int)LolisukiLevel.Level0}-{(int)LolisukiLevel.Level2}";
+            string[] levelArr = settingLevel.Split('-', StringSplitOptions.RemoveEmptyEntries);
+            string minLevelStr = levelArr[0].Trim();
+            string maxLevelStr = levelArr.Length > 1 ? levelArr[1].Trim() : levelArr[0].Trim();
+            int minLevelTemp = int.Parse(minLevelStr);
+            int maxLevelTemp = int.Parse(maxLevelStr);
+            int minLevel = Math.Min(minLevelTemp, maxLevelTemp);
+            int maxLevel = Math.Max(minLevelTemp, maxLevelTemp);
+            if (minLevel < (int)LolisukiLevel.Level0) minLevel = (int)LolisukiLevel.Level0;
+            if (maxLevel > (int)LolisukiLevel.Level6) maxLevel = (int)LolisukiLevel.Level6;
+            if (maxLevel > (int)LolisukiLevel.Level4 && isShowR18 == false) maxLevel = (int)LolisukiLevel.Level4;
+            return minLevel == maxLevel ? $"{minLevel}" : $"{minLevel}-{maxLevel}";
         }
-
-
 
     }
 }

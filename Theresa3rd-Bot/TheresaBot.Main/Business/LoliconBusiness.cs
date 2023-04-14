@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{UserId}", loliconData.uid);
             template = template.Replace("{SizeMB}", "??");
             template = template.Replace("{Tags}", loliconData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum));
-            template = template.Replace("{Urls}", loliconData.urls.original.ToOrginProxyUrl());
+            template = template.Replace("{Urls}", loliconData.urls.original.ToOriginProxyUrl());
             return template;
         }
 
@@ -34,7 +34,7 @@ namespace TheresaBot.Main.Business
             workInfoStr.AppendLine($"本条数据来源于Lolicon Api~");
             workInfoStr.AppendLine($"标题：{loliconData.title}，画师：{loliconData.author}，画师id：{loliconData.uid}");
             workInfoStr.AppendLine($"标签：{loliconData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum)}");
-            workInfoStr.Append(loliconData.urls.original.ToOrginProxyUrl());
+            workInfoStr.Append(loliconData.urls.original.ToOriginProxyUrl());
             return workInfoStr.ToString();
         }
 

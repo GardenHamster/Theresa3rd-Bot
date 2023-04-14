@@ -172,13 +172,30 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static string joinCookie(this Dictionary<string, string> cookieDic)
         {
-            StringBuilder cookieBuilder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             foreach (var item in cookieDic)
             {
-                if (cookieBuilder.Length > 0) cookieBuilder.Append(" ");
-                cookieBuilder.Append($"{item.Key}={item.Value};");
+                if (builder.Length > 0) builder.Append(" ");
+                builder.Append($"{item.Key}={item.Value};");
             }
-            return cookieBuilder.ToString();
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// 连接参数
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="paramKey"></param>
+        /// <returns></returns>
+        public static string joinParam(this List<int> ids, string paramKey)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (var id in ids)
+            {
+                if (builder.Length > 0) builder.Append("&");
+                builder.Append($"{paramKey}={id}");
+            }
+            return builder.ToString();
         }
 
         /// <summary>

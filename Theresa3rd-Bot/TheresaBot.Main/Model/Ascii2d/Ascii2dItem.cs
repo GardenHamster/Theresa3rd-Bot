@@ -2,7 +2,7 @@
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Model.Saucenao
+namespace TheresaBot.Main.Model.Ascii2d
 {
     public record Ascii2dItem : BaseSourceItem
     {
@@ -10,9 +10,9 @@ namespace TheresaBot.Main.Model.Saucenao
 
         public Ascii2dItem(SetuSourceType sourceType, string sourceUrl, string sourceId)
         {
-            this.SourceType = sourceType;
-            this.SourceUrl = sourceUrl;
-            this.SourceId = sourceId;
+            SourceType = sourceType;
+            SourceUrl = sourceUrl;
+            SourceId = sourceId;
         }
     }
 }

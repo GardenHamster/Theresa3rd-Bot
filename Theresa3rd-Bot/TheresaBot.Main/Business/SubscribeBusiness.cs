@@ -65,8 +65,8 @@ namespace TheresaBot.Main.Business
         {
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
-            dbSubscribe.SubscribeName = StringHelper.filterEmoji(userInfo.nickname)?.filterEmoji().cutString(50);
-            dbSubscribe.SubscribeDescription = userInfo.introduce?.filterEmoji().cutString(200);
+            dbSubscribe.SubscribeName = userInfo.nickname?.filterEmoji()?.cutString(50);
+            dbSubscribe.SubscribeDescription = userInfo.introduce?.filterEmoji()?.cutString(200);
             dbSubscribe.SubscribeType = SubscribeType.米游社用户;
             dbSubscribe.SubscribeSubType = 0;
             dbSubscribe.Isliving = false;
@@ -74,9 +74,9 @@ namespace TheresaBot.Main.Business
             return subscribeDao.Insert(dbSubscribe);
         }
 
-        public SubscribePO insertSurscribe(PixivUserInfo pixivUserInfoDto, string userId)
+        public SubscribePO insertSurscribe(PixivUserProfileTop pixivUserInfoDto, string userId)
         {
-            string userName = StringHelper.filterEmoji(pixivUserInfoDto.extraData.meta.title.Replace("- pixiv", "").Trim().cutString(200));
+            string userName = pixivUserInfoDto.extraData.meta.UserName.filterEmoji()?.Trim()?.cutString(200);
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;

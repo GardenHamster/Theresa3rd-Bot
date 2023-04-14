@@ -2,6 +2,7 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Drawer;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Mode;
@@ -9,7 +10,6 @@ using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Model.PixivRanking;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 
@@ -273,11 +273,11 @@ namespace TheresaBot.Main.Handler
             return fileInfos;
         }
 
-        private async Task<FileInfo> createPreviewImgAsync(PixivRankingInfo rankingInfo, List<PixivRankingDetail> datas, string fullSavePath)
+        private async Task<FileInfo> createPreviewImgAsync(PixivRankingInfo rankingInfo, List<PixivRankingDetail> details, string fullSavePath)
         {
             try
             {
-                return await PixivRankingDrawHelper.DrawPreview(rankingInfo, datas, fullSavePath);
+                return await new PixivRankingDrawer().DrawPreview(rankingInfo, details, fullSavePath);
             }
             catch (Exception ex)
             {
@@ -286,6 +286,7 @@ namespace TheresaBot.Main.Handler
                 return null;
             }
         }
+
 
     }
 }

@@ -2,7 +2,10 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Drawer;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Mode;
+using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Reporter;
@@ -107,6 +110,97 @@ namespace TheresaBot.Main.Handler
             finally
             {
                 CoolingCache.SetHandFinish(command.GroupId, command.MemberId);//请求处理完成
+            }
+        }
+
+
+        public async Task pixivUserProfileAsync(GroupCommand command)
+        {
+            try
+            {
+                string userId = command.KeyWord;
+                if (StringHelper.isPureNumber(userId) == false)
+                {
+                    await command.ReplyGroupMessageWithAtAsync("请指定一个画师id~");
+                    return;
+                }
+
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);
+                if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.PixivUser.ProcessingMsg) == false)
+                {
+                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.PixivUser.ProcessingMsg);
+                }
+
+                PixivUserProfileInfo profileInfo = PixivUserProfileCache.GetCache(userId);
+                if (profileInfo == null)
+                {
+                    profileInfo = await pixivBusiness.getUserProfileInfoAsync(userId);
+                    PixivUserProfileCache.AddCache(userId, profileInfo);
+                }
+
+                string template = BotConfig.SetuConfig.PixivUser.Template;
+                string templateMsg = pixivBusiness.getUserProfileMsg(profileInfo.UserName, template);
+
+                List<string> PreviewFilePaths = profileInfo.PreviewFilePaths;
+                if (PreviewFilePaths is null || PreviewFilePaths.IsFilesExists() == false)
+                {
+                    PreviewFilePaths = await createPreviewImgAsync(profileInfo);
+                    profileInfo.PreviewFilePaths = PreviewFilePaths;
+                }
+
+                List<SetuContent> setuContents = new List<SetuContent>();
+                setuContents.Add(new SetuContent(templateMsg));
+                setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
+
+                await command.ReplyGroupMessageWithAtAsync(templateMsg);
+                await Task.Delay(1000);
+                await SendGroupSetuAsync(setuContents, command.GroupId, true);
+            }
+            catch (Exception ex)
+            {
+                string errMsg = $"pixivUserProfileAsync异常";
+                LogHelper.Error(ex, errMsg);
+                await command.ReplyError(ex);
+                await Task.Delay(1000);
+                Reporter.SendError(ex, errMsg);
+            }
+            finally
+            {
+                CoolingCache.SetHandFinish(command.GroupId, command.MemberId);//请求处理完成
+            }
+        }
+
+        private async Task<List<string>> createPreviewImgAsync(PixivUserProfileInfo profileInfo)
+        {
+            int startIndex = 0;
+            int previewInPage = BotConfig.SetuConfig.PixivUser.PreviewInPage;
+            if (previewInPage <= 0) previewInPage = 30;
+            List<string> fileInfos = new List<string>();
+            List<PixivUserWorkInfo> workInfos = profileInfo.WorkInfos;
+            if (workInfos.Count == 0) return fileInfos;
+            while (startIndex < workInfos.Count)
+            {
+                string fileName = $"pixiv_user_{profileInfo.UserId}_preview_{startIndex}_{startIndex + previewInPage}.jpg";
+                string fullSavePath = Path.Combine(FilePath.GetPixivPreviewSavePath(), fileName);
+                var partList = workInfos.Skip(startIndex).Take(previewInPage).ToList();
+                var previewFile = await createPreviewImgAsync(profileInfo, partList, fullSavePath);
+                if (previewFile is not null) fileInfos.Add(previewFile.FullName);
+                startIndex += previewInPage;
+            }
+            return fileInfos;
+        }
+
+        private async Task<FileInfo> createPreviewImgAsync(PixivUserProfileInfo profileInfo, List<PixivUserWorkInfo> workInfos, string fullSavePath)
+        {
+            try
+            {
+                return await new PixivUserWorkDrawer().DrawPreview(profileInfo, workInfos, fullSavePath);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "画师作品一览图合成失败");
+                Reporter.SendError(ex, "画师作品一览图合成失败");
+                return null;
             }
         }
 

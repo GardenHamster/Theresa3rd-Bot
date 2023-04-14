@@ -8,7 +8,6 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Model.File;
 using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Model.PixivRanking;
 
 namespace TheresaBot.Main.Helper
 {
@@ -64,13 +63,32 @@ namespace TheresaBot.Main.Helper
             return await GetPixivResultAsync<PixivWorkInfo>(postUrl, operation, headerDic, retryTimes.Value);
         }
 
-        public static async Task<PixivUserInfo> GetPixivUserInfoAsync(string userId)
+        public static async Task<PixivUserProfileIllusts> GetPixivUserProfileIllustsAsync(string userid, List<int> workIds, bool isFirstPage)
         {
-            string operation = $"获取uid信息:{userId}";
-            string referer = HttpUrl.getPixivUserWorkInfoReferer(userId);
+            string operation = $"获取画师:{userid}作品信息";
+            int retryTimes = BotConfig.PixivConfig.ErrRetryTimes;
+            string referer = HttpUrl.getPixivUserReferer(userid);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivUserWorkInfoUrl(userId);
-            return await GetPixivResultAsync<PixivUserInfo>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
+            string postUrl = HttpUrl.GetPixivUserProfileIllustsAsync(userid, workIds, isFirstPage);
+            return await GetPixivResultAsync<PixivUserProfileIllusts>(postUrl, operation, headerDic, retryTimes);
+        }
+
+        public static async Task<PixivUserProfileAll> GetPixivUserProfileAllAsync(string userId)
+        {
+            string operation = $"获取画师作品:{userId}";
+            string referer = HttpUrl.getPixivUserReferer(userId);
+            Dictionary<string, string> headerDic = GetPixivHeader(referer);
+            string postUrl = HttpUrl.getPixivUserProfileAllUrl(userId);
+            return await GetPixivResultAsync<PixivUserProfileAll>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
+        }
+
+        public static async Task<PixivUserProfileTop> GetPixivUserProfileTopAsync(string userId)
+        {
+            string operation = $"获取画师信息:{userId}";
+            string referer = HttpUrl.getPixivUserReferer(userId);
+            Dictionary<string, string> headerDic = GetPixivHeader(referer);
+            string postUrl = HttpUrl.getPixivUserProfileTopUrl(userId);
+            return await GetPixivResultAsync<PixivUserProfileTop>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
         public static async Task<PixivUgoiraMeta> GetPixivUgoiraMetaAsync(string workId)
@@ -118,7 +136,7 @@ namespace TheresaBot.Main.Helper
             return await GetPixivRankingAsync<PixivRankingData>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
-        public static async Task<FileInfo> DownPixivImgAsync(string pixivIdStr, string downloadUrl, string fullFileName = null)
+        public static async Task<FileInfo> DownPixivImgAsync(string downloadUrl, string pixivIdStr, string fullFileName = null)
         {
             int pixivId = Convert.ToInt32(pixivIdStr);
             string referer = HttpUrl.getPixivArtworksReferer(pixivIdStr);
@@ -403,7 +421,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="imgUrl"></param>
         /// <returns></returns>
-        public static string ToOrginProxyUrl(this string imgUrl)
+        public static string ToOriginProxyUrl(this string imgUrl)
         {
             string proxyUrl = BotConfig.PixivConfig.OriginUrlProxy;
             if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.DefaultPixivImgProxy;
@@ -419,7 +437,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="originalUrl"></param>
         /// <returns></returns>
-        public static string ToThumbUrl(this string originalUrl)
+        public static string OriginToThumbUrl(this string originalUrl)
         {
             PixivWorkPath workPath = originalUrl.GetOriginalWorkPath();
             return $"{workPath.Host}/c/240x240/img-master/{workPath.ImgPath}_master1200.jpg";
@@ -430,7 +448,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="originalUrl"></param>
         /// <returns></returns>
-        public static string ToSmallUrl(this string originalUrl)
+        public static string OriginToSmallUrl(this string originalUrl)
         {
             PixivWorkPath workPath = originalUrl.GetOriginalWorkPath();
             return $"{workPath.Host}/c/540x540_70/img-master/{workPath.ImgPath}_master1200.jpg";
@@ -441,11 +459,24 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="originalUrl"></param>
         /// <returns></returns>
-        public static string ToRegularUrl(this string originalUrl)
+        public static string OriginToRegularUrl(this string originalUrl)
         {
             PixivWorkPath workPath = originalUrl.GetOriginalWorkPath();
             return $"{workPath.Host}/img-master/{workPath.ImgPath}_master1200.jpg";
         }
+
+
+        /// <summary>
+        /// 将thumb地址转换为Small格式的地址
+        /// </summary>
+        /// <param name="originalUrl"></param>
+        /// <returns></returns>
+        public static string ThumbToSmallUrl(this string originalUrl)
+        {
+            PixivWorkPath workPath = originalUrl.GetThumbWorkPath();
+            return $"{workPath.Host}/c/540x540_70/img-master/{workPath.ImgPath}_master1200.jpg";
+        }
+
 
         /// <summary>
         /// 获取保存预览图的文件名
@@ -467,10 +498,10 @@ namespace TheresaBot.Main.Helper
         {
             string imgSize = BotConfig.PixivConfig.ImgSize?.ToLower();
             if (imgSize == "original") return originalUrl;
-            if (imgSize == "regular") return originalUrl.ToRegularUrl();
-            if (imgSize == "small") return originalUrl.ToSmallUrl();
-            if (imgSize == "thumb") return originalUrl.ToThumbUrl();
-            return originalUrl.ToThumbUrl();
+            if (imgSize == "regular") return originalUrl.OriginToRegularUrl();
+            if (imgSize == "small") return originalUrl.OriginToSmallUrl();
+            if (imgSize == "thumb") return originalUrl.OriginToThumbUrl();
+            return originalUrl.OriginToThumbUrl();
         }
 
         /// <summary>
@@ -507,13 +538,14 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="originalUrl"></param>
         /// <returns></returns>
-        public static PixivWorkPath GetRegularWorkPath(this string regularUrl)
+        public static PixivWorkPath GetThumbWorkPath(this string thumbUrl)
         {
-            regularUrl = regularUrl.Trim();
-            string[] arr = regularUrl.Split("/img-master/", StringSplitOptions.RemoveEmptyEntries);
-            string[] arr2 = arr[1].Split("_master", StringSplitOptions.RemoveEmptyEntries);
-            string[] arr3 = arr[1].Split('.', StringSplitOptions.RemoveEmptyEntries);
-            return new PixivWorkPath(arr[0], arr2[0], arr3[1]);
+            thumbUrl = thumbUrl.Trim();
+            string[] arr = thumbUrl.Split("/img-master/", StringSplitOptions.RemoveEmptyEntries);
+            string[] arr2 = thumbUrl.Split("/c/", StringSplitOptions.RemoveEmptyEntries);
+            string[] arr3 = arr[1].Split("_square", StringSplitOptions.RemoveEmptyEntries);
+            string[] arr4 = arr[1].Split('.', StringSplitOptions.RemoveEmptyEntries);
+            return new PixivWorkPath(arr2[0], arr3[0], arr4[1]);
         }
 
     }

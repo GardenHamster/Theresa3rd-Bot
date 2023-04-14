@@ -141,6 +141,21 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
+            //Pixiv画师作品列表
+            new(BotConfig.SetuConfig?.PixivUser?.Commands, CommandType.Setu, new(async (botCommand, session, reporter) =>
+            {
+                PixivHandler handler = new PixivHandler(session, reporter);
+                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.PixivUser) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckMemberSetuCoolingAsync(botCommand)) return false;
+                if (await handler.CheckGroupSetuCoolingAsync(botCommand)) return false;
+                if (await handler.CheckSetuUseUpAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
+                await handler.pixivUserProfileAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
             //Lolicon
             new(BotConfig.SetuConfig?.Lolicon?.Commands, CommandType.Setu, new(async (botCommand, session, reporter) =>
             {

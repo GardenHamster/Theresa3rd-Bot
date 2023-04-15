@@ -144,19 +144,19 @@ Setu:                                                                           
                                 本条数据来源于本地图库，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回
                                 文件名：{FileName}，大小：{SizeMB}MB
 
-    PixivUser:
+    PixivUser:                                                                      #画师作品一览
         Enable:                 true                                                #是否启用
         Commands:               ['画师']                                            #命令
-        ProcessingMsg:          '正在获取画师作品信息，需要亿点时间...'                #开始执行前返回的消息
-        Template:               '画师[{UserName}]作品合集，数据缓存{CacheSeconds}秒'    #消息模版
-        MaxScan:                90                                                  #最多扫描前N个作品
+        ProcessingMsg:          '正在获取画师作品信息，需要亿点时间...'             #开始执行前返回的消息
+        Template:               '画师[{UserName}]作品合集，数据缓存{CacheSeconds}秒'
+        MaxScan:                300                                                 #最多扫描前N个作品
         PreviewInPage:          30                                                  #合成一览图中，每张一览图最多显示多少个作品
         CacheSeconds:           3600                                                #每个画师缓存时间
 
 Saucenao:                                                                           #Saucenao以图搜图，查找原图功能
     Enable:                     true                                                #是否启用
     Commands:                   ['原图','搜图','saucenao']                          #命令
-    NotFoundMsg:                '找不到相似的图，换一张完整的图片试试吧~'            #找不到相应原图时返回的消息
+    NotFoundMsg:                '找不到相似的图，换一张完整的图片试试吧~'           #找不到相应原图时返回的消息
     ProcessingMsg:              '正在通过saucenao尝试搜索原图...'                   #开始查找前返回的消息
     Template:                   '共找到 {MatchCount} 条匹配信息，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，CD{MemberCD}秒'
     MemberCD:                   30                                                  #独立CD(秒)，单个群员使用命令后需要等待的CD

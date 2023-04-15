@@ -519,7 +519,6 @@ namespace TheresaBot.Main.Helper
             return $"{httpFileInfo.FileName}_thumb.{httpFileInfo.FileExtension}";
         }
 
-
         /// <summary>
         /// 拆解originalUrl,返回host和文件目录等信息
         /// </summary>
@@ -543,7 +542,7 @@ namespace TheresaBot.Main.Helper
             thumbUrl = thumbUrl.Trim();
             string[] arr = thumbUrl.Split(new String[] { "/img-master/", "/custom-thumb/" }, StringSplitOptions.RemoveEmptyEntries);
             string[] arr2 = thumbUrl.Split("/c/", StringSplitOptions.RemoveEmptyEntries);
-            string[] arr3 = arr[1].Split("_square", StringSplitOptions.RemoveEmptyEntries);
+            string[] arr3 = arr[1].Split(new String[] { "_square", "_custom" }, StringSplitOptions.RemoveEmptyEntries);
             string[] arr4 = arr[1].Split('.', StringSplitOptions.RemoveEmptyEntries);
             return new PixivWorkPath(arr2[0], arr3[0], arr4[1]);
         }

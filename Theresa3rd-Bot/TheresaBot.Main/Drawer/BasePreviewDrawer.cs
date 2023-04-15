@@ -10,9 +10,9 @@ namespace TheresaBot.Main.Drawer
         protected virtual int CellMargin => 40;
         protected virtual int HeaderMargin => 15;
         protected virtual int HeaderFontSize => 50;
-        protected virtual int DateTimeMargin => 20;
-        protected virtual int DateTimeFontSize => 25;
-        protected virtual int ExplainMargin => 20;
+        protected virtual int DateTimeMargin => 15;
+        protected virtual int DateTimeFontSize => 40;
+        protected virtual int ExplainMargin => 15;
         protected virtual int ExplainFontSize => 25;
         protected virtual int TitleFontSize => 20;
         protected virtual int WatermarkMargin => 0;

@@ -18,11 +18,11 @@ namespace TheresaBot.Main.Drawer
             var drawingList = details.Select(o => new PixivRankingDrawing(o)).ToList();
             var arrangeList = await ArrangeDrawingAsync(drawingList);
             int maxRow = arrangeList.Max(o => o.Row);
-            int headerAreaHeight = HeaderMargin + HeaderFontSize;
-            int explainAreaHeight = ExplainMargin + ExplainFontSize;
+            int headerAreaHeight = HeaderMargin * 2 + HeaderFontSize;
+            int explainAreaHeight = ExplainMargin * 2 + ExplainFontSize;
             int workAreaWidth = MaxColumn * CellWidth + (MaxColumn + 1) * CellMargin;
-            int workAreaHeight = headerAreaHeight + maxRow * CellHeight + (maxRow + 1) * CellMargin;
-            int watermarkAreaHeight = WatermarkMargin + WatermarkFontSize;
+            int workAreaHeight = headerAreaHeight + maxRow * CellHeight + maxRow * CellMargin;
+            int watermarkAreaHeight = WatermarkMargin * 2 + WatermarkFontSize;
 
             int canvasWidth = workAreaWidth;
             int canvasHeight = headerAreaHeight + explainAreaHeight + workAreaHeight + watermarkAreaHeight;
@@ -57,7 +57,9 @@ namespace TheresaBot.Main.Drawer
             }
             areaY += workAreaHeight;
 
-            DrawWatermark(canvas, CellMargin, areaY);
+            startX = CellMargin;
+            startY = areaY;
+            DrawWatermark(canvas, startX, startY);
             areaY += watermarkAreaHeight;
 
             using SKImage image = surface.Snapshot();

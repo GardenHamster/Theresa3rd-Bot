@@ -19,11 +19,11 @@ namespace TheresaBot.Main.Drawer
             var drawingList = workInfos.Select(o => new PixivUserWorkDrawing(o)).ToList();
             var arrangeList = await ArrangeDrawingAsync(drawingList);
             int maxRow = arrangeList.Max(o => o.Row);
-            int headerAreaHeight = HeaderMargin + HeaderFontSize;
-            int dateTimeAreaHeight = DateTimeMargin + DateTimeFontSize;
+            int headerAreaHeight = HeaderMargin * 2 + HeaderFontSize;
+            int dateTimeAreaHeight = DateTimeMargin * 2 + DateTimeFontSize;
             int workAreaWidth = MaxColumn * CellWidth + (MaxColumn + 1) * CellMargin;
-            int workAreaHeight = headerAreaHeight + maxRow * CellHeight + (maxRow + 1) * CellMargin;
-            int watermarkAreaHeight = WatermarkMargin + WatermarkFontSize;
+            int workAreaHeight = headerAreaHeight + maxRow * CellHeight + maxRow * CellMargin;
+            int watermarkAreaHeight = WatermarkMargin * 2 + WatermarkFontSize;
 
             int canvasWidth = workAreaWidth;
             int canvasHeight = headerAreaHeight + dateTimeAreaHeight + workAreaHeight + watermarkAreaHeight;
@@ -57,7 +57,9 @@ namespace TheresaBot.Main.Drawer
             }
             areaY += workAreaHeight;
 
-            DrawWatermark(canvas, CellMargin, areaY);
+            startX = CellMargin;
+            startY = areaY;
+            DrawWatermark(canvas, startX, startY);
             areaY += watermarkAreaHeight;
 
             using SKImage image = surface.Snapshot();
@@ -71,7 +73,7 @@ namespace TheresaBot.Main.Drawer
         {
             int x = startX;
             int y = startY + HeaderMargin + HeaderFontSize;
-            string headerText = $"画师:{userName}(UID:{userId})";
+            string headerText = $"{userName}(UID:{userId})";
             canvas.DrawText(headerText, new SKPoint(x, y), HeaderPaint);
         }
 

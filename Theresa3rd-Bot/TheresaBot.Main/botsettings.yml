@@ -148,7 +148,7 @@ Setu:                                                                           
         Enable:                 true                                                #是否启用
         Commands:               ['画师']                                            #命令
         ProcessingMsg:          '正在获取画师作品信息，需要亿点时间...'                #开始执行前返回的消息
-        Template:               '画师{UserName}作品合集，数据缓存{CacheSeconds}秒'    #消息模版
+        Template:               '画师[{UserName}]作品合集，数据缓存{CacheSeconds}秒'    #消息模版
         MaxScan:                90                                                  #最多扫描前N个作品
         PreviewInPage:          30                                                  #合成一览图中，每张一览图最多显示多少个作品
         CacheSeconds:           3600                                                #每个画师缓存时间

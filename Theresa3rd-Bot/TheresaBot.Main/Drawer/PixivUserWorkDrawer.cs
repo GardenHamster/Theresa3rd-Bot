@@ -8,6 +8,8 @@ namespace TheresaBot.Main.Drawer
 {
     internal class PixivUserWorkDrawer : BasePreviewDrawer
     {
+        protected override int TitleFontSize => 30;
+
         public async Task<FileInfo> DrawPreview(PixivUserProfileInfo profileInfo, List<PixivUserWorkInfo> workInfos, string fullSavePath)
         {
             int areaX = 0;

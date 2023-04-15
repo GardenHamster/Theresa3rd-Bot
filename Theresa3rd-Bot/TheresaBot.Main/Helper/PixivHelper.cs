@@ -541,7 +541,7 @@ namespace TheresaBot.Main.Helper
         public static PixivWorkPath GetThumbWorkPath(this string thumbUrl)
         {
             thumbUrl = thumbUrl.Trim();
-            string[] arr = thumbUrl.Split("/img-master/", StringSplitOptions.RemoveEmptyEntries);
+            string[] arr = thumbUrl.Split(new String[] { "/img-master/", "/custom-thumb/" }, StringSplitOptions.RemoveEmptyEntries);
             string[] arr2 = thumbUrl.Split("/c/", StringSplitOptions.RemoveEmptyEntries);
             string[] arr3 = arr[1].Split("_square", StringSplitOptions.RemoveEmptyEntries);
             string[] arr4 = arr[1].Split('.', StringSplitOptions.RemoveEmptyEntries);

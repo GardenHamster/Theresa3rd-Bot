@@ -404,16 +404,18 @@ namespace TheresaBot.Main.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task<PixivUserProfileInfo> getUserProfileInfoAsync(string userId)
+        public async Task<PixivUserProfileInfo> getUserProfileInfoAsync(string userId, long groupId)
         {
             int eachPage = 40;
             int cacheSeconds = BotConfig.SetuConfig.PixivUser.CacheSeconds;
+            int maxScan = BotConfig.SetuConfig.PixivUser.MaxScan;
+            bool isShowR18 = groupId.IsShowR18Setu();
             List<PixivUserWorkInfo> workList = new List<PixivUserWorkInfo>();
             PixivUserProfileTop profileTop = await PixivHelper.GetPixivUserProfileTopAsync(userId);
             PixivUserProfileAll profileAll = await PixivHelper.GetPixivUserProfileAllAsync(userId);
             Dictionary<int, object> illusts = profileAll?.illusts;
             if (illusts is null || illusts.Count == 0) return new(userId, profileTop.UserName, cacheSeconds);
-            List<int> workIds = illusts.Select(o => o.Key).Where(o => o > 0).OrderByDescending(o => o).ToList();
+            List<int> workIds = illusts.Select(o => o.Key).Where(o => o > 0).OrderByDescending(o => o).Take(maxScan).ToList();
             int startIndex = 0;
             while (startIndex < workIds.Count)
             {
@@ -424,6 +426,7 @@ namespace TheresaBot.Main.Business
             }
             workList = workList.Where(o => o.IsImproper == false).ToList();
             workList = workList.Where(o => o.hasBanTag() is null).ToList();
+            workList = workList.Where(o => isShowR18 || o.IsR18 == false).ToList();
             workList = workList.OrderByDescending(o => Convert.ToInt32(o.id)).ToList();
             return new(userId, profileTop.UserName, cacheSeconds, workList);
         }

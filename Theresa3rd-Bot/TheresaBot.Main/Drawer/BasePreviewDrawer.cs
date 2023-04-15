@@ -7,35 +7,26 @@ namespace TheresaBot.Main.Drawer
 {
     internal abstract class BasePreviewDrawer : BaseDrawer
     {
-        protected const int CellMargin = 40;
-        protected const int HeaderMargin = 15;
-        protected const int HeaderFontSize = 50;
-        protected const int DateTimeMargin = 20;
-        protected const int DateTimeFontSize = 25;
-        protected const int ExplainMargin = 20;
-        protected const int ExplainFontSize = 25;
-        protected const int TitleFontSize = 20;
-        protected const int WatermarkMargin = 0;
-        protected const int WatermarkFontSize = 25;
-        protected const int MaxColumn = 5;
-        protected const int IllustWidth = 280;
-        protected const int IllustHeight = 400;
-        protected const int CellWidth = IllustWidth;
-        protected const int CellHeight = IllustHeight + TitleFontSize;
-        protected SKPaint HeaderPaint;
-        protected SKPaint DateTimePaint;
-        protected SKPaint ExplainPaint;
-        protected SKPaint TitlePaint;
-        protected SKPaint WatermarkPaint;
-
-        public BasePreviewDrawer()
-        {
-            HeaderPaint = getDefaultPaint(HeaderFontSize);
-            DateTimePaint = getDefaultPaint(DateTimeFontSize);
-            ExplainPaint = getDefaultPaint(ExplainFontSize);
-            TitlePaint = getDefaultPaint(TitleFontSize);
-            WatermarkPaint = getDefaultPaint(WatermarkFontSize);
-        }
+        protected virtual int CellMargin => 40;
+        protected virtual int HeaderMargin => 15;
+        protected virtual int HeaderFontSize => 50;
+        protected virtual int DateTimeMargin => 20;
+        protected virtual int DateTimeFontSize => 25;
+        protected virtual int ExplainMargin => 20;
+        protected virtual int ExplainFontSize => 25;
+        protected virtual int TitleFontSize => 20;
+        protected virtual int WatermarkMargin => 0;
+        protected virtual int WatermarkFontSize => 25;
+        protected virtual int MaxColumn => 5;
+        protected virtual int IllustWidth => 280;
+        protected virtual int IllustHeight => 400;
+        protected virtual int CellWidth => IllustWidth;
+        protected virtual int CellHeight => IllustHeight + TitleFontSize;
+        protected virtual SKPaint HeaderPaint => getDefaultPaint(HeaderFontSize);
+        protected virtual SKPaint DateTimePaint => getDefaultPaint(DateTimeFontSize);
+        protected virtual SKPaint ExplainPaint => getDefaultPaint(ExplainFontSize);
+        protected virtual SKPaint TitlePaint => getDefaultPaint(TitleFontSize);
+        protected virtual SKPaint WatermarkPaint => getDefaultPaint(WatermarkFontSize);
 
         protected SKPaint getDefaultPaint(int fontSize)
         {

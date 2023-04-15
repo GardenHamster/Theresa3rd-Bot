@@ -134,7 +134,7 @@ namespace TheresaBot.Main.Handler
                 PixivUserProfileInfo profileInfo = PixivUserProfileCache.GetCache(userId);
                 if (profileInfo == null)
                 {
-                    profileInfo = await pixivBusiness.getUserProfileInfoAsync(userId);
+                    profileInfo = await pixivBusiness.getUserProfileInfoAsync(userId, command.GroupId);
                     PixivUserProfileCache.AddCache(userId, profileInfo);
                 }
 

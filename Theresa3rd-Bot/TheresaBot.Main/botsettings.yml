@@ -63,8 +63,8 @@ Manage:                                                                         
     EnableTagCommands:          ['解禁标签','解锁标签']                             #解禁一个涩图关键词
     DisableMemberCommands:      ['禁止成员','拉黑成员']                             #将一个群成员拉入黑名单，所有群生效
     EnableMemberCommands:       ['解禁成员']                                        #将一个群成员从黑名单移除，所有群生效
-    ListSubscribeCommands:      ['订阅列表','已订列表']                              #列出所有订阅列表
-    RMSubscribeCommands:        ['移除订阅','取消订阅']                              #通过订阅Id移除一个订阅
+    ListSubCommands:            ['订阅列表','已订列表']                              #列出所有订阅列表
+    RemoveSubCommands:          ['移除订阅','取消订阅']                              #通过订阅Id移除一个订阅
     
 Menu:                                                                               #菜单指令
     Enable:                     true                                                #是否启用
@@ -182,7 +182,6 @@ Subscribe:                                                                      
         Enable:                 true                                                #是否启用
         AddCommands:            ['订阅版主']                                        #订阅命令，需要管理员执行
         RmCommands:             ['退订版主']                                        #退订命令，需要管理员执行
-        ListCommands:           ['已订版主']                                        #查询已订阅画师列表
         Template:               |                                                   #消息模版，值为空时将使用默认模版
                                 米游社[{UserName}]发布了新帖子，发布时间：{CreateTime}
                                 {Title}
@@ -195,7 +194,6 @@ Subscribe:                                                                      
         ScanMode:               2                                                   #1：从pixiv账号获取已关注用户的最新作品并推送到拥有订阅权限的群（耗时短），2：逐个扫描订阅命令所订阅的画师（可自定义）
         AddCommands:            ['订阅画师']                                        #订阅命令，需要管理员执行
         RmCommands:             ['退订画师']                                        #退订命令，需要管理员执行
-        ListCommands:           ['已订画师']                                        #查询已订阅画师列表
         SyncCommands:           ['同步画师']                                        #同步命令，从p站账号中获取关注画师列表并添加到订阅中，需要管理员执行
         Template:               'pixiv画师[{UserName}]发布了新作品：'               #消息模版，值为空时将使用默认模版
         ScanInterval:           3600                                                #扫描间隔(秒)
@@ -204,7 +202,6 @@ Subscribe:                                                                      
         Enable:                 true                                                #是否启用
         AddCommands:            ['订阅标签']                                        #订阅命令，需要管理员执行
         RmCommands:             ['退订标签']                                        #退订命令，需要管理员执行
-        ListCommands:           ['已订标签']                                        #查询已订阅画师列表
         Template:               'pixiv标签[{TagName}]出现了新作品：'                #消息模版，值为空时将使用默认模版
         ScanInterval:           1800                                                #扫描间隔(秒)
         ShelfLife:              86400                                               #保质期(秒)，距离发布时间超过该值的作品将不会推送，0表示永不过期

@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
+using TheresaBot.Main.Common;
+using TheresaBot.Main.Drawer;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
@@ -22,6 +26,37 @@ namespace TheresaBot.Main.Handler
         public SubscribeHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             subscribeBusiness = new SubscribeBusiness();
+        }
+
+        public async Task listSubscribeAsync(GroupCommand command)
+        {
+            try
+            {
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
+
+                long groupId = command.GroupId;
+                var miyousheSubList = subscribeBusiness.getSubscribes(groupId, SubscribeType.米游社用户);
+                var pixivUserSubList = subscribeBusiness.getSubscribes(groupId, SubscribeType.P站画师);
+                var pixivTagSubList = subscribeBusiness.getSubscribes(groupId, SubscribeType.P站标签);
+                string fullSavePath = FilePath.GetFullTempImgSavePath();
+                FileInfo fileInfo = new SubscribeDrawer().DrawSubscribe(miyousheSubList, pixivUserSubList, pixivTagSubList, fullSavePath);
+                List<BaseContent> sendContents = new List<BaseContent>();
+                sendContents.Add(new PlainContent("当前群已订阅内容如下"));
+                sendContents.Add(new LocalImageContent(fileInfo));
+                await command.ReplyGroupMessageWithAtAsync(sendContents);
+            }
+            catch (Exception ex)
+            {
+                string errMsg = $"查询订阅失败";
+                LogHelper.Error(ex, errMsg);
+                await command.ReplyError(ex);
+                await Task.Delay(1000);
+                Reporter.SendError(ex, errMsg);
+            }
+            finally
+            {
+                CoolingCache.SetHandFinish(command.GroupId, command.MemberId);//请求处理完成
+            }
         }
 
 

@@ -20,6 +20,48 @@ namespace TheresaBot.Main.Drawer
             DefaultTypeface = GetTypeface();
         }
 
+        protected SKPaint getDefaultPaint(int fontSize)
+        {
+            return new SKPaint
+            {
+                FakeBoldText = true,
+                Color = SKColors.Black,
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill,
+                TextAlign = SKTextAlign.Left,
+                TextSize = fontSize,
+                Typeface = DefaultTypeface
+            };
+        }
+
+        protected SKPaint getDefaultPaint(SKColor color, int fontSize)
+        {
+            return new SKPaint
+            {
+                FakeBoldText = true,
+                Color = color,
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill,
+                TextAlign = SKTextAlign.Left,
+                TextSize = fontSize,
+                Typeface = DefaultTypeface
+            };
+        }
+
+        protected SKPaint getDefaultPaint(SKColor color, int fontSize, bool bold)
+        {
+            return new SKPaint
+            {
+                FakeBoldText = bold,
+                Color = color,
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill,
+                TextAlign = SKTextAlign.Left,
+                TextSize = fontSize,
+                Typeface = DefaultTypeface
+            };
+        }
+
         protected SKTypeface GetTypeface()
         {
             try

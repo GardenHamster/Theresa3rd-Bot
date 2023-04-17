@@ -14,5 +14,9 @@
 
         public List<string> EnableMemberCommands { get; private set; }
 
+        public List<string> ListSubCommands { get; private set; }
+
+        public List<string> RemoveSubCommands { get; private set; }
+
     }
 }

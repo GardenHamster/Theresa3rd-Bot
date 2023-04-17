@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Common;
+﻿using System.ComponentModel.Design;
+using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Mys;
@@ -59,6 +60,19 @@ namespace TheresaBot.Main.Business
                 }
             }
             return subscribeTaskMap;
+        }
+
+        public List<SubscribeInfo> getSubscribes(long groupId, SubscribeType subscribeType)
+        {
+            var subscribeList = subscribeGroupDao.getSubscribes(groupId, subscribeType);
+            if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(groupId))
+            {
+                return subscribeList;
+            }
+            else
+            {
+                return subscribeList.Where(o => o.GroupId > 0 && o.GroupId == groupId).ToList();
+            }
         }
 
         public SubscribePO insertSurscribe(MysUserFullInfo userInfo, string userId)

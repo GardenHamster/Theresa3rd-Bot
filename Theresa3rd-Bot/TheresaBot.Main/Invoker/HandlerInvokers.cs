@@ -35,6 +35,24 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
+            //查询订阅
+            new(BotConfig.ManageConfig?.ListSubCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
+            {
+                SubscribeHandler handler = new SubscribeHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.listSubscribeAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //取消订阅
+            new(BotConfig.ManageConfig?.RemoveSubCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
+            {
+                SubscribeHandler handler = new SubscribeHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.cancleSubscribeAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
             //订阅pixiv画师
             new(BotConfig.SubscribeConfig?.PixivUser?.AddCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {

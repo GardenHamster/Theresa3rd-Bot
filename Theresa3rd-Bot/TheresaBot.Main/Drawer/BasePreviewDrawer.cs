@@ -28,20 +28,6 @@ namespace TheresaBot.Main.Drawer
         protected virtual SKPaint TitlePaint => getDefaultPaint(TitleFontSize);
         protected virtual SKPaint WatermarkPaint => getDefaultPaint(WatermarkFontSize);
 
-        protected SKPaint getDefaultPaint(int fontSize)
-        {
-            return new SKPaint
-            {
-                FakeBoldText = true,
-                Color = SKColors.Black,
-                IsAntialias = true,
-                Style = SKPaintStyle.Fill,
-                TextAlign = SKTextAlign.Left,
-                TextSize = fontSize,
-                Typeface = DefaultTypeface
-            };
-        }
-
         protected async Task<List<PixivPreviewDrawing<T>>> ArrangeDrawingAsync<T>(List<T> details) where T : BasePixivDrawing
         {
             int row = 1, column = 1;

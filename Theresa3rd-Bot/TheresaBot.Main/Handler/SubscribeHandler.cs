@@ -33,11 +33,10 @@ namespace TheresaBot.Main.Handler
             try
             {
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-
-                long groupId = command.GroupId;
-                var miyousheSubList = subscribeBusiness.getSubscribes(groupId, SubscribeType.米游社用户);
-                var pixivUserSubList = subscribeBusiness.getSubscribes(groupId, SubscribeType.P站画师);
-                var pixivTagSubList = subscribeBusiness.getSubscribes(groupId, SubscribeType.P站标签);
+                var miyousheSubList = subscribeBusiness.getSubscribes(command.GroupId, SubscribeType.米游社用户);
+                var pixivUserSubList = subscribeBusiness.getSubscribes(command.GroupId, SubscribeType.P站画师);
+                var pixivTagSubList = subscribeBusiness.getSubscribes(command.GroupId, SubscribeType.P站标签).Select(o => o with { SubscribeCode = String.Empty }).ToList();
+                var drawTagList = pixivTagSubList.Select(o => o with { SubscribeCode = String.Empty });
                 string fullSavePath = FilePath.GetFullTempImgSavePath();
                 FileInfo fileInfo = new SubscribeDrawer().DrawSubscribe(miyousheSubList, pixivUserSubList, pixivTagSubList, fullSavePath);
                 List<BaseContent> sendContents = new List<BaseContent>();
@@ -94,7 +93,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                subscribeBusiness.delSubscribeGroup(dbSubscribe.Id);
+                subscribeBusiness.cancleSubscribe(dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了{dbSubscribe.SubscribeType}[{dbSubscribe.SubscribeName}]~");
                 ConfigHelper.LoadSubscribeTask();
             }

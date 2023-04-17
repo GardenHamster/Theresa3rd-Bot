@@ -8,21 +8,21 @@ namespace TheresaBot.Main.Drawer
     {
         private const int canvaPadding = 15;
         private const int TitleMargin = 10;
-        private const int TitleFontSize = 20;
+        private const int TitleFontSize = 30;
         private const int HeaderMargin = 5;
-        private const int HeaderFontSize = 20;
+        private const int HeaderFontSize = 18;
         private const int DetailMargin = 5;
         private const int DetailFontSize = 15;
 
-        private const int subIdWidth = 30;
-        private const int subCodeWidth = 50;
-        private const int subNameWidth = 150;
-        private const int subGroupWidth = 60;
+        private const int subIdWidth = 70;
+        private const int subGroupWidth = 80;
+        private const int subCodeWidth = 120;
+        private const int subNameWidth = 400;
 
-        private SKPaint TitlePaint => getDefaultPaint(TitleFontSize);
+        private SKPaint TitlePaint => getDefaultPaint(SKColors.DarkRed, TitleFontSize);
         private SKPaint HeaderPaint => getDefaultPaint(SKColors.Black, HeaderFontSize, true);
-        private SKPaint DetailPaint1 => getDefaultPaint(SKColors.Black, DetailFontSize);
-        private SKPaint DetailPaint2 => getDefaultPaint(SKColors.Gray, DetailFontSize);
+        private SKPaint DetailPaint1 => getDefaultPaint(SKColors.DarkGreen, DetailFontSize);
+        private SKPaint DetailPaint2 => getDefaultPaint(SKColors.DarkBlue, DetailFontSize);
 
         public FileInfo DrawSubscribe(List<SubscribeInfo> miyousheSubList, List<SubscribeInfo> pixivUserSubList, List<SubscribeInfo> pixivTagSubList, string fullSavePath)
         {
@@ -45,6 +45,7 @@ namespace TheresaBot.Main.Drawer
             SKCanvas canvas = surface.Canvas;
             canvas.Clear(SKColors.White);
 
+            startY += TitleMargin;
             DrawTitle(canvas, "米游社用户", startX, startY);
             startY += titleAreaHeight;
             DrawHeader(canvas, startX, startY);
@@ -55,16 +56,7 @@ namespace TheresaBot.Main.Drawer
                 startY = startY + detailAreaHeight;
             }
 
-            DrawTitle(canvas, "Pixiv画师", startX, startY);
-            startY += titleAreaHeight;
-            DrawHeader(canvas, startX, startY);
-            startY += heaerAreaHeight;
-            for (int i = 0; i < pixivUserSubList.Count; i++)
-            {
-                DrawDetail(canvas, pixivUserSubList[i], i, startX, startY);
-                startY = startY + detailAreaHeight;
-            }
-
+            startY += TitleMargin;
             DrawTitle(canvas, "Pixiv标签", startX, startY);
             startY += titleAreaHeight;
             DrawHeader(canvas, startX, startY);
@@ -72,6 +64,17 @@ namespace TheresaBot.Main.Drawer
             for (int i = 0; i < pixivTagSubList.Count; i++)
             {
                 DrawDetail(canvas, pixivTagSubList[i], i, startX, startY);
+                startY = startY + detailAreaHeight;
+            }
+
+            startY += TitleMargin;
+            DrawTitle(canvas, "Pixiv画师", startX, startY);
+            startY += titleAreaHeight;
+            DrawHeader(canvas, startX, startY);
+            startY += heaerAreaHeight;
+            for (int i = 0; i < pixivUserSubList.Count; i++)
+            {
+                DrawDetail(canvas, pixivUserSubList[i], i, startX, startY);
                 startY = startY + detailAreaHeight;
             }
 
@@ -85,7 +88,7 @@ namespace TheresaBot.Main.Drawer
         private void DrawTitle(SKCanvas canvas, string title, int startX, int startY)
         {
             int x = startX;
-            int y = startY + TitleMargin + TitleFontSize;
+            int y = startY + TitleMargin;
             canvas.DrawText(title, new SKPoint(x, y), TitlePaint);
         }
 
@@ -93,25 +96,25 @@ namespace TheresaBot.Main.Drawer
         {
             canvas.DrawText("Id", new SKPoint(startX, startY), HeaderPaint);
             startX += subIdWidth;
+            canvas.DrawText("Group", new SKPoint(startX, startY), HeaderPaint);
+            startX += subGroupWidth;
             canvas.DrawText("Code", new SKPoint(startX, startY), HeaderPaint);
             startX += subCodeWidth;
             canvas.DrawText("Name", new SKPoint(startX, startY), HeaderPaint);
             startX += subNameWidth;
-            canvas.DrawText("Group", new SKPoint(startX, startY), HeaderPaint);
-            startX += subGroupWidth;
         }
 
         private void DrawDetail(SKCanvas canvas, SubscribeInfo subInfo, int index, int startX, int startY)
         {
-            SKPaint paint = index % 1 == 0 ? DetailPaint1 : DetailPaint2;
-            canvas.DrawText(subInfo.SubscribeId.ToString(), new SKPoint(startX, startY), HeaderPaint);
+            SKPaint paint = index % 2 == 1 ? DetailPaint1 : DetailPaint2;
+            canvas.DrawText(subInfo.SubscribeId.ToString(), new SKPoint(startX, startY), paint);
             startX += subIdWidth;
-            canvas.DrawText(subInfo.SubscribeCode, new SKPoint(startX, startY), HeaderPaint);
-            startX += subCodeWidth;
-            canvas.DrawText(subInfo.SubscribeName, new SKPoint(startX, startY), HeaderPaint);
-            startX += subNameWidth;
-            canvas.DrawText(subInfo.GroupId == 0 ? "所有群" : "当前群", new SKPoint(startX, startY), HeaderPaint);
+            canvas.DrawText(subInfo.GroupId == 0 ? "所有群" : "当前群", new SKPoint(startX, startY), paint);
             startX += subGroupWidth;
+            canvas.DrawText(subInfo.SubscribeCode, new SKPoint(startX, startY), paint);
+            startX += subCodeWidth;
+            canvas.DrawText(subInfo.SubscribeName, new SKPoint(startX, startY), paint);
+            startX += subNameWidth;
         }
 
 

@@ -180,12 +180,12 @@ namespace TheresaBot.Main.Business
             return subscribeGroupDao.isExistsSubscribeGroup(groupId, subscribeId);
         }
 
-        public int delSubscribeGroup(int subscribeId)
+        public int cancleSubscribe(int subscribeId)
         {
             return subscribeGroupDao.delSubscribeGroup(subscribeId);
         }
 
-        public int delSubscribeGroup(long groupId, int subscribeId)
+        public int cancleSubscribe(long groupId, int subscribeId)
         {
             return subscribeGroupDao.delSubscribeGroup(groupId, subscribeId);
         }

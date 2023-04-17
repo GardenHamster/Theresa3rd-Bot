@@ -179,7 +179,7 @@ namespace TheresaBot.Main.Handler
                 if (syncMode == PixivSyncModeType.Overwrite)
                 {
                     List<SubscribePO> subscribeList = subscribeBusiness.getSubscribes(SubscribeType.P站画师);
-                    foreach (var item in subscribeList) subscribeBusiness.delSubscribeGroup(item.Id);//覆盖情况下,删除所有这个订阅的数据
+                    foreach (var item in subscribeList) subscribeBusiness.cancleSubscribe(item.Id);//覆盖情况下,删除所有这个订阅的数据
                     foreach (var item in dbSubscribeList) subscribeBusiness.insertSubscribeGroup(subscribeGroupId, item.Id);
                 }
                 else
@@ -243,7 +243,7 @@ namespace TheresaBot.Main.Handler
                         await command.ReplyGroupMessageWithAtAsync($"退订失败，userId={pixivUserId}的订阅不存在");
                         return;
                     }
-                    subscribeBusiness.delSubscribeGroup(dbSubscribe.Id);
+                    subscribeBusiness.cancleSubscribe(dbSubscribe.Id);
                 }
 
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv用户[{pixivUserIds}]~");
@@ -363,7 +363,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                subscribeBusiness.delSubscribeGroup(dbSubscribe.Id);
+                subscribeBusiness.cancleSubscribe(dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv标签[{pixivTag}]~");
                 ConfigHelper.LoadSubscribeTask();
             }

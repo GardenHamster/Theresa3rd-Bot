@@ -2,7 +2,7 @@
 
 namespace TheresaBot.Main.Model.Subscribe
 {
-    public class SubscribeInfo
+    public record SubscribeInfo
     {
         public int SubscribeId { get; set; }
         public string SubscribeCode { get; set; }

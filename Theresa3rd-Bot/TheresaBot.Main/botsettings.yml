@@ -63,6 +63,8 @@ Manage:                                                                         
     EnableTagCommands:          ['解禁标签','解锁标签']                             #解禁一个涩图关键词
     DisableMemberCommands:      ['禁止成员','拉黑成员']                             #将一个群成员拉入黑名单，所有群生效
     EnableMemberCommands:       ['解禁成员']                                        #将一个群成员从黑名单移除，所有群生效
+    ListSubscribeCommands:      ['订阅列表','已订列表']                              #列出所有订阅列表
+    RMSubscribeCommands:        ['移除订阅','取消订阅']                              #通过订阅Id移除一个订阅
     
 Menu:                                                                               #菜单指令
     Enable:                     true                                                #是否启用

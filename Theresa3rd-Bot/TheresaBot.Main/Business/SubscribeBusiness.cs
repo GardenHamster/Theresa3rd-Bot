@@ -130,6 +130,10 @@ namespace TheresaBot.Main.Business
             return subscribeGroupDao.Update(subscribeGroup);
         }
 
+        public SubscribePO getSubscribe(int subscribeId)
+        {
+            return subscribeDao.getSubscribe(subscribeId);
+        }
 
         public SubscribePO getSubscribe(string subscribeCode, SubscribeType subscribeType)
         {

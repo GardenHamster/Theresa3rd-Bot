@@ -17,6 +17,11 @@ namespace TheresaBot.Main.Dao
             return Db.Ado.SqlQuery<SubscribeInfo>(sqlBuilder.ToString());
         }
 
+        public SubscribePO getSubscribe(int subscribeId)
+        {
+            return Db.Queryable<SubscribePO>().Where(o => o.Id == subscribeId).First();
+        }
+
         public SubscribePO getSubscribe(string subscribeCode, SubscribeType subscribeType)
         {
             return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).First();

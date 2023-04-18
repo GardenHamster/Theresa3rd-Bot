@@ -151,6 +151,7 @@ namespace TheresaBot.Main.Handler
                 List<SetuContent> setuContents = new List<SetuContent>();
                 setuContents.Add(new SetuContent(templateMsg));
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
+                setuContents.AddRange(pixivBusiness.getNumAndPids(profileInfo, 10));
 
                 await command.ReplyGroupMessageWithAtAsync(templateMsg);
                 await Task.Delay(1000);

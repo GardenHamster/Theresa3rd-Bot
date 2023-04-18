@@ -3,6 +3,7 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Cache;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
@@ -738,6 +739,27 @@ namespace TheresaBot.Main.Business
         public string getDefaultUserProfile(string userName)
         {
             return $"画师{userName}作品合集，数据缓存{BotConfig.SetuConfig.PixivUser.CacheSeconds}秒";
+        }
+
+
+        public List<SetuContent> getNumAndPids(PixivUserProfileInfo profileInfo, int eachPage)
+        {
+            int startIndex = 0;
+            if (eachPage <= 0) return new();
+            var pidList = new List<string>();
+            var workList = profileInfo.WorkInfos.ToList();
+            for (int i = 0; i < workList.Count; i++)
+            {
+                pidList.Add($"No.{(i+1).ToString().PadRight(3, ' ')} {workList[i].id}");
+            }
+            List<SetuContent> rankContents = new List<SetuContent>();
+            while (startIndex < pidList.Count)
+            {
+                var pageList = pidList.Skip(startIndex).Take(eachPage).ToList();
+                rankContents.Add(new(String.Join("\r\n", pageList)));
+                startIndex += eachPage;
+            }
+            return rankContents;
         }
 
         /// <summary>

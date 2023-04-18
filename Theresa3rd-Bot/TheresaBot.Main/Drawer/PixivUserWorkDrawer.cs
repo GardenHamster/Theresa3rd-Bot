@@ -8,7 +8,7 @@ namespace TheresaBot.Main.Drawer
 {
     internal class PixivUserWorkDrawer : BasePreviewDrawer
     {
-        protected override int TitleFontSize => 30;
+        protected override int TitleFontSize => 28;
 
         public async Task<FileInfo> DrawPreview(PixivUserProfileInfo profileInfo, List<PixivUserWorkInfo> workInfos, string fullSavePath)
         {
@@ -53,7 +53,7 @@ namespace TheresaBot.Main.Drawer
                 startX = areaX + CellMargin * column + CellWidth * (column - 1);
                 startY = areaY + CellMargin * row + CellHeight * (row - 1);
                 DrawImage(canvas, originBitmap, startX, startY, workInfo.IsR18, isHorizontal);
-                DrawTitle(canvas, workInfo, startX, startY);
+                DrawTitle(canvas, workInfo, i, startX, startY);
             }
             areaY += workAreaHeight;
 
@@ -85,11 +85,11 @@ namespace TheresaBot.Main.Drawer
             canvas.DrawText(headerText, new SKPoint(x, y), DateTimePaint);
         }
 
-        private void DrawTitle(SKCanvas canvas, PixivUserWorkInfo workInfo, int startX, int startY)
+        private void DrawTitle(SKCanvas canvas, PixivUserWorkInfo workInfo, int index, int startX, int startY)
         {
             int x = startX;
             int y = startY;
-            string drawText = $"PID:{workInfo.id}";
+            string drawText = $"No.{index + 1} PID:{workInfo.id}";
             canvas.DrawText(drawText, new SKPoint(x, y), TitlePaint);
         }
 

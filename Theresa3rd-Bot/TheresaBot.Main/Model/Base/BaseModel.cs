@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheresaBot.Main.Model.Type
+namespace TheresaBot.Main.Model.Base
 {
     public abstract class BaseModel<T> where T : Enum
     {
@@ -14,9 +14,9 @@ namespace TheresaBot.Main.Model.Type
 
         public BaseModel(T type, string code, string name)
         {
-            this.Type = type;
-            this.Code = code;
-            this.Name = name;
+            Type = type;
+            Code = code;
+            Name = name;
         }
 
     }

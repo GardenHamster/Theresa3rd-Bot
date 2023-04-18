@@ -1,6 +1,6 @@
 ﻿using TheresaBot.Main.Mode;
 using TheresaBot.Main.Model.Config;
-using TheresaBot.Main.Model.PixivRanking;
+using TheresaBot.Main.Model.Pixiv;
 
 namespace TheresaBot.Main.Model.Cache
 {

@@ -1,6 +1,7 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
+using Mirai.CSharp.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
             if (string.IsNullOrWhiteSpace(template)) return 0;
-            IChatMessage[] msgList = await template.SplitToChainAsync(SendTarget.Group).ToMiraiMessageAsync();
+            IChatMessage[] msgList = await template.SplitToChainAsync().ToMiraiMessageAsync(UploadTarget.Friend);
             return await Session.SendFriendMessageAsync(MemberId, msgList);
         }
 
@@ -45,7 +46,7 @@ namespace TheresaBot.MiraiHttpApi.Command
 
         public override async Task<int> ReplyFriendMessageAsync(List<BaseContent> contents)
         {
-            IChatMessage[] msgList = await contents.ToMiraiMessageAsync();
+            IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Friend);
             return await Session.SendFriendMessageAsync(MemberId, msgList);
         }
 

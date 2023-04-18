@@ -24,19 +24,19 @@ namespace TheresaBot.Main.Command
 
         public abstract Task<int> ReplyGroupMessageAsync(string message, bool isAt = false);
 
-        public abstract Task<int> ReplyGroupMessageAsync(List<BaseContent> chainList, bool isAt = false);
+        public abstract Task<int> ReplyGroupMessageAsync(List<BaseContent> contentList, bool isAt = false);
 
         public abstract Task<int> ReplyGroupMessageWithAtAsync(string plainMsg);
 
-        public abstract Task<int> ReplyGroupMessageWithAtAsync(params BaseContent[] chainArr);
+        public abstract Task<int> ReplyGroupMessageWithAtAsync(params BaseContent[] contentArr);
 
-        public abstract Task<int> ReplyGroupMessageWithAtAsync(List<BaseContent> chainList);
+        public abstract Task<int> ReplyGroupMessageWithAtAsync(List<BaseContent> contentList);
 
         public abstract Task<int> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "");
 
-        public abstract Task<int[]> ReplyGroupMessageAndRevokeAsync(SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false);
+        public abstract Task<int> ReplyGroupMessageAndRevokeAsync(List<BaseContent> contentList, int revokeInterval, bool isAt = false);
 
-        public abstract Task<int[]> ReplyTempMessageAsync(SetuContent setuContent, bool sendImgBehind);
+        public abstract Task<int> ReplyTempMessageAsync(List<BaseContent> contentList);
 
         public abstract Task RevokeGroupMessageAsync(int messageId, long groupId);
 
@@ -49,7 +49,7 @@ namespace TheresaBot.Main.Command
 
         public override async Task ReplyError(Exception ex, string message = "")
         {
-            List<BaseContent> contents = ex.GetErrorContents(SendTarget.Group, message);
+            List<BaseContent> contents = ex.GetErrorContents(message);
             await ReplyGroupMessageWithAtAsync(contents);
         }
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Theresa3rd_Bot
+namespace TheresaBot.MiraiHttpApi
 {
     public class Program
     {

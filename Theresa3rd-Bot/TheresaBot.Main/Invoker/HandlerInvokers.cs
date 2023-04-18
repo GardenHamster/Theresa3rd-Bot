@@ -35,6 +35,24 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
+            //查询订阅
+            new(BotConfig.ManageConfig?.ListSubCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
+            {
+                SubscribeHandler handler = new SubscribeHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.listSubscribeAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //取消订阅
+            new(BotConfig.ManageConfig?.RemoveSubCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
+            {
+                SubscribeHandler handler = new SubscribeHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.cancleSubscribeAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
             //订阅pixiv画师
             new(BotConfig.SubscribeConfig?.PixivUser?.AddCommands, CommandType.Subscribe, new(async (botCommand, session, reporter) =>
             {
@@ -138,6 +156,21 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckHandingAsync(botCommand)) return false;
                 CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
                 await handler.pixivSearchAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //Pixiv画师作品列表
+            new(BotConfig.SetuConfig?.PixivUser?.Commands, CommandType.Setu, new(async (botCommand, session, reporter) =>
+            {
+                PixivHandler handler = new PixivHandler(session, reporter);
+                if (await handler.CheckSetuEnableAsync(botCommand, BotConfig.SetuConfig?.PixivUser) == false) return false;
+                if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckMemberSetuCoolingAsync(botCommand)) return false;
+                if (await handler.CheckGroupSetuCoolingAsync(botCommand)) return false;
+                if (await handler.CheckSetuUseUpAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
+                await handler.pixivUserProfileAsync(botCommand);
                 await handler.addRecord(botCommand);
                 return true;
             })),

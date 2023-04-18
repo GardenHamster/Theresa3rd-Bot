@@ -1,4 +1,6 @@
 ﻿using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Model.Subscribe;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Dao
 {
@@ -24,6 +26,29 @@ namespace TheresaBot.Main.Dao
         public bool isExistsSubscribeGroup(int subscribeId)
         {
             return Db.Queryable<SubscribeGroupPO>().Where(o => o.SubscribeId == subscribeId).Any();
+        }
+
+        /// <summary>
+        /// 查询某个群的某个订阅类型的列表
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="subscribeType"></param>
+        /// <returns></returns>
+        public List<SubscribeInfo> getSubscribes(long groupId, SubscribeType subscribeType)
+        {
+            return Db.Queryable<SubscribeGroupPO>()
+            .InnerJoin<SubscribePO>((sg, s) => sg.SubscribeId == s.Id)
+            .Where((sg, s) => s.SubscribeType == subscribeType && (sg.GroupId == 0 || sg.GroupId == groupId))
+            .Select((sg, s) => new SubscribeInfo
+            {
+                SubscribeId = sg.SubscribeId,
+                SubscribeCode = s.SubscribeCode,
+                SubscribeType = s.SubscribeType,
+                SubscribeSubType = s.SubscribeSubType,
+                SubscribeName = s.SubscribeName,
+                SubscribeDescription = s.SubscribeDescription,
+                GroupId = sg.GroupId
+            }).ToList();
         }
 
         /// <summary>

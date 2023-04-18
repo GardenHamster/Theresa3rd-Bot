@@ -2,6 +2,7 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Drawer;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Mode;
@@ -9,7 +10,6 @@ using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Model.PixivRanking;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 
@@ -171,7 +171,7 @@ namespace TheresaBot.Main.Handler
                     List<FileInfo> setuFiles = await GetSetuFilesAsync(workInfo, groupIds);
                     string workMsg = pixivBusiness.getWorkInfo(detail.WorkInfo, BotConfig.PixivConfig.Template);
                     List<BaseContent> msgContent = new List<BaseContent>();
-                    msgContent.Add(new PlainContent($"#{rc.rank} {workInfo.likeRate.toPercent()}/{workInfo.bookmarkRate.toPercent()}\r\n"));
+                    msgContent.Add(new PlainContent($"#{rc.rank} {workInfo.likeRate.toPercent()}/{workInfo.bookmarkRate.toPercent()}"));
                     msgContent.Add(new PlainContent(workMsg));
                     setuContents.Add(new SetuContent(msgContent, setuFiles));
                 }
@@ -273,11 +273,11 @@ namespace TheresaBot.Main.Handler
             return fileInfos;
         }
 
-        private async Task<FileInfo> createPreviewImgAsync(PixivRankingInfo rankingInfo, List<PixivRankingDetail> datas, string fullSavePath)
+        private async Task<FileInfo> createPreviewImgAsync(PixivRankingInfo rankingInfo, List<PixivRankingDetail> details, string fullSavePath)
         {
             try
             {
-                return await PixivRankingDrawHelper.DrawPreview(rankingInfo, datas, fullSavePath);
+                return await new PixivRankingDrawer().DrawPreview(rankingInfo, details, fullSavePath);
             }
             catch (Exception ex)
             {
@@ -286,6 +286,7 @@ namespace TheresaBot.Main.Handler
                 return null;
             }
         }
+
 
     }
 }

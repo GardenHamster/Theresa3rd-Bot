@@ -1,5 +1,4 @@
 ﻿using SixLabors.ImageSharp;
-using System.Text.RegularExpressions;
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -176,32 +175,44 @@ namespace TheresaBot.Main.Handler
         /// <summary>
         /// 检查一张涩图是否可以发送，并且发送提示消息
         /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
+        /// <param name="command"></param>
+        /// <param name="setuInfo"></param>
+        /// <param name="isShowR18"></param>
+        /// <param name="isShowAI"></param>
+        /// <returns></returns>
+        public async Task<bool> CheckSetuSendable(GroupCommand command, BaseWorkInfo setuInfo, bool isShowR18)
+        {
+            string message = IsSetuSendable(command, setuInfo, isShowR18);
+            if (string.IsNullOrWhiteSpace(message)) return true;
+            await command.ReplyGroupMessageWithAtAsync(message);
+            return false;
+        }
+
+        /// <summary>
+        /// 判断一张涩图是否可以发送，并且返回不可发送原因
+        /// </summary>
+        /// <param name="command"></param>
         /// <param name="setuInfo"></param>
         /// <param name="isShowR18"></param>
         /// <returns></returns>
-        public async Task<bool> CheckSetuSendable(GroupCommand command, BaseWorkInfo setuInfo, bool isShowR18, bool isShowAI)
+        public string IsSetuSendable(GroupCommand command, BaseWorkInfo setuInfo, bool isShowR18)
         {
             if (setuInfo.IsImproper)
             {
-                await command.ReplyGroupMessageWithAtAsync("该作品含有R18G等内容，不显示相关内容");
-                return false;
+                return "该作品含有R18G等内容，不显示相关内容";
             }
 
             string banTagStr = setuInfo.hasBanTag();
-            if (banTagStr != null)
+            if (string.IsNullOrWhiteSpace(banTagStr) == false)
             {
-                await command.ReplyGroupMessageWithAtAsync($"该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容");
-                return false;
+                return $"该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容";
             }
 
             if (setuInfo.IsR18 && isShowR18 == false)
             {
-                await command.ReplyGroupMessageWithAtAsync("该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限");
-                return false;
+                return "该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限";
             }
-            return true;
+            return null;
         }
 
         /// <summary>
@@ -217,7 +228,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 List<BaseContent> chainList = new List<BaseContent>();
-                string template = timingSetuTimer.TimingMsg;
+                string template = timingSetuTimer.TimingMsg?.Trim()?.TrimLine();
                 if (string.IsNullOrWhiteSpace(template))
                 {
                     if (chainList.Count == 0) return;
@@ -226,7 +237,7 @@ namespace TheresaBot.Main.Handler
                 }
                 template = template.Replace("{Tags}", tags);
                 template = template.Replace("{SourceName}", timingSetuTimer.Source.GetTypeName());
-                chainList.AddRange(template.SplitToChainAsync(SendTarget.Group));
+                chainList.AddRange(template.SplitToChainAsync());
                 await Session.SendGroupMessageAsync(groupId, chainList, timingSetuTimer.AtAll);
             }
             catch (Exception ex)

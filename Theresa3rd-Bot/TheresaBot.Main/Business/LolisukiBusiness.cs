@@ -13,6 +13,7 @@ namespace TheresaBot.Main.Business
 
         public string getWorkInfo(LolisukiData lolisukiData, DateTime startTime, long todayLeft, string template = "")
         {
+            template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(lolisukiData);
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
@@ -25,7 +26,7 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{Taste}", lolisukiData.taste.ToString());
             template = template.Replace("{SizeMB}", "??");
             template = template.Replace("{Tags}", lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum));
-            template = template.Replace("{Urls}", lolisukiData.urls.original.ToOrginProxyUrl());
+            template = template.Replace("{Urls}", lolisukiData.urls.original.ToOriginProxyUrl());
             return template;
         }
 
@@ -35,7 +36,7 @@ namespace TheresaBot.Main.Business
             workInfoStr.AppendLine($"本条数据来源于Lolisuki Api~");
             workInfoStr.AppendLine($"标题：{lolisukiData.title}，画师：{lolisukiData.author}，画师id：{lolisukiData.uid}，Level：{lolisukiData.level}，分类：{lolisukiData.taste}");
             workInfoStr.AppendLine($"标签：{lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum)}");
-            workInfoStr.Append(lolisukiData.urls.original.ToOrginProxyUrl());
+            workInfoStr.Append(lolisukiData.urls.original.ToOriginProxyUrl());
             return workInfoStr.ToString();
         }
 

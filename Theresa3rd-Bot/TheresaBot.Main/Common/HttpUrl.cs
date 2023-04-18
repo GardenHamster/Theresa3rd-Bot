@@ -1,4 +1,6 @@
-﻿namespace TheresaBot.Main.Common
+﻿using TheresaBot.Main.Helper;
+
+namespace TheresaBot.Main.Common
 {
     public static class HttpUrl
     {
@@ -58,11 +60,32 @@
         }
 
         /// <summary>
+        /// 批量获取作品信息
+        /// </summary>
+        /// <param name="workId"></param>
+        /// <returns></returns>
+        public static string GetPixivUserProfileIllustsAsync(string userid, List<int> workIds, bool isFirstPage)
+        {
+            string is_first_page = isFirstPage ? "1" : "0";
+            return $"{PixivHomeUrl}/ajax/user/{userid}/profile/illusts?{workIds.joinParam("ids[]")}&work_category=illustManga&is_first_page={is_first_page}&lang=zh";
+        }
+
+        /// <summary>
         /// 画师作品地址
         /// </summary>
         /// <param name="userid"></param>
         /// <returns></returns>
-        public static string getPixivUserWorkInfoUrl(string userid)
+        public static string getPixivUserProfileAllUrl(string userid)
+        {
+            return $"{PixivHomeUrl}/ajax/user/{userid}/profile/all?lang=zh";
+        }
+
+        /// <summary>
+        /// 画师作品地址
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        public static string getPixivUserProfileTopUrl(string userid)
         {
             return $"{PixivHomeUrl}/ajax/user/{userid}/profile/top?lang=zh";
         }
@@ -148,7 +171,7 @@
         /// </summary>
         /// <param name="userid"></param>
         /// <returns></returns>
-        public static string getPixivUserWorkInfoReferer(string userid)
+        public static string getPixivUserReferer(string userid)
         {
             return $"{PixivHomeUrl}/user/{userid}";
         }

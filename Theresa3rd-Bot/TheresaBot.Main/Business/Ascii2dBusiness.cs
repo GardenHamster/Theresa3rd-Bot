@@ -5,8 +5,8 @@ using System.Net;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Ascii2d;
 using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business

@@ -5,7 +5,6 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
@@ -21,7 +20,7 @@ namespace TheresaBot.Main.Handler
             {
                 if (string.IsNullOrWhiteSpace(BotConfig.MenuConfig?.Template) == false)
                 {
-                    List<BaseContent> templateList = BotConfig.MenuConfig.Template.SplitToChainAsync(SendTarget.Group);
+                    List<BaseContent> templateList = BotConfig.MenuConfig.Template.SplitToChainAsync();
                     await command.ReplyGroupMessageWithAtAsync(templateList);
                     return;
                 }

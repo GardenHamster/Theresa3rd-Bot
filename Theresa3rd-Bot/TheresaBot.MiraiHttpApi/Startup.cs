@@ -16,7 +16,7 @@ using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Reporter;
 using TheresaBot.MiraiHttpApi.Session;
 
-namespace Theresa3rd_Bot
+namespace TheresaBot.MiraiHttpApi
 {
     public class Startup
     {

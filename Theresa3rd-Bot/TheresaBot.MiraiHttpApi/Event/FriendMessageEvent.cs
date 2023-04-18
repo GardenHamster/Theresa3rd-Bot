@@ -4,6 +4,7 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
+using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,8 +70,8 @@ namespace TheresaBot.MiraiHttpApi.Event
         {
             try
             {
-                List<BaseContent> contents = exception.GetErrorContents(SendTarget.Friend);
-                IChatMessage[] msgList = await contents.ToMiraiMessageAsync();
+                List<BaseContent> contents = exception.GetErrorContents();
+                IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Friend);
                 await MiraiHelper.Session.SendFriendMessageAsync(args.Sender.Id, msgList.ToArray());
             }
             catch (Exception ex)

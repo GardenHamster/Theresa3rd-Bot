@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Saucenao
 {
-    public class SaucenaoResult
+    public record SaucenaoResult
     {
         public int MatchCount { get; set; }
 

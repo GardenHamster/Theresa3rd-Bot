@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TheresaBot.Main.Helper;
 
-namespace TheresaBot.Main.Model.PixivRanking
+namespace TheresaBot.Main.Model.Pixiv
 {
     public class PixivRankingData
     {

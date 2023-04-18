@@ -117,6 +117,7 @@ namespace TheresaBot.Main.Business
 
         public string getPostInfoAsync(MysSubscribe mysSubscribe, string template = "")
         {
+            template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultPostInfoAsync(mysSubscribe);
             template = template.Replace("{UserName}", mysSubscribe.MysUserPostDto.user.nickname);
             template = template.Replace("{CreateTime}", mysSubscribe.CreateTime.ToSimpleString());

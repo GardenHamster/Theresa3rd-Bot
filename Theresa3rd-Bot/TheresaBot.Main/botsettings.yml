@@ -63,6 +63,8 @@ Manage:                                                                         
     EnableTagCommands:          ['解禁标签','解锁标签']                             #解禁一个涩图关键词
     DisableMemberCommands:      ['禁止成员','拉黑成员']                             #将一个群成员拉入黑名单，所有群生效
     EnableMemberCommands:       ['解禁成员']                                        #将一个群成员从黑名单移除，所有群生效
+    ListSubCommands:            ['订阅列表','已订列表']                             #列出所有订阅列表
+    RemoveSubCommands:          ['移除订阅','取消订阅']                             #通过订阅Id移除一个订阅
     
 Menu:                                                                               #菜单指令
     Enable:                     true                                                #是否启用
@@ -116,7 +118,7 @@ Setu:                                                                           
         MaxScreen:              60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
         MinBookmark:            900                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时适用)
         MinBookRate:            0.08                                                #最低收藏率，收藏数/浏览数(标签搜索时适用)
-    
+
     Lolicon:                                                                        #Lolicon图床 https://api.lolicon.app
         Enable:                 true                                                #是否启用
         Commands:               ['瑟图','lolicon']                                  #命令
@@ -144,18 +146,30 @@ Setu:                                                                           
                                 本条数据来源于本地图库，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回
                                 文件名：{FileName}，大小：{SizeMB}MB
 
+    PixivUser:                                                                      #画师作品一览
+        Enable:                 true                                                #是否启用
+        Commands:               ['画师']                                            #命令
+        ProcessingMsg:          '正在获取画师作品信息，需要亿点时间...'             #开始执行前返回的消息
+        Template:               '画师[{UserName}]作品合集，数据缓存{CacheSeconds}秒'
+        MaxScan:                120                                                 #最多扫描前N个作品
+        PreviewInPage:          30                                                  #合成一览图中，每张一览图最多显示多少个作品
+        CacheSeconds:           3600                                                #每个画师缓存时间
+
 Saucenao:                                                                           #Saucenao以图搜图，查找原图功能
     Enable:                     true                                                #是否启用
     Commands:                   ['原图','搜图','saucenao']                          #命令
-    NotFoundMsg:                |                                                   #找不到相应原图时返回的消息
-                                找不到相似的图，请换一张完整的图片试试吧~
+    NotFoundMsg:                '找不到相似的图，换一张完整的图片试试吧~'           #找不到相应原图时返回的消息
     ProcessingMsg:              '正在通过saucenao尝试搜索原图...'                   #开始查找前返回的消息
-    Template:                   '共找到 {MatchCount} 条匹配信息，相似度：{Similarity}%，来源：{SourceType}，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，CD{MemberCD}秒'
+    Template:                   '共找到 {MatchCount} 条匹配信息，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回，CD{MemberCD}秒'
     MemberCD:                   30                                                  #独立CD(秒)，单个群员使用命令后需要等待的CD
     MaxDaily:                   0                                                   #每人每日最大使用次数，0表示无限制
     MaxReceive:                 10                                                  #每次最多接收并查询多少张图片，0表示无限制
-    MinSimilarity:              60.00                                               #最低相似度(百分比)
-    PullOrigin:                 true                                                #尝试从源网站中获取原图
+    MinSimilarity:              60                                                  #最低相似度，范围0~100(%)
+    SaucenaoReadCount:          3                                                   #最多展示前N个Saucenao中的匹配结果
+    PixivPriority:              80                                                  #优先返回相似度高于该值的Pixiv中的结果，范围0~100(%)
+    SinglePriority:             85                                                  #相似度高于该值时，只返回第一个匹配度最高的结果，范围0~100(%)
+    ImagePriority:              80                                                  #相似度高于该值时，才显示图片，范围0~100(%)
+    PullOrigin:                 true                                                #尝试从源网站中获取图片和详细信息
     SendPrivate:                true                                                #同时私聊发送结果
     RevokeInterval:             0                                                   #N秒后撤回，0表示不撤回
     RevokeSearched:             false                                               #是否撤回被查找的图片

@@ -6,7 +6,6 @@ using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Model.PixivRanking;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business
@@ -72,9 +71,7 @@ namespace TheresaBot.Main.Business
                     await Task.Delay(500);
                     if (pixivWorkInfo is null) continue;
                     if (checkWorkIsOk(rankingItem, pixivWorkInfo) == false) continue;
-                    string fullFileName = rankingContent.url.GetPreviewImgSaveName(pixivWorkInfo.illustId);
-                    FileInfo previewFile = await PixivHelper.DownPixivImgAsync(rankingContent.illust_id.ToString(), rankingContent.url, fullFileName);
-                    PixivRankingDetail rankingDetail = new PixivRankingDetail(rankingContent, pixivWorkInfo, previewFile?.FullName);
+                    PixivRankingDetail rankingDetail = new PixivRankingDetail(rankingContent, pixivWorkInfo);
                     rankingDetails.Add(rankingDetail);
                 }
                 catch (Exception ex)
@@ -125,14 +122,15 @@ namespace TheresaBot.Main.Business
 
         public string getRankingMsg(string date, string rankingName, string template)
         {
-            if (string.IsNullOrWhiteSpace(template)) return getDefaultRankingInfo(date, rankingName);
+            template = template?.Trim()?.TrimLine();
+            if (string.IsNullOrWhiteSpace(template)) return getDefaultRankingMsg(date, rankingName);
             template = template.Replace("{Date}", date);
             template = template.Replace("{Ranking}", rankingName);
             template = template.Replace("{CacheSeconds}", BotConfig.PixivRankingConfig.CacheSeconds.ToString());
             return template;
         }
 
-        public string getDefaultRankingInfo(string date, string rankingName)
+        public string getDefaultRankingMsg(string date, string rankingName)
         {
             return $"{date}{rankingName}精选，数据缓存{BotConfig.PixivRankingConfig.CacheSeconds.ToString()}秒";
         }

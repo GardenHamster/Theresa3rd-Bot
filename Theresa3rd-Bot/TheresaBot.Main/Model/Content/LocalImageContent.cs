@@ -2,20 +2,17 @@
 
 namespace TheresaBot.Main.Model.Content
 {
-    public class LocalImageContent : BaseContent
+    public class LocalImageContent : ImageContent
     {
         public FileInfo FileInfo { get; set; }
-        public SendTarget SendTarget { get; set; }
 
-        public LocalImageContent(SendTarget target, string fullFilePath)
+        public LocalImageContent(string fullFilePath)
         {
-            this.SendTarget = target;
             this.FileInfo = new FileInfo(fullFilePath);
         }
 
-        public LocalImageContent(SendTarget target, FileInfo fileInfo)
+        public LocalImageContent(FileInfo fileInfo)
         {
-            this.SendTarget = target;
             this.FileInfo = fileInfo;
         }
 

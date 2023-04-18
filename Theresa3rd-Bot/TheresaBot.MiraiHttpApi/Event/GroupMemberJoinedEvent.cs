@@ -4,15 +4,17 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
+using Mirai.CSharp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
-using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
+using TheresaBot.MiraiHttpApi.Reporter;
 
 namespace TheresaBot.MiraiHttpApi.Event
 {
@@ -21,25 +23,31 @@ namespace TheresaBot.MiraiHttpApi.Event
     {
         public async Task HandleMessageAsync(IMiraiHttpSession session, IGroupMemberJoinedEventArgs message)
         {
-            long memberId = message.Member.Id;
-            long groupId = message.Member.Group.Id;
-            if (!BusinessHelper.IsHandleMessage(groupId)) return;
-            if (memberId == MiraiConfig.MiraiBotQQ) return;
-
-            WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
-            if (welcomeConfig is null || welcomeConfig.Enable == false) return;
-            string template = welcomeConfig.Template;
-            WelcomeSpecial welcomeSpecial = welcomeConfig.Special?.Where(m => m.GroupId == groupId).FirstOrDefault();
-            if (welcomeSpecial != null) template = welcomeSpecial.Template;
-            if (string.IsNullOrEmpty(template)) return;
-            IChatMessage[] templateList = await BusinessHelper.SplitToChainAsync(template, SendTarget.Group).ToMiraiMessageAsync();
-            List<IChatMessage> atList = new List<IChatMessage>()
+            try
             {
-                new AtMessage(memberId),new PlainMessage("\n")
-            };
-            List<IChatMessage> msgList = atList.Concat(templateList).ToList();
-            await session.SendGroupMessageAsync(groupId, msgList.ToArray());
-            message.BlockRemainingHandlers = true;
+                long memberId = message.Member.Id;
+                long groupId = message.Member.Group.Id;
+                if (!BusinessHelper.IsHandleMessage(groupId)) return;
+                if (memberId == MiraiConfig.MiraiBotQQ) return;
+                WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
+                if (welcomeConfig is null || welcomeConfig.Enable == false) return;
+                string template = welcomeConfig.Template;
+                WelcomeSpecial welcomeSpecial = welcomeConfig.Special?.Where(m => m.GroupId == groupId).FirstOrDefault();
+                if (welcomeSpecial != null) template = welcomeSpecial.Template;
+                if (string.IsNullOrEmpty(template)) return;
+                List<IChatMessage> welcomeMsgs = new List<IChatMessage>();
+                welcomeMsgs.Add(new AtMessage(memberId));
+                welcomeMsgs.Add(new PlainMessage("\r\n"));
+                welcomeMsgs.AddRange(await template.SplitToChainAsync().ToMiraiMessageAsync(UploadTarget.Group));
+                await session.SendGroupMessageAsync(groupId, welcomeMsgs.ToArray());
+                message.BlockRemainingHandlers = true;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "入群事件异常");
+                new MiraiReporter().SendError(ex, "入群事件异常");
+            }
         }
+
     }
 }

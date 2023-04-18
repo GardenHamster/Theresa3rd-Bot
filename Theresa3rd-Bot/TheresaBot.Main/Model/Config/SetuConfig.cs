@@ -26,6 +26,7 @@
 
         public LocalSetuConfig Local { get; private set; }
 
+        public PixivUserConfig PixivUser { get; private set; }
     }
 
 

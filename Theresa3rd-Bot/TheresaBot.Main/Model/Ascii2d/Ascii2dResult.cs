@@ -1,4 +1,4 @@
-﻿namespace TheresaBot.Main.Model.Saucenao
+﻿namespace TheresaBot.Main.Model.Ascii2d
 {
     public class Ascii2dResult
     {
@@ -10,9 +10,9 @@
 
         public Ascii2dResult(List<Ascii2dItem> items, DateTime startDateTime, int matchCount)
         {
-            this.Items = items;
-            this.StartDateTime = startDateTime;
-            this.MatchCount = matchCount;
+            Items = items;
+            StartDateTime = startDateTime;
+            MatchCount = matchCount;
         }
 
     }

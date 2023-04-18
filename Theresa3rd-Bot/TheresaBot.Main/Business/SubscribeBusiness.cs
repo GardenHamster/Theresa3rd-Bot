@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Common;
+﻿using System.ComponentModel.Design;
+using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Mys;
@@ -61,12 +62,25 @@ namespace TheresaBot.Main.Business
             return subscribeTaskMap;
         }
 
+        public List<SubscribeInfo> getSubscribes(long groupId, SubscribeType subscribeType)
+        {
+            var subscribeList = subscribeGroupDao.getSubscribes(groupId, subscribeType);
+            if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(groupId))
+            {
+                return subscribeList;
+            }
+            else
+            {
+                return subscribeList.Where(o => o.GroupId > 0 && o.GroupId == groupId).ToList();
+            }
+        }
+
         public SubscribePO insertSurscribe(MysUserFullInfo userInfo, string userId)
         {
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
-            dbSubscribe.SubscribeName = StringHelper.filterEmoji(userInfo.nickname)?.filterEmoji().cutString(50);
-            dbSubscribe.SubscribeDescription = userInfo.introduce?.filterEmoji().cutString(200);
+            dbSubscribe.SubscribeName = userInfo.nickname?.filterEmoji()?.cutString(50);
+            dbSubscribe.SubscribeDescription = userInfo.introduce?.filterEmoji()?.cutString(200);
             dbSubscribe.SubscribeType = SubscribeType.米游社用户;
             dbSubscribe.SubscribeSubType = 0;
             dbSubscribe.Isliving = false;
@@ -74,9 +88,9 @@ namespace TheresaBot.Main.Business
             return subscribeDao.Insert(dbSubscribe);
         }
 
-        public SubscribePO insertSurscribe(PixivUserInfo pixivUserInfoDto, string userId)
+        public SubscribePO insertSurscribe(PixivUserProfileTop pixivUserInfoDto, string userId)
         {
-            string userName = StringHelper.filterEmoji(pixivUserInfoDto.extraData.meta.title.Replace("- pixiv", "").Trim().cutString(200));
+            string userName = pixivUserInfoDto.extraData.meta.UserName.filterEmoji()?.Trim()?.cutString(200);
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
@@ -130,6 +144,10 @@ namespace TheresaBot.Main.Business
             return subscribeGroupDao.Update(subscribeGroup);
         }
 
+        public SubscribePO getSubscribe(int subscribeId)
+        {
+            return subscribeDao.getSubscribe(subscribeId);
+        }
 
         public SubscribePO getSubscribe(string subscribeCode, SubscribeType subscribeType)
         {
@@ -162,12 +180,12 @@ namespace TheresaBot.Main.Business
             return subscribeGroupDao.isExistsSubscribeGroup(groupId, subscribeId);
         }
 
-        public int delSubscribeGroup(int subscribeId)
+        public int cancleSubscribe(int subscribeId)
         {
             return subscribeGroupDao.delSubscribeGroup(subscribeId);
         }
 
-        public int delSubscribeGroup(long groupId, int subscribeId)
+        public int cancleSubscribe(long groupId, int subscribeId)
         {
             return subscribeGroupDao.delSubscribeGroup(groupId, subscribeId);
         }

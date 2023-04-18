@@ -53,7 +53,7 @@ namespace TheresaBot.Main.Helper
             string commandLower = command.ToLower();
             string messageLower = message.ToLower();
             if (messageLower.StartsWith(commandLower) == false) return String.Empty;
-            return message.Substring(command.Length, message.Length - command.Length);
+            return message.Substring(command.Length, message.Length - command.Length).Trim();
         }
 
         /// <summary>
@@ -172,13 +172,30 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static string joinCookie(this Dictionary<string, string> cookieDic)
         {
-            StringBuilder cookieBuilder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             foreach (var item in cookieDic)
             {
-                if (cookieBuilder.Length > 0) cookieBuilder.Append(" ");
-                cookieBuilder.Append($"{item.Key}={item.Value};");
+                if (builder.Length > 0) builder.Append(" ");
+                builder.Append($"{item.Key}={item.Value};");
             }
-            return cookieBuilder.ToString();
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// 连接参数
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="paramKey"></param>
+        /// <returns></returns>
+        public static string joinParam(this List<int> ids, string paramKey)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (var id in ids)
+            {
+                if (builder.Length > 0) builder.Append("&");
+                builder.Append($"{paramKey}={id}");
+            }
+            return builder.ToString();
         }
 
         /// <summary>
@@ -229,6 +246,36 @@ namespace TheresaBot.Main.Helper
         public static bool isPureNumber(this string str)
         {
             return Regex.IsMatch(str, @"^\d+$");
+        }
+
+        /// <summary>
+        /// 判断字符串是否为空行
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool isEmptyLine(this string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return true;
+            str = str.Trim().ToLower();
+            str = str.Replace("\r", string.Empty);
+            str = str.Replace("\n", string.Empty);
+            return string.IsNullOrWhiteSpace(str);
+        }
+
+        /// <summary>
+        /// 去除字符串头部和尾部的空行
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string TrimLine(this string str)
+        {
+            str = str?.Trim();
+            if (string.IsNullOrEmpty(str)) return string.Empty;
+            while (str.StartsWith("\r")) str = str.Substring(2, str.Length - 2).Trim();
+            while (str.StartsWith("\n")) str = str.Substring(2, str.Length - 2).Trim();
+            while (str.EndsWith("\r")) str = str.Substring(0, str.Length - 2).Trim();
+            while (str.EndsWith("\n")) str = str.Substring(0, str.Length - 2).Trim();
+            return str;
         }
 
         /// <summary>

@@ -1,16 +1,11 @@
-﻿using TheresaBot.Main.Model.Pixiv;
+﻿using TheresaBot.Main.Model.Base;
+using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Saucenao
 {
-    public class SaucenaoItem
+    public record SaucenaoItem : BaseSourceItem
     {
-        public SetuSourceType SourceType { get; set; }
-
-        public string SourceUrl { get; set; }
-
-        public string SourceId { get; set; }
-
         public decimal Similarity { get; set; }
 
         public PixivWorkInfo PixivWorkInfo { get; set; }
@@ -22,7 +17,6 @@ namespace TheresaBot.Main.Model.Saucenao
             this.SourceId = sourceId;
             this.Similarity = similarity;
         }
-
 
     }
 }

@@ -45,8 +45,20 @@ namespace TheresaBot.Main.Common
             string extension = fileInfo.FileExtension;
             if (string.IsNullOrEmpty(extension)) extension = "jpg";
             string fullFileName = StringHelper.get16UUID() + "." + extension;
-            string mysFilePath = GetMysImgSavePath();
-            return Path.Combine(mysFilePath, fullFileName);
+            string savePath = GetMysImgSavePath();
+            return Path.Combine(savePath, fullFileName);
+        }
+
+        /// <summary>
+        /// 获取米游社图片存放路径
+        /// </summary>
+        /// <returns></returns>
+        public static string GetFullTempImgSavePath(string extension = "jpg")
+        {
+            if (string.IsNullOrEmpty(extension)) extension = "jpg";
+            string fullFileName = StringHelper.get16UUID() + "." + extension;
+            string savePath = GetTempSavePath();
+            return Path.Combine(savePath, fullFileName);
         }
 
         /// <summary>

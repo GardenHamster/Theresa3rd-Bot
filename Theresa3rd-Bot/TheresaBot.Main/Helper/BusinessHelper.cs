@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Helper
 {
@@ -106,6 +106,17 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 判断标签中是否包含动图标签
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static bool IsGif(this List<string> tags)
+        {
+            if (tags is null || tags.Count == 0) return false;
+            return tags.Where(o => o == "うごイラ" || o == "动图" || o == "動圖" || o.ToLower() == "ugoira").Any();
+        }
+
+        /// <summary>
         /// 判断标签中是否包含被禁止的标签，有则返回内容，否则返回null
         /// </summary>
         /// <param name="tags"></param>
@@ -119,18 +130,7 @@ namespace TheresaBot.Main.Helper
                 List<BanWordPO> banList = BotConfig.BanSetuTagList.Where(o => tag.Trim().ToUpper().Contains(o.KeyWord.Trim().ToUpper())).ToList();
                 if (banList.Count > 0) banTags.AddRange(banList.Select(o => o.KeyWord).ToList());
             }
-            return banTags.Count > 0 ? String.Join('，', banTags) : null;
-        }
-
-        /// <summary>
-        /// 判断标签中是否包含动图标签
-        /// </summary>
-        /// <param name="tags"></param>
-        /// <returns></returns>
-        public static bool IsGif(this List<string> tags)
-        {
-            if (tags is null || tags.Count == 0) return false;
-            return tags.Where(o => o == "うごイラ" || o == "动图" || o == "動圖" || o.ToLower() == "ugoira").Any();
+            return banTags.Count > 0 ? String.Join('，', banTags.Distinct()) : null;
         }
 
         /// <summary>
@@ -150,26 +150,27 @@ namespace TheresaBot.Main.Helper
         /// 将模版转换为消息链
         /// </summary>
         /// <param name="session"></param>
-        /// <param name="template"></param>
         /// <returns></returns>
-        public static List<BaseContent> SplitToChainAsync(this string template, SendTarget sendTarget)
+        public static List<BaseContent> SplitToChainAsync(this string template)
         {
+            template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return new();
             List<BaseContent> chatContents = new List<BaseContent>();
             List<string> splitList = SplitImageCode(template);
             foreach (var item in splitList)
             {
-                string code = item.Trim();
-                if (string.IsNullOrEmpty(item)) continue;
+                string code = item?.Trim();
+                if (string.IsNullOrEmpty(code)) continue;
+                if (code.isEmptyLine()) continue;
                 if (Regex.Match(code, ImageCodeRegex).Success)
                 {
                     string path = code.Substring(ImageCodeHeader.Length, code.Length - ImageCodeHeader.Length - 1);
                     if (File.Exists(path) == false) continue;
-                    chatContents.Add(new LocalImageContent(sendTarget, new FileInfo(path)));
+                    chatContents.Add(new LocalImageContent(new FileInfo(path)));
                 }
                 else
                 {
-                    chatContents.Add(new PlainContent(item));
+                    chatContents.Add(new PlainContent(item, false));
                 }
             }
             return chatContents;
@@ -179,16 +180,18 @@ namespace TheresaBot.Main.Helper
         /// 处理错误后返回的提示内容
         /// </summary>
         /// <param name="ex"></param>
-        /// <param name="sendTarget"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static List<BaseContent> GetErrorContents(this Exception ex, SendTarget sendTarget, string message = "")
+        public static List<BaseContent> GetErrorContents(this Exception ex, string message = "")
         {
             string template = BotConfig.GeneralConfig.ErrorMsg;
-            if (string.IsNullOrWhiteSpace(template)) template = "出了点小问题，再试一次吧~";
+            if (string.IsNullOrWhiteSpace(template)) template = "出了点小问题，稍后再试吧~";
             if (template.StartsWith(" ") == false) template = " " + template;
+            string errorMsg = ex is BaseException ? ex.Message : message;
+            if (string.IsNullOrWhiteSpace(errorMsg)) errorMsg = message;
             List<BaseContent> contents = new List<BaseContent>();
-            contents.AddRange(template.SplitToChainAsync(sendTarget));
+            contents.AddRange(template.SplitToChainAsync());
+            contents.Add(new PlainContent(errorMsg, false));
             return contents;
         }
 
@@ -226,13 +229,13 @@ namespace TheresaBot.Main.Helper
         /// <param name="pixivWorkInfo"></param>
         /// <param name="maxShowCount"></param>
         /// <returns></returns>
-        public static string JoinPixivImgOrginUrls(PixivWorkInfo pixivWorkInfo)
+        public static string JoinPixivImgOriginUrls(PixivWorkInfo pixivWorkInfo)
         {
             StringBuilder LinkBuilder = new StringBuilder();
             int maxCount = BotConfig.PixivConfig.UrlShowMaximum > 0 ? BotConfig.PixivConfig.UrlShowMaximum : pixivWorkInfo.pageCount;
             for (int i = 0; i < maxCount && i < pixivWorkInfo.pageCount; i++)
             {
-                string imgUrl = pixivWorkInfo.urls.original.ToOrginProxyUrl();
+                string imgUrl = pixivWorkInfo.urls.original.ToOriginProxyUrl();
                 if (i > 0) imgUrl = imgUrl.Replace("_p0.", $"_p{i}.");
                 if (LinkBuilder.Length > 0) LinkBuilder.AppendLine();
                 LinkBuilder.Append(imgUrl);

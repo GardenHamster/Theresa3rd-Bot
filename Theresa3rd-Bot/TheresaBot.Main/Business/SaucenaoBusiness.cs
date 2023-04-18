@@ -6,6 +6,8 @@ using System.Text;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Base;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Type;
@@ -127,40 +129,44 @@ namespace TheresaBot.Main.Business
             return null;
         }
 
-        public async Task<SaucenaoItem> getBestMatchAsync(SaucenaoResult saucenaoResult)
+        public async Task<List<SaucenaoItem>> getBestMatchAsync(List<SaucenaoItem> sortList, int count)
         {
-            if (saucenaoResult.Items.Count == 0) return null;
-            List<SaucenaoItem> sortList = sortSaucenaoItem(saucenaoResult.Items);
-            for (int i = 0; i < sortList.Count; i++)
+            List<SaucenaoItem> resultList = new List<SaucenaoItem>();
+            for (int i = 0; i < sortList.Count && resultList.Count < count; i++)
             {
                 SaucenaoItem saucenaoItem = sortList[i];
                 if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
                 {
-                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
+                    int pixivId = 0;
+                    if (int.TryParse(saucenaoItem.SourceId, out pixivId) == false) continue;
+                    if (pixivId < 40000000) continue;
+                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivId.ToString());
                     if (pixivWorkInfo is null) continue;
                     saucenaoItem.PixivWorkInfo = pixivWorkInfo;
-                    return saucenaoItem;
+                    resultList.Add(saucenaoItem);
                 }
-                if (saucenaoItem.SourceType == SetuSourceType.Twitter)
+                else if (saucenaoItem.SourceType == SetuSourceType.Twitter)
                 {
                     //ToDo
-                    return saucenaoItem;
+                    resultList.Add(saucenaoItem);
                 }
-                if (saucenaoItem.SourceType == SetuSourceType.FanBox)
+                else if (saucenaoItem.SourceType == SetuSourceType.FanBox)
                 {
                     //ToDo
-                    return saucenaoItem;
+                    resultList.Add(saucenaoItem);
                 }
-                return saucenaoItem;
+                else
+                {
+                    resultList.Add(saucenaoItem);
+                }
             }
-            return null;
+            return resultList;
         }
 
-
-        public string getDefaultRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, long todayLeft)
+        public string getDefaultRemindMessage(SaucenaoResult saucenaoResult, long todayLeft)
         {
             StringBuilder warnBuilder = new StringBuilder();
-            warnBuilder.Append($" 共找到 {saucenaoResult.MatchCount} 条匹配信息，相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}");
+            warnBuilder.Append($"共找到 {saucenaoResult.MatchCount} 条匹配信息");
             if (BotConfig.SaucenaoConfig.MaxDaily > 0)
             {
                 if (warnBuilder.Length > 0) warnBuilder.Append("，");
@@ -176,22 +182,17 @@ namespace TheresaBot.Main.Business
                 if (warnBuilder.Length > 0) warnBuilder.Append("，");
                 warnBuilder.Append($"CD{BotConfig.SetuConfig.MemberCD}秒");
             }
-            if (warnBuilder.Length > 0)
-            {
-                warnBuilder.Append("\r\n");
-            }
             return warnBuilder.ToString();
         }
 
-        public string getSaucenaoRemindMessage(SaucenaoResult saucenaoResult, SaucenaoItem saucenaoItem, string template, long todayLeft)
+        public string getSaucenaoRemindMessage(SaucenaoResult saucenaoResult, string template, long todayLeft)
         {
+            template = template?.Trim()?.TrimLine();
             template = template.Replace("{MatchCount}", saucenaoResult.MatchCount.ToString());
-            template = template.Replace("{Similarity}", saucenaoItem.Similarity.ToString());
-            template = template.Replace("{SourceType}", Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType));
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SaucenaoConfig.RevokeInterval.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
-            return template + "\r\n";
+            return template;
         }
 
         /// <summary>
@@ -199,12 +200,12 @@ namespace TheresaBot.Main.Business
         /// </summary>
         /// <param name="itemList"></param>
         /// <returns></returns>
-        private List<SaucenaoItem> sortSaucenaoItem(List<SaucenaoItem> itemList)
+        public List<SaucenaoItem> sortSaucenaoItem(List<SaucenaoItem> itemList)
         {
             if (itemList is null) return new List<SaucenaoItem>();
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();
             List<SaucenaoItem> selectList = itemList.OrderByDescending(o => o.Similarity).Take(20).ToList();
-            sortList.AddRange(selectList.Where(o => o.SourceType == SetuSourceType.Pixiv && o.Similarity >= 90).ToList());
+            sortList.AddRange(selectList.Where(o => o.SourceType == SetuSourceType.Pixiv && o.Similarity >= BotConfig.SaucenaoConfig.PixivPriority).ToList());
             sortList.AddRange(selectList.Where(o => o.Similarity >= 80).OrderByDescending(o => o.SourceType));
             sortList.AddRange(selectList.OrderByDescending(o => o.Similarity).ThenBy(o => o.SourceType));
             return sortList.Distinct().ToList();

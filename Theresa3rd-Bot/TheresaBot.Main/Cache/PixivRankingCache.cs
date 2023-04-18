@@ -3,7 +3,7 @@ using TheresaBot.Main.Model.Cache;
 
 namespace TheresaBot.Main.Cache
 {
-    public class PixivRankingCache
+    public static class PixivRankingCache
     {
         private static readonly Dictionary<PixivRankingMode, List<PixivRankingInfo>> CacheDic = new();
 

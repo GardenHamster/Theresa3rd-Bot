@@ -177,13 +177,13 @@ namespace TheresaBot.Main.Handler
             int previewInPage = BotConfig.SetuConfig.PixivUser.PreviewInPage;
             if (previewInPage <= 0) previewInPage = 30;
             List<string> fileInfos = new List<string>();
-            List<PixivUserWorkInfo> workInfos = profileInfo.WorkInfos;
-            if (workInfos.Count == 0) return fileInfos;
-            while (startIndex < workInfos.Count)
+            List<PixivProfileDetail> profileDetails = profileInfo.ProfileDetails;
+            if (profileDetails.Count == 0) return fileInfos;
+            while (startIndex < profileDetails.Count)
             {
                 string fileName = $"pixiv_user_{profileInfo.UserId}_preview_{startIndex}_{startIndex + previewInPage}.jpg";
                 string fullSavePath = Path.Combine(FilePath.GetPixivPreviewSavePath(), fileName);
-                var partList = workInfos.Skip(startIndex).Take(previewInPage).ToList();
+                var partList = profileDetails.Skip(startIndex).Take(previewInPage).ToList();
                 var previewFile = await createPreviewImgAsync(profileInfo, partList, fullSavePath);
                 if (previewFile is not null) fileInfos.Add(previewFile.FullName);
                 startIndex += previewInPage;
@@ -191,11 +191,11 @@ namespace TheresaBot.Main.Handler
             return fileInfos;
         }
 
-        private async Task<FileInfo> createPreviewImgAsync(PixivUserProfileInfo profileInfo, List<PixivUserWorkInfo> workInfos, string fullSavePath)
+        private async Task<FileInfo> createPreviewImgAsync(PixivUserProfileInfo profileInfo, List<PixivProfileDetail> details, string fullSavePath)
         {
             try
             {
-                return await new PixivUserWorkDrawer().DrawPreview(profileInfo, workInfos, fullSavePath);
+                return await new PixivUserWorkDrawer().DrawPreview(profileInfo, details, fullSavePath);
             }
             catch (Exception ex)
             {

@@ -429,7 +429,9 @@ namespace TheresaBot.Main.Business
             workList = workList.Where(o => o.hasBanTag() is null).ToList();
             workList = workList.Where(o => isShowR18 || o.IsR18 == false).ToList();
             workList = workList.OrderByDescending(o => Convert.ToInt32(o.id)).ToList();
-            return new(userId, profileTop.UserName, cacheSeconds, workList);
+            List<PixivProfileDetail> profileDetails = new List<PixivProfileDetail>();
+            for (int i = 0; i < workList.Count; i++) profileDetails.Add(new PixivProfileDetail(workList[i], i + 1));
+            return new(userId, profileTop.UserName, cacheSeconds, profileDetails);
         }
 
         /// <summary>
@@ -746,12 +748,8 @@ namespace TheresaBot.Main.Business
         {
             int startIndex = 0;
             if (eachPage <= 0) return new();
-            var pidList = new List<string>();
-            var workList = profileInfo.WorkInfos.ToList();
-            for (int i = 0; i < workList.Count; i++)
-            {
-                pidList.Add($"No.{(i+1).ToString().PadRight(3, ' ')} {workList[i].id}");
-            }
+            var details = profileInfo.ProfileDetails.ToList();
+            var pidList = details.Select(o => $"No.{o.No.ToString().PadRight(3, ' ')} {o.WorkInfo.id}").ToList();
             List<SetuContent> rankContents = new List<SetuContent>();
             while (startIndex < pidList.Count)
             {

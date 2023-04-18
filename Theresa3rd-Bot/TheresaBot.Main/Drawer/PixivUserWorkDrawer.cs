@@ -10,13 +10,13 @@ namespace TheresaBot.Main.Drawer
     {
         protected override int TitleFontSize => 28;
 
-        public async Task<FileInfo> DrawPreview(PixivUserProfileInfo profileInfo, List<PixivUserWorkInfo> workInfos, string fullSavePath)
+        public async Task<FileInfo> DrawPreview(PixivUserProfileInfo profileInfo, List<PixivProfileDetail> details, string fullSavePath)
         {
             int areaX = 0;
             int areaY = 0;
             int startX = 0;
             int startY = 0;
-            var drawingList = workInfos.Select(o => new PixivUserWorkDrawing(o)).ToList();
+            var drawingList = details.Select(o => new PixivUserWorkDrawing(o)).ToList();
             var arrangeList = await ArrangeDrawingAsync(drawingList);
             int maxRow = arrangeList.Max(o => o.Row);
             int headerAreaHeight = HeaderMargin * 2 + HeaderFontSize;
@@ -49,11 +49,11 @@ namespace TheresaBot.Main.Drawer
                 int row = drawing.Row, column = drawing.Column;
                 bool isHorizontal = drawing.IsHorizontal;
                 SKBitmap originBitmap = drawing.OriginBitmap;
-                PixivUserWorkInfo workInfo = drawing.Detail.WorkInfo;
+                var detail = drawing.Detail;
                 startX = areaX + CellMargin * column + CellWidth * (column - 1);
                 startY = areaY + CellMargin * row + CellHeight * (row - 1);
-                DrawImage(canvas, originBitmap, startX, startY, workInfo.IsR18, isHorizontal);
-                DrawTitle(canvas, workInfo, i, startX, startY);
+                DrawImage(canvas, originBitmap, startX, startY, detail.ProfileDetail.WorkInfo.IsR18, isHorizontal);
+                DrawTitle(canvas, detail.ProfileDetail, startX, startY);
             }
             areaY += workAreaHeight;
 
@@ -85,11 +85,11 @@ namespace TheresaBot.Main.Drawer
             canvas.DrawText(headerText, new SKPoint(x, y), DateTimePaint);
         }
 
-        private void DrawTitle(SKCanvas canvas, PixivUserWorkInfo workInfo, int index, int startX, int startY)
+        private void DrawTitle(SKCanvas canvas, PixivProfileDetail detail, int startX, int startY)
         {
             int x = startX;
             int y = startY;
-            string drawText = $"No.{index + 1} PID:{workInfo.id}";
+            string drawText = $"No.{detail.No} PID:{detail.WorkInfo.id}";
             canvas.DrawText(drawText, new SKPoint(x, y), TitlePaint);
         }
 

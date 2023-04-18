@@ -10,14 +10,14 @@ namespace TheresaBot.Main.Model.Drawing
 {
     public class PixivUserWorkDrawing : BasePixivDrawing
     {
-        public PixivUserWorkInfo WorkInfo { get; set; }
-        public override string PixivId => WorkInfo.id;
-        public override string ImageHttpUrl => WorkInfo.url.ThumbToSmallUrl();
+        public PixivProfileDetail ProfileDetail { get; set; }
+        public override string PixivId => ProfileDetail.WorkInfo.id;
+        public override string ImageHttpUrl => ProfileDetail.WorkInfo.url.ThumbToSmallUrl();
         public override string ImageSavePath { get; protected set; }
 
-        public PixivUserWorkDrawing(PixivUserWorkInfo workInfo)
+        public PixivUserWorkDrawing(PixivProfileDetail detail)
         {
-            this.WorkInfo = workInfo;
+            this.ProfileDetail = detail;
             this.ImageSavePath = ImageHttpUrl.GetPreviewImgSaveName(PixivId);
         }
 

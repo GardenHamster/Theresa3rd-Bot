@@ -35,6 +35,7 @@
 - [x] ascii2d搜图功能(当saucenao中找不到来源时，继续使用ascii2d搜索)
 - [x] 定时色图功能，包括本地色图，lolicon，lolisuki
 - [x] Pixiv日榜/周榜/月榜/AI榜/男性向日榜
+- [x] pixiv画师作品预览
 
 ### 订阅推送功能
 - [x] pixiv画师最新作品推送功能
@@ -48,7 +49,6 @@
 ### TODO
 - [ ] 写一个可在外网访问的Web UI，用于查询和管理订阅列表和黑名单数据等
 - [ ] 做一个涩图收藏功能(包括添加到Pixiv收藏，记录到数据库，保存到本地文件夹)
-- [ ] 做一个画师作品一览图功能
 
 ### 其他摆烂中的功能
 - [ ] 小游戏 - 狼人杀
@@ -74,5 +74,7 @@
 
 ![image](https://user-images.githubusercontent.com/89188316/197740246-9850327e-3cd1-4dd5-9ade-402ce613bf7d.png)
 
-![image](https://user-images.githubusercontent.com/89188316/222678926-469e27f6-1efe-426d-9646-9d2821e9904d.png)
+![image](https://user-images.githubusercontent.com/89188316/232713149-a98093c6-0c6c-4112-b9b6-e4aad91eab84.png)
+
+![image](https://user-images.githubusercontent.com/89188316/232714636-8d8da894-0f58-430b-bc09-1dc765af37c9.png)
 

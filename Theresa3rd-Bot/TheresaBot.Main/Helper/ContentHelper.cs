@@ -42,6 +42,21 @@ namespace TheresaBot.Main.Helper
             return contentList;
         }
 
+        public static List<BaseContent>[] ToBaseContents(this List<SetuContent> setuContents)
+        {
+            var contentLists = new List<List<BaseContent>>();
+            foreach (SetuContent setuContent in setuContents)
+            {
+                contentLists.Add(setuContent.SetuInfos.Concat(setuContent.SetuImages.ToLocalImageContent()).ToList());
+            }
+            return contentLists.ToArray();
+        }
+
+        public static List<BaseContent> ToBaseContent(this List<FileInfo> imgLists)
+        {
+            return imgLists.ToLocalImageContent().Cast<BaseContent>().ToList();
+        }
+
         public static List<LocalImageContent> ToLocalImageContent(this List<FileInfo> imgLists)
         {
             return imgLists.Select(o => new LocalImageContent(o)).ToList();

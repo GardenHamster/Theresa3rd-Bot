@@ -55,32 +55,6 @@ namespace TheresaBot.MiraiHttpApi.Session
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
         }
 
-        public override async Task<int[]> SendGroupMessageAsync(long groupId, SetuContent setuContent, bool sendImgBehind)
-        {
-            if (setuContent is null) return new int[0];
-            List<int> msgIds = new List<int>();
-            List<BaseContent> setuInfos = setuContent.SetuInfos ?? new();
-            List<FileInfo> setuFiles = setuContent.SetuImages ?? new();
-
-            if (sendImgBehind)
-            {
-                int workMsgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, await setuInfos.ToMiraiMessageAsync(UploadTarget.Group));
-                await Task.Delay(1000);
-                List<IChatMessage> imgMsgs = await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Group);
-                int imgMsgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, imgMsgs.ToArray());
-                msgIds.Add(workMsgId);
-                msgIds.Add(imgMsgId);
-            }
-            else
-            {
-                List<IChatMessage> msgList = new List<IChatMessage>();
-                msgList.AddRange(await setuInfos.ToMiraiMessageAsync(UploadTarget.Group));
-                msgList.AddRange(await MiraiHelper.UploadPictureAsync(setuFiles, UploadTarget.Group));
-                msgIds.Add(await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray()));
-            }
-            return msgIds.ToArray();
-        }
-
         public override async Task<int> SendGroupMergeAsync(long groupId, params List<BaseContent>[] contentLists)
         {
             if (contentLists.Length == 0) return 0;
@@ -88,21 +62,6 @@ namespace TheresaBot.MiraiHttpApi.Session
             foreach (var contentList in contentLists)
             {
                 nodeList.Add(new ForwardMessageNode(MiraiConfig.MiraiBotName, MiraiConfig.MiraiBotQQ, DateTime.Now, await contentList.ToMiraiMessageAsync(UploadTarget.Group)));
-            }
-            return await MiraiHelper.Session.SendGroupMessageAsync(groupId, new ForwardMessage(nodeList.ToArray()));
-        }
-
-        public override async Task<int> SendGroupMergeAsync(long groupId, List<SetuContent> setuContents)
-        {
-            var sendContents = setuContents.Where(o => o is not null).ToList();
-            if (sendContents.Count == 0) return 0;
-            List<IForwardMessageNode> nodeList = new();
-            foreach (var content in sendContents)
-            {
-                List<IChatMessage> msgList = new List<IChatMessage>();
-                msgList.AddRange(await content.SetuInfos.ToMiraiMessageAsync(UploadTarget.Group));
-                msgList.AddRange(await content.SetuImages.UploadPictureAsync(UploadTarget.Group));
-                nodeList.Add(new ForwardMessageNode(MiraiConfig.MiraiBotName, MiraiConfig.MiraiBotQQ, DateTime.Now, msgList.ToArray()));
             }
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, new ForwardMessage(nodeList.ToArray()));
         }

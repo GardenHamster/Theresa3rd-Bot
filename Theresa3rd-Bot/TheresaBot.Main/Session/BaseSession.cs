@@ -16,10 +16,6 @@ namespace TheresaBot.Main.Session
 
         public abstract Task<int> SendGroupMergeAsync(long groupId, params List<BaseContent>[] contentLists);
 
-        public abstract Task<int> SendGroupMergeAsync(long groupId, List<SetuContent> setuContents);
-
-        public abstract Task<int[]> SendGroupMessageAsync(long groupId, SetuContent setuContent, bool sendImgBehind);
-
         public abstract Task<int> SendFriendMessageAsync(long memberId, string message);
 
         public abstract Task<int> SendFriendMessageAsync(long memberId, params BaseContent[] contents);

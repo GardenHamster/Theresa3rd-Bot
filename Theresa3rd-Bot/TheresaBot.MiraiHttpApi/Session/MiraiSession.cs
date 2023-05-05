@@ -2,8 +2,6 @@
 using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Session;

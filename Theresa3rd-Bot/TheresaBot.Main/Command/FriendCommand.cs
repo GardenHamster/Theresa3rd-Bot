@@ -3,7 +3,6 @@ using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Command
 {
@@ -26,15 +25,15 @@ namespace TheresaBot.Main.Command
 
         public abstract Task<int> ReplyFriendTemplateAsync(string template, string defaultmsg);
 
-        public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
-        {
-            return await HandlerInvoker.HandleMethod.Invoke(this, session, reporter);
-        }
-
         public override async Task ReplyError(Exception ex, string message = "")
         {
             List<BaseContent> contents = ex.GetErrorContents(message);
             await ReplyFriendMessageAsync(contents);
+        }
+
+        public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
+        {
+            return await HandlerInvoker.HandleMethod.Invoke(this, session, reporter);
         }
 
     }

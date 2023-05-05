@@ -4,14 +4,12 @@ using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
-using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Command

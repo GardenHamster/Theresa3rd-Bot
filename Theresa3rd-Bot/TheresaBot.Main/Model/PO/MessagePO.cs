@@ -2,11 +2,11 @@
 
 namespace TheresaBot.Main.Model.PO
 {
-    [SugarTable("message_record")]
-    public class MessageRecordPO : BasePO
+    [SugarTable("message")]
+    public class MessagePO : BasePO
     {
-        [SugarColumn(IsNullable = false, ColumnDescription = "消息ID")]
-        public long MsgId { get; set; }
+        [SugarColumn(IsNullable = false, ColumnDescription = "消息编号")]
+        public long MsgCode { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDescription = "发送群ID")]
         public long GroupId { get; set; }
@@ -22,11 +22,5 @@ namespace TheresaBot.Main.Model.PO
 
         [SugarColumn(IsNullable = false, ColumnDescription = "发送时间")]
         public DateTime CreateDate { get; set; }
-
-        [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "包含的图片地址")]
-        public string ImageUrls { get; set; }
-
-        [SugarColumn(IsNullable = false, Length = 50, ColumnDescription = "包含的PixivId")]
-        public string PixivId { get; set; }
     }
 }

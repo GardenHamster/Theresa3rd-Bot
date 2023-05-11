@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{IllustTitle}", loliconData.title);
             template = template.Replace("{PixivId}", loliconData.pid.ToString());
             template = template.Replace("{UserName}", loliconData.author);
-            template = template.Replace("{UserId}", loliconData.uid);
+            template = template.Replace("{UserId}", loliconData.uid.ToString());
             template = template.Replace("{SizeMB}", "??");
             template = template.Replace("{Tags}", loliconData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum));
             template = template.Replace("{Urls}", loliconData.urls.original.ToOriginProxyUrl());

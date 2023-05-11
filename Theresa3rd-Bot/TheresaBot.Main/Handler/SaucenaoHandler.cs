@@ -149,8 +149,7 @@ namespace TheresaBot.Main.Handler
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, command.GroupId, command.MemberId));
                     workMsgs.AddRange(getSimpleMessage(sortList.Take(BotConfig.SaucenaoConfig.SaucenaoReadCount).ToList()));
-                    SetuContent setuContent = new SetuContent(workMsgs);
-                    Task sendSimpleTask = sendSetuAndRevoke(command, setuContent);
+                    Task sendSimpleTask = sendAndRevoke(command, workMsgs);
                     return true;
                 }
 
@@ -168,7 +167,7 @@ namespace TheresaBot.Main.Handler
                     setuContents.Add(await getSaucenaoContentAsync(command, saucenaoItems[i]));
                 }
 
-                Task sendDetailTask = sendSaucenaoAndRevoke(command, setuContents);
+                Task sendDetailTask = sendAndRevoke(command, setuContents);
                 return true;
             }
             catch (Exception ex)
@@ -224,7 +223,7 @@ namespace TheresaBot.Main.Handler
                 List<FileInfo> setuFiles = saucenaoItem.Similarity < minSimilarity ? new() : await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
                 workMsgs.Add(getSourceMessage(saucenaoItem));
                 workMsgs.AddRange(getPixivMessageAsync(saucenaoItem));
-                return new(workMsgs, setuFiles);
+                return new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
             }
             else
             {
@@ -278,8 +277,7 @@ namespace TheresaBot.Main.Handler
                     List<BaseContent> simpleList = new List<BaseContent>();
                     simpleList.Add(new PlainContent($"ascii2d中搜索到的前{readCount}条结果如下："));
                     simpleList.AddRange(getSimpleMessage(ascii2dItems));
-                    SetuContent setuContent = new SetuContent(simpleList);
-                    Task sendSimpleTask = sendSetuAndRevoke(command, setuContent);
+                    Task sendSimpleTask = sendAndRevoke(command, simpleList);
                     return;
                 }
 
@@ -311,7 +309,7 @@ namespace TheresaBot.Main.Handler
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 workMsgs.Add(new PlainContent(resultBuilder.ToString()));
-                Task sendTask = sendSetuAndRevoke(command, new SetuContent(workMsgs));
+                Task sendTask = sendAndRevoke(command, workMsgs);
             }
             catch (Exception ex)
             {
@@ -330,13 +328,13 @@ namespace TheresaBot.Main.Handler
         /// <param name="args"></param>
         /// <param name="saucenaoMessage"></param>
         /// <returns></returns>
-        private async Task sendSetuAndRevoke(GroupCommand command, SetuContent setuContent)
+        private async Task sendAndRevoke(GroupCommand command, List<BaseContent> contentList)
         {
-            Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(setuContent, BotConfig.SaucenaoConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+            await command.ReplyGroupMessageAsync(contentList, BotConfig.SaucenaoConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);
-                Task sendTempTask = command.ReplyTempMessageAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
+                await command.SendTempMessageAsync(contentList);
             }
         }
 
@@ -347,13 +345,14 @@ namespace TheresaBot.Main.Handler
         /// <param name="args"></param>
         /// <param name="saucenaoMessage"></param>
         /// <returns></returns>
-        private async Task sendSaucenaoAndRevoke(GroupCommand command, List<SetuContent> setuContents)
+        private async Task sendAndRevoke(GroupCommand command, List<SetuContent> setuContents)
         {
-            Task sendGroupTask = command.ReplyGroupSaucenaoAndRevokeAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
+            int msgId = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
+            Task recordTask = recordBusiness.AddPixivRecord(setuContents, msgId);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);
-                Task sendTempTask = command.ReplyTempSaucenaoAsync(setuContents);
+                await command.SendTempSetuAsync(setuContents);
             }
         }
 

@@ -16,8 +16,11 @@ namespace TheresaBot.Main.Handler
 {
     internal abstract class SetuHandler : BaseHandler
     {
+        protected RecordBusiness recordBusiness;
+
         public SetuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
+            recordBusiness = new RecordBusiness();
         }
 
         public async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, List<SetuContent> headerContents, long groupId, int eachPage = 5)
@@ -79,14 +82,15 @@ namespace TheresaBot.Main.Handler
 
         public async Task<int[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
         {
-            int[] msgIdArr = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
-            if (msgIdArr.Where(o => o < 0).Any() && BotConfig.PixivConfig.ImgResend != ResendType.None)
+            int[] msgIds = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
+            if (msgIds.Where(o => o < 0).Any() && BotConfig.PixivConfig.ImgResend != ResendType.None)
             {
                 await Task.Delay(1000);
                 SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);
-                msgIdArr = await Session.SendGroupMessageAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
+                msgIds = await Session.SendGroupMessageAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
             }
-            return msgIdArr;
+            Task recordTask = recordBusiness.AddPixivRecord(setuContent, msgIds);
+            return msgIds;
         }
 
         private async Task<int[]> SendGroupMergeSetuAsync(List<SetuContent> setuContents, long groupId)
@@ -227,17 +231,11 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                List<BaseContent> chainList = new List<BaseContent>();
                 string template = timingSetuTimer.TimingMsg?.Trim()?.TrimLine();
-                if (string.IsNullOrWhiteSpace(template))
-                {
-                    if (chainList.Count == 0) return;
-                    await Session.SendGroupMessageAsync(groupId, chainList, timingSetuTimer.AtAll);
-                    return;
-                }
+                if (string.IsNullOrWhiteSpace(template)) return;
                 template = template.Replace("{Tags}", tags);
                 template = template.Replace("{SourceName}", timingSetuTimer.Source.GetTypeName());
-                chainList.AddRange(template.SplitToChainAsync());
+                List<BaseContent> chainList = new List<BaseContent>(template.SplitToChainAsync());
                 await Session.SendGroupMessageAsync(groupId, chainList, timingSetuTimer.AtAll);
             }
             catch (Exception ex)
@@ -304,7 +302,7 @@ namespace TheresaBot.Main.Handler
                 int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
                 for (int i = 0; i < maxCount && i < originUrls.Count; i++)
                 {
-                    imgList.Add(await PixivHelper.DownPixivImgBySizeAsync(workInfo.PixivId, originUrls[i]));
+                    imgList.Add(await PixivHelper.DownPixivImgBySizeAsync(workInfo.PixivId.ToString(), originUrls[i]));
                 }
                 return imgList;
             }
@@ -327,18 +325,17 @@ namespace TheresaBot.Main.Handler
             {
                 int gifSigma = 15;
                 bool isR18 = workInfo.IsR18;
-                string pixivIdStr = workInfo.PixivId;
-                int pixivId = Convert.ToInt32(pixivIdStr);
+                int pixivId = workInfo.PixivId;
                 string fullGifSavePath = Path.Combine(FilePath.GetPixivImgSavePath(pixivId), $"{pixivId}.gif");
                 if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
-                PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivIdStr);
+                PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId.ToString());
                 string zipHttpUrl = pixivUgoiraMetaDto.src;
 
-                FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivIdStr, zipHttpUrl);
+                FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivId.ToString(), zipHttpUrl);
                 if (zipFile == null) return null;
 
-                string unZipDirPath = Path.Combine(FilePath.GetTempSavePath(), pixivIdStr);
+                string unZipDirPath = Path.Combine(FilePath.GetTempSavePath(), pixivId.ToString());
                 ZipHelper.ZipToFile(zipFile.FullName, unZipDirPath);
 
                 DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);

@@ -59,12 +59,11 @@ namespace TheresaBot.Main.Handler
             StringBuilder menuBuilder = new StringBuilder();
             menuBuilder.AppendLine($"超级管理员的功能如下：");
             menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.Miyoushe.AddCommands)}】订阅米游社用户");
-            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.Miyoushe.RmCommands)}】退订米游社用户");
             menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.PixivUser.AddCommands)}】订阅P站画师");
             menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.PixivUser.SyncCommands)}】订阅所有P站已关注的画师");
-            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.PixivUser.RmCommands)}】退订P站画师");
             menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.PixivTag.AddCommands)}】订阅P站标签");
-            menuBuilder.AppendLine($"【{joinCommands(BotConfig.SubscribeConfig.PixivTag.RmCommands)}】退订P站标签");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.ManageConfig.ListSubCommands)}】查询订阅");
+            menuBuilder.AppendLine($"【{joinCommands(BotConfig.ManageConfig.RemoveSubCommands)}】取消订阅");
             menuBuilder.AppendLine($"【{joinCommands(BotConfig.ManageConfig.DisableMemberCommands)}】拉黑成员");
             menuBuilder.AppendLine($"【{joinCommands(BotConfig.ManageConfig.EnableMemberCommands)}】解除拉黑");
             menuBuilder.AppendLine($"【{joinCommands(BotConfig.ManageConfig.DisableTagCommands)}】屏蔽涩图标签");

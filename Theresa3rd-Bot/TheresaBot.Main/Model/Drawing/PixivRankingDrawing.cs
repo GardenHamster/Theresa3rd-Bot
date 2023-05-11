@@ -11,7 +11,7 @@ namespace TheresaBot.Main.Model.Drawing
     public class PixivRankingDrawing : BasePixivDrawing
     {
         public PixivRankingDetail RankingDetail { get; set; }
-        public override string PixivId => RankingDetail.WorkInfo.PixivId;
+        public override string PixivId => RankingDetail.WorkInfo.PixivId.ToString();
         public override string ImageHttpUrl => RankingDetail.RankingContent.url;
         public override string ImageSavePath { get; protected set; }
 

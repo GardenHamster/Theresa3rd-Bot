@@ -636,9 +636,9 @@ namespace TheresaBot.Main.Business
             SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
             subscribeRecord.Title = StringHelper.filterEmoji(workInfo.illustTitle);
             subscribeRecord.Content = subscribeRecord.Title;
-            subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId);
-            subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId);
-            subscribeRecord.DynamicCode = workInfo.illustId;
+            subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId.ToString());
+            subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId.ToString());
+            subscribeRecord.DynamicCode = workInfo.illustId.ToString();
             subscribeRecord.DynamicType = SubscribeDynamicType.插画;
             return subscribeRecord;
         }
@@ -703,7 +703,7 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{IllustTitle}", pixivWorkInfo.illustTitle);
-            template = template.Replace("{PixivId}", pixivWorkInfo.illustId);
+            template = template.Replace("{PixivId}", pixivWorkInfo.illustId.ToString());
             template = template.Replace("{UserName}", pixivWorkInfo.userName);
             template = template.Replace("{UserId}", pixivWorkInfo.userId.ToString());
             template = template.Replace("{CreateTime}", pixivWorkInfo.createDate.ToSimpleString());

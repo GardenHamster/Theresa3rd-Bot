@@ -60,11 +60,11 @@ namespace TheresaBot.Main.Handler
                 List<FileInfo> setuFiles = new() { setuInfo.FileInfo };
 
                 SetuContent setuContent = new SetuContent(workMsgs, setuFiles);
-                Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                Task sendGroupTask = command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = command.ReplyTempMessageAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    Task sendTempTask = command.SendTempSetuAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
                 }
 
                 CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);

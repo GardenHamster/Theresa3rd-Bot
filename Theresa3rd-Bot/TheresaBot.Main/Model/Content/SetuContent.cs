@@ -12,6 +12,8 @@ namespace TheresaBot.Main.Model.Content
 
         public List<FileInfo> SetuImages { get; set; }
 
+        protected SetuContent() { }
+
         public SetuContent(string setuInfo)
         {
             this.SetuInfos = new() { new PlainContent(setuInfo) };

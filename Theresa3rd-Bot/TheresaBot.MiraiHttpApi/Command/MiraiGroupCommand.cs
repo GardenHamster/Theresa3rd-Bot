@@ -81,45 +81,23 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList);
         }
 
-        public override async Task<int> ReplyGroupMessageAndRevokeAsync(List<BaseContent> contentList, int revokeInterval, bool isAt = false)
-        {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            if (isAt) msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await contentList.ToMiraiMessageAsync(UploadTarget.Group));
-            int msgId = await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            if (revokeInterval > 0)
-            {
-                Task revokeTask = RevokeGroupMessageAsync(new() { msgId }, GroupId, revokeInterval);
-            }
-            return msgId;
-        }
-
-        public override async Task<int> ReplyTempMessageAsync(List<BaseContent> contentList)
+        public override async Task<int> SendTempMessageAsync(List<BaseContent> contentList)
         {
             IChatMessage[] msgArr = await contentList.ToMiraiMessageAsync(UploadTarget.Group);
             return await Session.SendTempMessageAsync(MemberId, GroupId, msgArr);
         }
 
-        public override async Task RevokeGroupMessageAsync(int messageId, long groupId)
+        public override async Task RevokeGroupMessageAsync(int messageId, long groupId, int revokeInterval = 0)
         {
             try
             {
+                if (messageId <= 0) return;
+                if (revokeInterval > 0) await Task.Delay(revokeInterval * 1000);
                 await Session.RevokeMessageAsync(messageId, groupId);
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "群消息撤回失败");
-            }
-        }
-
-        public override async Task RevokeGroupMessageAsync(List<int> messageIds, long groupId, int revokeInterval = 0)
-        {
-            if (revokeInterval > 0) await Task.Delay(revokeInterval * 1000);
-            foreach (int messageId in messageIds)
-            {
-                if (messageId <= 0) continue;
-                await RevokeGroupMessageAsync(messageId, groupId);
-                await Task.Delay(500);
             }
         }
 

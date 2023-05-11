@@ -13,10 +13,10 @@ namespace TheresaBot.Main.Model.Lolisuki
 
     public class LolisukiData : BaseWorkInfo
     {
-        public long pid { get; set; }
+        public int pid { get; set; }
         public int p { get; set; }
         public int total { get; set; }
-        public string uid { get; set; }
+        public int uid { get; set; }
         public string author { get; set; }
         public int level { get; set; }
         public LolisukiTaste taste { get; set; }
@@ -37,7 +37,10 @@ namespace TheresaBot.Main.Model.Lolisuki
 
         public override bool IsGif => gif;
         public override bool IsAI => aiType > 1;
-        public override string PixivId => pid.ToString();
+        public override int PixivId => pid;
+        public override int UserId => uid;
+        public override string Title => title;
+        public override string UserName => author;
 
         public override bool IsR18
         {

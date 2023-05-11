@@ -9,7 +9,7 @@ namespace TheresaBot.Main.Model.Pixiv
         public int bookmarkCount { get; set; }
         public int viewCount { get; set; }
         public int likeCount { get; set; }
-        public string illustId { get; set; }
+        public int illustId { get; set; }
         public string illustTitle { get; set; }
         public int illustType { get; set; }
         public string illustComment { get; set; }
@@ -28,16 +28,14 @@ namespace TheresaBot.Main.Model.Pixiv
 
         public bool IsIllust => illustType == 0;
 
-        //xRestrict=1为R18,xRestrict=2为R18G
         public override bool IsR18 => xRestrict > 0 || getTags().IsR18();
-
         public override bool IsGif => illustType == 2;
-
         public override bool IsAI => aiType > 1 || getTags().IsAI();
-
         public override bool IsImproper => xRestrict > 1 || getTags().IsImproper();
-
-        public override string PixivId => illustId;
+        public override int PixivId => illustId;
+        public override int UserId => userId;
+        public override string Title => illustTitle;
+        public override string UserName => userName;
 
         public override List<string> getTags() => tags?.getTags() ?? new List<string>();
 

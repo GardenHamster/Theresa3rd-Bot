@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{IllustTitle}", lolisukiData.title);
             template = template.Replace("{PixivId}", lolisukiData.pid.ToString());
             template = template.Replace("{UserName}", lolisukiData.author);
-            template = template.Replace("{UserId}", lolisukiData.uid);
+            template = template.Replace("{UserId}", lolisukiData.uid.ToString());
             template = template.Replace("{Level}", lolisukiData.level.ToString());
             template = template.Replace("{Taste}", lolisukiData.taste.ToString());
             template = template.Replace("{SizeMB}", "??");

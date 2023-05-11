@@ -78,7 +78,7 @@ namespace TheresaBot.Main.Handler
                     if (isAISetu && groupId.IsShowAISetu() == false) continue;
                     bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                     List<FileInfo> imgList = isShowImg ? setuFiles : new();
-                    SetuContent setuContent = new SetuContent(workMsgs, imgList);
+                    PixivSetuContent setuContent = new PixivSetuContent(workMsgs, imgList, pixivWorkInfo);
                     await SendGroupSetuAsync(setuContent, groupId);
                 }
                 catch (Exception ex)
@@ -167,8 +167,9 @@ namespace TheresaBot.Main.Handler
                     if (isAISetu && groupId.IsShowAISetu() == false) continue;
                     bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                     List<FileInfo> imgList = isShowImg ? setuFiles : new();
-                    SetuContent setuContent = new SetuContent(workMsgs, imgList);
-                    await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    PixivSetuContent setuContent = new PixivSetuContent(workMsgs, imgList, pixivWorkInfo);
+                    int[] msgIds = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    Task recordTask = recordBusiness.AddPixivRecord(setuContent, msgIds);
                 }
                 catch (Exception ex)
                 {

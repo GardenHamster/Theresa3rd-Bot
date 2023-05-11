@@ -9,18 +9,46 @@ namespace TheresaBot.Main.Helper
 {
     public static class CommandHelper
     {
-        public static async Task ReplyGroupSetuAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = true)
+        public static async Task<int> ReplyGroupMessageAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool sendImgBehind, bool isAt = true)
         {
-            int[] msgIdArr = await command.ReplyGroupMessageAndRevokeAsync(setuContent, revokeInterval, sendImgBehind, isAt);
-            if (msgIdArr.Where(o => o < 0).Any() && BotConfig.PixivConfig.ImgResend != ResendType.None)
+            return await command.ReplyAndRevokeAsync(contentList, revokeInterval, isAt);
+        }
+
+        public static async Task<int[]> ReplyGroupSetuAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = true)
+        {
+            int[] msgIds = await command.ReplyAndRevokeAsync(setuContent, revokeInterval, sendImgBehind, isAt);
+            if (msgIds.Where(o => o < 0).Any() && BotConfig.PixivConfig.ImgResend != ResendType.None)
             {
                 await Task.Delay(1000);
                 SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);
-                msgIdArr = await command.ReplyGroupMessageAndRevokeAsync(resendContent, revokeInterval, sendImgBehind, isAt);
+                msgIds = await command.ReplyAndRevokeAsync(resendContent, revokeInterval, sendImgBehind, isAt);
             }
+            return msgIds;
         }
 
-        public static async Task<int[]> ReplyGroupMessageAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
+        public static async Task<int> ReplyGroupSetuAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = true)
+        {
+            int msgId = await command.ReplyAndRevokeAsync(setuContents, revokeInterval, isAt);
+            if (msgId < 0 && BotConfig.PixivConfig.ImgResend != ResendType.None)
+            {
+                await Task.Delay(1000);
+                List<SetuContent> resendContents = setuContents.ToResendContent(BotConfig.PixivConfig.ImgResend);
+                msgId = await command.ReplyAndRevokeAsync(setuContents, revokeInterval, isAt);
+            }
+            return msgId;
+        }
+
+        private static async Task<int> ReplyAndRevokeAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool isAt = false)
+        {
+            var msgId = await command.ReplyGroupMessageAsync(contentList, isAt);
+            if (revokeInterval > 0)
+            {
+                Task revokeTask = command.RevokeGroupMessageAsync(msgId, command.GroupId, revokeInterval);
+            }
+            return msgId;
+        }
+
+        private static async Task<int[]> ReplyAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
         {
             List<int> msgIds = new List<int>();
             List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
@@ -44,11 +72,39 @@ namespace TheresaBot.Main.Helper
             {
                 Task revokeTask = command.RevokeGroupMessageAsync(msgIds, command.GroupId, revokeInterval);
             }
-
             return msgIds.ToArray();
         }
 
-        public static async Task<int[]> ReplyTempMessageAsync(this GroupCommand command, SetuContent setuContent, bool sendImgBehind)
+        private static async Task<int> ReplyAndRevokeAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = false)
+        {
+            var contentList = new List<BaseContent>();
+            foreach (var setuContent in setuContents)
+            {
+                contentList.AddRange(setuContent.SetuInfos ?? new());
+                contentList.AddRange(setuContent.SetuImages.ToLocalImageContent().Cast<BaseContent>());
+            }
+
+            var msgId = await command.ReplyGroupMessageAsync(contentList, isAt);
+            if (revokeInterval > 0)
+            {
+                Task revokeTask = command.RevokeGroupMessageAsync(msgId, command.GroupId, revokeInterval);
+            }
+            return msgId;
+        }
+
+        public static async Task SendTempSetuAsync(this GroupCommand command, List<SetuContent> setuContents)
+        {
+            List<BaseContent> contentList = setuContents.ToBaseContent();
+            int msgId = await command.SendTempMessageAsync(contentList);
+            if (msgId < 0 && BotConfig.PixivConfig.ImgResend != ResendType.None)
+            {
+                await Task.Delay(1000);
+                List<SetuContent> resendContents = setuContents.ToResendContent(BotConfig.PixivConfig.ImgResend);
+                await command.SendTempMessageAsync(resendContents.ToBaseContent());
+            }
+        }
+
+        public static async Task<int[]> SendTempSetuAsync(this GroupCommand command, SetuContent setuContent, bool sendImgBehind)
         {
             try
             {
@@ -59,14 +115,14 @@ namespace TheresaBot.Main.Helper
 
                 if (sendImgBehind)
                 {
-                    msgIds.Add(await command.ReplyTempMessageAsync(msgContents));
+                    msgIds.Add(await command.SendTempMessageAsync(msgContents));
                     await Task.Delay(1000);
-                    msgIds.Add(await command.ReplyTempMessageAsync(imgContents));
+                    msgIds.Add(await command.SendTempMessageAsync(imgContents));
                 }
                 else
                 {
                     var contentList = msgContents.Concat(imgContents).ToList();
-                    msgIds.Add(await command.ReplyTempMessageAsync(contentList));
+                    msgIds.Add(await command.SendTempMessageAsync(contentList));
                 }
                 return msgIds.ToArray();
             }
@@ -77,27 +133,12 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        public static async Task ReplyGroupSaucenaoAndRevokeAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = true)
+        public static async Task RevokeGroupMessageAsync(this GroupCommand command, List<int> messageIds, long groupId, int revokeInterval = 0)
         {
-            List<BaseContent> contentList = setuContents.ToBaseContent();
-            int msgId = await command.ReplyGroupMessageAndRevokeAsync(contentList, revokeInterval, isAt);
-            if (msgId < 0 && BotConfig.PixivConfig.ImgResend != ResendType.None)
+            foreach (int messageId in messageIds)
             {
-                await Task.Delay(1000);
-                List<SetuContent> resendContents = setuContents.ToResendContent(BotConfig.PixivConfig.ImgResend);
-                await command.ReplyGroupMessageAndRevokeAsync(resendContents.ToBaseContent(), revokeInterval, isAt);
-            }
-        }
-
-        public static async Task ReplyTempSaucenaoAsync(this GroupCommand command, List<SetuContent> setuContents)
-        {
-            List<BaseContent> contentList = setuContents.ToBaseContent();
-            int msgId = await command.ReplyTempMessageAsync(contentList);
-            if (msgId < 0 && BotConfig.PixivConfig.ImgResend != ResendType.None)
-            {
-                await Task.Delay(1000);
-                List<SetuContent> resendContents = setuContents.ToResendContent(BotConfig.PixivConfig.ImgResend);
-                await command.ReplyTempMessageAsync(resendContents.ToBaseContent());
+                await command.RevokeGroupMessageAsync(messageId, groupId, revokeInterval);
+                await Task.Delay(500);
             }
         }
 

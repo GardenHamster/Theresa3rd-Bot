@@ -2,11 +2,11 @@
 
 namespace TheresaBot.Main.Model.PO
 {
-    [SugarTable("message_image")]
-    public class MessageImagePO : BasePO
+    [SugarTable("image_record")]
+    public class ImageRecordPO : BasePO
     {
         [SugarColumn(IsNullable = false, ColumnDescription = "消息ID")]
-        public int MsgId { get; set; }
+        public long MessageId { get; set; }
 
         [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "图片Http地址")]
         public string HttpUrl { get; set; }

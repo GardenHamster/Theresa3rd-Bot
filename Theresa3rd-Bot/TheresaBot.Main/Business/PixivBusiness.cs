@@ -51,7 +51,8 @@ namespace TheresaBot.Main.Business
         /// <summary>
         /// 随机获取一个指定标签中的作品
         /// </summary>
-        /// <param name="e"></param>
+        /// <param name="includeR18"></param>
+        /// <param name="includeAI"></param>
         /// <returns></returns>
         public async Task<PixivWorkInfo> getRandomWorkInTagsAsync(bool includeR18, bool includeAI)
         {

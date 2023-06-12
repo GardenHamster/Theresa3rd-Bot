@@ -102,6 +102,7 @@ namespace TheresaBot.Main.Handler
                 List<SetuContent> resendContents = GetResendContent(setuContents);
                 msgId = await Session.SendGroupMergeAsync(groupId, resendContents);
             }
+            Task recordTask = recordBusiness.AddPixivRecord(setuContents, msgId);
             return new[] { msgId };
         }
 
@@ -250,11 +251,10 @@ namespace TheresaBot.Main.Handler
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static long GetSetuLeftToday(long groupId, long memberId)
+        public long GetSetuLeftToday(long groupId, long memberId)
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
             if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(groupId)) return BotConfig.SetuConfig.MaxDaily;
-            RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
             int todayUseCount = requestRecordBusiness.getUsedCountToday(groupId, memberId, CommandType.Setu);
             long leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
@@ -266,10 +266,9 @@ namespace TheresaBot.Main.Handler
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static int GetSaucenaoLeftToday(long groupId, long memberId)
+        public int GetSaucenaoLeftToday(long groupId, long memberId)
         {
             if (BotConfig.SaucenaoConfig.MaxDaily == 0) return 0;
-            RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
             int todayUseCount = requestRecordBusiness.getUsedCountToday(groupId, memberId, CommandType.Saucenao);
             int leftToday = BotConfig.SaucenaoConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;

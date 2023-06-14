@@ -82,7 +82,7 @@ namespace TheresaBot.Main.Handler
                 else if (notFoundList.Count > 0 && await CheckContinueAscii2d(command, notFoundList))
                 {
                     await command.ReplyGroupMessageAsync($"Saucenao共有{notFoundList.Count}张图片搜索失败，正在通过ascii2d尝试搜索剩余图片...");
-                    for (int i = 0; i < imgList.Count; i++) await searchWithAscii2d(command, imgList[i]);
+                    for (int i = 0; i < notFoundList.Count; i++) await searchWithAscii2d(command, notFoundList[i]);
                 }
                 else if (notFoundList.Count > 0)
                 {

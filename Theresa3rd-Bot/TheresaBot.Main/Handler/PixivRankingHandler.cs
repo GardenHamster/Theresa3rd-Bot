@@ -30,63 +30,63 @@ namespace TheresaBot.Main.Handler
         {
             PixivRankingMode rankingMode = PixivRankingMode.Daily;
             PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Daily;
-            await replyRankingInfo(command, rankingMode, rankingItem);
+            await replyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task sendDailyAIRanking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.DailyAI;
             PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.DailyAI;
-            await replyRankingInfo(command, rankingMode, rankingItem);
+            await replyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task sendMaleRanking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Male;
             PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Male;
-            await replyRankingInfo(command, rankingMode, rankingItem);
+            await replyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task sendWeeklyRanking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Weekly;
             PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Weekly;
-            await replyRankingInfo(command, rankingMode, rankingItem);
+            await replyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task sendMonthlyRanking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Monthly;
             PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Monthly;
-            await replyRankingInfo(command, rankingMode, rankingItem);
+            await replyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task sendDailyR18Ranking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Daily_R18;
             PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Daily;
-            await replyRankingInfo(command, rankingMode, rankingItem);
+            await replyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task sendDailyAIR18Ranking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.DailyAI_R18;
             PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.DailyAI;
-            await replyRankingInfo(command, rankingMode, rankingItem);
+            await replyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task sendMaleR18Ranking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Male_R18;
             PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Male;
-            await replyRankingInfo(command, rankingMode, rankingItem);
+            await replyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task sendWeeklyR18Ranking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Weekly_R18;
             PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Weekly;
-            await replyRankingInfo(command, rankingMode, rankingItem);
+            await replyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task handleRankingSubscribeAsync(PixivRankingTimer rankingTimer, PixivRankingItem rankingItem, PixivRankingMode rankingMode)
@@ -192,21 +192,43 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task replyRankingInfo(GroupCommand command, PixivRankingMode rankingMode, PixivRankingItem rankingItem)
+        private async Task replyRanking(GroupCommand command, PixivRankingMode rankingMode, PixivRankingItem rankingItem)
+        {
+            var dateStr = string.Empty;
+            var idStr = string.Empty;
+
+            var paramArr = command.Params;
+            if (paramArr.Length > 1)
+            {
+                dateStr = paramArr[0];
+                idStr = paramArr[1];
+            }
+            else
+            {
+                idStr = paramArr[0];
+            }
+
+            if (string.IsNullOrEmpty(idStr))
+            {
+                await replyRankingPreview(command, rankingMode, rankingItem, dateStr);
+            }
+            else
+            {
+                await replyRankingDetail(command, rankingMode, rankingItem, dateStr, idStr);
+            }
+        }
+
+        private async Task replyRankingPreview(GroupCommand command, PixivRankingMode rankingMode, PixivRankingItem rankingItem, string search_date)
         {
             try
             {
-                string search_date = command.KeyWord;
                 CoolingCache.SetPixivRankingHanding();
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);
-                if (string.IsNullOrWhiteSpace(BotConfig.PixivRankingConfig.ProcessingMsg) == false)
-                {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.PixivRankingConfig.ProcessingMsg);
-                }
 
                 PixivRankingInfo pixivRankingInfo = PixivRankingCache.GetCache(rankingMode, search_date);
                 if (pixivRankingInfo == null)
                 {
+                    await command.ReplyProcessingMessageAsync(BotConfig.PixivRankingConfig.ProcessingMsg);
                     pixivRankingInfo = await rankingBusiness.getRankingInfo(rankingItem, rankingMode, search_date);
                     PixivRankingCache.AddCache(rankingMode, pixivRankingInfo, search_date);
                 }
@@ -250,6 +272,45 @@ namespace TheresaBot.Main.Handler
                 CoolingCache.SetPixivRankingHandFinish();
                 CoolingCache.SetHandFinish(command.GroupId, command.MemberId);
             }
+        }
+
+        private async Task replyRankingDetail(GroupCommand command, PixivRankingMode rankingMode, PixivRankingItem rankingItem, string search_date, string idStr)
+        {
+            var idList = idStr.SplitToIdList();
+            if (idList.Count == 0)
+            {
+                await command.ReplyGroupMessageWithAtAsync($"没有检测到序号，你可以使用【#日榜 20230601 11,45,14】的格式获取指定序号的作品详情");
+                return;
+            }
+
+            PixivRankingInfo pixivRankingInfo = PixivRankingCache.GetCache(rankingMode, search_date);
+            if (pixivRankingInfo == null)
+            {
+                await command.ReplyProcessingMessageAsync(BotConfig.PixivRankingConfig.ProcessingMsg);
+                pixivRankingInfo = await rankingBusiness.getRankingInfo(rankingItem, rankingMode, search_date);
+                PixivRankingCache.AddCache(rankingMode, pixivRankingInfo, search_date);
+            }
+
+            var rankingDetails = pixivRankingInfo.RankingDetails.Where(o => idList.Contains(o.RankingContent.rank)).ToList();
+            if (rankingDetails.Count == 0)
+            {
+                await command.ReplyGroupMessageWithAtAsync($"当前榜单中没有不存在指定序号的作品");
+                return;
+            }
+
+            string template = BotConfig.PixivConfig.Template;
+            var setuContents = new List<SetuContent>();
+            foreach (var rankingDetail in rankingDetails)
+            {
+                var pixivWorkInfo = rankingDetail.WorkInfo;
+                var setuInfo = new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, template));
+                var setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
+                SetuContent setuContent = new PixivSetuContent(setuInfo, setuFiles, pixivWorkInfo);
+                setuContents.Add(setuContent);
+            }
+
+            int msgId = await Session.SendGroupMergeAsync(command.GroupId, setuContents);
+            Task recordTask = recordBusiness.AddPixivRecord(setuContents, msgId);
         }
 
         private async Task<List<string>> createPreviewImgAsync(PixivRankingInfo rankingInfo)

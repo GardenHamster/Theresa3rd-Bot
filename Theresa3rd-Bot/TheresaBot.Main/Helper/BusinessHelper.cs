@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
@@ -144,6 +145,35 @@ namespace TheresaBot.Main.Helper
             if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate) return false;
             if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0) return false;
             return true;
+        }
+
+        /// <summary>
+        /// 判断字符串是否为符合yyyyMMdd格式的日期字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool isShortDateStr(this string str)
+        {
+            DateTime outTime = DateTime.Now;
+            return DateTime.TryParseExact(str, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out outTime);
+        }
+
+        /// <summary>
+        /// 将Id字符串通过逗号拆分成一个int集合
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static List<int> SplitToIdList(this string str)
+        {
+            if (string.IsNullOrEmpty(str)) return new();
+            var splitArr = str.Trim().Split(new char[] { '，', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var numList = new List<int>();
+            foreach (var item in splitArr)
+            {
+                int num = 0;
+                if (int.TryParse(item, out num)) numList.Add(num);
+            }
+            return numList;
         }
 
         /// <summary>

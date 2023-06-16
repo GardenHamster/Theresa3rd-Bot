@@ -9,6 +9,12 @@ namespace TheresaBot.Main.Helper
 {
     public static class CommandHelper
     {
+        public static async Task ReplyProcessingMessageAsync(this GroupCommand command, string template)
+        {
+            if (string.IsNullOrWhiteSpace(template) == false) return;
+            await command.ReplyGroupTemplateWithAtAsync(template);
+        }
+
         public static async Task<int> ReplyGroupMessageAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool sendImgBehind, bool isAt = true)
         {
             return await command.ReplyAndRevokeAsync(contentList, revokeInterval, isAt);

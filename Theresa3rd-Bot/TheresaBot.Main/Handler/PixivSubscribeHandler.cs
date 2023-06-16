@@ -108,7 +108,7 @@ namespace TheresaBot.Main.Handler
                     }
                     finally
                     {
-                        Thread.Sleep(2000);
+                        await Task.Delay(2000);
                     }
                 }
                 if (pixivUserIdArr.Length > 1)

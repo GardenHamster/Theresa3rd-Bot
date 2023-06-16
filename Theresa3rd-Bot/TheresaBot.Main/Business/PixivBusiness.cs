@@ -203,7 +203,7 @@ namespace TheresaBot.Main.Business
             int total = pageOne.getIllust().total;
             int maxPage = MathHelper.getMaxPage(total, PageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
 
             //获取随机页中的所有作品
             int[] pageArr = getRandomPageNo(maxPage, pageCount);
@@ -213,7 +213,7 @@ namespace TheresaBot.Main.Business
                 PixivSearch pixivSearchDto = await PixivHelper.GetPixivSearchAsync(searchWord, page, false, includeR18);
                 if (pixivSearchDto?.getIllust()?.data is null) continue;
                 tempIllustList.AddRange(pixivSearchDto.getIllust().data);
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
             }
 
             //乱序
@@ -282,7 +282,7 @@ namespace TheresaBot.Main.Business
                 }
                 finally
                 {
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000);
                 }
             }
         }

@@ -203,7 +203,7 @@ namespace TheresaBot.Main.Handler
                 dateStr = paramArr[0];
                 idStr = paramArr[1];
             }
-            else
+            else if (paramArr.Length > 0)
             {
                 idStr = paramArr[0];
             }

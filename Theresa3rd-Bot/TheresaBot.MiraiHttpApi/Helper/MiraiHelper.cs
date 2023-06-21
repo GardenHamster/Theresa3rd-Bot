@@ -109,7 +109,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
             await Task.Delay(3000);
             List<IChatMessage> msgList = new List<IChatMessage>();
             StringBuilder msgBuilder=new StringBuilder();
-            msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot {BotConfig.BotVersion}】");
+            msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot v{BotConfig.BotVersion}】");
             msgBuilder.AppendLine($"群聊发送【#菜单】可以查看指令");
             msgBuilder.AppendLine($"部署或者使用教程请访问");
             msgBuilder.Append($"{BotConfig.BotHomepage}");
@@ -151,7 +151,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
         /// </summary>
         /// <param name="instruction"></param>
-        /// <param name="command"></param>
+        /// <param name="handler"></param>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
         /// <returns></returns>
         public static MiraiGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, long groupId, long memberId)
         {
@@ -167,12 +171,17 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
         /// </summary>
         /// <param name="instruction"></param>
+        /// <param name="handler"></param>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
         /// <param name="command"></param>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
         /// <returns></returns>
         private static MiraiGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, string command, long groupId, long memberId)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
-            if (instruction.ToLower().StartsWith(command.ToLower()) == false) return null;
+            if (instruction.ToUpper().StartsWith(command.ToUpper()) == false) return null;
             return new(handler, session, args, instruction, command, groupId, memberId);
         }
 
@@ -180,7 +189,10 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
         /// </summary>
         /// <param name="instruction"></param>
-        /// <param name="command"></param>
+        /// <param name="handler"></param>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <param name="memberId"></param>
         /// <returns></returns>
         public static MiraiFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, IMiraiHttpSession session, IFriendMessageEventArgs args, long memberId)
         {
@@ -196,13 +208,55 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
         /// </summary>
         /// <param name="instruction"></param>
+        /// <param name="handler"></param>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
         /// <param name="command"></param>
+        /// <param name="memberId"></param>
         /// <returns></returns>
         private static MiraiFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, IMiraiHttpSession session, IFriendMessageEventArgs args, string command, long memberId)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
             if (instruction.StartsWith(command) == false) return null;
             return new(handler, session, args, instruction, command, memberId);
+        }
+
+        /// <summary>
+        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
+        /// </summary>
+        /// <param name="instruction"></param>
+        /// <param name="handler"></param>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public static MiraiGroupQuoteCommand CheckCommand(this string instruction, CommandHandler<GroupQuoteCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, long groupId, long memberId)
+        {
+            if (handler.Commands is null || handler.Commands.Count == 0) return null;
+            foreach (string command in handler.Commands)
+            {
+                if (instruction.CheckCommand(handler, session, args, command, groupId, memberId) is { } botCommand) return botCommand;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
+        /// </summary>
+        /// <param name="instruction"></param>
+        /// <param name="handler"></param>
+        /// <param name="session"></param>
+        /// <param name="args"></param>
+        /// <param name="command"></param>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        private static MiraiGroupQuoteCommand CheckCommand(this string instruction, CommandHandler<GroupQuoteCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, string command, long groupId, long memberId)
+        {
+            if (string.IsNullOrWhiteSpace(command)) return null;
+            if (instruction.ToUpper().StartsWith(command.ToUpper()) == false) return null;
+            return new(handler, session, args, instruction, command, groupId, memberId);
         }
 
         /// <summary>

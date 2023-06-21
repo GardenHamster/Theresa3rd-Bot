@@ -1,8 +1,10 @@
-﻿namespace TheresaBot.Main.Model.Config
+﻿using TheresaBot.Main.Helper;
+
+namespace TheresaBot.Main.Model.Config
 {
     public class GeneralConfig
     {
-        public string Prefix { get; private set; }
+        public List<string> Prefixs { get; private set; }
 
         public string DownloadPath { get; private set; }
 
@@ -23,5 +25,12 @@
         public string SetuCustomDisableMsg { get; private set; }
 
         public bool SendRelevantCommands { get; private set; }
+
+        public GeneralConfig FormatConfig()
+        {
+            this.Prefixs = this.Prefixs?.Trim() ?? new();
+            return this;
+        }
+
     }
 }

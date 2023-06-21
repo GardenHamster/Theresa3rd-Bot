@@ -9,8 +9,10 @@ namespace TheresaBot.Main.Dao
 {
     public class ImageRecordDao : DbContext<ImageRecordPO>
     {
-
-
+        public List<ImageRecordPO> getRecord(int msgId)
+        {
+            return Db.Queryable<ImageRecordPO>().Where(o => o.MessageId == msgId).ToList();
+        }
 
     }
 }

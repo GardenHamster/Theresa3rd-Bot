@@ -1,5 +1,5 @@
 ﻿General:                                                                            #基础设置
-    Prefix:                     '#'                                                 #指令前缀
+    Prefixs:                    ['#','＃']                                          #指令前缀
     DownloadPath:               'BotImg/download'                                   #下载文件的存放目录
     DownPathCleanCron:          '0 0 4 * * ?'                                       #下载目录清理定时器，Cron表达式，空值表示不清理，格式：0 0 4 * * ?
     DownErrorImgPath:           'BotImg/face/error.jpg'                             #图片下载失败时的替代图片

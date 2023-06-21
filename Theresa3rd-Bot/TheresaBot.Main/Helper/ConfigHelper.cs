@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Helper
             using TextReader reader = new StreamReader(fileStream, Encoding.GetEncoding("gb2312"));
             Deserializer deserializer = new Deserializer();
             BotConfigDto botConfig = deserializer.Deserialize<BotConfigDto>(reader);
-            BotConfig.GeneralConfig = botConfig.General;
+            BotConfig.GeneralConfig = botConfig.General.FormatConfig();
             BotConfig.PixivConfig = botConfig.Pixiv.FormatConfig();
             BotConfig.PermissionsConfig = botConfig.Permissions;
             BotConfig.ManageConfig = botConfig.Manage;

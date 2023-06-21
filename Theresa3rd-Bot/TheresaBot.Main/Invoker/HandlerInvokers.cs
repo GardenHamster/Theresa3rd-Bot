@@ -353,7 +353,7 @@ namespace TheresaBot.Main.Invoker
             //version
             new(new List<string>() { "版本", "version" }, CommandType.Version, new(async (botCommand, session, reporter) =>
             {
-                await botCommand.ReplyGroupMessageAsync($"Theresa3rd-Bot {BotConfig.BotVersion}");
+                await botCommand.ReplyGroupMessageAsync($"Theresa3rd-Bot v{BotConfig.BotVersion}");
                 return false;
             }))
         };
@@ -375,6 +375,23 @@ namespace TheresaBot.Main.Invoker
                 CookieHandler handler = new CookieHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 await handler.UpdateSaucenaoCookieAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            }))
+        };
+
+        public readonly static List<CommandHandler<GroupQuoteCommand>> GroupQuoteCommands = new()
+        {
+            //Saucenao
+            new(BotConfig.SaucenaoConfig?.Commands, CommandType.Saucenao, new(async (botCommand, session, reporter) =>
+            {
+                SaucenaoHandler handler = new SaucenaoHandler(session, reporter);
+                if (await handler.CheckSaucenaoEnableAsync(botCommand) == false) return false;
+                if (BotConfig.SaucenaoConfig.PullOrigin && await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckMemberSaucenaoCoolingAsync(botCommand)) return false;
+                if (await handler.CheckSaucenaoUseUpAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.searchResult(botCommand);
                 await handler.addRecord(botCommand);
                 return true;
             }))

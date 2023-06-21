@@ -9,7 +9,7 @@
             this.GroupId = GroupId;
         }
 
-        public abstract List<string> GetReplyImageUrls();
+        public abstract List<string> GetImageUrls();
 
     }
 }

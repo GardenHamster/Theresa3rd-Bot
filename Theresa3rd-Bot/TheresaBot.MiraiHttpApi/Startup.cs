@@ -74,7 +74,7 @@ namespace TheresaBot.MiraiHttpApi
                 TimerManager.initCookieJobAsync(session, reporter);
                 TimerManager.initTempClearJobAsync(session, reporter);
                 TimerManager.initDownloadClearJobAsync(session, reporter);
-                LogHelper.Info($"Theresa3rd-Bot启动完毕，版本：{BotConfig.BotVersion}");
+                LogHelper.Info($"Theresa3rd-Bot启动完毕，版本：v{BotConfig.BotVersion}");
                 Task welcomeTask = MiraiHelper.SendStartUpMessageAsync();
             }
             catch (Exception ex)

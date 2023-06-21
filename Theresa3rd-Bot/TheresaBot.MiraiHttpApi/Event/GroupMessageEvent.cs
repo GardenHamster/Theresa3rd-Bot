@@ -10,10 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TheresaBot.Main.Cache;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
@@ -37,19 +37,27 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (memberId == MiraiConfig.MiraiBotQQ) return;
                 if (BusinessHelper.IsBanMember(memberId)) return; //黑名单成员
 
-                string prefix = BotConfig.GeneralConfig.Prefix;
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
                 if (chainList is null || chainList.Count == 0) return;
 
                 int msgId = args.GetMessageId();
-                string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray()) : "";
+                string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray())?.Trim() : string.Empty;
                 string instruction = plainList.FirstOrDefault()?.Trim() ?? "";
                 if (string.IsNullOrWhiteSpace(message)) return;
-                message = message.Trim();
+
+                string prefix = MatchPrefix(message);
+                if (string.IsNullOrWhiteSpace(prefix)) return;
+
+                if (args.Chain.Where(v => v is QuoteMessage).Any())
+                {
+                    GroupQuoteCommand quoteCommand = GetGroupCommand(session, args, instruction, groupId, memberId);
+                    if (quoteCommand is not null) args.BlockRemainingHandlers = await quoteCommand.InvokeAsync(new MiraiSession(), new MiraiReporter());
+                    return;
+                }
 
                 bool isAt = args.Chain.Where(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber).Any();
-                bool isInstruct = string.IsNullOrWhiteSpace(instruction) == false && string.IsNullOrWhiteSpace(prefix) == false && instruction.StartsWith(prefix);
+                bool isInstruct = string.IsNullOrWhiteSpace(instruction) == false && instruction.StartsWith(prefix);
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 
                 if (isAt == false && isInstruct == false)//没有@也不是一条指令
@@ -62,12 +70,10 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 if (string.IsNullOrWhiteSpace(instruction)) return;//不存在任何指令
 
-                MiraiGroupCommand botCommand = GetGroupCommand(session, args, instruction, groupId, memberId);
-                if (botCommand is not null)
+                MiraiGroupCommand command = GetGroupCommand(session, args, instruction, groupId, memberId);
+                if (command is not null)
                 {
-                    MiraiSession miraiSession = new MiraiSession();
-                    MiraiReporter miraiReporter = new MiraiReporter();
-                    args.BlockRemainingHandlers = await botCommand.InvokeAsync(miraiSession, miraiReporter);
+                    args.BlockRemainingHandlers = await command.InvokeAsync(new MiraiSession(), new MiraiReporter());
                     return;
                 }
 

@@ -14,5 +14,11 @@ namespace TheresaBot.Main.Helper
             list.AddRange(arr);
         }
 
+        public static List<string> Trim(this List<string> list)
+        {
+            if (list is null) return new();
+            return list.Where(o => string.IsNullOrWhiteSpace(o) == false).Select(o=>o.Trim()).ToList();
+        }
+
     }
 }

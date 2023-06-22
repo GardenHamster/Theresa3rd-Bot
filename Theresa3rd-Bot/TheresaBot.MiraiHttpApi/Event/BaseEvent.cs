@@ -30,7 +30,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             return null;
         }
 
-        public static MiraiGroupQuoteCommand GetGroupQuoteCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, string message, long groupId, long memberId)
+        public static MiraiGroupCommand GetGroupQuoteCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, string message, long groupId, long memberId)
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {

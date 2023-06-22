@@ -26,10 +26,20 @@ namespace TheresaBot.MiraiHttpApi.Event
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IGroupMessageEventArgs, GroupMessageEventArgs>))]
     public class GroupMessageEvent : BaseEvent, IMiraiHttpMessageHandler<IGroupMessageEventArgs>
     {
+        private MiraiSession miraiSession;
+        private MiraiReporter miraiReporter;
+
+        public GroupMessageEvent()
+        {
+            this.miraiSession = new MiraiSession();
+            this.miraiReporter = new MiraiReporter();
+        }
+
         public async Task HandleMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             try
             {
+                int msgId = args.GetMessageId();
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
                 long botId = session.QQNumber ?? 0;
@@ -41,26 +51,23 @@ namespace TheresaBot.MiraiHttpApi.Event
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
                 if (chainList is null || chainList.Count == 0) return;
 
-                int msgId = args.GetMessageId();
-                string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray())?.Trim() : string.Empty;
                 string instruction = plainList.FirstOrDefault()?.Trim() ?? "";
+                string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray())?.Trim() : string.Empty;
                 if (string.IsNullOrWhiteSpace(message)) return;
 
-                string prefix = MatchPrefix(message);
-                if (string.IsNullOrWhiteSpace(prefix)) return;
+                string prefix = prefix = MatchPrefix(message);
+                bool isAt = args.Chain.Where(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber).Any();
+                bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
+                if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 
-                if (args.Chain.Where(v => v is QuoteMessage).Any())
+                if (args.Chain.Where(v => v is QuoteMessage).Any())//引用指令
                 {
-                    GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(session, args, instruction, groupId, memberId);
-                    if (quoteCommand is not null) args.BlockRemainingHandlers = await quoteCommand.InvokeAsync(new MiraiSession(), new MiraiReporter());
+                    GroupCommand quoteCommand = GetGroupQuoteCommand(session, args, instruction, groupId, memberId);
+                    if (quoteCommand is not null) args.BlockRemainingHandlers = await quoteCommand.InvokeAsync(miraiSession, miraiReporter);
                     return;
                 }
 
-                bool isAt = args.Chain.Where(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber).Any();
-                bool isInstruct = string.IsNullOrWhiteSpace(instruction) == false && instruction.StartsWith(prefix);
-                if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
-
-                if (isAt == false && isInstruct == false)//没有@也不是一条指令
+                if (isAt == false && isInstruct == false)//复读或者分步操作
                 {
                     MiraiGroupRelay relay = new MiraiGroupRelay(args, msgId, message, groupId, memberId);
                     if (StepCache.HandleStep(relay, groupId, memberId)) return; //分步处理
@@ -68,12 +75,15 @@ namespace TheresaBot.MiraiHttpApi.Event
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(instruction)) return;//不存在任何指令
+                if (string.IsNullOrWhiteSpace(instruction))//空指令
+                {
+                    return;
+                }
 
                 MiraiGroupCommand command = GetGroupCommand(session, args, instruction, groupId, memberId);
                 if (command is not null)
                 {
-                    args.BlockRemainingHandlers = await command.InvokeAsync(new MiraiSession(), new MiraiReporter());
+                    args.BlockRemainingHandlers = await command.InvokeAsync(miraiSession, miraiReporter);
                     return;
                 }
 

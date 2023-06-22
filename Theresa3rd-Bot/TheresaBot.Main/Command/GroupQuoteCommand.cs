@@ -1,9 +1,6 @@
-﻿using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Model.Invoker;
+﻿using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Command
 {

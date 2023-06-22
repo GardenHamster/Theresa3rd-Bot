@@ -89,7 +89,7 @@ namespace TheresaBot.Main.Handler
                 SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);
                 msgIds = await Session.SendGroupMessageAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
             }
-            Task recordTask = recordBusiness.AddPixivRecord(setuContent, msgIds);
+            Task recordTask = recordBusiness.AddPixivRecord(setuContent, msgIds, groupId);
             return msgIds;
         }
 
@@ -102,7 +102,7 @@ namespace TheresaBot.Main.Handler
                 List<SetuContent> resendContents = GetResendContent(setuContents);
                 msgId = await Session.SendGroupMergeAsync(groupId, resendContents);
             }
-            Task recordTask = recordBusiness.AddPixivRecord(setuContents, msgId);
+            Task recordTask = recordBusiness.AddPixivRecord(setuContents, msgId, groupId);
             return new[] { msgId };
         }
 

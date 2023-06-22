@@ -67,11 +67,15 @@ namespace TheresaBot.MiraiHttpApi.Event
                     return;
                 }
 
-                if (isAt == false && isInstruct == false)//复读或者分步操作
+                if (isAt == false && isInstruct == false)//复读,分步操作,保存消息记录
                 {
                     MiraiGroupRelay relay = new MiraiGroupRelay(args, msgId, message, groupId, memberId);
                     if (StepCache.HandleStep(relay, groupId, memberId)) return; //分步处理
                     if (RepeatCache.CheckCanRepeat(groupId, botId, memberId, message)) await SendRepeat(session, args);//复读机
+                    List<string> imgUrls = args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
+                    Task task1 = RecordHelper.AddImageRecords(imgUrls, msgId, groupId, memberId);
+                    List<string> plainMessages = args.Chain.Where(o => o is PlainMessage).Select(o => o.ToString()).ToList();
+                    Task task2 = RecordHelper.AddPlainRecords(plainMessages, msgId, groupId, memberId);
                     return;
                 }
 

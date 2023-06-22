@@ -34,7 +34,7 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                int revokeMsgId = command.MsgId;
+                long revokeMsgId = command.MsgId;
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
                 List<string> imgList = command.GetImageUrls();
@@ -79,7 +79,7 @@ namespace TheresaBot.Main.Handler
             {
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-                List<ImageRecordPO> imgRecords = recordBusiness.GetImageRecord(command.MsgId);
+                List<ImageRecordPO> imgRecords = recordBusiness.GetImageRecord(command.MsgId,command.GroupId);
                 List<string> imgList = imgRecords.Select(o => o.HttpUrl).ToList();
                 if (imgList is null || imgList.Count == 0)
                 {
@@ -87,7 +87,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                int revokeMsgId = command.MsgId;
+                long revokeMsgId = command.MsgId;
                 await HandleSearch(command, imgList, revokeMsgId);
                 CoolingCache.SetMemberSaucenaoCooling(command.GroupId, command.MemberId);
             }
@@ -105,7 +105,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task HandleSearch(GroupCommand command, List<string> imgList, int revokeMsgId)
+        private async Task HandleSearch(GroupCommand command, List<string> imgList, long revokeMsgId)
         {
             if (string.IsNullOrWhiteSpace(BotConfig.SaucenaoConfig.ProcessingMsg) == false)
             {
@@ -386,7 +386,7 @@ namespace TheresaBot.Main.Handler
         private async Task sendAndRevoke(GroupCommand command, List<SetuContent> setuContents)
         {
             int msgId = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
-            Task recordTask = recordBusiness.AddPixivRecord(setuContents, msgId);
+            Task recordTask = recordBusiness.AddPixivRecord(setuContents, msgId, command.GroupId);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);

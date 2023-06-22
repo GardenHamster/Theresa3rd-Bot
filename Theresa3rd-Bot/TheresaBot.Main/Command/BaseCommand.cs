@@ -7,7 +7,7 @@ namespace TheresaBot.Main.Command
 {
     public abstract class BaseCommand
     {
-        public int MsgId { get; set; }
+        public long MsgId { get; set; }
         public long MemberId { get; init; }
         public string Instruction { get; init; }
         public string Command { get; set; }
@@ -15,7 +15,7 @@ namespace TheresaBot.Main.Command
         public string KeyWord { get; set; }
         public CommandType CommandType { get; init; }
 
-        public BaseCommand(CommandType commandType, int msgId, string instruction, string command, long memberId)
+        public BaseCommand(CommandType commandType, long msgId, string instruction, string command, long memberId)
         {
             this.MsgId = msgId;
             this.Instruction = instruction;

@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Dao;
+﻿using TheresaBot.Main.Command;
+using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
@@ -18,27 +19,27 @@ namespace TheresaBot.Main.Business
             this.imageRecordDao = new ImageRecordDao();
         }
 
-        public List<ImageRecordPO> GetImageRecord(int msgId)
+        public List<ImageRecordPO> GetImageRecord(long msgId, long groupId)
         {
-            return imageRecordDao.getRecord(msgId);
+            return imageRecordDao.getRecord(msgId, groupId);
         }
 
-        public async Task AddImageRecord(List<string> imgUrls, int msgId)
+        public async Task AddImageRecord(List<string> imgUrls, long msgId, long groupId, long memberId)
         {
-            foreach (var imgUrl in imgUrls) await AddImageRecord(imgUrl, msgId);
+            foreach (var imgUrl in imgUrls) await AddImageRecord(imgUrl, msgId, groupId, memberId);
         }
 
-        public async Task AddPixivRecord(SetuContent setucontent, int[] msgIds)
+        public async Task AddPixivRecord(SetuContent setucontent, int[] msgIds, long groupId)
         {
-            foreach (var msgId in msgIds) await AddPixivRecord(setucontent, msgId);
+            foreach (var msgId in msgIds) await AddPixivRecord(setucontent, msgId, groupId);
         }
 
-        public async Task AddPixivRecord(List<SetuContent> setucontents, int msgId)
+        public async Task AddPixivRecord(List<SetuContent> setucontents, int msgId, long groupId)
         {
-            foreach (var setucontent in setucontents) await AddPixivRecord(setucontent, msgId);
+            foreach (var setucontent in setucontents) await AddPixivRecord(setucontent, msgId, groupId);
         }
 
-        public async Task AddPixivRecord(SetuContent setucontent, int msgId)
+        public async Task AddPixivRecord(SetuContent setucontent, int msgId, long groupId)
         {
             try
             {
@@ -47,6 +48,7 @@ namespace TheresaBot.Main.Business
                 PixivSetuContent pixivContent = (PixivSetuContent)setucontent;
                 PixivRecordPO pixivRecord = new PixivRecordPO();
                 pixivRecord.MessageId = msgId;
+                pixivRecord.GroupId = groupId;
                 pixivRecord.PixivId = pixivContent.WorkInfo.PixivId;
                 pixivRecord.Title = pixivContent.WorkInfo.Title;
                 pixivRecord.UserName = pixivContent.WorkInfo.UserName;
@@ -60,7 +62,7 @@ namespace TheresaBot.Main.Business
             }
         }
 
-        public async Task AddImageRecord(string imgUrl, int msgId)
+        public async Task AddImageRecord(string imgUrl, long msgId, long groupId, long memberId)
         {
             try
             {
@@ -68,6 +70,8 @@ namespace TheresaBot.Main.Business
                 if (string.IsNullOrWhiteSpace(imgUrl)) return;
                 ImageRecordPO imageRecord = new ImageRecordPO();
                 imageRecord.MessageId = msgId;
+                imageRecord.GroupId = groupId;
+                imageRecord.MemberId = memberId;
                 imageRecord.HttpUrl = imgUrl.Trim();
                 imageRecord.CreateDate = DateTime.Now;
                 imageRecordDao.Insert(imageRecord);
@@ -78,6 +82,29 @@ namespace TheresaBot.Main.Business
                 LogHelper.Error(ex);
             }
         }
+
+        public async Task AddMessageRecord(string plainMessage, long msgId, long groupId, long memberId)
+        {
+            try
+            {
+                if (msgId <= 0) return;
+                if (string.IsNullOrWhiteSpace(plainMessage)) return;
+                MessageRecordPO messageRecord = new MessageRecordPO();
+                messageRecord.MessageId = msgId;
+                messageRecord.GroupId = groupId;
+                messageRecord.MemberId = memberId;
+                messageRecord.MessageText = plainMessage;
+                messageRecord.CreateDate = DateTime.Now;
+                messageRecordDao.Insert(messageRecord);
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
+        }
+
+
 
     }
 }

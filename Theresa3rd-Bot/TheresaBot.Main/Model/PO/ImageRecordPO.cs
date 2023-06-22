@@ -8,6 +8,12 @@ namespace TheresaBot.Main.Model.PO
         [SugarColumn(IsNullable = false, ColumnDescription = "消息ID")]
         public long MessageId { get; set; }
 
+        [SugarColumn(IsNullable = false, ColumnDescription = "发送群ID")]
+        public long GroupId { get; set; }
+
+        [SugarColumn(IsNullable = false, ColumnDescription = "发送人ID")]
+        public long MemberId { get; set; }
+
         [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "图片Http地址")]
         public string HttpUrl { get; set; }
 

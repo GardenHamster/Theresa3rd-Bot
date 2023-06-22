@@ -44,7 +44,7 @@ namespace TheresaBot.Main.Command
 
         public abstract Task<int> SendTempMessageAsync(List<BaseContent> contentList);
 
-        public abstract Task RevokeGroupMessageAsync(int messageId, long groupId, int revokeInterval = 0);
+        public abstract Task RevokeGroupMessageAsync(long messageId, long groupId, int revokeInterval = 0);
 
         public override async Task ReplyError(Exception ex, string message = "")
         {

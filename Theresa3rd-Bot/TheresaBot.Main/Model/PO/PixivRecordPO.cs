@@ -8,6 +8,9 @@ namespace TheresaBot.Main.Model.PO
         [SugarColumn(IsNullable = false, ColumnDescription = "消息ID")]
         public long MessageId { get; set; }
 
+        [SugarColumn(IsNullable = false, ColumnDescription = "发送群ID")]
+        public long GroupId { get; set; }
+
         [SugarColumn(IsNullable = false, ColumnDescription = "PixivId")]
         public int PixivId { get; set; }
 

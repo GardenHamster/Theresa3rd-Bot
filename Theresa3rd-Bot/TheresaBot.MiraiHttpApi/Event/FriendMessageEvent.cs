@@ -49,7 +49,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (string.IsNullOrWhiteSpace(message)) return;//空消息
                 if (string.IsNullOrWhiteSpace(instruction)) return;//空指令
 
-                string prefix = prefix = MatchPrefix(message);
+                string prefix = prefix = MatchPrefix(instruction);
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 

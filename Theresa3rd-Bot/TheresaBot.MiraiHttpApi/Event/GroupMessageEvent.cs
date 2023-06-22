@@ -55,7 +55,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray())?.Trim() : string.Empty;
                 if (string.IsNullOrWhiteSpace(message)) return;
 
-                string prefix = prefix = MatchPrefix(message);
+                string prefix = prefix = MatchPrefix(instruction);
                 bool isAt = args.Chain.Where(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber).Any();
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();

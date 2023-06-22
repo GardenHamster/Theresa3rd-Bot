@@ -5,7 +5,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Invoker
 {
-    public class CommandHandler<T> where T : IBaseCommand
+    public class CommandHandler<T> where T : BaseCommand
     {
         public List<string> Commands { get; set; }
 

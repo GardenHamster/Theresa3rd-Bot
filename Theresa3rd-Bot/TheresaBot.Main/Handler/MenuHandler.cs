@@ -73,7 +73,7 @@ namespace TheresaBot.Main.Handler
 
         private string joinCommands(List<string> commands)
         {
-            return $"{BotConfig.GeneralConfig.Prefix}{string.Join('/', commands)}";
+            return $"{BotConfig.GeneralConfig.DefaultPrefix}{string.Join('/', commands)}";
         }
 
         private string pixivRankingCommands()
@@ -85,7 +85,7 @@ namespace TheresaBot.Main.Handler
             string monthlyCommand = BotConfig.PixivRankingConfig.Monthly?.Commands?.FirstOrDefault();
             List<string> commands = new() { dailyCommand, aiCommand, maleCommand, weeklyCommand, monthlyCommand };
             commands = commands.Where(o => o is not null).Distinct().ToList();
-            return $"{BotConfig.GeneralConfig.Prefix}{String.Join('/', commands)}";
+            return $"{BotConfig.GeneralConfig.DefaultPrefix}{String.Join('/', commands)}";
         }
 
 

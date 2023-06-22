@@ -30,17 +30,15 @@ namespace TheresaBot.MiraiHttpApi.Event
             return null;
         }
 
-        public static MiraiFriendCommand GetGroupQuoteCommand(IMiraiHttpSession session, IFriendMessageEventArgs args, string message, long memberId)
+        public static MiraiGroupQuoteCommand GetGroupQuoteCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, string message, long groupId, long memberId)
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
-                MiraiGroupQuoteCommand command = message.CheckCommand(invoker, session, args, memberId);
+                MiraiGroupQuoteCommand command = message.CheckCommand(invoker, session, args, groupId, memberId);
                 if (command is not null) return command;
             }
             return null;
         }
-
-
 
         /// <summary>
         /// 匹配对应的指令前缀

@@ -156,7 +156,7 @@ namespace TheresaBot.Main.Helper
             foreach (string command in groupCommands)
             {
                 if (builder.Length > 0) builder.Append('/');
-                builder.Append($"{BotConfig.GeneralConfig.Prefix}{command}");
+                builder.Append($"{BotConfig.GeneralConfig.DefaultPrefix}{command}");
             }
             return builder.ToString();
         }
@@ -166,7 +166,6 @@ namespace TheresaBot.Main.Helper
             if (string.IsNullOrWhiteSpace(keyword)) return new();
             string splitString = keyword.ToLower().Replace(" ", string.Empty).Trim();
             List<char> charList = splitString.ToList().Distinct().ToList();
-            charList.RemoveAll(o => o.ToString() == BotConfig.GeneralConfig.Prefix);
             List<string> similarCommands = new List<string>();
             List<string> groupCommands = GetGroupCommands();
             foreach (char c in charList)

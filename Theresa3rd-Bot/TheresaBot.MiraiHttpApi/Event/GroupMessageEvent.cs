@@ -51,7 +51,7 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 if (args.Chain.Where(v => v is QuoteMessage).Any())
                 {
-                    GroupQuoteCommand quoteCommand = GetGroupCommand(session, args, instruction, groupId, memberId);
+                    GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(session, args, instruction, groupId, memberId);
                     if (quoteCommand is not null) args.BlockRemainingHandlers = await quoteCommand.InvokeAsync(new MiraiSession(), new MiraiReporter());
                     return;
                 }

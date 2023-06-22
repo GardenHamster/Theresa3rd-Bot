@@ -105,7 +105,6 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-
         private async Task HandleSearch(GroupCommand command, List<string> imgList, int revokeMsgId)
         {
             if (string.IsNullOrWhiteSpace(BotConfig.SaucenaoConfig.ProcessingMsg) == false)

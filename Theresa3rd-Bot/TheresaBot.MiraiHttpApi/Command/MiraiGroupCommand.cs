@@ -10,6 +10,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
+using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Command
@@ -19,6 +20,13 @@ namespace TheresaBot.MiraiHttpApi.Command
         public IGroupMessageEventArgs Args { get; set; }
         public IMiraiHttpSession Session { get; set; }
 
+        public MiraiGroupCommand(CommandType commandType, IMiraiHttpSession session, IGroupMessageEventArgs args, string instruction, string command, long groupId, long memberId)
+            : base(commandType, args.GetMessageId(), instruction, command, groupId, memberId)
+        {
+            this.Args = args;
+            this.Session = session;
+        }
+
         public MiraiGroupCommand(CommandHandler<GroupCommand> invoker, IMiraiHttpSession session, IGroupMessageEventArgs args, string instruction, string command, long groupId, long memberId)
             : base(invoker, args.GetMessageId(), instruction, command, groupId, memberId)
         {
@@ -26,7 +34,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             this.Session = session;
         }
 
-        public override List<string> GetReplyImageUrls()
+        public override List<string> GetImageUrls()
         {
             return Args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
         }

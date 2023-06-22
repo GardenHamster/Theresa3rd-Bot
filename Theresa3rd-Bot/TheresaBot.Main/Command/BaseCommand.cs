@@ -15,7 +15,7 @@ namespace TheresaBot.Main.Command
         public string KeyWord { get; set; }
         public CommandType CommandType { get; init; }
 
-        public BaseCommand(int msgId, CommandType commandType, string instruction, string command, long memberId)
+        public BaseCommand(CommandType commandType, int msgId, string instruction, string command, long memberId)
         {
             this.MsgId = msgId;
             this.Instruction = instruction;

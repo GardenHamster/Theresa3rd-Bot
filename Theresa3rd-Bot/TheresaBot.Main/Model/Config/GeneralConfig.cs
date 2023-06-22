@@ -26,6 +26,8 @@ namespace TheresaBot.Main.Model.Config
 
         public bool SendRelevantCommands { get; private set; }
 
+        public string DefaultPrefix => Prefixs.FirstOrDefault() ?? string.Empty;
+
         public GeneralConfig FormatConfig()
         {
             this.Prefixs = this.Prefixs?.Trim() ?? new();

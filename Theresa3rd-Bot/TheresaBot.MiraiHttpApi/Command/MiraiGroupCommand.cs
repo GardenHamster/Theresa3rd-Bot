@@ -17,10 +17,10 @@ namespace TheresaBot.MiraiHttpApi.Command
 {
     public class MiraiGroupCommand : GroupCommand
     {
-        public IGroupMessageEventArgs Args { get; set; }
-        public IMiraiHttpSession Session { get; set; }
+        private IMiraiHttpSession Session;
+        private IGroupMessageEventArgs Args;
 
-        public MiraiGroupCommand(CommandType commandType, IMiraiHttpSession session, IGroupMessageEventArgs args, string instruction, string command, long groupId, long memberId)
+        public MiraiGroupCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, CommandType commandType, string instruction, string command, long groupId, long memberId)
             : base(commandType, args.GetMessageId(), instruction, command, groupId, memberId)
         {
             this.Args = args;
@@ -37,6 +37,12 @@ namespace TheresaBot.MiraiHttpApi.Command
         public override List<string> GetImageUrls()
         {
             return Args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
+        }
+
+        public override int GetQuoteMessageId()
+        {
+            var quoteMessage = Args.Chain.Where(v => v is QuoteMessage).FirstOrDefault();
+            return quoteMessage is null ? 0 : ((QuoteMessage)quoteMessage).Id;
         }
 
         public override async Task<int> ReplyGroupMessageAsync(string message, bool isAt = false)

@@ -79,7 +79,8 @@ namespace TheresaBot.Main.Handler
             {
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-                List<ImageRecordPO> imgRecords = recordBusiness.GetImageRecord(command.MsgId,command.GroupId);
+                long quoteId = command.GetQuoteMessageId();
+                List<ImageRecordPO> imgRecords = quoteId > 0 ? recordBusiness.GetImageRecord(quoteId, command.GroupId) : new();
                 List<string> imgList = imgRecords.Select(o => o.HttpUrl).ToList();
                 if (imgList is null || imgList.Count == 0)
                 {

@@ -30,6 +30,8 @@ namespace TheresaBot.Main.Command
 
         public abstract List<string> GetImageUrls();
 
+        public abstract int GetQuoteMessageId();
+
         public abstract Task<int> ReplyGroupMessageAsync(string message, bool isAt = false);
 
         public abstract Task<int> ReplyGroupMessageAsync(List<BaseContent> contentList, bool isAt = false);

@@ -1,8 +1,6 @@
-﻿using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Model.Invoker;
+﻿using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Command
 {
@@ -10,7 +8,7 @@ namespace TheresaBot.Main.Command
     {
         protected CommandHandler<GroupQuoteCommand> HandlerInvoker { get; init; }
 
-        public GroupQuoteCommand(CommandHandler<GroupQuoteCommand> invoker, int msgId, string instruction, string command, long groupId, long memberId)
+        public GroupQuoteCommand(CommandHandler<GroupQuoteCommand> invoker, long msgId, string instruction, string command, long groupId, long memberId)
             : base(invoker.CommandType, msgId, instruction, command, groupId, memberId)
         {
             this.HandlerInvoker = invoker;

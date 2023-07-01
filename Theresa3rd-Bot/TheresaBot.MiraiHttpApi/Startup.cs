@@ -34,7 +34,7 @@ namespace TheresaBot.MiraiHttpApi
                 LogHelper.ConfigureLog();
                 LogHelper.Info($"日志配置完毕...");
 
-                MiraiHelper.LoadMiraiConfig(Configuration);
+                MiraiHelper.LoadAppSettings(Configuration);
                 ConfigHelper.LoadBotConfig();
                 LogHelper.Info($"配置文件加载完毕...");
 

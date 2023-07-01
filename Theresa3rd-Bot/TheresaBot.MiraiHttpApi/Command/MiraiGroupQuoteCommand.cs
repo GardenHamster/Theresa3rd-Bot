@@ -20,28 +20,28 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             this.Args = args;
             this.Session = session;
-            this.BaseCommand = new MiraiGroupCommand(session, args, invoker.CommandType, instruction, command, groupId, memberId);
+            this.BaseCommand = new(session, args, invoker.CommandType, instruction, command, groupId, memberId);
         }
 
         public override List<string> GetImageUrls() => BaseCommand.GetImageUrls();
 
-        public override int GetQuoteMessageId() => BaseCommand.GetQuoteMessageId();
+        public override long GetQuoteMessageId() => BaseCommand.GetQuoteMessageId();
 
-        public override Task<int> ReplyGroupMessageAsync(string message, bool isAt = false) => BaseCommand.ReplyGroupMessageAsync(message, isAt);
+        public override Task<long> ReplyGroupMessageAsync(string message, bool isAt = false) => BaseCommand.ReplyGroupMessageAsync(message, isAt);
 
-        public override Task<int> ReplyGroupMessageAsync(List<BaseContent> contentList, bool isAt = false) => BaseCommand.ReplyGroupMessageAsync(contentList, isAt);
+        public override Task<long> ReplyGroupMessageAsync(List<BaseContent> contentList, bool isAt = false) => BaseCommand.ReplyGroupMessageAsync(contentList, isAt);
 
-        public override Task<int> ReplyGroupMessageWithAtAsync(string plainMsg) => BaseCommand.ReplyGroupMessageWithAtAsync(plainMsg);
+        public override Task<long> ReplyGroupMessageWithAtAsync(string plainMsg) => BaseCommand.ReplyGroupMessageWithAtAsync(plainMsg);
 
-        public override Task<int> ReplyGroupMessageWithAtAsync(params BaseContent[] contentArr) => BaseCommand.ReplyGroupMessageWithAtAsync(contentArr);
+        public override Task<long> ReplyGroupMessageWithAtAsync(params BaseContent[] contentArr) => BaseCommand.ReplyGroupMessageWithAtAsync(contentArr);
 
-        public override Task<int> ReplyGroupMessageWithAtAsync(List<BaseContent> contentList) => BaseCommand.ReplyGroupMessageWithAtAsync(contentList);
+        public override Task<long> ReplyGroupMessageWithAtAsync(List<BaseContent> contentList) => BaseCommand.ReplyGroupMessageWithAtAsync(contentList);
 
-        public override Task<int> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "") => BaseCommand.ReplyGroupTemplateWithAtAsync(template, defaultmsg);
+        public override Task<long> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "") => BaseCommand.ReplyGroupTemplateWithAtAsync(template, defaultmsg);
 
         public override Task RevokeGroupMessageAsync(long messageId, long groupId, int revokeInterval = 0) => BaseCommand.RevokeGroupMessageAsync(messageId, groupId, revokeInterval);
 
-        public override Task<int> SendTempMessageAsync(List<BaseContent> contentList) => BaseCommand.SendTempMessageAsync(contentList);
+        public override Task<long> SendTempMessageAsync(List<BaseContent> contentList) => BaseCommand.SendTempMessageAsync(contentList);
 
     }
 }

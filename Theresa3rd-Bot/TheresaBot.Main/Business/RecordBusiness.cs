@@ -29,17 +29,17 @@ namespace TheresaBot.Main.Business
             foreach (var imgUrl in imgUrls) await AddImageRecord(imgUrl, msgId, groupId, memberId);
         }
 
-        public async Task AddPixivRecord(SetuContent setucontent, int[] msgIds, long groupId)
+        public async Task AddPixivRecord(SetuContent setucontent, long[] msgIds, long groupId)
         {
             foreach (var msgId in msgIds) await AddPixivRecord(setucontent, msgId, groupId);
         }
 
-        public async Task AddPixivRecord(List<SetuContent> setucontents, int msgId, long groupId)
+        public async Task AddPixivRecord(List<SetuContent> setucontents, long msgId, long groupId)
         {
             foreach (var setucontent in setucontents) await AddPixivRecord(setucontent, msgId, groupId);
         }
 
-        public async Task AddPixivRecord(SetuContent setucontent, int msgId, long groupId)
+        public async Task AddPixivRecord(SetuContent setucontent, long msgId, long groupId)
         {
             try
             {

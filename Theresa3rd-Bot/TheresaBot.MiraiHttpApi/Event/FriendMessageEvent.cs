@@ -38,7 +38,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             {
                 int msgId = args.GetMessageId();
                 long memberId = args.Sender.Id;
-                if (memberId == MiraiConfig.MiraiBotQQ) return;
+                if (memberId == MiraiConfig.BotQQ) return;
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
                 if (chainList is null || chainList.Count == 0) return;
@@ -49,7 +49,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (string.IsNullOrWhiteSpace(message)) return;//空消息
                 if (string.IsNullOrWhiteSpace(instruction)) return;//空指令
 
-                string prefix = prefix = MatchPrefix(instruction);
+                string prefix = prefix = instruction.MatchPrefix();
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 

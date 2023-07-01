@@ -10,7 +10,7 @@ namespace TheresaBot.Main.Command
     {
         private CommandHandler<FriendCommand> HandlerInvoker { get; init; }
 
-        public FriendCommand(CommandHandler<FriendCommand> invoker, int msgId, string instruction, string command, long memberId)
+        public FriendCommand(CommandHandler<FriendCommand> invoker, long msgId, string instruction, string command, long memberId)
             : base(invoker.CommandType, msgId, instruction, command, memberId)
         {
             this.HandlerInvoker = invoker;
@@ -19,11 +19,11 @@ namespace TheresaBot.Main.Command
 
         public abstract List<string> GetImageUrls();
 
-        public abstract Task<int> ReplyFriendMessageAsync(string message);
+        public abstract Task<long> ReplyFriendMessageAsync(string message);
 
-        public abstract Task<int> ReplyFriendMessageAsync(List<BaseContent> contents);
+        public abstract Task<long> ReplyFriendMessageAsync(List<BaseContent> contents);
 
-        public abstract Task<int> ReplyFriendTemplateAsync(string template, string defaultmsg);
+        public abstract Task<long> ReplyFriendTemplateAsync(string template, string defaultmsg);
 
         public override async Task ReplyError(Exception ex, string message = "")
         {

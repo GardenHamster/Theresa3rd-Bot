@@ -13,14 +13,14 @@ namespace TheresaBot.Main.Command
 
         private CommandHandler<GroupCommand> HandlerInvoker { get; init; }
 
-        public GroupCommand(CommandType commandType, int msgId, string instruction, string command, long groupId, long memberId)
+        public GroupCommand(CommandType commandType, long msgId, string instruction, string command, long groupId, long memberId)
             : base(commandType, msgId, instruction, command, memberId)
         {
             this.MemberId = memberId;
             this.GroupId = groupId;
         }
 
-        public GroupCommand(CommandHandler<GroupCommand> invoker, int msgId, string instruction, string command, long groupId, long memberId)
+        public GroupCommand(CommandHandler<GroupCommand> invoker, long msgId, string instruction, string command, long groupId, long memberId)
             : base(invoker.CommandType, msgId, instruction, command, memberId)
         {
             this.HandlerInvoker = invoker;
@@ -30,21 +30,21 @@ namespace TheresaBot.Main.Command
 
         public abstract List<string> GetImageUrls();
 
-        public abstract int GetQuoteMessageId();
+        public abstract long GetQuoteMessageId();
 
-        public abstract Task<int> ReplyGroupMessageAsync(string message, bool isAt = false);
+        public abstract Task<long> ReplyGroupMessageAsync(string message, bool isAt = false);
 
-        public abstract Task<int> ReplyGroupMessageAsync(List<BaseContent> contentList, bool isAt = false);
+        public abstract Task<long> ReplyGroupMessageAsync(List<BaseContent> contentList, bool isAt = false);
 
-        public abstract Task<int> ReplyGroupMessageWithAtAsync(string plainMsg);
+        public abstract Task<long> ReplyGroupMessageWithAtAsync(string plainMsg);
 
-        public abstract Task<int> ReplyGroupMessageWithAtAsync(params BaseContent[] contentArr);
+        public abstract Task<long> ReplyGroupMessageWithAtAsync(params BaseContent[] contentArr);
 
-        public abstract Task<int> ReplyGroupMessageWithAtAsync(List<BaseContent> contentList);
+        public abstract Task<long> ReplyGroupMessageWithAtAsync(List<BaseContent> contentList);
 
-        public abstract Task<int> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "");
+        public abstract Task<long> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "");
 
-        public abstract Task<int> SendTempMessageAsync(List<BaseContent> contentList);
+        public abstract Task<long> SendTempMessageAsync(List<BaseContent> contentList);
 
         public abstract Task RevokeGroupMessageAsync(long messageId, long groupId, int revokeInterval = 0);
 

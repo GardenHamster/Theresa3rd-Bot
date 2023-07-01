@@ -89,7 +89,7 @@ namespace TheresaBot.Main.Handler
                 workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, pixivTemplate)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
-                int[] msgIds = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                long[] msgIds = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
                 Task recordTask = recordBusiness.AddPixivRecord(setuContent, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {

@@ -309,7 +309,7 @@ namespace TheresaBot.Main.Handler
                 setuContents.Add(setuContent);
             }
 
-            int msgId = await Session.SendGroupMergeAsync(command.GroupId, setuContents);
+            long msgId = await Session.SendGroupMergeAsync(command.GroupId, setuContents);
             Task recordTask = recordBusiness.AddPixivRecord(setuContents, msgId, command.GroupId);
         }
 

@@ -12,7 +12,7 @@ namespace TheresaBot.Main.Reporter
         private static int LastSendHour = DateTime.Now.Hour;
         private static Dictionary<System.Type, List<ErrorRecord>> SendDic = new Dictionary<System.Type, List<ErrorRecord>>();
 
-        protected abstract Task<int> SendReport(long groupId, string message);
+        protected abstract Task<long> SendReport(long groupId, string message);
 
         /// <summary>
         /// 将错误日志发送到日志群中

@@ -18,7 +18,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             {
                 try
                 {
-                    await session.ConnectAsync(MiraiConfig.MiraiBotQQ);
+                    await session.ConnectAsync(MiraiConfig.BotQQ);
                     e.BlockRemainingHandlers = true;
                     LogHelper.Info("已重新连接到mcl...");
                     break;

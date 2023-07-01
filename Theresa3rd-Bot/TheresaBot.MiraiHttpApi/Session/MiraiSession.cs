@@ -12,26 +12,26 @@ namespace TheresaBot.MiraiHttpApi.Session
 {
     public class MiraiSession : BaseSession
     {
-        public override async Task<int> SendGroupMessageAsync(long groupId, string message)
+        public override async Task<long> SendGroupMessageAsync(long groupId, string message)
         {
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, new PlainMessage(message));
         }
 
-        public override async Task<int> SendGroupMessageAsync(long groupId, params BaseContent[] contents)
+        public override async Task<long> SendGroupMessageAsync(long groupId, params BaseContent[] contents)
         {
             if (contents.Length == 0) return 0;
             IChatMessage[] msgList = await new List<BaseContent>(contents).ToMiraiMessageAsync(UploadTarget.Group);
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList);
         }
 
-        public override async Task<int> SendGroupMessageAsync(long groupId, List<BaseContent> contents)
+        public override async Task<long> SendGroupMessageAsync(long groupId, List<BaseContent> contents)
         {
             if (contents.Count == 0) return 0;
             IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Group);
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList);
         }
 
-        public override async Task<int> SendGroupMessageAsync(long groupId, List<BaseContent> contents, bool isAtAll = false)
+        public override async Task<long> SendGroupMessageAsync(long groupId, List<BaseContent> contents, bool isAtAll = false)
         {
             if (contents.Count == 0) return 0;
             List<IChatMessage> msgList = new();
@@ -40,7 +40,7 @@ namespace TheresaBot.MiraiHttpApi.Session
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
         }
 
-        public override async Task<int> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers, bool isAtAll = false)
+        public override async Task<long> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers, bool isAtAll = false)
         {
             if (contents.Count == 0) return 0;
             List<IChatMessage> msgList = new();
@@ -53,30 +53,30 @@ namespace TheresaBot.MiraiHttpApi.Session
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
         }
 
-        public override async Task<int> SendGroupMergeAsync(long groupId, params List<BaseContent>[] contentLists)
+        public override async Task<long> SendGroupMergeAsync(long groupId, params List<BaseContent>[] contentLists)
         {
             if (contentLists.Length == 0) return 0;
             List<IForwardMessageNode> nodeList = new();
             foreach (var contentList in contentLists)
             {
-                nodeList.Add(new ForwardMessageNode(MiraiConfig.MiraiBotName, MiraiConfig.MiraiBotQQ, DateTime.Now, await contentList.ToMiraiMessageAsync(UploadTarget.Group)));
+                nodeList.Add(new ForwardMessageNode(MiraiConfig.BotName, MiraiConfig.BotQQ, DateTime.Now, await contentList.ToMiraiMessageAsync(UploadTarget.Group)));
             }
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, new ForwardMessage(nodeList.ToArray()));
         }
 
-        public override async Task<int> SendFriendMessageAsync(long memberId, string message)
+        public override async Task<long> SendFriendMessageAsync(long memberId, string message)
         {
             return await MiraiHelper.Session.SendFriendMessageAsync(memberId, new PlainMessage(message));
         }
 
-        public override async Task<int> SendFriendMessageAsync(long memberId, params BaseContent[] contents)
+        public override async Task<long> SendFriendMessageAsync(long memberId, params BaseContent[] contents)
         {
             if (contents.Length == 0) return 0;
             IChatMessage[] msgList = await new List<BaseContent>(contents).ToMiraiMessageAsync(UploadTarget.Group);
             return await MiraiHelper.Session.SendFriendMessageAsync(memberId, msgList);
         }
 
-        public override async Task<int> SendFriendMessageAsync(long memberId, List<BaseContent> contents)
+        public override async Task<long> SendFriendMessageAsync(long memberId, List<BaseContent> contents)
         {
             if (contents.Count == 0) return 0;
             IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Group);

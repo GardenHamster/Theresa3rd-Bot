@@ -6,15 +6,15 @@ namespace TheresaBot.MiraiHttpApi.Common
     {
         public static string ConnectionString = string.Empty;
 
-        public static string MiraiHost = string.Empty;
+        public static string Host = string.Empty;
 
-        public static int MiraiPort = 0;
+        public static int Port = 0;
 
-        public static string MiraiAuthKey = string.Empty;
+        public static string AuthKey = string.Empty;
 
-        public static long MiraiBotQQ = 0;
+        public static long BotQQ = 0;
 
-        public static string MiraiBotName = "Bot";
+        public static string BotName = "Bot";
 
 
     }

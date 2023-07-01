@@ -23,11 +23,11 @@ namespace TheresaBot.Main.Handler
             recordBusiness = new RecordBusiness();
         }
 
-        public async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, List<SetuContent> headerContents, long groupId, int eachPage = 5)
+        public async Task<long[]> SendGroupSetuAsync(List<SetuContent> setuContents, List<SetuContent> headerContents, long groupId, int eachPage = 5)
         {
             int startIndex = 0;
-            if (eachPage <= 0) return new[] { 0 };
-            List<int> msgIds = new List<int>();
+            if (eachPage <= 0) return new long[] { 0 };
+            var msgIds = new List<long>();
             while (startIndex < setuContents.Count)
             {
                 List<SetuContent> pageContents = new List<SetuContent>();
@@ -39,7 +39,7 @@ namespace TheresaBot.Main.Handler
             return msgIds.ToArray();
         }
 
-        public async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 0)
+        public async Task<long[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 0)
         {
             if (sendMerge == false || margeEachPage <= 0)
             {
@@ -47,7 +47,7 @@ namespace TheresaBot.Main.Handler
             }
 
             int startIndex = 0;
-            List<int> msgIds = new List<int>();
+            var msgIds = new List<long>();
             while (startIndex < setuContents.Count)
             {
                 List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(margeEachPage).ToList();
@@ -57,7 +57,7 @@ namespace TheresaBot.Main.Handler
             return msgIds.ToArray();
         }
 
-        public async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge)
+        public async Task<long[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge)
         {
             if (sendMerge)
             {
@@ -69,9 +69,9 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId)
+        private async Task<long[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId)
         {
-            List<int> msgIdList = new List<int>();
+            var msgIdList = new List<long>();
             foreach (var content in setuContents)
             {
                 msgIdList.AddRange(await SendGroupSetuAsync(content, groupId));
@@ -80,9 +80,9 @@ namespace TheresaBot.Main.Handler
             return msgIdList.ToArray();
         }
 
-        public async Task<int[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
+        public async Task<long[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
         {
-            int[] msgIds = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
+            long[] msgIds = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
             if (msgIds.Where(o => o < 0).Any() && BotConfig.PixivConfig.ImgResend != ResendType.None)
             {
                 await Task.Delay(1000);
@@ -93,9 +93,9 @@ namespace TheresaBot.Main.Handler
             return msgIds;
         }
 
-        private async Task<int[]> SendGroupMergeSetuAsync(List<SetuContent> setuContents, long groupId)
+        private async Task<long[]> SendGroupMergeSetuAsync(List<SetuContent> setuContents, long groupId)
         {
-            int msgId = await Session.SendGroupMergeAsync(groupId, setuContents);
+            long msgId = await Session.SendGroupMergeAsync(groupId, setuContents);
             if (msgId < 0)
             {
                 await Task.Delay(1000);

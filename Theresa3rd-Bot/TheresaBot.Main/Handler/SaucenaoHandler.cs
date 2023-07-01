@@ -386,7 +386,7 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         private async Task sendAndRevoke(GroupCommand command, List<SetuContent> setuContents)
         {
-            int msgId = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
+            long msgId = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
             Task recordTask = recordBusiness.AddPixivRecord(setuContents, msgId, command.GroupId);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {

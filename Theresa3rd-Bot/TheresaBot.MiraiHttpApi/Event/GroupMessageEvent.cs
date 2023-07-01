@@ -39,12 +39,12 @@ namespace TheresaBot.MiraiHttpApi.Event
         {
             try
             {
-                int msgId = args.GetMessageId();
+                long msgId = args.GetMessageId();
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
                 long botId = session.QQNumber ?? 0;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
-                if (memberId == MiraiConfig.MiraiBotQQ) return;
+                if (memberId == MiraiConfig.BotQQ) return;
                 if (BusinessHelper.IsBanMember(memberId)) return; //黑名单成员
 
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
@@ -55,7 +55,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray())?.Trim() : string.Empty;
                 if (string.IsNullOrWhiteSpace(message)) return;
 
-                string prefix = prefix = MatchPrefix(instruction);
+                string prefix = prefix = instruction.MatchPrefix();
                 bool isAt = args.Chain.Where(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber).Any();
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();

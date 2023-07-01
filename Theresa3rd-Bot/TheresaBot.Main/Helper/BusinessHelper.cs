@@ -22,6 +22,19 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         private static string ImageCodeHeader = @"[image:";
 
+        /// <summary>
+        /// 匹配对应的指令前缀
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static string MatchPrefix(this string message)
+        {
+            var prefixs = BotConfig.GeneralConfig.Prefixs;
+            if (prefixs is null || prefixs.Count == 0) return string.Empty;
+            message = message?.Trim() ?? string.Empty;
+            var prefix = prefixs.Where(o => message.StartsWith(o)).FirstOrDefault();
+            return string.IsNullOrWhiteSpace(prefix) ? string.Empty : prefix;
+        }
 
         /// <summary>
         /// 检查是否黑名单成员
@@ -204,6 +217,20 @@ namespace TheresaBot.Main.Helper
                 }
             }
             return chatContents;
+        }
+
+        /// <summary>
+        /// 获取欢迎消息
+        /// </summary>
+        /// <returns></returns>
+        public static string GetStartUpMessage()
+        {
+            StringBuilder msgBuilder = new StringBuilder();
+            msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot v{BotConfig.BotVersion}】");
+            msgBuilder.AppendLine($"群聊发送【#菜单】可以查看指令");
+            msgBuilder.AppendLine($"部署或者使用教程请访问");
+            msgBuilder.Append($"{BotConfig.BotHomepage}");
+            return msgBuilder.ToString();
         }
 
         /// <summary>

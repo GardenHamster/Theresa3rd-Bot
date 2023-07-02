@@ -104,13 +104,12 @@ namespace TheresaBot.GoCqHttp.Command
             return result is null ? 0 : result.MessageId;
         }
 
-        public override async Task RevokeGroupMessageAsync(long? msgId, long groupId, int revokeInterval = 0)
+        public override async Task RevokeGroupMessageAsync(long msgId, long groupId)
         {
             try
             {
-                if (msgId is null || msgId == 0) return;
-                if (revokeInterval > 0) await Task.Delay(revokeInterval * 1000);
-                await Session.RecallMessageAsync(msgId.Value);
+                if (msgId >= 0) return;
+                await Session.RecallMessageAsync(msgId);
             }
             catch (Exception ex)
             {

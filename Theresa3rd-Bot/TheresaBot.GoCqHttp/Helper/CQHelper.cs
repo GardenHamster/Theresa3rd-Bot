@@ -244,11 +244,11 @@ namespace TheresaBot.GoCqHttp.Helper
             }
             if (chatContent is LocalImageContent localImageContent)
             {
-                return CqImageMsg.FromFile(localImageContent.FileInfo.FullName);
+                return localImageContent.FileInfo is null ? null : CqImageMsg.FromFile(localImageContent.FileInfo.FullName);
             }
             if (chatContent is WebImageContent webImageContent)
             {
-                return new CqImageMsg(webImageContent.Url);
+                return string.IsNullOrWhiteSpace(webImageContent.Url) ? null : new CqImageMsg(webImageContent.Url);
             }
             return null;
         }

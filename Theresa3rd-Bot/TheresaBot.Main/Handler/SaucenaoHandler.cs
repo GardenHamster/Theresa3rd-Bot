@@ -369,7 +369,7 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         private async Task sendAndRevoke(GroupCommand command, List<BaseContent> contentList)
         {
-            await command.ReplyGroupMessageAsync(contentList, BotConfig.SaucenaoConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+            await command.ReplyAndRevokeAsync(contentList, BotConfig.SaucenaoConfig.RevokeInterval, true);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);

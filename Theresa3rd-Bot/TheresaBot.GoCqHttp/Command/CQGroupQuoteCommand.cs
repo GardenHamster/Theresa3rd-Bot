@@ -38,7 +38,7 @@ namespace TheresaBot.GoCqHttp.Command
 
         public override Task<long?> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "") => BaseCommand.ReplyGroupTemplateWithAtAsync(template, defaultmsg);
 
-        public override Task RevokeGroupMessageAsync(long? msgId, long groupId, int revokeInterval = 0) => BaseCommand.RevokeGroupMessageAsync(msgId, groupId, revokeInterval);
+        public override Task RevokeGroupMessageAsync(long msgId, long groupId) => BaseCommand.RevokeGroupMessageAsync(msgId, groupId);
 
         public override Task<long?> SendTempMessageAsync(List<BaseContent> contentList) => BaseCommand.SendTempMessageAsync(contentList);
 

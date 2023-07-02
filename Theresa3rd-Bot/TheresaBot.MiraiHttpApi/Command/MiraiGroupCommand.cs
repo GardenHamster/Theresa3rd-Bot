@@ -99,13 +99,12 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendTempMessageAsync(MemberId, GroupId, msgArr);
         }
 
-        public override async Task RevokeGroupMessageAsync(long? msgId, long groupId, int revokeInterval = 0)
+        public override async Task RevokeGroupMessageAsync(long msgId, long groupId)
         {
             try
             {
-                if (msgId is null || msgId < 0) return;
-                if (revokeInterval > 0) await Task.Delay(revokeInterval * 1000);
-                await Session.RevokeMessageAsync((int)msgId.Value, groupId);
+                if (msgId <= 0) return;
+                await Session.RevokeMessageAsync((int)msgId, groupId);
             }
             catch (Exception ex)
             {

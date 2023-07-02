@@ -310,11 +310,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
             }
             if (chatContent is LocalImageContent localImageContent)
             {
-                return await UploadPictureAsync(localImageContent, uploadTarget);
+                return localImageContent.FileInfo is null ? null : await UploadPictureAsync(localImageContent, uploadTarget);
             }
             if (chatContent is WebImageContent webImageContent)
             {
-                return new ImageMessage(null, webImageContent.Url, null);
+                return string.IsNullOrWhiteSpace(webImageContent.Url) ? null : new ImageMessage(null, webImageContent.Url, null);
             }
             return null;
         }

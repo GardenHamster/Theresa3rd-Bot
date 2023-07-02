@@ -15,11 +15,6 @@ namespace TheresaBot.Main.Helper
             await command.ReplyGroupTemplateWithAtAsync(template);
         }
 
-        public static async Task<long?> ReplyGroupMessageAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool sendImgBehind, bool isAt = true)
-        {
-            return await command.ReplyAndRevokeAsync(contentList, revokeInterval, isAt);
-        }
-
         public static async Task<long?[]> ReplyGroupSetuAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = true)
         {
             long?[] msgIds = await command.ReplyAndRevokeAsync(setuContent, revokeInterval, sendImgBehind, isAt);
@@ -44,17 +39,29 @@ namespace TheresaBot.Main.Helper
             return msgId;
         }
 
-        private static async Task<long?> ReplyAndRevokeAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool isAt = false)
+        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long? msgId, long groupId, int revokeInterval)
+        {
+            try
+            {
+                if (revokeInterval <= 0) return;
+                if (msgId is null || msgId == 0) return;
+                await Task.Delay(revokeInterval * 1000);
+                await command.RevokeGroupMessageAsync(msgId.Value, groupId);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "群消息撤回失败");
+            }
+        }
+
+        public static async Task<long?> ReplyAndRevokeAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool isAt = false)
         {
             long? msgId = await command.ReplyGroupMessageAsync(contentList, isAt);
-            if (revokeInterval > 0)
-            {
-                Task revokeTask = command.RevokeGroupMessageAsync(msgId, command.GroupId, revokeInterval);
-            }
+            Task revokeTask = command.RevokeGroupMessageAsync(msgId, command.GroupId, revokeInterval);
             return msgId;
         }
 
-        private static async Task<long?[]> ReplyAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
+        public static async Task<long?[]> ReplyAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
         {
             List<long?> msgIds = new List<long?>();
             List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
@@ -81,7 +88,7 @@ namespace TheresaBot.Main.Helper
             return msgIds.ToArray();
         }
 
-        private static async Task<long?> ReplyAndRevokeAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = false)
+        public static async Task<long?> ReplyAndRevokeAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = false)
         {
             var contentList = new List<BaseContent>();
             foreach (var setuContent in setuContents)
@@ -91,10 +98,7 @@ namespace TheresaBot.Main.Helper
             }
 
             long? msgId = await command.ReplyGroupMessageAsync(contentList, isAt);
-            if (revokeInterval > 0)
-            {
-                Task revokeTask = command.RevokeGroupMessageAsync(msgId, command.GroupId, revokeInterval);
-            }
+            Task revokeTask = command.RevokeGroupMessageAsync(msgId, command.GroupId, revokeInterval);
             return msgId;
         }
 
@@ -141,11 +145,12 @@ namespace TheresaBot.Main.Helper
 
         public static async Task RevokeGroupMessageAsync(this GroupCommand command, List<long?> msgIds, long groupId, int revokeInterval = 0)
         {
+            if (revokeInterval <= 0) return;
             foreach (long? msgId in msgIds)
             {
                 if (msgId is null || msgId == 0) continue;
-                await command.RevokeGroupMessageAsync(msgId, groupId, revokeInterval);
-                await Task.Delay(500);
+                Task revokeTask = command.RevokeGroupMessageAsync(msgId, groupId, revokeInterval);
+                await Task.Delay(1000);
             }
         }
 

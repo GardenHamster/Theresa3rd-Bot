@@ -51,7 +51,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "PixivUserTimer异常");
-                Reporter.SendError(ex, "PixivUserTimer异常");
+                Reporter.SendError(ex, "PixivUserTimer异常").Wait();
             }
             finally
             {

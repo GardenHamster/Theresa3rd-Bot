@@ -65,7 +65,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
             finally
             {
@@ -98,7 +98,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
             finally
             {
@@ -215,7 +215,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
                 return true;
             }
         }
@@ -356,7 +356,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
         }
 

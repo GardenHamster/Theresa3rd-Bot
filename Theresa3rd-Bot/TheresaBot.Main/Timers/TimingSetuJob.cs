@@ -42,7 +42,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "TimingSetuJob异常");
-                reporter.SendError(ex, "TimingSetuJob异常");
+                await reporter.SendError(ex, "TimingSetuJob异常");
             }
         }
 
@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"{timingSetuTimer.Name}定时任务异常");
-                reporter.SendError(ex, $"{timingSetuTimer.Name}定时任务异常");
+                await reporter.SendError(ex, $"{timingSetuTimer.Name}定时任务异常");
             }
         }
 

@@ -44,7 +44,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "disableSetuTagAsync异常");
-                Reporter.SendError(ex, "disableSetuTagAsync异常");
+                await Reporter.SendError(ex, "disableSetuTagAsync异常");
             }
         }
 
@@ -74,7 +74,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "enableSetuAsync异常");
-                Reporter.SendError(ex, "enableSetuAsync异常");
+                await Reporter.SendError(ex, "enableSetuAsync异常");
             }
         }
 
@@ -110,7 +110,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "disableMemberAsync异常");
-                Reporter.SendError(ex, "disableMemberAsync异常");
+                await Reporter.SendError(ex, "disableMemberAsync异常");
             }
         }
 
@@ -140,7 +140,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "enableMemberAsync异常");
-                Reporter.SendError(ex, "enableMemberAsync异常");
+                await Reporter.SendError(ex, "enableMemberAsync异常");
             }
         }
 

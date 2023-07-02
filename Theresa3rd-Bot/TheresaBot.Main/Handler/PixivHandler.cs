@@ -105,7 +105,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
             finally
             {
@@ -163,7 +163,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
             finally
             {
@@ -200,7 +200,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "画师作品一览图合成失败");
-                Reporter.SendError(ex, "画师作品一览图合成失败");
+                await Reporter.SendError(ex, "画师作品一览图合成失败");
                 return null;
             }
         }

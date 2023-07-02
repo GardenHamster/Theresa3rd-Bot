@@ -20,7 +20,7 @@ namespace TheresaBot.Main.Reporter
         /// </summary>
         /// <param name="exception"></param>
         /// <param name="message"></param>
-        public async void SendError(Exception exception, string message = "")
+        public async Task SendError(Exception exception, string message = "")
         {
             try
             {

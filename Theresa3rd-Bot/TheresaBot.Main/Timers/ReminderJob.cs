@@ -27,7 +27,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "ReminderJob异常");
-                reporter.SendError(ex, "ReminderJob异常");
+                await reporter.SendError(ex, "ReminderJob异常");
             }
         }
     }

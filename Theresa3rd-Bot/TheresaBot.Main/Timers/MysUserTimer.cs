@@ -33,7 +33,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "MysUserTimer异常");
-                Reporter.SendError(ex, "MysUserTimer异常");
+                Reporter.SendError(ex, "MysUserTimer异常").Wait();
             }
             finally
             {

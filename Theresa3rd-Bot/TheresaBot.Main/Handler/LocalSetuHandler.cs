@@ -74,7 +74,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, "localSearchAsync异常");
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, "localSearchAsync异常");
+                await Reporter.SendError(ex, "localSearchAsync异常");
             }
             finally
             {

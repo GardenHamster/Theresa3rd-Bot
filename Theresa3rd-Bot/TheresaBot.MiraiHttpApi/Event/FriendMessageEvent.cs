@@ -5,10 +5,6 @@ using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
@@ -39,6 +35,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 int msgId = args.GetMessageId();
                 long memberId = args.Sender.Id;
                 if (memberId == MiraiConfig.BotQQ) return;
+                if (BusinessHelper.IsBanMember(memberId)) return; //黑名单成员
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
                 if (chainList is null || chainList.Count == 0) return;
@@ -65,7 +62,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 LogHelper.Error(ex, "私聊指令异常");
                 await ReplyFriendErrorAsync(ex, args);
                 await Task.Delay(1000);
-                new MiraiReporter().SendError(ex, "私聊指令异常");
+                await miraiReporter.SendError(ex, "私聊指令异常");
             }
         }
 

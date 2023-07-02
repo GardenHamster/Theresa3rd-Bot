@@ -26,7 +26,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "TempClearJob异常");
-                reporter.SendError(ex, "TempClearJob异常");
+                await reporter.SendError(ex, "TempClearJob异常");
             }
         }
 
@@ -49,7 +49,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "临时文件目录清理失败");
-                reporter.SendError(ex, "临时文件目录清理失败");
+                reporter.SendError(ex, "临时文件目录清理失败").Wait();
             }
         }
 
@@ -75,7 +75,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "上传临时文件清理失败");
-                reporter.SendError(ex, "上传临时文件清理失败");
+                reporter.SendError(ex, "上传临时文件清理失败").Wait();
             }
         }
 

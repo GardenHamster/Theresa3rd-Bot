@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "CookieWarningJob异常");
-                reporter.SendError(ex, "CookieWarningJob异常");
+                await reporter.SendError(ex, "CookieWarningJob异常");
             }
         }
 

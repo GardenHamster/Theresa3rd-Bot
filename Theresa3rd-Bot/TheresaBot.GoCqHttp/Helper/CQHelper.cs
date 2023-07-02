@@ -59,13 +59,14 @@ namespace TheresaBot.GoCqHttp.Helper
             try
             {
                 var result = await Session.GetLoginInformationAsync();
+                if (result is null) throw new Exception("Bot名片获取失败");
                 CQConfig.BotQQ = result?.UserId ?? 0;
                 CQConfig.BotName = result?.Nickname ?? "Bot";
                 LogHelper.Info($"Bot名片获取完毕，QQNumber={CQConfig.BotQQ}，Nickname={result?.Nickname ?? ""}");
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "Bot名片获取失败");
+                LogHelper.Error(ex, "Bot名片获取异常");
             }
         }
 

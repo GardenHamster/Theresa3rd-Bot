@@ -36,7 +36,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "TimingRankingJob异常");
-                reporter.SendError(ex, "TimingRankingJob异常");
+                await reporter.SendError(ex, "TimingRankingJob异常");
             }
         }
 

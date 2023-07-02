@@ -112,7 +112,7 @@ namespace TheresaBot.Main.Handler
                     scanReport.ErrorWork++;
                     string message = $"扫描pixiv用户[{subscribeTask.SubscribeCode}]订阅失败";
                     LogHelper.Error(ex, message);
-                    Reporter.SendError(ex, message);
+                    await Reporter.SendError(ex, message);
                 }
             }
             return scanReport;
@@ -129,7 +129,7 @@ namespace TheresaBot.Main.Handler
             {
                 string message = $"扫描pixiv关注用户最新作品失败";
                 LogHelper.Error(ex, message);
-                Reporter.SendError(ex, message);
+                await Reporter.SendError(ex, message);
             }
             return scanReport;
         }

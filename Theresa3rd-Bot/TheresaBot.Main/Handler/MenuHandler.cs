@@ -37,7 +37,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "菜单发送失败");
-                Reporter.SendError(ex, "菜单发送失败");
+                await Reporter.SendError(ex, "菜单发送失败");
             }
         }
 

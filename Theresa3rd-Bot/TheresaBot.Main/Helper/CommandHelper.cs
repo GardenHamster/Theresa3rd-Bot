@@ -11,7 +11,7 @@ namespace TheresaBot.Main.Helper
     {
         public static async Task ReplyProcessingMessageAsync(this GroupCommand command, string template)
         {
-            if (string.IsNullOrWhiteSpace(template) == false) return;
+            if (string.IsNullOrWhiteSpace(template)) return;
             await command.ReplyGroupTemplateWithAtAsync(template);
         }
 

@@ -85,7 +85,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, "lolisukiSearchAsync异常");
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, "lolisukiSearchAsync异常");
+                await Reporter.SendError(ex, "lolisukiSearchAsync异常");
             }
             finally
             {
@@ -117,7 +117,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "定时涩图异常");
-                Reporter.SendError(ex, "定时涩图异常");
+                await Reporter.SendError(ex, "定时涩图异常");
             }
         }
 

@@ -8,7 +8,7 @@ namespace TheresaBot.GoCqHttp.Relay
     {
         public CqGroupMessagePostContext Args { get; set; }
 
-        public CQGroupRelay(CqGroupMessagePostContext args, int msgId, string message, long groupId, long memberId) : base(msgId, message, groupId, memberId)
+        public CQGroupRelay(CqGroupMessagePostContext args, long msgId, string message, long groupId, long memberId) : base(msgId, message, groupId, memberId)
         {
             Args = args;
         }

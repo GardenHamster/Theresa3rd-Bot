@@ -102,7 +102,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, "订阅米游社用户异常");
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, "订阅米游社用户异常");
+                await Reporter.SendError(ex, "订阅米游社用户异常");
             }
         }
 
@@ -154,7 +154,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, "退订米游社用户异常");
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, "退订米游社用户异常");
+                await Reporter.SendError(ex, "退订米游社用户异常");
             }
         }
 

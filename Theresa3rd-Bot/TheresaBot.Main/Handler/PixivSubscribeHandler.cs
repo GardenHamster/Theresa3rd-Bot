@@ -122,7 +122,7 @@ namespace TheresaBot.Main.Handler
                 string errMsg = $"订阅pixiv用户失败";
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyGroupMessageWithAtAsync(errMsg);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -201,7 +201,7 @@ namespace TheresaBot.Main.Handler
                 DbScoped.SugarScope.RollbackTran();//事务回滚
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -255,7 +255,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -324,7 +324,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -373,7 +373,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -414,7 +414,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
         }
 

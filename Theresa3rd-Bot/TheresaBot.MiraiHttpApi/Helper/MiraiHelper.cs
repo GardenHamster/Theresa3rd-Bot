@@ -6,6 +6,7 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Options;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
+using MySqlX.XDevAPI.Common;
 using System.Text;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -87,6 +88,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
             try
             {
                 IBotProfile profile = await Session.GetBotProfileAsync();
+                if (profile is null) throw new Exception("Bot名片获取失败");
                 MiraiConfig.BotName = profile?.Nickname ?? "Bot";
                 LogHelper.Info($"Bot名片获取完毕，QQNumber={Session.QQNumber}，Nickname={profile?.Nickname ?? ""}");
             }

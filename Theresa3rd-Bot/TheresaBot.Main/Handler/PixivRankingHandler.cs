@@ -106,7 +106,7 @@ namespace TheresaBot.Main.Handler
             {
                 string errMsg = $"handleRankingSubscribeAsync异常";
                 LogHelper.Error(ex, errMsg);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
             finally
             {
@@ -151,7 +151,7 @@ namespace TheresaBot.Main.Handler
             {
                 string errMsg = $"sendPreviewFileAsync异常";
                 LogHelper.Error(ex, errMsg);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -188,7 +188,7 @@ namespace TheresaBot.Main.Handler
             {
                 string errMsg = $"sendSetuDetailAsync异常";
                 LogHelper.Error(ex, errMsg);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
         }
 
@@ -265,7 +265,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
             finally
             {
@@ -343,7 +343,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "日榜一览图合成失败");
-                Reporter.SendError(ex, "日榜一览图合成失败");
+                await Reporter.SendError(ex, "日榜一览图合成失败");
                 return null;
             }
         }

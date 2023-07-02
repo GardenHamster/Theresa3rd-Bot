@@ -5,10 +5,6 @@ using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -42,7 +38,6 @@ namespace TheresaBot.MiraiHttpApi.Event
                 long msgId = args.GetMessageId();
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
-                long botId = session.QQNumber ?? 0;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
                 if (memberId == MiraiConfig.BotQQ) return;
                 if (BusinessHelper.IsBanMember(memberId)) return; //黑名单成员
@@ -71,7 +66,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 {
                     MiraiGroupRelay relay = new MiraiGroupRelay(args, msgId, message, groupId, memberId);
                     if (StepCache.HandleStep(relay, groupId, memberId)) return; //分步处理
-                    if (RepeatCache.CheckCanRepeat(groupId, botId, memberId, message)) await SendRepeat(session, args);//复读机
+                    if (RepeatCache.CheckCanRepeat(groupId, MiraiConfig.BotQQ, memberId, message)) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, msgId, groupId, memberId);
                     List<string> plainMessages = args.Chain.Where(o => o is PlainMessage).Select(o => o.ToString()).ToList();
@@ -102,7 +97,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 LogHelper.Error(ex, "群指令异常");
                 await ReplyGroupErrorAsync(ex, args);
                 await Task.Delay(1000);
-                new MiraiReporter().SendError(ex, "群指令异常");
+                await miraiReporter.SendError(ex, "群指令异常");
             }
         }
 

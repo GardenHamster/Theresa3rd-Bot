@@ -32,21 +32,21 @@ namespace TheresaBot.Main.Command
 
         public abstract long GetQuoteMessageId();
 
-        public abstract Task<long> ReplyGroupMessageAsync(string message, bool isAt = false);
+        public abstract Task<long?> ReplyGroupMessageAsync(string message, bool isAt = false);
 
-        public abstract Task<long> ReplyGroupMessageAsync(List<BaseContent> contentList, bool isAt = false);
+        public abstract Task<long?> ReplyGroupMessageAsync(List<BaseContent> contentList, bool isAt = false);
 
-        public abstract Task<long> ReplyGroupMessageWithAtAsync(string plainMsg);
+        public abstract Task<long?> ReplyGroupMessageWithAtAsync(string plainMsg);
 
-        public abstract Task<long> ReplyGroupMessageWithAtAsync(params BaseContent[] contentArr);
+        public abstract Task<long?> ReplyGroupMessageWithAtAsync(params BaseContent[] contentArr);
 
-        public abstract Task<long> ReplyGroupMessageWithAtAsync(List<BaseContent> contentList);
+        public abstract Task<long?> ReplyGroupMessageWithAtAsync(List<BaseContent> contentList);
 
-        public abstract Task<long> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "");
+        public abstract Task<long?> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "");
 
-        public abstract Task<long> SendTempMessageAsync(List<BaseContent> contentList);
+        public abstract Task<long?> SendTempMessageAsync(List<BaseContent> contentList);
 
-        public abstract Task RevokeGroupMessageAsync(long messageId, long groupId, int revokeInterval = 0);
+        public abstract Task RevokeGroupMessageAsync(long? msgId, long groupId, int revokeInterval = 0);
 
         public override async Task ReplyError(Exception ex, string message = "")
         {

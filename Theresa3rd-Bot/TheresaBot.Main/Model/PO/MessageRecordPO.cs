@@ -1,4 +1,5 @@
 ﻿using SqlSugar;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.PO
 {
@@ -7,6 +8,9 @@ namespace TheresaBot.Main.Model.PO
     {
         [SugarColumn(IsNullable = false, ColumnDescription = "消息编号")]
         public long MessageId { get; set; }
+
+        [SugarColumn(IsNullable = false, ColumnDescription = "Bot平台")]
+        public PlatformType PlatformType { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDescription = "发送群ID")]
         public long GroupId { get; set; }

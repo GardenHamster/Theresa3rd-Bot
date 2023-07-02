@@ -10,6 +10,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
@@ -68,9 +69,9 @@ namespace TheresaBot.MiraiHttpApi.Event
                     if (StepCache.HandleStep(relay, groupId, memberId)) return; //分步处理
                     if (RepeatCache.CheckCanRepeat(groupId, MiraiConfig.BotQQ, memberId, message)) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
-                    Task task1 = RecordHelper.AddImageRecords(imgUrls, msgId, groupId, memberId);
+                    Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.Mirai, msgId, groupId, memberId);
                     List<string> plainMessages = args.Chain.Where(o => o is PlainMessage).Select(o => o.ToString()).ToList();
-                    Task task2 = RecordHelper.AddPlainRecords(plainMessages, msgId, groupId, memberId);
+                    Task task2 = RecordHelper.AddPlainRecords(plainMessages, PlatformType.Mirai, msgId, groupId, memberId);
                     return;
                 }
 

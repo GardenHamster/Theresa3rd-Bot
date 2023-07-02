@@ -19,11 +19,11 @@ namespace TheresaBot.Main.Command
 
         public abstract List<string> GetImageUrls();
 
-        public abstract Task<long> ReplyFriendMessageAsync(string message);
+        public abstract Task<long?> ReplyFriendMessageAsync(string message);
 
-        public abstract Task<long> ReplyFriendMessageAsync(List<BaseContent> contents);
+        public abstract Task<long?> ReplyFriendMessageAsync(List<BaseContent> contents);
 
-        public abstract Task<long> ReplyFriendTemplateAsync(string template, string defaultmsg);
+        public abstract Task<long?> ReplyFriendTemplateAsync(string template, string defaultmsg);
 
         public override async Task ReplyError(Exception ex, string message = "")
         {

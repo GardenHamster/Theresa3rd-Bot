@@ -14,6 +14,7 @@ namespace TheresaBot.Main.Command
         public string[] Params { get; init; }
         public string KeyWord { get; set; }
         public CommandType CommandType { get; init; }
+        public abstract PlatformType PlatformType { get; }
 
         public BaseCommand(CommandType commandType, long msgId, string instruction, string command, long memberId)
         {
@@ -29,6 +30,11 @@ namespace TheresaBot.Main.Command
         public abstract Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter);
 
         public abstract Task ReplyError(Exception ex, string message = "");
+
+        public virtual async Task Test()
+        {
+            await Task.CompletedTask;
+        }
 
     }
 }

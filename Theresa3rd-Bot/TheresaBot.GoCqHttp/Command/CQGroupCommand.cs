@@ -14,6 +14,7 @@ namespace TheresaBot.GoCqHttp.Command
     {
         private ICqActionSession Session;
         private CqGroupMessagePostContext Args;
+        public override PlatformType PlatformType { get; } = PlatformType.GoCQHttp;
 
         public CQGroupCommand(ICqActionSession session, CqGroupMessagePostContext args, CommandType commandType, string instruction, string command, long groupId, long memberId)
             : base(commandType, args.MessageId, instruction, command, groupId, memberId)
@@ -39,7 +40,7 @@ namespace TheresaBot.GoCqHttp.Command
             return Args.Message.OfType<CqReplyMsg>().FirstOrDefault()?.Id ?? 0;
         }
 
-        public override async Task<long> ReplyGroupMessageAsync(string message, bool isAt = false)
+        public override async Task<long?> ReplyGroupMessageAsync(string message, bool isAt = false)
         {
             List<CqMsg> msgList = new List<CqMsg>();
             if (isAt) msgList.Add(new CqAtMsg(MemberId));
@@ -48,7 +49,7 @@ namespace TheresaBot.GoCqHttp.Command
             return result is null ? 0 : result.MessageId;
         }
 
-        public override async Task<long> ReplyGroupMessageAsync(List<BaseContent> chainList, bool isAt = false)
+        public override async Task<long?> ReplyGroupMessageAsync(List<BaseContent> chainList, bool isAt = false)
         {
             List<CqMsg> msgList = new List<CqMsg>();
             if (isAt) msgList.Add(new CqAtMsg(MemberId));
@@ -57,7 +58,7 @@ namespace TheresaBot.GoCqHttp.Command
             return result is null ? 0 : result.MessageId;
         }
 
-        public override async Task<long> ReplyGroupMessageWithAtAsync(string plainMsg)
+        public override async Task<long?> ReplyGroupMessageWithAtAsync(string plainMsg)
         {
             if (plainMsg.StartsWith(" ") == false) plainMsg = " " + plainMsg;
             List<CqMsg> msgList = new List<CqMsg>();
@@ -67,7 +68,7 @@ namespace TheresaBot.GoCqHttp.Command
             return result is null ? 0 : result.MessageId;
         }
 
-        public override async Task<long> ReplyGroupMessageWithAtAsync(params BaseContent[] chainArr)
+        public override async Task<long?> ReplyGroupMessageWithAtAsync(params BaseContent[] chainArr)
         {
             List<CqMsg> msgList = new List<CqMsg>();
             msgList.Add(new CqAtMsg(MemberId));
@@ -76,7 +77,7 @@ namespace TheresaBot.GoCqHttp.Command
             return result is null ? 0 : result.MessageId;
         }
 
-        public override async Task<long> ReplyGroupMessageWithAtAsync(List<BaseContent> chainList)
+        public override async Task<long?> ReplyGroupMessageWithAtAsync(List<BaseContent> chainList)
         {
             List<CqMsg> msgList = new List<CqMsg>();
             msgList.Add(new CqAtMsg(MemberId));
@@ -85,7 +86,7 @@ namespace TheresaBot.GoCqHttp.Command
             return result is null ? 0 : result.MessageId;
         }
 
-        public override async Task<long> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "")
+        public override async Task<long?> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "")
         {
             template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
@@ -96,25 +97,30 @@ namespace TheresaBot.GoCqHttp.Command
             return result is null ? 0 : result.MessageId;
         }
 
-        public override async Task<long> SendTempMessageAsync(List<BaseContent> contentList)
+        public override async Task<long?> SendTempMessageAsync(List<BaseContent> contentList)
         {
             CqMsg[] msgArr = contentList.ToCQMessageAsync();
             var result = await Session.SendPrivateMessageAsync(MemberId, GroupId, new CqMessage(msgArr));
             return result is null ? 0 : result.MessageId;
         }
 
-        public override async Task RevokeGroupMessageAsync(long messageId, long groupId, int revokeInterval = 0)
+        public override async Task RevokeGroupMessageAsync(long? msgId, long groupId, int revokeInterval = 0)
         {
             try
             {
-                if (messageId <= 0) return;
+                if (msgId is null || msgId == 0) return;
                 if (revokeInterval > 0) await Task.Delay(revokeInterval * 1000);
-                await Session.RecallMessageAsync(messageId);
+                await Session.RecallMessageAsync(msgId.Value);
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "群消息撤回失败");
             }
+        }
+
+        public override async Task Test()
+        {
+            await Task.CompletedTask;
         }
 
 

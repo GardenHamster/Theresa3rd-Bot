@@ -12,6 +12,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.GoCqHttp.Plugin
 {
@@ -62,9 +63,9 @@ namespace TheresaBot.GoCqHttp.Plugin
                     if (StepCache.HandleStep(relay, groupId, memberId)) return; //分步处理
                     if (RepeatCache.CheckCanRepeat(groupId, CQConfig.BotQQ, memberId, message)) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Message.OfType<CqImageMsg>().Select(o => o.Image).ToList();
-                    Task task1 = RecordHelper.AddImageRecords(imgUrls, msgId, groupId, memberId);
+                    Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.GoCQHttp, msgId, groupId, memberId);
                     List<string> plainMessages = args.Message.OfType<CqTextMsg>().Select(o => o.Text).ToList();
-                    Task task2 = RecordHelper.AddPlainRecords(plainMessages, msgId, groupId, memberId);
+                    Task task2 = RecordHelper.AddPlainRecords(plainMessages, PlatformType.GoCQHttp, msgId, groupId, memberId);
                     return;
                 }
 

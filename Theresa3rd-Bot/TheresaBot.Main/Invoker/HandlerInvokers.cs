@@ -355,6 +355,12 @@ namespace TheresaBot.Main.Invoker
             {
                 await botCommand.ReplyGroupMessageAsync($"Theresa3rd-Bot v{BotConfig.BotVersion}");
                 return false;
+            })),
+            //test
+            new(new List<string>() { "test" }, CommandType.Other, new(async (botCommand, session, reporter) =>
+            {
+                await botCommand.Test();
+                return false;
             }))
         };
 

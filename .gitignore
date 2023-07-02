@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+
+
+Theresa3rd-Bot/TheresaBot.GoCqHttp/BotImg/
+Theresa3rd-Bot/TheresaBot.MiraiHttpApi/BotImg/
+
+
 .config
 
 # User-specific files

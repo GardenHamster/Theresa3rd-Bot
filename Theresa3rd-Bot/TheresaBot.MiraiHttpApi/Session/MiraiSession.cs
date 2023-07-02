@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Session;
+using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
 
@@ -12,6 +13,8 @@ namespace TheresaBot.MiraiHttpApi.Session
 {
     public class MiraiSession : BaseSession
     {
+        public override PlatformType PlatformType { get; } = PlatformType.Mirai;
+
         public override async Task<long> SendGroupMessageAsync(long groupId, string message)
         {
             return await MiraiHelper.Session.SendGroupMessageAsync(groupId, new PlainMessage(message));

@@ -1,9 +1,12 @@
 ﻿using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Session
 {
     public abstract class BaseSession
     {
+        public abstract PlatformType PlatformType { get; }
+
         public abstract Task<long> SendGroupMessageAsync(long groupId, string message);
 
         public abstract Task<long> SendGroupMessageAsync(long groupId, params BaseContent[] contents);

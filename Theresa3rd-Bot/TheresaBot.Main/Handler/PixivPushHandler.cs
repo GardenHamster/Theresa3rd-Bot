@@ -168,8 +168,8 @@ namespace TheresaBot.Main.Handler
                     bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                     List<FileInfo> imgList = isShowImg ? setuFiles : new();
                     PixivSetuContent setuContent = new PixivSetuContent(workMsgs, imgList, pixivWorkInfo);
-                    long[] msgIds = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
-                    Task recordTask = recordBusiness.AddPixivRecord(setuContent, msgIds, groupId);
+                    long?[] msgIds = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    Task recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, groupId);
                 }
                 catch (Exception ex)
                 {

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Helper
 {
@@ -12,12 +13,12 @@ namespace TheresaBot.Main.Helper
     {
         private static readonly RecordBusiness recordBusiness = new RecordBusiness();
 
-        public static async Task AddImageRecords(List<string> imageUrls, long msgId, long groupId, long memberId)
+        public static async Task AddImageRecords(List<string> imageUrls, PlatformType platformType, long msgId, long groupId, long memberId)
         {
             try
             {
                 if (imageUrls == null || imageUrls.Count == 0) return;
-                await recordBusiness.AddImageRecord(imageUrls, msgId, groupId, memberId);
+                await recordBusiness.AddImageRecord(imageUrls, platformType, msgId, groupId, memberId);
             }
             catch (Exception ex)
             {
@@ -25,14 +26,14 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        public static async Task AddPlainRecords(List<string> plainMessages, long msgId, long groupId, long memberId)
+        public static async Task AddPlainRecords(List<string> plainMessages, PlatformType platformType, long msgId, long groupId, long memberId)
         {
             try
             {
                 if (plainMessages == null || plainMessages.Count == 0) return;
                 string plainMessage = string.Join(' ', plainMessages);
                 if (string.IsNullOrWhiteSpace(plainMessage)) return;
-                await recordBusiness.AddMessageRecord(plainMessage, msgId, groupId, memberId);
+                await recordBusiness.AddMessageRecord(platformType, plainMessage, msgId, groupId, memberId);
             }
             catch (Exception ex)
             {

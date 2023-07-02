@@ -309,8 +309,8 @@ namespace TheresaBot.Main.Handler
                 setuContents.Add(setuContent);
             }
 
-            long msgId = await Session.SendGroupMergeAsync(command.GroupId, setuContents);
-            Task recordTask = recordBusiness.AddPixivRecord(setuContents, msgId, command.GroupId);
+            long? msgId = await Session.SendGroupMergeAsync(command.GroupId, setuContents);
+            Task recordTask = recordBusiness.AddPixivRecord(setuContents, command.PlatformType, msgId, command.GroupId);
         }
 
         private async Task<List<string>> createPreviewImgAsync(PixivRankingInfo rankingInfo)

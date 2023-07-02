@@ -2,10 +2,6 @@
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
@@ -19,6 +15,7 @@ namespace TheresaBot.MiraiHttpApi.Command
     {
         private IMiraiHttpSession Session;
         private IGroupMessageEventArgs Args;
+        public override PlatformType PlatformType { get; } = PlatformType.Mirai;
 
         public MiraiGroupCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, CommandType commandType, string instruction, string command, long groupId, long memberId)
             : base(commandType, args.GetMessageId(), instruction, command, groupId, memberId)
@@ -45,7 +42,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             return quoteMessage is null ? 0 : ((QuoteMessage)quoteMessage).Id;
         }
 
-        public override async Task<long> ReplyGroupMessageAsync(string message, bool isAt = false)
+        public override async Task<long?> ReplyGroupMessageAsync(string message, bool isAt = false)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             if (isAt) msgList.Add(new AtMessage(MemberId));
@@ -53,7 +50,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
-        public override async Task<long> ReplyGroupMessageAsync(List<BaseContent> chainList, bool isAt = false)
+        public override async Task<long?> ReplyGroupMessageAsync(List<BaseContent> chainList, bool isAt = false)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             if (isAt) msgList.Add(new AtMessage(MemberId));
@@ -61,7 +58,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
-        public override async Task<long> ReplyGroupMessageWithAtAsync(string plainMsg)
+        public override async Task<long?> ReplyGroupMessageWithAtAsync(string plainMsg)
         {
             if (plainMsg.StartsWith(" ") == false) plainMsg = " " + plainMsg;
             List<IChatMessage> msgList = new List<IChatMessage>();
@@ -70,7 +67,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
-        public override async Task<long> ReplyGroupMessageWithAtAsync(params BaseContent[] chainArr)
+        public override async Task<long?> ReplyGroupMessageWithAtAsync(params BaseContent[] chainArr)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             msgList.Add(new AtMessage(MemberId));
@@ -78,7 +75,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
-        public override async Task<long> ReplyGroupMessageWithAtAsync(List<BaseContent> chainList)
+        public override async Task<long?> ReplyGroupMessageWithAtAsync(List<BaseContent> chainList)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             msgList.Add(new AtMessage(MemberId));
@@ -86,7 +83,7 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
         }
 
-        public override async Task<long> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "")
+        public override async Task<long?> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "")
         {
             template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
@@ -96,19 +93,19 @@ namespace TheresaBot.MiraiHttpApi.Command
             return await Session.SendGroupMessageAsync(GroupId, msgList);
         }
 
-        public override async Task<long> SendTempMessageAsync(List<BaseContent> contentList)
+        public override async Task<long?> SendTempMessageAsync(List<BaseContent> contentList)
         {
             IChatMessage[] msgArr = await contentList.ToMiraiMessageAsync(UploadTarget.Group);
             return await Session.SendTempMessageAsync(MemberId, GroupId, msgArr);
         }
 
-        public override async Task RevokeGroupMessageAsync(long messageId, long groupId, int revokeInterval = 0)
+        public override async Task RevokeGroupMessageAsync(long? msgId, long groupId, int revokeInterval = 0)
         {
             try
             {
-                if (messageId <= 0) return;
+                if (msgId is null || msgId < 0) return;
                 if (revokeInterval > 0) await Task.Delay(revokeInterval * 1000);
-                await Session.RevokeMessageAsync((int)messageId, groupId);
+                await Session.RevokeMessageAsync((int)msgId.Value, groupId);
             }
             catch (Exception ex)
             {

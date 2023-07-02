@@ -4,11 +4,14 @@ using TheresaBot.GoCqHttp.Common;
 using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Session;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.GoCqHttp.Session
 {
     public class CQSession : BaseSession
     {
+        public override PlatformType PlatformType { get; } = PlatformType.GoCQHttp;
+
         public override async Task<long> SendGroupMessageAsync(long groupId, string message)
         {
             var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(message));
@@ -56,14 +59,8 @@ namespace TheresaBot.GoCqHttp.Session
         public override async Task<long> SendGroupMergeAsync(long groupId, params List<BaseContent>[] contentLists)
         {
             if (contentLists.Length == 0) return 0;
-            var nodeList = new List<CqForwardMessageNode>();
-            foreach (var contentList in contentLists)
-            {
-                CqMsg[] msgList = contentList.ToCQMessageAsync();
-                nodeList.Add(new CqForwardMessageNode(CQConfig.BotName, CQConfig.BotQQ, new CqMessage(msgList)));
-            }
-            var forwardMessages = new CqForwardMessage(nodeList);
-            var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(forwardMessages));
+            var nodeList = contentLists.Select(o => new CqForwardMessageNode(CQConfig.BotName, CQConfig.BotQQ, new CqMessage(o.ToCQMessageAsync()))).ToList();
+            var result = await CQHelper.Session.SendGroupForwardMessageAsync(groupId, new CqForwardMessage(nodeList));
             return result is null ? 0 : result.MessageId;
         }
 

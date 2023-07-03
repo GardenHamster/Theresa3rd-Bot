@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Model.Content;
+﻿using TheresaBot.Main.Common;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Helper
@@ -52,15 +53,34 @@ namespace TheresaBot.Main.Helper
             return contentLists.ToArray();
         }
 
-        public static List<BaseContent> ToBaseContent(this List<FileInfo> imgLists)
+        public static List<BaseContent> ToBaseContent(this List<FileInfo> imgList)
         {
-            return imgLists.ToLocalImageContent().Cast<BaseContent>().ToList();
+            return imgList.ToLocalImageContent().Cast<BaseContent>().ToList();
         }
 
-        public static List<LocalImageContent> ToLocalImageContent(this List<FileInfo> imgLists)
+        public static List<LocalImageContent> ToLocalImageContent(this List<FileInfo> imgList)
         {
-            return imgLists.Select(o => new LocalImageContent(o)).ToList();
+            return imgList.Select(o => new LocalImageContent(o)).ToList();
         }
+
+        public static List<BaseContent>[] SetDefaultImage(this List<BaseContent>[] contentList)
+        {
+            return contentList.Select(o => o.SetDefaultImage()).ToArray();
+        }
+
+        public static List<BaseContent> SetDefaultImage(this List<BaseContent> contentList)
+        {
+            FileInfo errorImg = FilePath.GetDownErrorImg();
+            for (int i = 0; i < contentList.Count; i++)
+            {
+                if (contentList[i] is not LocalImageContent imageContent) continue;
+                if (imageContent.FileInfo is not null) continue;
+                if (errorImg is not null) imageContent.FileInfo = errorImg;
+            }
+            return contentList;
+        }
+
+        
 
     }
 }

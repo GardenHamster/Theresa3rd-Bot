@@ -320,39 +320,15 @@ namespace TheresaBot.MiraiHttpApi.Helper
         }
 
         /// <summary>
-        /// 上传图片,返回mirai图片消息
-        /// </summary>
-        /// <param name="setuFiles"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public static async Task<List<IChatMessage>> UploadPictureAsync(this List<FileInfo> setuFiles, UploadTarget target)
-        {
-            List<IChatMessage> imgMsgs = new List<IChatMessage>();
-            foreach (FileInfo setuFile in setuFiles)
-            {
-                if(setuFile is not null)
-                {
-                    imgMsgs.Add((IChatMessage)await Session.UploadPictureAsync(target, setuFile.FullName));
-                    continue;
-                }
-                FileInfo errorImg = FilePath.GetDownErrorImg();
-                if(errorImg is not null)
-                {
-                    imgMsgs.Add((IChatMessage)await Session.UploadPictureAsync(target, errorImg.FullName));
-                }
-            }
-            return imgMsgs;
-        }
-
-        /// <summary>
-        /// 上传图片,返回mirai图片消息
+        /// 上传图片，返回mirai图片消息
         /// </summary>
         /// <param name="imageContent"></param>
         /// <returns></returns>
-        private static async Task<IChatMessage> UploadPictureAsync(LocalImageContent imageContent, UploadTarget uploadTarget)
+        private static async Task<IChatMessage> UploadPictureAsync(LocalImageContent imageContent, UploadTarget target)
         {
-            if (imageContent?.FileInfo == null) return null;
-            return (IImageMessage)await Session.UploadPictureAsync(uploadTarget, imageContent.FileInfo.FullName);
+            FileInfo imageFile = imageContent.FileInfo;
+            if (imageFile is null || imageFile.Exists == false) return null;
+            return (IChatMessage)await Session.UploadPictureAsync(target, imageFile.FullName);
         }
 
     }

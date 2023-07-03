@@ -165,7 +165,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool isShortDateStr(this string str)
+        public static bool IsShortDateStr(this string str)
         {
             DateTime outTime = DateTime.Now;
             return DateTime.TryParseExact(str, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out outTime);

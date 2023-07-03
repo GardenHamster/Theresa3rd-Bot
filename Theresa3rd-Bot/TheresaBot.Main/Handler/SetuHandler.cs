@@ -56,7 +56,7 @@ namespace TheresaBot.Main.Handler
         {
             if (sendMerge == false || margeEachPage <= 0)
             {
-                return await SendGroupSetuAsync(setuContents, groupId, sendMerge);
+                return await SendGroupSetuAsync(setuContents, groupId);
             }
 
             int startIndex = 0;
@@ -294,22 +294,14 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         protected async Task<List<FileInfo>> downPixivImgsAsync(BaseWorkInfo workInfo)
         {
-            try
+            List<FileInfo> imgList = new List<FileInfo>();
+            List<string> originUrls = workInfo.getOriginalUrls();
+            int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
+            for (int i = 0; i < maxCount && i < originUrls.Count; i++)
             {
-                List<FileInfo> imgList = new List<FileInfo>();
-                List<string> originUrls = workInfo.getOriginalUrls();
-                int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
-                for (int i = 0; i < maxCount && i < originUrls.Count; i++)
-                {
-                    imgList.Add(await PixivHelper.DownPixivImgBySizeAsync(workInfo.PixivId.ToString(), originUrls[i]));
-                }
-                return imgList;
+                imgList.Add(await PixivHelper.DownPixivImgBySizeAsync(workInfo.PixivId.ToString(), originUrls[i]));
             }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "downPixivImgsAsync异常");
-                return null;
-            }
+            return imgList;
         }
 
 

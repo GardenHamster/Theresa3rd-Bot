@@ -1,8 +1,5 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Common;
-using TheresaBot.Main.Model.Content;
+﻿using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Helper
 {
@@ -10,19 +7,18 @@ namespace TheresaBot.Main.Helper
     {
         public static async Task<long?[]> SendGroupMessageAsync(this BaseSession session, long groupId, SetuContent setuContent, bool sendImgBehind)
         {
-            if (setuContent is null) return new long?[0];
-            List<BaseContent> setuInfos = setuContent.SetuInfos ?? new();
-            List<FileInfo> setuFiles = setuContent.SetuImages ?? new();
+            List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
+            List<BaseContent> imgContents = setuContent.SetuImages.ToBaseContent().SetDefaultImage().ToList();
             if (sendImgBehind)
             {
-                long? workMsgId = await session.SendGroupMessageAsync(groupId, setuInfos);
+                long? workMsgId = await session.SendGroupMessageAsync(groupId, msgContents);
                 await Task.Delay(1000);
-                long? imgMsgId = await session.SendGroupMessageAsync(groupId, setuFiles.ToBaseContent());
+                long? imgMsgId = await session.SendGroupMessageAsync(groupId, imgContents);
                 return new long?[] { workMsgId, imgMsgId };
             }
             else
             {
-                List<BaseContent> msgList = setuInfos.Concat(setuFiles.ToBaseContent()).ToList();
+                List<BaseContent> msgList = msgContents.Concat(imgContents).ToList();
                 long msgId = await session.SendGroupMessageAsync(groupId, msgList.ToArray());
                 return new long?[] { msgId };
             }
@@ -31,7 +27,7 @@ namespace TheresaBot.Main.Helper
         public static async Task<long?> SendGroupMergeAsync(this BaseSession session, long groupId, List<SetuContent> setuContents)
         {
             if (setuContents.Count == 0) return 0;
-            return await session.SendGroupMergeAsync(groupId, setuContents.ToBaseContents());
+            return await session.SendGroupMergeAsync(groupId, setuContents.ToBaseContents().SetDefaultImage());
         }
 
         

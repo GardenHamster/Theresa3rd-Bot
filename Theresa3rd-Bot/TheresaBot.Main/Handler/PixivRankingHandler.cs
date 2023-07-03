@@ -11,6 +11,7 @@ using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
@@ -309,8 +310,8 @@ namespace TheresaBot.Main.Handler
                 setuContents.Add(setuContent);
             }
 
-            long? msgId = await Session.SendGroupMergeAsync(command.GroupId, setuContents);
-            Task recordTask = recordBusiness.AddPixivRecord(setuContents, command.PlatformType, msgId, command.GroupId);
+            BaseResult result = await Session.SendGroupMergeAsync(command.GroupId, setuContents);
+            Task recordTask = recordBusiness.AddPixivRecord(setuContents, command.PlatformType, result.MsgId, command.GroupId);
         }
 
         private async Task<List<string>> createPreviewImgAsync(PixivRankingInfo rankingInfo)

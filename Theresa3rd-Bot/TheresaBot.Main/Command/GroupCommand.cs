@@ -2,6 +2,7 @@
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -32,26 +33,26 @@ namespace TheresaBot.Main.Command
 
         public abstract long GetQuoteMessageId();
 
-        public abstract Task<long?> ReplyGroupMessageAsync(string message, bool isAt = false);
+        public abstract Task<BaseResult> ReplyGroupMessageAsync(string message, bool isAt = false);
 
-        public abstract Task<long?> ReplyGroupMessageAsync(List<BaseContent> contentList, bool isAt = false);
+        public abstract Task<BaseResult> ReplyGroupMessageAsync(List<BaseContent> contentList, bool isAt = false);
 
-        public abstract Task<long?> ReplyGroupMessageWithAtAsync(string plainMsg);
+        public abstract Task<BaseResult> ReplyGroupMessageWithAtAsync(string plainMsg);
 
-        public abstract Task<long?> ReplyGroupMessageWithAtAsync(params BaseContent[] contentArr);
+        public abstract Task<BaseResult> ReplyGroupMessageWithAtAsync(params BaseContent[] contentArr);
 
-        public abstract Task<long?> ReplyGroupMessageWithAtAsync(List<BaseContent> contentList);
+        public abstract Task<BaseResult> ReplyGroupMessageWithAtAsync(List<BaseContent> contentList);
 
-        public abstract Task<long?> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "");
+        public abstract Task<BaseResult> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "");
 
-        public abstract Task<long?> SendTempMessageAsync(List<BaseContent> contentList);
+        public abstract Task<BaseResult> SendTempMessageAsync(List<BaseContent> contentList);
 
         public abstract Task RevokeGroupMessageAsync(long msgId, long groupId);
 
-        public override async Task ReplyError(Exception ex, string message = "")
+        public override async Task<BaseResult> ReplyError(Exception ex, string message = "")
         {
             List<BaseContent> contents = ex.GetErrorContents(message);
-            await ReplyGroupMessageWithAtAsync(contents);
+            return await ReplyGroupMessageWithAtAsync(contents);
         }
 
         public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)

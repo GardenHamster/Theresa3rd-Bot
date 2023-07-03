@@ -5,6 +5,7 @@ using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -168,8 +169,8 @@ namespace TheresaBot.Main.Handler
                     bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                     List<FileInfo> imgList = isShowImg ? setuFiles : new();
                     PixivSetuContent setuContent = new PixivSetuContent(workMsgs, imgList, pixivWorkInfo);
-                    long?[] msgIds = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
-                    Task recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, groupId);
+                    BaseResult[] results = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    Task recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, results.Select(o => o.MsgId).ToArray(), groupId);
                 }
                 catch (Exception ex)
                 {

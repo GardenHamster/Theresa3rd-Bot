@@ -1,5 +1,4 @@
-﻿using TheresaBot.Main.Command;
-using TheresaBot.Main.Dao;
+﻿using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
@@ -25,32 +24,32 @@ namespace TheresaBot.Main.Business
             return imageRecordDao.getRecord(platformType,msgId, groupId);
         }
 
-        public async Task AddImageRecord(List<string> imgUrls, PlatformType platformType, long? msgId, long groupId, long memberId)
+        public async Task AddImageRecord(List<string> imgUrls, PlatformType platformType, long msgId, long groupId, long memberId)
         {
-            if (msgId is null || msgId == 0) return;
+            if (msgId == 0) return;
             foreach (var imgUrl in imgUrls) await AddImageRecord(platformType, imgUrl, msgId, groupId, memberId);
         }
 
-        public async Task AddPixivRecord(SetuContent setucontent, PlatformType platformType, long?[] msgIds, long groupId)
+        public async Task AddPixivRecord(SetuContent setucontent, PlatformType platformType, long[] msgIds, long groupId)
         {
             foreach (var msgId in msgIds) await AddPixivRecord(setucontent, platformType, msgId, groupId);
         }
 
-        public async Task AddPixivRecord(List<SetuContent> setucontents, PlatformType platformType, long? msgId, long groupId)
+        public async Task AddPixivRecord(List<SetuContent> setucontents, PlatformType platformType, long msgId, long groupId)
         {
-            if (msgId is null || msgId == 0) return;
+            if (msgId == 0) return;
             foreach (var setucontent in setucontents) await AddPixivRecord(setucontent, platformType, msgId, groupId);
         }
 
-        public async Task AddPixivRecord(SetuContent setucontent, PlatformType platformType, long? msgId, long groupId)
+        public async Task AddPixivRecord(SetuContent setucontent, PlatformType platformType, long msgId, long groupId)
         {
             try
             {
-                if (msgId is null || msgId == 0) return;
+                if (msgId == 0) return;
                 if (setucontent is not PixivSetuContent) return;
                 PixivSetuContent pixivContent = (PixivSetuContent)setucontent;
                 PixivRecordPO pixivRecord = new PixivRecordPO();
-                pixivRecord.MessageId = msgId.Value;
+                pixivRecord.MessageId = msgId;
                 pixivRecord.PlatformType = platformType;
                 pixivRecord.GroupId = groupId;
                 pixivRecord.PixivId = pixivContent.WorkInfo.PixivId;
@@ -66,14 +65,14 @@ namespace TheresaBot.Main.Business
             }
         }
 
-        public async Task AddImageRecord(PlatformType platformType, string imgUrl, long? msgId, long groupId, long memberId)
+        public async Task AddImageRecord(PlatformType platformType, string imgUrl, long msgId, long groupId, long memberId)
         {
             try
             {
-                if (msgId is null || msgId == 0) return;
+                if (msgId == 0) return;
                 if (string.IsNullOrWhiteSpace(imgUrl)) return;
                 ImageRecordPO imageRecord = new ImageRecordPO();
-                imageRecord.MessageId = msgId.Value;
+                imageRecord.MessageId = msgId;
                 imageRecord.PlatformType = platformType;
                 imageRecord.GroupId = groupId;
                 imageRecord.MemberId = memberId;
@@ -88,14 +87,14 @@ namespace TheresaBot.Main.Business
             }
         }
 
-        public async Task AddMessageRecord(PlatformType platformType, string plainMessage, long? msgId, long groupId, long memberId)
+        public async Task AddMessageRecord(PlatformType platformType, string plainMessage, long msgId, long groupId, long memberId)
         {
             try
             {
-                if (msgId is null || msgId == 0) return;
+                if (msgId == 0) return;
                 if (string.IsNullOrWhiteSpace(plainMessage)) return;
                 MessageRecordPO messageRecord = new MessageRecordPO();
-                messageRecord.MessageId = msgId.Value;
+                messageRecord.MessageId = msgId;
                 messageRecord.PlatformType = platformType;
                 messageRecord.GroupId = groupId;
                 messageRecord.MemberId = memberId;

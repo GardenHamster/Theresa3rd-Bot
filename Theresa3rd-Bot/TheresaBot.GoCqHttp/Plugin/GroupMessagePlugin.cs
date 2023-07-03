@@ -46,11 +46,11 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (string.IsNullOrWhiteSpace(message)) return;
 
                 string prefix = prefix = instruction.MatchPrefix();
-                bool isAt = args.Message.Where(v => v is CqAtMsg atMsg && atMsg.Target == CQConfig.BotQQ).Any();
+                bool isAt = args.Message.Any(v => v is CqAtMsg atMsg && atMsg.Target == CQConfig.BotQQ);
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 
-                if (args.Message.Where(v => v is CqReplyMsg).Any())//引用指令
+                if (args.Message.Any(v => v is CqReplyMsg))//引用指令
                 {
                     GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(session, args, instruction, groupId, memberId);
                     if (quoteCommand is not null)  await quoteCommand.InvokeAsync(cqSession, cqReporter);

@@ -11,6 +11,7 @@ using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.Main.Type.StepOption;
@@ -405,8 +406,8 @@ namespace TheresaBot.Main.Handler
                 workMsgs.Add(new PlainContent($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
                 workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, BotConfig.PixivConfig.Template)));
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
-                long?[] msgIds = await Session.SendGroupMessageAsync(command.GroupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
-                Task recordTask = recordBusiness.AddPixivRecord(setuContent, command.PlatformType, msgIds, command.GroupId);
+                BaseResult[] results = await Session.SendGroupMessageAsync(command.GroupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
+                Task recordTask = recordBusiness.AddPixivRecord(setuContent, command.PlatformType, results.Select(o => o.MsgId).ToArray(), command.GroupId);
             }
             catch (Exception ex)
             {

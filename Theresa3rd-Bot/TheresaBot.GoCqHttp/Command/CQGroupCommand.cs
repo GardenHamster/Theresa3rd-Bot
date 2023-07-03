@@ -2,10 +2,12 @@
 using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
 using TheresaBot.GoCqHttp.Helper;
+using TheresaBot.GoCqHttp.Result;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.GoCqHttp.Command
@@ -40,68 +42,68 @@ namespace TheresaBot.GoCqHttp.Command
             return Args.Message.OfType<CqReplyMsg>().FirstOrDefault()?.Id ?? 0;
         }
 
-        public override async Task<long?> ReplyGroupMessageAsync(string message, bool isAt = false)
+        public override async Task<BaseResult> ReplyGroupMessageAsync(string message, bool isAt = false)
         {
             List<CqMsg> msgList = new List<CqMsg>();
             if (isAt) msgList.Add(new CqAtMsg(MemberId));
             msgList.AddRange(new CqMessage(message));
             var result = await Session.SendGroupMessageAsync(GroupId, new CqMessage(msgList));
-            return result is null ? 0 : result.MessageId;
+            return new CQResult(result);
         }
 
-        public override async Task<long?> ReplyGroupMessageAsync(List<BaseContent> chainList, bool isAt = false)
+        public override async Task<BaseResult> ReplyGroupMessageAsync(List<BaseContent> chainList, bool isAt = false)
         {
             List<CqMsg> msgList = new List<CqMsg>();
             if (isAt) msgList.Add(new CqAtMsg(MemberId));
             msgList.AddRange(chainList.ToCQMessageAsync());
             var result = await Session.SendGroupMessageAsync(GroupId, new CqMessage(msgList));
-            return result is null ? 0 : result.MessageId;
+            return new CQResult(result);
         }
 
-        public override async Task<long?> ReplyGroupMessageWithAtAsync(string plainMsg)
+        public override async Task<BaseResult> ReplyGroupMessageWithAtAsync(string plainMsg)
         {
             if (plainMsg.StartsWith(" ") == false) plainMsg = " " + plainMsg;
             List<CqMsg> msgList = new List<CqMsg>();
             msgList.Add(new CqAtMsg(MemberId));
             msgList.Add(new CqTextMsg(plainMsg));
             var result = await Session.SendGroupMessageAsync(GroupId, new CqMessage(msgList));
-            return result is null ? 0 : result.MessageId;
+            return new CQResult(result);
         }
 
-        public override async Task<long?> ReplyGroupMessageWithAtAsync(params BaseContent[] chainArr)
+        public override async Task<BaseResult> ReplyGroupMessageWithAtAsync(params BaseContent[] chainArr)
         {
             List<CqMsg> msgList = new List<CqMsg>();
             msgList.Add(new CqAtMsg(MemberId));
             msgList.AddRange(chainArr.ToList().ToCQMessageAsync());
             var result = await Session.SendGroupMessageAsync(GroupId, new CqMessage(msgList));
-            return result is null ? 0 : result.MessageId;
+            return new CQResult(result);
         }
 
-        public override async Task<long?> ReplyGroupMessageWithAtAsync(List<BaseContent> chainList)
+        public override async Task<BaseResult> ReplyGroupMessageWithAtAsync(List<BaseContent> chainList)
         {
             List<CqMsg> msgList = new List<CqMsg>();
             msgList.Add(new CqAtMsg(MemberId));
             msgList.AddRange(chainList.ToCQMessageAsync());
             var result = await Session.SendGroupMessageAsync(GroupId, new CqMessage(msgList));
-            return result is null ? 0 : result.MessageId;
+            return new CQResult(result);
         }
 
-        public override async Task<long?> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "")
+        public override async Task<BaseResult> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "")
         {
             template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
-            if (string.IsNullOrWhiteSpace(template)) return 0;
+            if (string.IsNullOrWhiteSpace(template)) return CQResult.Undo;
             if (template.StartsWith(" ") == false) template = " " + template;
             CqMsg[] msgList = template.SplitToChainAsync().ToCQMessageAsync();
             var result = await Session.SendGroupMessageAsync(GroupId, new CqMessage(msgList));
-            return result is null ? 0 : result.MessageId;
+            return new CQResult(result);
         }
 
-        public override async Task<long?> SendTempMessageAsync(List<BaseContent> contentList)
+        public override async Task<BaseResult> SendTempMessageAsync(List<BaseContent> contentList)
         {
             CqMsg[] msgArr = contentList.ToCQMessageAsync();
             var result = await Session.SendPrivateMessageAsync(MemberId, GroupId, new CqMessage(msgArr));
-            return result is null ? 0 : result.MessageId;
+            return new CQResult(result);
         }
 
         public override async Task RevokeGroupMessageAsync(long msgId, long groupId)

@@ -3,6 +3,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Invoker;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Helper
@@ -15,127 +16,121 @@ namespace TheresaBot.Main.Helper
             await command.ReplyGroupTemplateWithAtAsync(template);
         }
 
-        public static async Task<long?[]> ReplyGroupSetuAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = true)
+        public static async Task<BaseResult[]> ReplyGroupSetuAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = true)
         {
-            long?[] msgIds = await command.ReplyAndRevokeAsync(setuContent, revokeInterval, sendImgBehind, isAt);
-            if (msgIds.Where(o => o is null).Any() && BotConfig.PixivConfig.ImgResend != ResendType.None)//发送失败后重发
+            BaseResult[] results = await command.ReplyAndRevokeAsync(setuContent, revokeInterval, sendImgBehind, isAt);
+            if (results.Any(o => o.IsFailed) && BotConfig.PixivConfig.ImgResend != ResendType.None) //发送失败后重发
             {
                 await Task.Delay(1000);
                 SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);
-                msgIds = await command.ReplyAndRevokeAsync(resendContent, revokeInterval, sendImgBehind, isAt);
+                results = await command.ReplyAndRevokeAsync(resendContent, revokeInterval, sendImgBehind, isAt);
             }
-            return msgIds;
+            return results;
         }
 
-        public static async Task<long?> ReplyGroupSetuAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = true)
+        public static async Task<BaseResult> ReplyGroupSetuAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = true)
         {
-            long? msgId = await command.ReplyAndRevokeAsync(setuContents, revokeInterval, isAt);
-            if (msgId is null && BotConfig.PixivConfig.ImgResend != ResendType.None)
+            BaseResult results = await command.ReplyAndRevokeAsync(setuContents, revokeInterval, isAt);
+            if (results.IsFailed && BotConfig.PixivConfig.ImgResend != ResendType.None)
             {
                 await Task.Delay(1000);
                 List<SetuContent> resendContents = setuContents.ToResendContent(BotConfig.PixivConfig.ImgResend);
-                msgId = await command.ReplyAndRevokeAsync(resendContents, revokeInterval, isAt);
+                results = await command.ReplyAndRevokeAsync(resendContents, revokeInterval, isAt);
             }
-            return msgId;
+            return results;
         }
 
-        public static async Task<long?> ReplyAndRevokeAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool isAt = false)
+        public static async Task<BaseResult> ReplyAndRevokeAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool isAt = false)
         {
-            long? msgId = await command.ReplyGroupMessageAsync(contentList, isAt);
-            Task revokeTask = command.RevokeGroupMessageAsync(msgId, command.GroupId, revokeInterval);
-            return msgId;
+            BaseResult results = await command.ReplyGroupMessageAsync(contentList, isAt);
+            Task revokeTask = command.RevokeGroupMessageAsync(results.MsgId, command.GroupId, revokeInterval);
+            return results;
         }
 
-        private static async Task<long?[]> ReplyAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
+        private static async Task<BaseResult[]> ReplyAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
         {
-            List<long?> msgIds = new List<long?>();
+            List<BaseResult> results = new List<BaseResult>();
             List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
             List<BaseContent> imgContents = setuContent.SetuImages.ToBaseContent().SetDefaultImage().ToList();
 
             if (sendImgBehind)
             {
-                long? workMsgId = await command.ReplyGroupMessageAsync(msgContents, isAt);
+                BaseResult workMsgResult = await command.ReplyGroupMessageAsync(msgContents, isAt);
                 await Task.Delay(1000);
-                long? imgMsgId = await command.ReplyGroupMessageAsync(imgContents, false);
-                msgIds.Add(workMsgId);
-                msgIds.Add(imgMsgId);
+                BaseResult imgMsgResult = await command.ReplyGroupMessageAsync(imgContents, false);
+                results.Add(workMsgResult);
+                results.Add(imgMsgResult);
             }
             else
             {
                 List<BaseContent> contentList = msgContents.Concat(imgContents).ToList();
-                long? msgId = await command.ReplyGroupMessageAsync(contentList, isAt);
-                msgIds.Add(msgId);
+                BaseResult msgResult = await command.ReplyGroupMessageAsync(contentList, isAt);
+                results.Add(msgResult);
             }
 
             if (revokeInterval > 0)
             {
+                long[] msgIds = results.Select(o => o.MsgId).ToArray();
                 Task revokeTask = command.RevokeGroupMessageAsync(msgIds, command.GroupId, revokeInterval);
             }
 
-            return msgIds.ToArray();
+            return results.ToArray();
         }
 
-        private static async Task<long?> ReplyAndRevokeAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = false)
+        private static async Task<BaseResult> ReplyAndRevokeAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = false)
         {
             List<BaseContent> contentList = setuContents.ToBaseContent().SetDefaultImage();
-            long? msgId = await command.ReplyGroupMessageAsync(contentList, isAt);
-            Task revokeTask = command.RevokeGroupMessageAsync(msgId, command.GroupId, revokeInterval);
-            return msgId;
+            BaseResult result = await command.ReplyGroupMessageAsync(contentList, isAt);
+            Task revokeTask = command.RevokeGroupMessageAsync(result.MsgId, command.GroupId, revokeInterval);
+            return result;
         }
 
-        public static async Task<long?> SendTempSetuAsync(this GroupCommand command, List<SetuContent> setuContents)
+        public static async Task<BaseResult> SendTempSetuAsync(this GroupCommand command, List<SetuContent> setuContents)
         {
             List<BaseContent> contentList = setuContents.ToBaseContent().SetDefaultImage();
             return await command.SendTempMessageAsync(contentList);
         }
 
-        public static async Task<long?[]> SendTempSetuAsync(this GroupCommand command, SetuContent setuContent, bool sendImgBehind)
+        public static async Task<BaseResult[]> SendTempSetuAsync(this GroupCommand command, SetuContent setuContent, bool sendImgBehind)
         {
-            try
-            {
-                List<long?> msgIds = new List<long?>();
-                List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
-                List<BaseContent> imgContents = setuContent.SetuImages.ToBaseContent().SetDefaultImage().ToList();
+            List<BaseResult> results = new List<BaseResult>();
+            List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
+            List<BaseContent> imgContents = setuContent.SetuImages.ToBaseContent().SetDefaultImage().ToList();
 
-                if (sendImgBehind)
-                {
-                    msgIds.Add(await command.SendTempMessageAsync(msgContents));
-                    await Task.Delay(1000);
-                    msgIds.Add(await command.SendTempMessageAsync(imgContents));
-                }
-                else
-                {
-                    List<BaseContent> contentList = msgContents.Concat(imgContents).ToList();
-                    msgIds.Add(await command.SendTempMessageAsync(contentList));
-                }
-                return msgIds.ToArray();
-            }
-            catch (Exception ex)
+            if (sendImgBehind)
             {
-                LogHelper.Error(ex, "SendTempSetuAsync异常");
-                return new long?[] { 0 };
+                results.Add(await command.SendTempMessageAsync(msgContents));
+                await Task.Delay(1000);
+                results.Add(await command.SendTempMessageAsync(imgContents));
             }
+            else
+            {
+                List<BaseContent> contentList = msgContents.Concat(imgContents).ToList();
+                results.Add(await command.SendTempMessageAsync(contentList));
+            }
+
+            return results.ToArray();
         }
 
-        public static async Task RevokeGroupMessageAsync(this GroupCommand command, List<long?> msgIds, long groupId, int revokeInterval = 0)
+        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long[] msgIds, long groupId, int revokeInterval = 0)
         {
             if (revokeInterval <= 0) return;
-            foreach (long? msgId in msgIds)
+            foreach (long msgId in msgIds)
             {
-                if (msgId is null || msgId == 0) continue;
+                if (msgId == 0) continue;
                 Task revokeTask = command.RevokeGroupMessageAsync(msgId, groupId, revokeInterval);
                 await Task.Delay(1000);
             }
         }
 
-        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long? msgId, long groupId, int revokeInterval)
+        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long msgId, long groupId, int revokeInterval = 0)
         {
             try
             {
+                if (msgId == 0) return;
                 if (revokeInterval <= 0) return;
-                if (msgId is null || msgId == 0) return;
                 await Task.Delay(revokeInterval * 1000);
-                await command.RevokeGroupMessageAsync(msgId.Value, groupId);
+                await command.RevokeGroupMessageAsync(msgId, groupId);
             }
             catch (Exception ex)
             {

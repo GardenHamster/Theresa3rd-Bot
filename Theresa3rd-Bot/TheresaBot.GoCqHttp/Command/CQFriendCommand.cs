@@ -1,11 +1,13 @@
-﻿using EleCho.GoCqHttpSdk.Post;
-using EleCho.GoCqHttpSdk;
+﻿using EleCho.GoCqHttpSdk;
+using EleCho.GoCqHttpSdk.Message;
+using EleCho.GoCqHttpSdk.Post;
+using TheresaBot.GoCqHttp.Helper;
+using TheresaBot.GoCqHttp.Result;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
-using EleCho.GoCqHttpSdk.Message;
-using TheresaBot.GoCqHttp.Helper;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.GoCqHttp.Command
@@ -28,26 +30,26 @@ namespace TheresaBot.GoCqHttp.Command
             return Args.Message.OfType<CqImageMsg>().Select(o => o.Image).ToList();
         }
 
-        public override async Task<long?> ReplyFriendTemplateAsync(string template, string defaultmsg)
+        public override async Task<BaseResult> ReplyFriendTemplateAsync(string template, string defaultmsg)
         {
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
-            if (string.IsNullOrWhiteSpace(template)) return 0;
+            if (string.IsNullOrWhiteSpace(template)) return CQResult.Undo;
             CqMsg[] msgList = template.SplitToChainAsync().ToCQMessageAsync();
             var result = await Session.SendPrivateMessageAsync(MemberId, new CqMessage(msgList));
-            return result is null ? 0 : result.MessageId;
+            return new CQResult(result);
         }
 
-        public override async Task<long?> ReplyFriendMessageAsync(string message)
+        public override async Task<BaseResult> ReplyFriendMessageAsync(string message)
         {
             var result = await Session.SendPrivateMessageAsync(MemberId, new CqMessage(message));
-            return result is null ? 0 : result.MessageId;
+            return new CQResult(result);
         }
 
-        public override async Task<long?> ReplyFriendMessageAsync(List<BaseContent> contents)
+        public override async Task<BaseResult> ReplyFriendMessageAsync(List<BaseContent> contents)
         {
             CqMsg[] msgList = contents.ToCQMessageAsync();
             var result = await Session.SendPrivateMessageAsync(MemberId, new CqMessage(msgList));
-            return result is null ? 0 : result.MessageId;
+            return new CQResult(result);
         }
 
     }

@@ -45,7 +45,7 @@ namespace TheresaBot.Main.Business
                 {
                     SaucenaoItem saucenaoItem = getSaucenaoItem(linkifyElement, similarity);
                     if (saucenaoItem is null) continue;
-                    if (itemList.Where(o => o.SourceUrl == saucenaoItem.SourceUrl).Any()) continue;
+                    if (itemList.Any(o => o.SourceUrl == saucenaoItem.SourceUrl)) continue;
                     itemList.Add(saucenaoItem);
                 }
             }

@@ -2,6 +2,7 @@
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Command
@@ -19,16 +20,16 @@ namespace TheresaBot.Main.Command
 
         public abstract List<string> GetImageUrls();
 
-        public abstract Task<long?> ReplyFriendMessageAsync(string message);
+        public abstract Task<BaseResult> ReplyFriendMessageAsync(string message);
 
-        public abstract Task<long?> ReplyFriendMessageAsync(List<BaseContent> contents);
+        public abstract Task<BaseResult> ReplyFriendMessageAsync(List<BaseContent> contents);
 
-        public abstract Task<long?> ReplyFriendTemplateAsync(string template, string defaultmsg);
+        public abstract Task<BaseResult> ReplyFriendTemplateAsync(string template, string defaultmsg);
 
-        public override async Task ReplyError(Exception ex, string message = "")
+        public override async Task<BaseResult> ReplyError(Exception ex, string message = "")
         {
             List<BaseContent> contents = ex.GetErrorContents(message);
-            await ReplyFriendMessageAsync(contents);
+            return await ReplyFriendMessageAsync(contents);
         }
 
         public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)

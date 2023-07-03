@@ -44,7 +44,7 @@ namespace TheresaBot.Main.Helper
         public static bool IsBanMember(long memberId)
         {
             if (memberId == 0) return false;
-            return BotConfig.BanMemberList.Where(o => o.KeyWord == memberId.ToString()).Any();
+            return BotConfig.BanMemberList.Any(o => o.KeyWord == memberId.ToString());
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace TheresaBot.Main.Helper
         public static bool IsR18(this List<string> tags)
         {
             if (tags is null || tags.Count == 0) return false;
-            return tags.Where(o => o.IsR18()).Any();
+            return tags.Any(o => o.IsR18());
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace TheresaBot.Main.Helper
         public static bool IsAI(this List<string> tags)
         {
             if (tags is null || tags.Count == 0) return false;
-            return tags.Where(o => o.IsAI()).Any();
+            return tags.Any(o => o.IsAI());
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace TheresaBot.Main.Helper
         public static bool IsImproper(this List<string> tags)
         {
             if (tags is null || tags.Count == 0) return false;
-            if (tags.Where(o => o.ToUpper().Replace("-", "").Replace(" ", "").Contains("R18G")).Any()) return true;
+            if (tags.Any(o => o.ToUpper().Replace("-", "").Replace(" ", "").Contains("R18G"))) return true;
             return false;
         }
 
@@ -127,7 +127,7 @@ namespace TheresaBot.Main.Helper
         public static bool IsGif(this List<string> tags)
         {
             if (tags is null || tags.Count == 0) return false;
-            return tags.Where(o => o == "うごイラ" || o == "动图" || o == "動圖" || o.ToLower() == "ugoira").Any();
+            return tags.Any(o => o == "うごイラ" || o == "动图" || o == "動圖" || o.ToLower() == "ugoira");
         }
 
         /// <summary>

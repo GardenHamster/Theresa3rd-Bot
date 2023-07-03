@@ -34,7 +34,7 @@ namespace TheresaBot.Main.Business
                 {
                     Ascii2dItem saucenaoItem = getAscii2dItem(linkElement);
                     if (saucenaoItem is null) continue;
-                    if (itemList.Where(o => o.SourceUrl == saucenaoItem.SourceUrl).Any()) continue;
+                    if (itemList.Any(o => o.SourceUrl == saucenaoItem.SourceUrl)) continue;
                     itemList.Add(saucenaoItem);
                 }
             }

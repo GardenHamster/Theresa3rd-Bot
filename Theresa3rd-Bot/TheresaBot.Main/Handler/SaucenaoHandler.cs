@@ -12,6 +12,7 @@ using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -386,8 +387,8 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         private async Task sendAndRevoke(GroupCommand command, List<SetuContent> setuContents)
         {
-            long? msgId = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
-            Task recordTask = recordBusiness.AddPixivRecord(setuContents, command.PlatformType, msgId, command.GroupId);
+            BaseResult result = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
+            Task recordTask = recordBusiness.AddPixivRecord(setuContents, command.PlatformType, result.MsgId, command.GroupId);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);

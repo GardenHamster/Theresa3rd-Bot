@@ -1,5 +1,6 @@
 ﻿using TheresaBot.Main.Helper;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -29,7 +30,7 @@ namespace TheresaBot.Main.Command
 
         public abstract Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter);
 
-        public abstract Task ReplyError(Exception ex, string message = "");
+        public abstract Task<BaseResult> ReplyError(Exception ex, string message = "");
 
         public virtual async Task Test()
         {

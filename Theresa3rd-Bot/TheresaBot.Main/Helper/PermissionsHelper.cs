@@ -11,7 +11,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static bool IsShowAISetu(this List<long> groupIds)
         {
-            return groupIds.Where(o => o.IsShowAISetu()).Any();
+            return groupIds.Any(o => o.IsShowAISetu());
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static bool IsShowSetuImg(this List<long> groupIds, bool isR18Img)
         {
-            return groupIds.Where(o => o.IsShowSetuImg(isR18Img)).Any();
+            return groupIds.Any(o => o.IsShowSetuImg(isR18Img));
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static bool IsShowR18SetuImg(this List<long> groupIds)
         {
-            return groupIds.Where(o => o.IsShowR18SetuImg()).Any();
+            return groupIds.Any(o => o.IsShowR18SetuImg());
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static bool IsShowR18Setu(this List<long> groupIds)
         {
-            return groupIds.Where(o => o.IsShowR18Setu()).Any();
+            return groupIds.Any(o => o.IsShowR18Setu());
         }
 
         /// <summary>

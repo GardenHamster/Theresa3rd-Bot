@@ -52,11 +52,11 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (string.IsNullOrWhiteSpace(message)) return;
 
                 string prefix = prefix = instruction.MatchPrefix();
-                bool isAt = args.Chain.Where(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber).Any();
+                bool isAt = args.Chain.Any(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber);
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 
-                if (args.Chain.Where(v => v is QuoteMessage).Any())//引用指令
+                if (args.Chain.Any(v => v is QuoteMessage))//引用指令
                 {
                     GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(session, args, instruction, groupId, memberId);
                     if (quoteCommand is not null) args.BlockRemainingHandlers = await quoteCommand.InvokeAsync(miraiSession, miraiReporter);

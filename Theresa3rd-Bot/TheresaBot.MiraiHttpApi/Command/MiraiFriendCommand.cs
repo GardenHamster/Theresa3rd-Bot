@@ -6,8 +6,10 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
+using TheresaBot.MiraiHttpApi.Result;
 
 namespace TheresaBot.MiraiHttpApi.Command
 {
@@ -29,23 +31,26 @@ namespace TheresaBot.MiraiHttpApi.Command
             return Args.Chain.OfType<ImageMessage>().Select(o => o.Url).ToList();
         }
 
-        public override async Task<long?> ReplyFriendTemplateAsync(string template, string defaultmsg)
+        public override async Task<BaseResult> ReplyFriendTemplateAsync(string template, string defaultmsg)
         {
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
-            if (string.IsNullOrWhiteSpace(template)) return 0;
+            if (string.IsNullOrWhiteSpace(template)) return MiraiResult.Undo;
             IChatMessage[] msgList = await template.SplitToChainAsync().ToMiraiMessageAsync(UploadTarget.Friend);
-            return await Session.SendFriendMessageAsync(MemberId, msgList);
+            var msgId = await Session.SendFriendMessageAsync(MemberId, msgList);
+            return new MiraiResult(msgId);
         }
 
-        public override async Task<long?> ReplyFriendMessageAsync(string message)
+        public override async Task<BaseResult> ReplyFriendMessageAsync(string message)
         {
-            return await Session.SendFriendMessageAsync(MemberId, new PlainMessage(message));
+            var msgId = await Session.SendFriendMessageAsync(MemberId, new PlainMessage(message));
+            return new MiraiResult(msgId);
         }
 
-        public override async Task<long?> ReplyFriendMessageAsync(List<BaseContent> contents)
+        public override async Task<BaseResult> ReplyFriendMessageAsync(List<BaseContent> contents)
         {
             IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Friend);
-            return await Session.SendFriendMessageAsync(MemberId, msgList);
+            var msgId = await Session.SendFriendMessageAsync(MemberId, msgList);
+            return new MiraiResult(msgId);
         }
 
     }

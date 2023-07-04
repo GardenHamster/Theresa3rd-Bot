@@ -20,7 +20,7 @@ namespace TheresaBot.Main.Helper
             else
             {
                 List<BaseContent> msgList = msgContents.Concat(imgContents).ToList();
-                BaseResult result = await session.SendGroupMessageAsync(groupId, msgList.ToArray());
+                BaseResult result = await session.SendGroupMessageAsync(groupId, msgList);
                 return new BaseResult[] { result };
             }
         }

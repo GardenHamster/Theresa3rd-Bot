@@ -20,14 +20,6 @@ namespace TheresaBot.GoCqHttp.Session
             return new CQResult(result);
         }
 
-        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, params BaseContent[] contents)
-        {
-            if (contents.Length == 0) return CQResult.Undo;
-            CqMsg[] msgList = contents.ToList().ToCQMessageAsync();
-            var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(msgList));
-            return new CQResult(result);
-        }
-
         public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents)
         {
             if (contents.Count == 0) return CQResult.Undo;
@@ -69,14 +61,6 @@ namespace TheresaBot.GoCqHttp.Session
         public override async Task<BaseResult> SendFriendMessageAsync(long memberId, string message)
         {
             var result = await CQHelper.Session.SendPrivateMessageAsync(memberId, new CqMessage(message));
-            return new CQResult(result);
-        }
-
-        public override async Task<BaseResult> SendFriendMessageAsync(long memberId, params BaseContent[] contents)
-        {
-            if (contents.Length == 0) return CQResult.Undo;
-            CqMsg[] msgList = contents.ToList().ToCQMessageAsync();
-            var result = await CQHelper.Session.SendPrivateMessageAsync(memberId, new CqMessage(msgList));
             return new CQResult(result);
         }
 

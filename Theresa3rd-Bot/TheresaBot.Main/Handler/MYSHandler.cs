@@ -205,7 +205,7 @@ namespace TheresaBot.Main.Handler
                 {
                     try
                     {
-                        await Session.SendGroupMessageAsync(groupId, msgList.ToArray());
+                        await Session.SendGroupMessageAsync(groupId, msgList);
                     }
                     catch (Exception ex)
                     {

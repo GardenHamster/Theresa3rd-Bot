@@ -20,14 +20,6 @@ namespace TheresaBot.MiraiHttpApi.Session
             return new MiraiResult(msgId);
         }
 
-        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, params BaseContent[] contents)
-        {
-            if (contents.Length == 0) return MiraiResult.Undo;
-            IChatMessage[] msgList = await new List<BaseContent>(contents).ToMiraiMessageAsync(UploadTarget.Group);
-            var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList);
-            return new MiraiResult(msgId);
-        }
-
         public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents)
         {
             if (contents.Count == 0) return MiraiResult.Undo;
@@ -75,14 +67,6 @@ namespace TheresaBot.MiraiHttpApi.Session
         public override async Task<BaseResult> SendFriendMessageAsync(long memberId, string message)
         {
             var msgId = await MiraiHelper.Session.SendFriendMessageAsync(memberId, new PlainMessage(message));
-            return new MiraiResult(msgId);
-        }
-
-        public override async Task<BaseResult> SendFriendMessageAsync(long memberId, params BaseContent[] contents)
-        {
-            if (contents.Length == 0) return MiraiResult.Undo;
-            IChatMessage[] msgList = await new List<BaseContent>(contents).ToMiraiMessageAsync(UploadTarget.Group);
-            var msgId = await MiraiHelper.Session.SendFriendMessageAsync(memberId, msgList);
             return new MiraiResult(msgId);
         }
 

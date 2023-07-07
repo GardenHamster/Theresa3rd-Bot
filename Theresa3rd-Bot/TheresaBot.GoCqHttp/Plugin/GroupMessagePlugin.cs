@@ -5,8 +5,6 @@ using TheresaBot.GoCqHttp.Command;
 using TheresaBot.GoCqHttp.Common;
 using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.GoCqHttp.Relay;
-using TheresaBot.GoCqHttp.Reporter;
-using TheresaBot.GoCqHttp.Session;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;

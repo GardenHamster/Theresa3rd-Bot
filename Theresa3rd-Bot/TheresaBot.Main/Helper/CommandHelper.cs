@@ -10,6 +10,15 @@ namespace TheresaBot.Main.Helper
 {
     public static class CommandHelper
     {
+        /// <summary>
+        /// 发送涩图，然后撤回
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="setuContent"></param>
+        /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
+        /// <param name="sendImgBehind"></param>
+        /// <param name="isAt"></param>
+        /// <returns></returns>
         public static async Task<BaseResult[]> ReplyGroupSetuAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = true)
         {
             BaseResult[] results = await command.ReplyAndRevokeAsync(setuContent, revokeInterval, sendImgBehind, isAt);
@@ -22,6 +31,14 @@ namespace TheresaBot.Main.Helper
             return results;
         }
 
+        /// <summary>
+        /// 发送涩图，然后撤回
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="setuContents"></param>
+        /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
+        /// <param name="isAt"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyGroupSetuAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = true)
         {
             BaseResult results = await command.ReplyAndRevokeAsync(setuContents, revokeInterval, isAt);
@@ -34,6 +51,14 @@ namespace TheresaBot.Main.Helper
             return results;
         }
 
+        /// <summary>
+        /// 发送涩图，然后撤回
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="contentList"></param>
+        /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
+        /// <param name="isAt"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyAndRevokeAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool isAt = false)
         {
             BaseResult results = await command.ReplyGroupMessageAsync(contentList, isAt);
@@ -41,6 +66,15 @@ namespace TheresaBot.Main.Helper
             return results;
         }
 
+        /// <summary>
+        /// 发送涩图，然后撤回
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="setuContent"></param>
+        /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
+        /// <param name="sendImgBehind"></param>
+        /// <param name="isAt"></param>
+        /// <returns></returns>
         private static async Task<BaseResult[]> ReplyAndRevokeAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = false)
         {
             List<BaseResult> results = new List<BaseResult>();
@@ -71,6 +105,14 @@ namespace TheresaBot.Main.Helper
             return results.ToArray();
         }
 
+        /// <summary>
+        /// 发送涩图，然后撤回
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="setuContents"></param>
+        /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
+        /// <param name="isAt"></param>
+        /// <returns></returns>
         private static async Task<BaseResult> ReplyAndRevokeAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval, bool isAt = false)
         {
             List<BaseContent> contentList = setuContents.ToBaseContent().SetDefaultImage();
@@ -79,18 +121,37 @@ namespace TheresaBot.Main.Helper
             return result;
         }
 
+        /// <summary>
+        /// 回复一条正在处理中的提示信息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="template"></param>
+        /// <returns></returns>
         public static async Task ReplyProcessingMessageAsync(this GroupCommand command, string template)
         {
             if (string.IsNullOrWhiteSpace(template)) return;
             await command.ReplyGroupTemplateWithAtAsync(template);
         }
 
+        /// <summary>
+        /// 私发涩图
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="setuContents"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> SendTempSetuAsync(this GroupCommand command, List<SetuContent> setuContents)
         {
             List<BaseContent> contentList = setuContents.ToBaseContent().SetDefaultImage();
             return await command.SendTempMessageAsync(contentList);
         }
 
+        /// <summary>
+        /// 私发涩图
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="setuContent"></param>
+        /// <param name="sendImgBehind"></param>
+        /// <returns></returns>
         public static async Task<BaseResult[]> SendTempSetuAsync(this GroupCommand command, SetuContent setuContent, bool sendImgBehind)
         {
             List<BaseResult> results = new List<BaseResult>();
@@ -112,6 +173,14 @@ namespace TheresaBot.Main.Helper
             return results.ToArray();
         }
 
+        /// <summary>
+        /// 延时撤回消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="msgIds"></param>
+        /// <param name="groupId"></param>
+        /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
+        /// <returns></returns>
         public static async Task RevokeGroupMessageAsync(this GroupCommand command, long[] msgIds, long groupId, int revokeInterval = 0)
         {
             if (revokeInterval <= 0) return;
@@ -123,6 +192,14 @@ namespace TheresaBot.Main.Helper
             }
         }
 
+        /// <summary>
+        /// 延时撤回消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="msgId"></param>
+        /// <param name="groupId"></param>
+        /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
+        /// <returns></returns>
         public static async Task RevokeGroupMessageAsync(this GroupCommand command, long msgId, long groupId, int revokeInterval = 0)
         {
             try
@@ -130,7 +207,7 @@ namespace TheresaBot.Main.Helper
                 if (msgId == 0) return;
                 if (revokeInterval <= 0) return;
                 await Task.Delay(revokeInterval * 1000);
-                await command.RevokeGroupMessageAsync(msgId, groupId);
+                await command.Session.RevokeGroupMessageAsync(msgId, groupId);
             }
             catch (Exception ex)
             {
@@ -138,15 +215,30 @@ namespace TheresaBot.Main.Helper
             }
         }
 
+        /// <summary>
+        /// 回复错误
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="ex"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyError(this GroupCommand command, Exception ex, string message = "")
         {
+            if (ex is null) return BaseResult.Undo;
             List<BaseContent> contents = ex.GetErrorContents(message);
             return await command.ReplyGroupMessageWithAtAsync(contents);
         }
 
-
+        /// <summary>
+        /// 回复错误
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="ex"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyError(this FriendCommand command, Exception ex, string message = "")
         {
+            if (ex is null) return BaseResult.Undo;
             List<BaseContent> contents = ex.GetErrorContents(message);
             return await command.ReplyFriendMessageAsync(contents);
         }
@@ -169,6 +261,47 @@ namespace TheresaBot.Main.Helper
             return await command.ReplyFriendMessageAsync(template.SplitToChainAsync());
         }
 
+        public static async Task<BaseResult> ReplyGroupMessageWithAtAsync(this GroupCommand command, string message)
+        {
+            if (message.StartsWith(" ") == false) message = " " + message;
+            return await command.Session.SendGroupMessageWithAtAsync(command.GroupId, command.MemberId, message);
+        }
+
+        public static async Task<BaseResult> ReplyGroupMessageWithAtAsync(this GroupCommand command, List<BaseContent> contents)
+        {
+            return await command.Session.SendGroupMessageAsync(command.GroupId, contents, new() { command.MemberId });
+        }
+
+        public static async Task<BaseResult> ReplyGroupMessageAsync(this GroupCommand command, string message, bool isAt = false)
+        {
+            if (isAt)
+            {
+                if (message.StartsWith(" ") == false) message = " " + message;
+                return await command.Session.SendGroupMessageWithAtAsync(command.GroupId, command.MemberId, message);
+            }
+            else
+            {
+                return await command.Session.SendGroupMessageAsync(command.GroupId, message);
+            }
+        }
+
+        public static async Task<BaseResult> ReplyGroupMessageAsync(this GroupCommand command, List<BaseContent> contents, bool isAt = false)
+        {
+            if (isAt)
+            {
+                return await command.Session.SendGroupMessageAsync(command.GroupId, contents, new() { command.MemberId });
+            }
+            else
+            {
+                return await command.Session.SendGroupMessageAsync(command.GroupId, contents);
+            }
+        }
+
+        public static async Task<BaseResult> SendTempMessageAsync(this GroupCommand command, List<BaseContent> contents)
+        {
+            return await command.Session.SendTempMessageAsync(command.GroupId, command.MemberId, contents);
+        }
+
         public static async Task<BaseResult> ReplyFriendMessageAsync(this FriendCommand command, string message)
         {
             return await command.Session.SendFriendMessageAsync(command.MemberId, message);
@@ -178,94 +311,6 @@ namespace TheresaBot.Main.Helper
         {
             return await command.Session.SendFriendMessageAsync(command.MemberId, contents);
         }
-
-
-
-
-
-
-
-        public static async Task<BaseResult> ReplyGroupMessageAsync(this GroupCommand command, string message, bool isAt = false)
-        {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            if (isAt) msgList.Add(new AtMessage(MemberId));
-            msgList.Add(new PlainMessage(message));
-            var msgId = await MiraiSession.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public static async Task<BaseResult> ReplyGroupMessageAsync(this GroupCommand command, List<BaseContent> chainList, bool isAt = false)
-        {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            if (isAt) msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await chainList.ToMiraiMessageAsync(UploadTarget.Group));
-            var msgId = await MiraiSession.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public static async Task<BaseResult> ReplyGroupMessageWithAtAsync(this GroupCommand command, string plainMsg)
-        {
-            if (plainMsg.StartsWith(" ") == false) plainMsg = " " + plainMsg;
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            msgList.Add(new AtMessage(MemberId));
-            msgList.Add(new PlainMessage(plainMsg));
-            var msgId = await MiraiSession.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public static async Task<BaseResult> ReplyGroupMessageWithAtAsync(this GroupCommand command, params BaseContent[] chainArr)
-        {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await new List<BaseContent>(chainArr).ToMiraiMessageAsync(UploadTarget.Group));
-            var msgId = await MiraiSession.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public static async Task<BaseResult> ReplyGroupMessageWithAtAsync(this GroupCommand command, List<BaseContent> chainList)
-        {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await chainList.ToMiraiMessageAsync(UploadTarget.Group));
-            var msgId = await MiraiSession.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public static async Task<BaseResult> SendTempMessageAsync(this GroupCommand command, List<BaseContent> contentList)
-        {
-            IChatMessage[] msgArr = await contentList.ToMiraiMessageAsync(UploadTarget.Group);
-            var msgId = await MiraiSession.SendTempMessageAsync(MemberId, GroupId, msgArr);
-            return new MiraiResult(msgId);
-        }
-
-        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long msgId, long groupId)
-        {
-            try
-            {
-                if (msgId <= 0) return;
-                await MiraiSession.RevokeMessageAsync((int)msgId, groupId);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "群消息撤回失败");
-            }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         public static string GetSimilarGroupCommandStrs(string keyword)
         {

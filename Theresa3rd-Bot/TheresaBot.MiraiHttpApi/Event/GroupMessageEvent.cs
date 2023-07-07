@@ -15,15 +15,13 @@ using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Relay;
-using TheresaBot.MiraiHttpApi.Reporter;
-using TheresaBot.MiraiHttpApi.Session;
 
 namespace TheresaBot.MiraiHttpApi.Event
 {
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IGroupMessageEventArgs, GroupMessageEventArgs>))]
     public class GroupMessageEvent : BaseEvent, IMiraiHttpMessageHandler<IGroupMessageEventArgs>
     {
-        
+
         public async Task HandleMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             try

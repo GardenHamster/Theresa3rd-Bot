@@ -10,7 +10,7 @@ namespace TheresaBot.MiraiHttpApi.Event
 {
     public abstract class BaseEvent
     {
-        protected MiraiSession miraiSession{get;init;}
+        protected MiraiSession miraiSession { get; init; }
 
         protected MiraiReporter miraiReporter { get; init; }
 
@@ -24,7 +24,7 @@ namespace TheresaBot.MiraiHttpApi.Event
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
-                MiraiGroupCommand command = instruction.CheckCommand(invoker, session, args);
+                MiraiGroupCommand command = instruction.CheckCommand(miraiSession, invoker, session, args);
                 if (command is not null) return command;
             }
             return null;
@@ -34,7 +34,7 @@ namespace TheresaBot.MiraiHttpApi.Event
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
-                MiraiFriendCommand command = instruction.CheckCommand(invoker, session, args);
+                MiraiFriendCommand command = instruction.CheckCommand(miraiSession, invoker, session, args);
                 if (command is not null) return command;
             }
             return null;
@@ -44,7 +44,7 @@ namespace TheresaBot.MiraiHttpApi.Event
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
-                MiraiGroupQuoteCommand command = instruction.CheckCommand(invoker, session, args);
+                MiraiGroupQuoteCommand command = instruction.CheckCommand(miraiSession, invoker, session, args);
                 if (command is not null) return command;
             }
             return null;

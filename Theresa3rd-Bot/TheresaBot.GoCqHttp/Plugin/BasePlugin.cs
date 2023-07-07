@@ -23,7 +23,7 @@ namespace TheresaBot.GoCqHttp.Plugin
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
-                CQGroupCommand command = message.CheckCommand(invoker, session, args);
+                CQGroupCommand command = message.CheckCommand(cqSession, invoker, session, args);
                 if (command is not null) return command;
             }
             return null;
@@ -33,7 +33,7 @@ namespace TheresaBot.GoCqHttp.Plugin
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
-                CQFriendCommand command = message.CheckCommand(invoker, session, args);
+                CQFriendCommand command = message.CheckCommand(cqSession, invoker, session, args);
                 if (command is not null) return command;
             }
             return null;
@@ -43,7 +43,7 @@ namespace TheresaBot.GoCqHttp.Plugin
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
-                CQGroupQuoteCommand command = message.CheckCommand(invoker, session, args);
+                CQGroupQuoteCommand command = message.CheckCommand(cqSession, invoker, session, args);
                 if (command is not null) return command;
             }
             return null;

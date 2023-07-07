@@ -20,25 +20,16 @@ namespace TheresaBot.MiraiHttpApi.Session
             return new MiraiResult(msgId);
         }
 
-        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents)
+        public override async Task<BaseResult> SendGroupMessageWithAtAsync(long groupId, long memberId, string message)
         {
-            if (contents.Count == 0) return MiraiResult.Undo;
-            IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Group);
-            var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList);
-            return new MiraiResult(msgId);
-        }
-
-        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents, bool isAtAll = false)
-        {
-            if (contents.Count == 0) return MiraiResult.Undo;
             List<IChatMessage> msgList = new List<IChatMessage>();
-            if (isAtAll) msgList.Add(new AtAllMessage());
-            msgList.AddRange(await contents.ToMiraiMessageAsync(UploadTarget.Group));
+            msgList.Add(new AtMessage(memberId));
+            msgList.Add(new PlainMessage(message));
             var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
             return new MiraiResult(msgId);
         }
 
-        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers, bool isAtAll = false)
+        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers = null, bool isAtAll = false)
         {
             if (contents.Count == 0) return MiraiResult.Undo;
             List<IChatMessage> msgList = new List<IChatMessage>();
@@ -73,9 +64,26 @@ namespace TheresaBot.MiraiHttpApi.Session
         public override async Task<BaseResult> SendFriendMessageAsync(long memberId, List<BaseContent> contents)
         {
             if (contents.Count == 0) return MiraiResult.Undo;
-            IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Group);
+            IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Friend);
             var msgId = await MiraiHelper.Session.SendFriendMessageAsync(memberId, msgList);
             return new MiraiResult(msgId);
+        }
+
+        public override async Task<BaseResult> SendTempMessageAsync(long groupId, long memberId, string message)
+        {
+            var msgId = await MiraiHelper.Session.SendTempMessageAsync(memberId, groupId, new PlainMessage(message));
+            return new MiraiResult(msgId);
+        }
+
+        public override async Task<BaseResult> SendTempMessageAsync(long groupId, long memberId, List<BaseContent> contents)
+        {
+            var msgId = await MiraiHelper.Session.SendTempMessageAsync(memberId, groupId, await contents.ToMiraiMessageAsync(UploadTarget.Temp));
+            return new MiraiResult(msgId);
+        }
+
+        public override async Task RevokeGroupMessageAsync(long groupId, long messageId)
+        {
+            await MiraiHelper.Session.RevokeMessageAsync((int)messageId, groupId);
         }
 
     }

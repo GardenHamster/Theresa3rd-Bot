@@ -1,11 +1,8 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
-using TheresaBot.GoCqHttp.Session;
 using TheresaBot.Main.Command;
-using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
-using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 

@@ -214,7 +214,7 @@ namespace TheresaBot.Main.Handler
                 template = template.Replace("{Tags}", tags);
                 template = template.Replace("{SourceName}", timingSetuTimer.Source.GetTypeName());
                 List<BaseContent> chainList = new List<BaseContent>(template.SplitToChainAsync());
-                await Session.SendGroupMessageAsync(groupId, chainList, timingSetuTimer.AtAll);
+                await Session.SendGroupMessageAsync(groupId, chainList, new() { }, timingSetuTimer.AtAll);
             }
             catch (Exception ex)
             {

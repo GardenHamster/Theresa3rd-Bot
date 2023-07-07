@@ -20,25 +20,16 @@ namespace TheresaBot.GoCqHttp.Session
             return new CQResult(result);
         }
 
-        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents)
+        public override async Task<BaseResult> SendGroupMessageWithAtAsync(long groupId, long memberId, string message)
         {
-            if (contents.Count == 0) return CQResult.Undo;
-            CqMsg[] msgList = contents.ToCQMessageAsync();
-            var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(msgList));
-            return new CQResult(result);
-        }
-
-        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents, bool isAtAll = false)
-        {
-            if (contents.Count == 0) return CQResult.Undo;
             List<CqMsg> msgList = new List<CqMsg>();
-            if (isAtAll) msgList.Add(CqAtMsg.AtAll);
-            msgList.AddRange(contents.ToCQMessageAsync());
+            msgList.Add(new CqAtMsg(memberId));
+            msgList.Add(new CqTextMsg(message));
             var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(msgList));
             return new CQResult(result);
         }
 
-        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers, bool isAtAll = false)
+        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers = null, bool isAtAll = false)
         {
             if (contents.Count == 0) return CQResult.Undo;
             List<CqMsg> msgList = new List<CqMsg>();
@@ -70,6 +61,25 @@ namespace TheresaBot.GoCqHttp.Session
             CqMsg[] msgList = contents.ToCQMessageAsync();
             var result = await CQHelper.Session.SendPrivateMessageAsync(memberId, new CqMessage(msgList));
             return new CQResult(result);
+        }
+
+        public override async Task<BaseResult> SendTempMessageAsync(long groupId, long memberId, string message)
+        {
+            var result = await CQHelper.Session.SendPrivateMessageAsync(groupId, new CqMessage(message));
+            return new CQResult(result);
+        }
+
+        public override async Task<BaseResult> SendTempMessageAsync(long groupId, long memberId, List<BaseContent> contents)
+        {
+            if (contents.Count == 0) return CQResult.Undo;
+            CqMsg[] msgList = contents.ToCQMessageAsync();
+            var result = await CQHelper.Session.SendPrivateMessageAsync(memberId, new CqMessage(msgList));
+            return new CQResult(result);
+        }
+
+        public override async Task RevokeGroupMessageAsync(long groupId, long messageId)
+        {
+            await CQHelper.Session.RecallMessageAsync(messageId);
         }
 
     }

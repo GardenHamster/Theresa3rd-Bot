@@ -11,6 +11,7 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
+using TheresaBot.Main.Session;
 using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Event;
@@ -134,12 +135,12 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static MiraiGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static MiraiGroupCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<GroupCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (handler.Commands is null || handler.Commands.Count == 0) return null;
             foreach (string command in handler.Commands)
             {
-                if (instruction.CheckCommand(handler, session, args, command) is { } botCommand) return botCommand;
+                if (instruction.CheckCommand(baseSession, handler, session, args, command) is { } botCommand) return botCommand;
             }
             return null;
         }
@@ -155,11 +156,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        private static MiraiGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, string command)
+        private static MiraiGroupCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<GroupCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, string command)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
             if (instruction.ToUpper().StartsWith(command.ToUpper()) == false) return null;
-            return new(handler, session, args, instruction, command);
+            return new(baseSession, handler, session, args, instruction, command);
         }
 
         /// <summary>
@@ -171,12 +172,12 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <param name="args"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static MiraiFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, IMiraiHttpSession session, IFriendMessageEventArgs args)
+        public static MiraiFriendCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<FriendCommand> handler, IMiraiHttpSession session, IFriendMessageEventArgs args)
         {
             if (handler.Commands is null || handler.Commands.Count == 0) return null;
             foreach (string command in handler.Commands)
             {
-                if (instruction.CheckCommand(handler, session, args, command) is { } botCommand) return botCommand;
+                if (instruction.CheckCommand(baseSession, handler, session, args, command) is { } botCommand) return botCommand;
             }
             return null;
         }
@@ -191,11 +192,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <param name="command"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        private static MiraiFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, IMiraiHttpSession session, IFriendMessageEventArgs args, string command)
+        private static MiraiFriendCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<FriendCommand> handler, IMiraiHttpSession session, IFriendMessageEventArgs args, string command)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
             if (instruction.StartsWith(command) == false) return null;
-            return new(handler, session, args, instruction, command);
+            return new(baseSession, handler, session, args, instruction, command);
         }
 
         /// <summary>
@@ -208,12 +209,12 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static MiraiGroupQuoteCommand CheckCommand(this string instruction, CommandHandler<GroupQuoteCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args)
+        public static MiraiGroupQuoteCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<GroupQuoteCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             if (handler.Commands is null || handler.Commands.Count == 0) return null;
             foreach (string command in handler.Commands)
             {
-                if (instruction.CheckCommand(handler, session, args, command) is { } botCommand) return botCommand;
+                if (instruction.CheckCommand(baseSession, handler, session, args, command) is { } botCommand) return botCommand;
             }
             return null;
         }
@@ -229,11 +230,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        private static MiraiGroupQuoteCommand CheckCommand(this string instruction, CommandHandler<GroupQuoteCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, string command)
+        private static MiraiGroupQuoteCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<GroupQuoteCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, string command)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
             if (instruction.ToUpper().StartsWith(command.ToUpper()) == false) return null;
-            return new(handler, session, args, instruction, command);
+            return new(baseSession, handler, session, args, instruction, command);
         }
 
         /// <summary>

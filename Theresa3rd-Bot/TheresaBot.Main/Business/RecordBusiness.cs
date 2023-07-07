@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Business
 
         public List<ImageRecordPO> GetImageRecord(PlatformType platformType, long msgId, long groupId)
         {
-            return imageRecordDao.getRecord(platformType,msgId, groupId);
+            return imageRecordDao.getRecord(platformType, msgId, groupId);
         }
 
         public async Task AddImageRecord(List<string> imgUrls, PlatformType platformType, long msgId, long groupId, long memberId)

@@ -23,7 +23,7 @@ namespace TheresaBot.Main.Common
         /// Ascii2d域名搜索地址
         /// </summary>
         public const string Ascii2dDomainUrl = "https://ascii2d.net/search/uri";
-        
+
         /// <summary>
         /// 默认pixiv图片代理地址
         /// </summary>

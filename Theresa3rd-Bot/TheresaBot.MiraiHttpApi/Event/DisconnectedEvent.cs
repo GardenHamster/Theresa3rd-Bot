@@ -1,8 +1,6 @@
 ﻿using Mirai.CSharp.HttpApi.Handlers;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
-using System;
-using System.Threading.Tasks;
 using TheresaBot.Main.Helper;
 using TheresaBot.MiraiHttpApi.Common;
 

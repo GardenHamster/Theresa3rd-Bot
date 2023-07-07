@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Model.Config;
-
-namespace TheresaBot.GoCqHttp.Common
+﻿namespace TheresaBot.GoCqHttp.Common
 {
     public class CQConfig
     {

@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Model.Config;
-
-namespace TheresaBot.MiraiHttpApi.Common
+﻿namespace TheresaBot.MiraiHttpApi.Common
 {
     public class MiraiConfig
     {

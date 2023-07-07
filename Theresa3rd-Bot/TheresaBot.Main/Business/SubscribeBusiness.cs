@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Design;
-using TheresaBot.Main.Common;
+﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Mys;

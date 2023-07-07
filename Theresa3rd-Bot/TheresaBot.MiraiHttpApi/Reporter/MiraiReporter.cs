@@ -1,5 +1,4 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
-using System.Threading.Tasks;
 using TheresaBot.Main.Reporter;
 using TheresaBot.MiraiHttpApi.Helper;
 

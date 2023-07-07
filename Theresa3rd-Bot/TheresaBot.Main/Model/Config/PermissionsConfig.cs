@@ -31,6 +31,6 @@
         public List<long> SubscribeGroups { get; private set; }
 
         public List<long> PixivRankingGroups { get; private set; }
-        
+
     }
 }

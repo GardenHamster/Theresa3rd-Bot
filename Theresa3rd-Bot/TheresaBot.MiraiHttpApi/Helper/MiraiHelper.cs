@@ -6,8 +6,6 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Options;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
-using MySqlX.XDevAPI.Common;
-using System.Text;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;

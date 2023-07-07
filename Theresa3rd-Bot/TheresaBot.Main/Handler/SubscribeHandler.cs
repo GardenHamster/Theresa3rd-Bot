@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -19,7 +14,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
-    internal class SubscribeHandler: BaseHandler
+    internal class SubscribeHandler : BaseHandler
     {
         private SubscribeBusiness subscribeBusiness;
 

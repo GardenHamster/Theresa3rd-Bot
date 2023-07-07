@@ -1,6 +1,4 @@
 ﻿using Quartz;
-using System.Text.RegularExpressions;
-using TheresaBot.Main.Cache;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Handler;
 using TheresaBot.Main.Helper;
@@ -8,7 +6,6 @@ using TheresaBot.Main.Mode;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Timers
 {

@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Helper;
-
-namespace TheresaBot.Main.Model.Config
+﻿namespace TheresaBot.Main.Model.Config
 {
     public class BotConfigDto
     {

@@ -83,7 +83,7 @@ namespace TheresaBot.Main.Helper
             return contentList;
         }
 
-        
+
 
     }
 }

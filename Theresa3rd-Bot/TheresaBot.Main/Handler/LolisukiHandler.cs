@@ -7,7 +7,6 @@ using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Lolisuki;
 using TheresaBot.Main.Reporter;
-using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 

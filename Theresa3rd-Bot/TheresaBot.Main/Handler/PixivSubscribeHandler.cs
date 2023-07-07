@@ -2,7 +2,6 @@
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
-using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
@@ -11,7 +10,6 @@ using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
-using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.Main.Type.StepOption;

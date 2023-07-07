@@ -12,7 +12,6 @@ using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
-using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 

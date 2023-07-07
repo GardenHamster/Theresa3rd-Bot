@@ -7,7 +7,7 @@ using TheresaBot.Main.Model.Pixiv;
 
 namespace TheresaBot.Main.Drawer
 {
-    internal class PixivRankingDrawer: BasePreviewDrawer
+    internal class PixivRankingDrawer : BasePreviewDrawer
     {
         public async Task<FileInfo> DrawPreview(PixivRankingInfo rankingInfo, List<PixivRankingDetail> details, string fullSavePath)
         {

@@ -15,7 +15,7 @@ namespace TheresaBot.Main.Model.Subscribe
         {
             this.SubscribeRecord = record;
             this.PixivWorkInfo = workInfo;
-            this.SubscribeTask= subscribeTask;
+            this.SubscribeTask = subscribeTask;
         }
 
     }

@@ -7,7 +7,6 @@ using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Lolicon;
 using TheresaBot.Main.Reporter;
-using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler

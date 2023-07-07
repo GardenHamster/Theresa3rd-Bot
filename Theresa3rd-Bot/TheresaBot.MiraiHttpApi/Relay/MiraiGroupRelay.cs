@@ -1,7 +1,5 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
-using System.Collections.Generic;
-using System.Linq;
 using TheresaBot.Main.Relay;
 
 namespace TheresaBot.MiraiHttpApi.Relay

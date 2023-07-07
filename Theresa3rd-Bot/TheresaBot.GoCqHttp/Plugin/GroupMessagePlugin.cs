@@ -39,7 +39,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (memberId == CQConfig.BotQQ) return;
                 if (BusinessHelper.IsBanMember(memberId)) return; //黑名单成员
 
-                List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o=>!string.IsNullOrEmpty(o)).ToList();
+                List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
 
                 string instruction = plainList.FirstOrDefault()?.Trim() ?? "";
                 string message = args.Message.Text;
@@ -53,7 +53,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (args.Message.Any(v => v is CqReplyMsg))//引用指令
                 {
                     GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(session, args, instruction, groupId, memberId);
-                    if (quoteCommand is not null)  await quoteCommand.InvokeAsync(cqSession, cqReporter);
+                    if (quoteCommand is not null) await quoteCommand.InvokeAsync(cqSession, cqReporter);
                     return;
                 }
 

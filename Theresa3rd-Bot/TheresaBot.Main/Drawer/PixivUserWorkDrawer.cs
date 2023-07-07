@@ -69,7 +69,7 @@ namespace TheresaBot.Main.Drawer
             return new FileInfo(fullSavePath);
         }
 
-        private void DrawHeader(SKCanvas canvas, string userId,string userName, int startX, int startY)
+        private void DrawHeader(SKCanvas canvas, string userId, string userName, int startX, int startY)
         {
             int x = startX;
             int y = startY + HeaderMargin + HeaderFontSize;

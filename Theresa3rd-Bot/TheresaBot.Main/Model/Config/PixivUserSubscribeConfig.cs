@@ -4,7 +4,7 @@ namespace TheresaBot.Main.Model.Config
 {
     public class PixivUserSubscribeConfig : BaseSubscribeConfig
     {
-        public PixivScanType ScanMode { get; private set; }= PixivScanType.Default;
+        public PixivScanType ScanMode { get; private set; } = PixivScanType.Default;
 
         public List<string> SyncCommands { get; private set; }
 

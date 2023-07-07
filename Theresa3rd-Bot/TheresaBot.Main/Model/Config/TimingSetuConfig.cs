@@ -22,7 +22,7 @@ namespace TheresaBot.Main.Model.Config
         public int Quantity { get; private set; }
         public bool AtAll { get; private set; }
         public string TimingMsg { get; private set; }
-        
+
     }
 
 }

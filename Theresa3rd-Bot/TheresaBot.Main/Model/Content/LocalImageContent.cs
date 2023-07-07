@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Type;
-
-namespace TheresaBot.Main.Model.Content
+﻿namespace TheresaBot.Main.Model.Content
 {
     public class LocalImageContent : ImageContent
     {

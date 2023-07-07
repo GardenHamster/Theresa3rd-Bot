@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Helper;
-
-namespace TheresaBot.Main.Model.Pixiv
+﻿namespace TheresaBot.Main.Model.Pixiv
 {
     public class PixivUserProfileTop
     {

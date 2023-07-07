@@ -32,7 +32,7 @@ namespace TheresaBot.Main.Handler
                 string localPath = BotConfig.SetuConfig.Local.LocalPath;
                 if (string.IsNullOrWhiteSpace(localPath)) throw new Exception($"未配置LocalPath");
                 if (Directory.Exists(localPath) == false) throw new Exception($"本地涩图路径：{localPath}不存在");
-                
+
                 if (await CheckSetuTagEnableAsync(command, tagName) == false) return;
 
                 if (string.IsNullOrEmpty(tagName))

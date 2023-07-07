@@ -1,5 +1,4 @@
 ﻿using SkiaSharp;
-using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
 
 namespace TheresaBot.Main.Drawer

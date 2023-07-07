@@ -7,6 +7,7 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Result;
+using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Result;
@@ -15,7 +16,7 @@ namespace TheresaBot.MiraiHttpApi.Command
 {
     public class MiraiGroupCommand : GroupCommand
     {
-        private IMiraiHttpSession Session { get; init; }
+        private IMiraiHttpSession MiraiSession { get; init; }
 
         private IGroupMessageEventArgs Args { get; init; }
 
@@ -27,18 +28,18 @@ namespace TheresaBot.MiraiHttpApi.Command
 
         public override long MemberId => Args.Sender.Id;
 
-        public MiraiGroupCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, CommandType commandType, string instruction, string command)
-            : base(commandType, instruction, command)
+        public MiraiGroupCommand(BaseSession baseSession, IMiraiHttpSession miariSession, IGroupMessageEventArgs args, CommandType commandType, string instruction, string command)
+            : base(baseSession, commandType, instruction, command)
         {
             this.Args = args;
-            this.Session = session;
+            this.MiraiSession = miariSession;
         }
 
-        public MiraiGroupCommand(CommandHandler<GroupCommand> invoker, IMiraiHttpSession session, IGroupMessageEventArgs args, string instruction, string command)
-            : base(invoker, instruction, command)
+        public MiraiGroupCommand(BaseSession baseSession, CommandHandler<GroupCommand> invoker, IMiraiHttpSession miariSession, IGroupMessageEventArgs args, string instruction, string command)
+            : base(baseSession, invoker, instruction, command)
         {
             this.Args = args;
-            this.Session = session;
+            this.MiraiSession = miariSession;
         }
 
         public override List<string> GetImageUrls()
@@ -51,73 +52,6 @@ namespace TheresaBot.MiraiHttpApi.Command
             var quoteMessage = Args.Chain.Where(v => v is QuoteMessage).FirstOrDefault();
             return quoteMessage is null ? 0 : ((QuoteMessage)quoteMessage).Id;
         }
-
-        public override async Task<BaseResult> ReplyGroupMessageAsync(string message, bool isAt = false)
-        {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            if (isAt) msgList.Add(new AtMessage(MemberId));
-            msgList.Add(new PlainMessage(message));
-            var msgId = await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public override async Task<BaseResult> ReplyGroupMessageAsync(List<BaseContent> chainList, bool isAt = false)
-        {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            if (isAt) msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await chainList.ToMiraiMessageAsync(UploadTarget.Group));
-            var msgId = await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public override async Task<BaseResult> ReplyGroupMessageWithAtAsync(string plainMsg)
-        {
-            if (plainMsg.StartsWith(" ") == false) plainMsg = " " + plainMsg;
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            msgList.Add(new AtMessage(MemberId));
-            msgList.Add(new PlainMessage(plainMsg));
-            var msgId = await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public override async Task<BaseResult> ReplyGroupMessageWithAtAsync(params BaseContent[] chainArr)
-        {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await new List<BaseContent>(chainArr).ToMiraiMessageAsync(UploadTarget.Group));
-            var msgId = await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public override async Task<BaseResult> ReplyGroupMessageWithAtAsync(List<BaseContent> chainList)
-        {
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            msgList.Add(new AtMessage(MemberId));
-            msgList.AddRange(await chainList.ToMiraiMessageAsync(UploadTarget.Group));
-            var msgId = await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public override async Task<BaseResult> SendTempMessageAsync(List<BaseContent> contentList)
-        {
-            IChatMessage[] msgArr = await contentList.ToMiraiMessageAsync(UploadTarget.Group);
-            var msgId = await Session.SendTempMessageAsync(MemberId, GroupId, msgArr);
-            return new MiraiResult(msgId);
-        }
-
-        public override async Task RevokeGroupMessageAsync(long msgId, long groupId)
-        {
-            try
-            {
-                if (msgId <= 0) return;
-                await Session.RevokeMessageAsync((int)msgId, groupId);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "群消息撤回失败");
-            }
-        }
-
 
     }
 }

@@ -19,14 +19,6 @@ namespace TheresaBot.MiraiHttpApi.Event
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IFriendMessageEventArgs, FriendMessageEventArgs>))]
     public class FriendMessageEvent : BaseEvent, IMiraiHttpMessageHandler<IFriendMessageEventArgs>
     {
-        private MiraiSession miraiSession;
-        private MiraiReporter miraiReporter;
-
-        public FriendMessageEvent()
-        {
-            this.miraiSession = new MiraiSession();
-            this.miraiReporter = new MiraiReporter();
-        }
 
         public async Task HandleMessageAsync(IMiraiHttpSession session, IFriendMessageEventArgs args)
         {

@@ -169,6 +169,15 @@ namespace TheresaBot.Main.Helper
             return await command.ReplyFriendMessageAsync(template.SplitToChainAsync());
         }
 
+        public static async Task<BaseResult> ReplyFriendMessageAsync(this FriendCommand command, string message)
+        {
+            return await command.Session.SendFriendMessageAsync(command.MemberId, message);
+        }
+
+        public static async Task<BaseResult> ReplyFriendMessageAsync(this FriendCommand command, List<BaseContent> contents)
+        {
+            return await command.Session.SendFriendMessageAsync(command.MemberId, contents);
+        }
 
 
 
@@ -176,11 +185,71 @@ namespace TheresaBot.Main.Helper
 
 
 
+        public static async Task<BaseResult> ReplyGroupMessageAsync(this GroupCommand command, string message, bool isAt = false)
+        {
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            if (isAt) msgList.Add(new AtMessage(MemberId));
+            msgList.Add(new PlainMessage(message));
+            var msgId = await MiraiSession.SendGroupMessageAsync(GroupId, msgList.ToArray());
+            return new MiraiResult(msgId);
+        }
 
+        public static async Task<BaseResult> ReplyGroupMessageAsync(this GroupCommand command, List<BaseContent> chainList, bool isAt = false)
+        {
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            if (isAt) msgList.Add(new AtMessage(MemberId));
+            msgList.AddRange(await chainList.ToMiraiMessageAsync(UploadTarget.Group));
+            var msgId = await MiraiSession.SendGroupMessageAsync(GroupId, msgList.ToArray());
+            return new MiraiResult(msgId);
+        }
 
+        public static async Task<BaseResult> ReplyGroupMessageWithAtAsync(this GroupCommand command, string plainMsg)
+        {
+            if (plainMsg.StartsWith(" ") == false) plainMsg = " " + plainMsg;
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new AtMessage(MemberId));
+            msgList.Add(new PlainMessage(plainMsg));
+            var msgId = await MiraiSession.SendGroupMessageAsync(GroupId, msgList.ToArray());
+            return new MiraiResult(msgId);
+        }
 
+        public static async Task<BaseResult> ReplyGroupMessageWithAtAsync(this GroupCommand command, params BaseContent[] chainArr)
+        {
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new AtMessage(MemberId));
+            msgList.AddRange(await new List<BaseContent>(chainArr).ToMiraiMessageAsync(UploadTarget.Group));
+            var msgId = await MiraiSession.SendGroupMessageAsync(GroupId, msgList.ToArray());
+            return new MiraiResult(msgId);
+        }
 
+        public static async Task<BaseResult> ReplyGroupMessageWithAtAsync(this GroupCommand command, List<BaseContent> chainList)
+        {
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new AtMessage(MemberId));
+            msgList.AddRange(await chainList.ToMiraiMessageAsync(UploadTarget.Group));
+            var msgId = await MiraiSession.SendGroupMessageAsync(GroupId, msgList.ToArray());
+            return new MiraiResult(msgId);
+        }
 
+        public static async Task<BaseResult> SendTempMessageAsync(this GroupCommand command, List<BaseContent> contentList)
+        {
+            IChatMessage[] msgArr = await contentList.ToMiraiMessageAsync(UploadTarget.Group);
+            var msgId = await MiraiSession.SendTempMessageAsync(MemberId, GroupId, msgArr);
+            return new MiraiResult(msgId);
+        }
+
+        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long msgId, long groupId)
+        {
+            try
+            {
+                if (msgId <= 0) return;
+                await MiraiSession.RevokeMessageAsync((int)msgId, groupId);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "群消息撤回失败");
+            }
+        }
 
 
 

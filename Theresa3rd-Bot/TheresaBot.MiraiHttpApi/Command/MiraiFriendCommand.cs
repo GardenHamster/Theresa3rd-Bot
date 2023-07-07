@@ -6,6 +6,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Result;
+using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Result;
@@ -16,7 +17,7 @@ namespace TheresaBot.MiraiHttpApi.Command
     {
         private IFriendMessageEventArgs Args { get; init; }
 
-        private IMiraiHttpSession Session { get; init; }
+        private IMiraiHttpSession MiraiSession { get; init; }
 
         public override PlatformType PlatformType { get; } = PlatformType.Mirai;
 
@@ -24,11 +25,11 @@ namespace TheresaBot.MiraiHttpApi.Command
 
         public override long MemberId => Args.Sender.Id;
 
-        public MiraiFriendCommand(CommandHandler<FriendCommand> invoker, IMiraiHttpSession session, IFriendMessageEventArgs args, string instruction, string command)
-            : base(invoker, instruction, command)
+        public MiraiFriendCommand(BaseSession baseSession, CommandHandler<FriendCommand> invoker, IMiraiHttpSession miariSession, IFriendMessageEventArgs args, string instruction, string command)
+            : base(baseSession, invoker, instruction, command)
         {
             this.Args = args;
-            this.Session = session;
+            this.MiraiSession = miariSession;
         }
 
         public override List<string> GetImageUrls()
@@ -38,18 +39,6 @@ namespace TheresaBot.MiraiHttpApi.Command
 
 
 
-        public override async Task<BaseResult> ReplyFriendMessageAsync(string message)
-        {
-            var msgId = await Session.SendFriendMessageAsync(MemberId, new PlainMessage(message));
-            return new MiraiResult(msgId);
-        }
-
-        public override async Task<BaseResult> ReplyFriendMessageAsync(List<BaseContent> contents)
-        {
-            IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Friend);
-            var msgId = await Session.SendFriendMessageAsync(MemberId, msgList);
-            return new MiraiResult(msgId);
-        }
 
     }
 }

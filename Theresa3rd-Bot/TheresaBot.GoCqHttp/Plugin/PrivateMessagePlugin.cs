@@ -14,15 +14,6 @@ namespace TheresaBot.GoCqHttp.Plugin
 {
     public class PrivateMessagePlugin : BasePlugin
     {
-        private CQSession miraiSession;
-        private CQReporter miraiReporter;
-
-        public PrivateMessagePlugin()
-        {
-            this.miraiSession = new CQSession();
-            this.miraiReporter = new CQReporter();
-        }
-
         public override async void OnPrivateMessageReceived(CqPrivateMessagePostContext args)
         {
             try
@@ -47,7 +38,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 CQFriendCommand botCommand = GetFriendCommand(session, args, instruction);
                 if (botCommand is not null)
                 {
-                    await botCommand.InvokeAsync(miraiSession, miraiReporter);
+                    await botCommand.InvokeAsync(cqSession, cqReporter);
                     return;
                 }
             }
@@ -56,7 +47,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 LogHelper.Error(ex, "私聊指令异常");
                 await ReplyFriendErrorAsync(ex, args);
                 await Task.Delay(1000);
-                await miraiReporter.SendError(ex, "私聊指令异常");
+                await cqReporter.SendError(ex, "私聊指令异常");
             }
         }
 

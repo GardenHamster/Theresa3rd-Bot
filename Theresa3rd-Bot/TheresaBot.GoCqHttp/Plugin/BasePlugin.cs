@@ -2,12 +2,23 @@
 using EleCho.GoCqHttpSdk.Post;
 using TheresaBot.GoCqHttp.Command;
 using TheresaBot.GoCqHttp.Helper;
+using TheresaBot.GoCqHttp.Reporter;
+using TheresaBot.GoCqHttp.Session;
 using TheresaBot.Main.Invoker;
 
 namespace TheresaBot.GoCqHttp.Plugin
 {
     public class BasePlugin : CqPostPlugin
     {
+        protected CQSession cqSession { get; init; }
+        protected CQReporter cqReporter { get; init; }
+
+        public BasePlugin()
+        {
+            this.cqSession = new CQSession();
+            this.cqReporter = new CQReporter();
+        }
+
         public CQGroupCommand GetGroupCommand(ICqActionSession session, CqGroupMessagePostContext args, string message)
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)

@@ -8,8 +8,8 @@ namespace TheresaBot.Main.Command
     {
         protected CommandHandler<GroupQuoteCommand> HandlerInvoker { get; init; }
 
-        public GroupQuoteCommand(CommandHandler<GroupQuoteCommand> invoker, string instruction, string command)
-            : base(invoker.CommandType, instruction, command)
+        public GroupQuoteCommand(BaseSession baseSession, CommandHandler<GroupQuoteCommand> invoker, string instruction, string command)
+            : base(baseSession, invoker.CommandType, instruction, command)
         {
             this.HandlerInvoker = invoker;
         }

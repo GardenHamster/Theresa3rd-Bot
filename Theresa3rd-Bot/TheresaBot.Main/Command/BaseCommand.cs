@@ -16,12 +16,14 @@ namespace TheresaBot.Main.Command
         public string[] Params { get; init; }
         public string KeyWord { get; set; }
         public CommandType CommandType { get; init; }
+        public BaseSession Session { get; init; }
 
-        public BaseCommand(CommandType commandType, string instruction, string command)
+        public BaseCommand(BaseSession baseSession, CommandType commandType, string instruction, string command)
         {
             this.Command = command;
             this.Instruction = instruction;
             this.CommandType = commandType;
+            this.Session = baseSession;
             this.KeyWord = instruction.splitKeyWord(command);
             this.Params = instruction.splitKeyParams(command);
         }

@@ -18,14 +18,6 @@ namespace TheresaBot.GoCqHttp.Plugin
 {
     public class GroupMessagePlugin : BasePlugin
     {
-        private CQSession cqSession;
-        private CQReporter cqReporter;
-
-        public GroupMessagePlugin()
-        {
-            this.cqSession = new CQSession();
-            this.cqReporter = new CQReporter();
-        }
 
         public override async Task OnGroupMessageReceivedAsync(CqGroupMessagePostContext args)
         {

@@ -23,15 +23,7 @@ namespace TheresaBot.MiraiHttpApi.Event
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IGroupMessageEventArgs, GroupMessageEventArgs>))]
     public class GroupMessageEvent : BaseEvent, IMiraiHttpMessageHandler<IGroupMessageEventArgs>
     {
-        private MiraiSession miraiSession;
-        private MiraiReporter miraiReporter;
-
-        public GroupMessageEvent()
-        {
-            this.miraiSession = new MiraiSession();
-            this.miraiReporter = new MiraiReporter();
-        }
-
+        
         public async Task HandleMessageAsync(IMiraiHttpSession session, IGroupMessageEventArgs args)
         {
             try

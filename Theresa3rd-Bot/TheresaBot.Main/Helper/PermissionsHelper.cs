@@ -26,17 +26,6 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 判断是否存在其中一个群需要显示图片
-        /// </summary>
-        /// <param name="groupIds"></param>
-        /// <param name="isR18Img"></param>
-        /// <returns></returns>
-        public static bool IsShowSetuImg(this List<long> groupIds, bool isR18Img)
-        {
-            return groupIds.Any(o => o.IsShowSetuImg(isR18Img));
-        }
-
-        /// <summary>
         /// 判断某一个群是否可以显示图片
         /// </summary>
         /// <param name="groupId"></param>

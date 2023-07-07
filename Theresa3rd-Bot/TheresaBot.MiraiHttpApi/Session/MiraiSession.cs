@@ -52,13 +52,13 @@ namespace TheresaBot.MiraiHttpApi.Session
             return new MiraiResult(msgId);
         }
 
-        public override async Task<BaseResult> SendGroupMergeAsync(long groupId, params List<BaseContent>[] contentLists)
+        public override async Task<BaseResult> SendGroupMergeAsync(long groupId, List<BaseContent[]> contentLists)
         {
-            if (contentLists.Length == 0) return MiraiResult.Undo;
+            if (contentLists.Count == 0) return MiraiResult.Undo;
             List<IForwardMessageNode> nodeList = new List<IForwardMessageNode>();
-            foreach (var contentList in contentLists)
+            foreach (var contentArr in contentLists)
             {
-                nodeList.Add(new ForwardMessageNode(MiraiConfig.BotName, MiraiConfig.BotQQ, DateTime.Now, await contentList.ToMiraiMessageAsync(UploadTarget.Group)));
+                nodeList.Add(new ForwardMessageNode(MiraiConfig.BotName, MiraiConfig.BotQQ, DateTime.Now, await contentArr.ToList().ToMiraiMessageAsync(UploadTarget.Group)));
             }
             var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, new ForwardMessage(nodeList.ToArray()));
             return new MiraiResult(msgId);

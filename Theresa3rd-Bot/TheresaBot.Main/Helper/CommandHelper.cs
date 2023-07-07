@@ -10,12 +10,6 @@ namespace TheresaBot.Main.Helper
 {
     public static class CommandHelper
     {
-        public static async Task ReplyProcessingMessageAsync(this GroupCommand command, string template)
-        {
-            if (string.IsNullOrWhiteSpace(template)) return;
-            await command.ReplyGroupTemplateWithAtAsync(template);
-        }
-
         public static async Task<BaseResult[]> ReplyGroupSetuAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind, bool isAt = true)
         {
             BaseResult[] results = await command.ReplyAndRevokeAsync(setuContent, revokeInterval, sendImgBehind, isAt);
@@ -39,6 +33,17 @@ namespace TheresaBot.Main.Helper
             }
             return results;
         }
+
+
+
+
+
+
+
+
+
+
+
 
         public static async Task<BaseResult> ReplyAndRevokeAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool isAt = false)
         {
@@ -83,6 +88,12 @@ namespace TheresaBot.Main.Helper
             BaseResult result = await command.ReplyGroupMessageAsync(contentList, isAt);
             Task revokeTask = command.RevokeGroupMessageAsync(result.MsgId, command.GroupId, revokeInterval);
             return result;
+        }
+
+        public static async Task ReplyProcessingMessageAsync(this GroupCommand command, string template)
+        {
+            if (string.IsNullOrWhiteSpace(template)) return;
+            await command.ReplyGroupTemplateWithAtAsync(template);
         }
 
         public static async Task<BaseResult> SendTempSetuAsync(this GroupCommand command, List<SetuContent> setuContents)

@@ -43,14 +43,17 @@ namespace TheresaBot.Main.Helper
             return contentList;
         }
 
-        public static List<BaseContent>[] ToBaseContents(this List<SetuContent> setuContents)
+        public static List<BaseContent[]> ToBaseContents(this List<SetuContent> setuContents)
         {
-            var contentLists = new List<List<BaseContent>>();
+            var contentLists = new List<BaseContent[]>();
             foreach (SetuContent setuContent in setuContents)
             {
-                contentLists.Add(setuContent.SetuInfos.Concat(setuContent.SetuImages.ToLocalImageContent()).ToList());
+                var baseContents = new List<BaseContent>();
+                baseContents.AddRange(setuContent.SetuInfos);
+                baseContents.AddRange(setuContent.SetuImages.ToLocalImageContent());
+                contentLists.Add(baseContents.ToArray());
             }
-            return contentLists.ToArray();
+            return contentLists;
         }
 
         public static List<BaseContent> ToBaseContent(this List<FileInfo> imgList)
@@ -63,9 +66,9 @@ namespace TheresaBot.Main.Helper
             return imgList.Select(o => new LocalImageContent(o)).ToList();
         }
 
-        public static List<BaseContent>[] SetDefaultImage(this List<BaseContent>[] contentList)
+        public static List<BaseContent[]> SetDefaultImage(this List<BaseContent[]> contentList)
         {
-            return contentList.Select(o => o.SetDefaultImage()).ToArray();
+            return contentList.Select(o => o.ToList().SetDefaultImage().ToArray()).ToList();
         }
 
         public static List<BaseContent> SetDefaultImage(this List<BaseContent> contentList)

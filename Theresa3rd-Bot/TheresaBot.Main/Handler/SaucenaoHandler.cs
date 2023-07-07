@@ -150,7 +150,6 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-
         private async Task<bool> CheckContinueAscii2d(GroupCommand command, List<string> notFoundList)
         {
             YNAType ynaType = BotConfig.SaucenaoConfig.ContinueAscii2d;
@@ -189,7 +188,7 @@ namespace TheresaBot.Main.Handler
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(getRemindMessage(saucenaoResult, command.GroupId, command.MemberId));
                     workMsgs.AddRange(getSimpleMessage(sortList.Take(BotConfig.SaucenaoConfig.SaucenaoReadCount).ToList()));
-                    Task sendSimpleTask = sendAndRevoke(command, workMsgs);
+                    Task sendSimpleTask = replyAndRevoke(command, workMsgs);
                     return true;
                 }
 
@@ -207,7 +206,7 @@ namespace TheresaBot.Main.Handler
                     setuContents.Add(await getSaucenaoContentAsync(command, saucenaoItems[i]));
                 }
 
-                Task sendDetailTask = sendAndRevoke(command, setuContents);
+                Task sendDetailTask = replyAndRevoke(command, setuContents);
                 return true;
             }
             catch (Exception ex)
@@ -277,7 +276,7 @@ namespace TheresaBot.Main.Handler
         {
             List<BaseContent> msgList = new List<BaseContent>();
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
-            msgList.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, BotConfig.PixivConfig.Template)));
+            msgList.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo)));
             return msgList;
         }
 
@@ -317,7 +316,7 @@ namespace TheresaBot.Main.Handler
                     List<BaseContent> simpleList = new List<BaseContent>();
                     simpleList.Add(new PlainContent($"ascii2d中搜索到的前{readCount}条结果如下："));
                     simpleList.AddRange(getSimpleMessage(ascii2dItems));
-                    Task sendSimpleTask = sendAndRevoke(command, simpleList);
+                    Task sendSimpleTask = replyAndRevoke(command, simpleList);
                     return;
                 }
 
@@ -349,7 +348,7 @@ namespace TheresaBot.Main.Handler
 
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 workMsgs.Add(new PlainContent(resultBuilder.ToString()));
-                Task sendTask = sendAndRevoke(command, workMsgs);
+                Task sendTask = replyAndRevoke(command, workMsgs);
             }
             catch (Exception ex)
             {
@@ -368,7 +367,7 @@ namespace TheresaBot.Main.Handler
         /// <param name="args"></param>
         /// <param name="saucenaoMessage"></param>
         /// <returns></returns>
-        private async Task sendAndRevoke(GroupCommand command, List<BaseContent> contentList)
+        private async Task replyAndRevoke(GroupCommand command, List<BaseContent> contentList)
         {
             await command.ReplyAndRevokeAsync(contentList, BotConfig.SaucenaoConfig.RevokeInterval, true);
             if (BotConfig.SaucenaoConfig.SendPrivate)
@@ -385,10 +384,10 @@ namespace TheresaBot.Main.Handler
         /// <param name="args"></param>
         /// <param name="saucenaoMessage"></param>
         /// <returns></returns>
-        private async Task sendAndRevoke(GroupCommand command, List<SetuContent> setuContents)
+        private async Task replyAndRevoke(GroupCommand command, List<SetuContent> setuContents)
         {
-            BaseResult result = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
-            Task recordTask = recordBusiness.AddPixivRecord(setuContents, command.PlatformType, result.MsgId, command.GroupId);
+            var result = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
+            var recordTask = recordBusiness.AddPixivRecord(setuContents, command.PlatformType, result.MsgId, command.GroupId);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);

@@ -26,7 +26,6 @@ namespace TheresaBot.Main.Business
 
         public async Task AddImageRecord(List<string> imgUrls, PlatformType platformType, long msgId, long groupId, long memberId)
         {
-            if (msgId == 0) return;
             foreach (var imgUrl in imgUrls) await AddImageRecord(platformType, imgUrl, msgId, groupId, memberId);
         }
 
@@ -37,7 +36,6 @@ namespace TheresaBot.Main.Business
 
         public async Task AddPixivRecord(List<SetuContent> setucontents, PlatformType platformType, long msgId, long groupId)
         {
-            if (msgId == 0) return;
             foreach (var setucontent in setucontents) await AddPixivRecord(setucontent, platformType, msgId, groupId);
         }
 
@@ -46,8 +44,7 @@ namespace TheresaBot.Main.Business
             try
             {
                 if (msgId == 0) return;
-                if (setucontent is not PixivSetuContent) return;
-                PixivSetuContent pixivContent = (PixivSetuContent)setucontent;
+                if (setucontent is not PixivSetuContent pixivContent) return;
                 PixivRecordPO pixivRecord = new PixivRecordPO();
                 pixivRecord.MessageId = msgId;
                 pixivRecord.PlatformType = platformType;

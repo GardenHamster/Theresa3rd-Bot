@@ -11,5 +11,13 @@
         public int MinBookPerHour { get; private set; } = 50;
 
         public double MinBookRate { get; private set; } = 0.05;
+
+        public bool SendMerge { get; set; } = false;
+
+        public PixivTagSubscribeConfig()
+        {
+            this.ScanInterval = 30 * 60;
+        }
+
     }
 }

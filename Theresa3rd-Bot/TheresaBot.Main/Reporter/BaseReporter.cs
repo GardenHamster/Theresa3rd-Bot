@@ -49,7 +49,7 @@ namespace TheresaBot.Main.Reporter
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex);
+                LogHelper.Error(ex, "错误日志发送失败");
             }
         }
 
@@ -68,7 +68,7 @@ namespace TheresaBot.Main.Reporter
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex);
+                LogHelper.Error(ex, "错误日志发送失败");
             }
         }
 

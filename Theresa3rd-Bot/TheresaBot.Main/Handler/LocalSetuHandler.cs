@@ -60,7 +60,9 @@ namespace TheresaBot.Main.Handler
                 List<FileInfo> setuFiles = new() { setuInfo.FileInfo };
 
                 SetuContent setuContent = new SetuContent(workMsgs, setuFiles);
-                Task sendGroupTask = command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                var msgIds = results.Select(o => o.MsgId).ToArray();
+                var recordTask = recordBusiness.AddPixivRecord(setuContent, command.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);

@@ -24,87 +24,63 @@ namespace TheresaBot.Main.Handler
             recordBusiness = new RecordBusiness();
         }
 
-        public async Task<BaseResult[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
+        protected async Task SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 10)
         {
-            BaseResult[] results = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
+            if (sendMerge && margeEachPage > 0)
+            {
+                await SendGroupMergeSetuAsync(setuContents, new(), groupId, margeEachPage);
+            }
+            else
+            {
+                await SendGroupSetuAsync(setuContents, groupId);
+            }
+        }
+
+        private async Task SendGroupSetuAsync(List<SetuContent> setuContents, long groupId)
+        {
+            foreach (SetuContent setuContent in setuContents)
+            {
+                await SendGroupSetuAsync(setuContent, groupId);
+                await Task.Delay(1000);
+            }
+        }
+
+        protected async Task SendGroupSetuAsync(SetuContent setuContent, long groupId)
+        {
+            BaseResult[] results = await Session.SendGroupSetuAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
             if (results.Any(o => o.IsFailed) && BotConfig.PixivConfig.ImgResend != ResendType.None)
             {
                 await Task.Delay(1000);
                 SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);
-                results = await Session.SendGroupMessageAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
+                results = await Session.SendGroupSetuAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
             }
-            Task recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, results.Select(o => o.MsgId).ToArray(), groupId);
-            return results;
+            long[] msgIds = results.Select(o => o.MsgId).ToArray();
+            Task recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, groupId);
         }
 
-        public async Task<BaseResult[]> SendGroupSetuAsync(List<SetuContent> setuContents, List<SetuContent> headerContents, long groupId, int eachPage = 5)
+        protected async Task SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent> headerContents, long groupId, int eachPage = 10)
         {
             int startIndex = 0;
-            if (eachPage <= 0) return new BaseResult[0];
-            List<BaseResult> results = new List<BaseResult>();
+            if (eachPage <= 0) eachPage = 5;
             while (startIndex < setuContents.Count)
             {
-                List<SetuContent> pageContents = new List<SetuContent>();
-                pageContents.AddRange(headerContents);
-                pageContents.AddRange(setuContents.Skip(startIndex).Take(eachPage).ToList());
-                results.AddRange(await SendGroupMergeSetuAsync(pageContents, groupId));
+                List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(eachPage).ToList();
+                BaseResult result = await SendGroupMergeSetuAsync(pageContents, headerContents, groupId);
+                Task recordTask = recordBusiness.AddPixivRecord(pageContents, Session.PlatformType, result.MsgId, groupId);
                 startIndex += eachPage;
             }
-            return results.ToArray();
         }
 
-        public async Task<BaseResult[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 0)
+        private async Task<BaseResult> SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent> headerContents, long groupId)
         {
-            if (sendMerge == false || margeEachPage <= 0)
-            {
-                return await SendGroupSetuAsync(setuContents, groupId);
-            }
-
-            int startIndex = 0;
-            List<BaseResult> results = new List<BaseResult>();
-            while (startIndex < setuContents.Count)
-            {
-                List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(margeEachPage).ToList();
-                results.AddRange(await SendGroupSetuAsync(pageContents, groupId, sendMerge));
-                startIndex += margeEachPage;
-            }
-            return results.ToArray();
-        }
-
-        public async Task<BaseResult[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge)
-        {
-            if (sendMerge)
-            {
-                return await SendGroupMergeSetuAsync(setuContents, groupId);
-            }
-            else
-            {
-                return await SendGroupSetuAsync(setuContents, groupId);
-            }
-        }
-
-        private async Task<BaseResult[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId)
-        {
-            List<BaseResult> msgIds = new List<BaseResult>();
-            foreach (var content in setuContents)
-            {
-                msgIds.AddRange(await SendGroupSetuAsync(content, groupId));
-                await Task.Delay(1000);
-            }
-            return msgIds.ToArray();
-        }
-
-        private async Task<BaseResult[]> SendGroupMergeSetuAsync(List<SetuContent> setuContents, long groupId)
-        {
-            BaseResult result = await Session.SendGroupMergeAsync(groupId, setuContents);
-            if (result is null)
+            BaseResult result = await Session.SendGroupMergeSetuAsync(setuContents, headerContents, groupId);
+            if (result.IsFailed)
             {
                 await Task.Delay(1000);
                 List<SetuContent> resendContents = GetResendContent(setuContents);
-                result = await Session.SendGroupMergeAsync(groupId, resendContents);
+                result = await Session.SendGroupMergeSetuAsync(resendContents, headerContents, groupId);
             }
-            Task recordTask = recordBusiness.AddPixivRecord(setuContents, Session.PlatformType, result.MsgId, groupId);
-            return new[] { result };
+            return result;
         }
 
         private List<SetuContent> GetResendContent(List<SetuContent> setuContents)
@@ -125,7 +101,7 @@ namespace TheresaBot.Main.Handler
 
         public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, List<long> groupIds)
         {
-            bool isShowImg = groupIds.IsShowSetuImg(workInfo.IsR18);
+            bool isShowImg = groupIds.Any(o => o.IsShowSetuImg(workInfo.IsR18));
             if (isShowImg == false) return new List<FileInfo>();
             return await GetSetuFilesAsync(workInfo);
         }

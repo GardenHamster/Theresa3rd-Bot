@@ -31,6 +31,19 @@ namespace TheresaBot.Main.Dao
         }
 
         /// <summary>
+        /// 添加多条记录
+        /// </summary>
+        /// <returns></returns>
+        public virtual List<T> Insert(List<T> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                list[i] = Db.Insertable(list[i]).ExecuteReturnEntity();
+            }
+            return list;
+        }
+
+        /// <summary>
         /// 更新一条记录
         /// </summary>
         /// <returns></returns>

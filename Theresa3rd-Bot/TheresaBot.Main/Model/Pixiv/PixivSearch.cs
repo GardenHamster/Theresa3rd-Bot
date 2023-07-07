@@ -40,6 +40,6 @@ namespace TheresaBot.Main.Model.Pixiv
         public bool IsR18 => xRestrict > 0 || getTags().IsR18();
         public bool IsImproper => xRestrict > 1 || getTags().IsImproper();
         public List<string> getTags() => tags ?? new List<string>();
-
+        public string hasBanTag() => getTags()?.hasBanTags();
     }
 }

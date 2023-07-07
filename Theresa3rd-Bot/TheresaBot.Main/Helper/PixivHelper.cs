@@ -254,6 +254,7 @@ namespace TheresaBot.Main.Helper
                 {
                     if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = new HttpFileInfo(url).FullFileName;
                     string fullImgSavePath = Path.Combine(FilePath.GetPixivImgSavePath(pixivId), fullFileName);
+                    if (File.Exists(fullImgSavePath)) return new FileInfo(fullImgSavePath);
                     return await DownPixivImgAsync(url, fullImgSavePath, headerDic, timeout);
                 }
                 catch (Exception ex)

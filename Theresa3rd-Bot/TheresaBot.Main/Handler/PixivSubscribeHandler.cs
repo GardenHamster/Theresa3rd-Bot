@@ -404,10 +404,9 @@ namespace TheresaBot.Main.Handler
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
                 workMsgs.Add(new PlainContent($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, BotConfig.PixivConfig.Template)));
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo)));
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
-                BaseResult[] results = await Session.SendGroupMessageAsync(command.GroupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
-                Task recordTask = recordBusiness.AddPixivRecord(setuContent, command.PlatformType, results.Select(o => o.MsgId).ToArray(), command.GroupId);
+                await SendGroupSetuAsync(setuContent, command.GroupId);
             }
             catch (Exception ex)
             {

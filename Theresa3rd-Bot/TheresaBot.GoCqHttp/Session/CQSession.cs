@@ -50,10 +50,10 @@ namespace TheresaBot.GoCqHttp.Session
             return new CQResult(result);
         }
 
-        public override async Task<BaseResult> SendGroupMergeAsync(long groupId, params List<BaseContent>[] contentLists)
+        public override async Task<BaseResult> SendGroupMergeAsync(long groupId, List<BaseContent[]> contentLists)
         {
-            if (contentLists.Length == 0) return CQResult.Undo;
-            var nodeList = contentLists.Select(o => new CqForwardMessageNode(CQConfig.BotName, CQConfig.BotQQ, new CqMessage(o.ToCQMessageAsync()))).ToList();
+            if (contentLists.Count == 0) return CQResult.Undo;
+            var nodeList = contentLists.Select(o => new CqForwardMessageNode(CQConfig.BotName, CQConfig.BotQQ, new CqMessage(o.ToList().ToCQMessageAsync()))).ToList();
             var result = await CQHelper.Session.SendGroupForwardMessageAsync(groupId, new CqForwardMessage(nodeList));
             return new CQResult(result);
         }

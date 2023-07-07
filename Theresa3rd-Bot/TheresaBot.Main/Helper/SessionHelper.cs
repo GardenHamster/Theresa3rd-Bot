@@ -6,7 +6,7 @@ namespace TheresaBot.Main.Helper
 {
     public static class SessionHelper
     {
-        public static async Task<BaseResult[]> SendGroupMessageAsync(this BaseSession session, long groupId, SetuContent setuContent, bool sendImgBehind)
+        public static async Task<BaseResult[]> SendGroupSetuAsync(this BaseSession session, long groupId, SetuContent setuContent, bool sendImgBehind)
         {
             List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
             List<BaseContent> imgContents = setuContent.SetuImages.ToBaseContent().SetDefaultImage().ToList();
@@ -25,12 +25,13 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        public static async Task<BaseResult> SendGroupMergeAsync(this BaseSession session, long groupId, List<SetuContent> setuContents)
+        public static async Task<BaseResult> SendGroupMergeSetuAsync(this BaseSession session, List<SetuContent> setuContents, List<BaseContent> headerContents, long groupId)
         {
-            return await session.SendGroupMergeAsync(groupId, setuContents.ToBaseContents().SetDefaultImage());
+            List<BaseContent[]> sendContents = new List<BaseContent[]>();
+            sendContents.AddRange(headerContents.ToArray());
+            sendContents.AddRange(setuContents.ToBaseContents().SetDefaultImage());
+            return await session.SendGroupMergeAsync(groupId, sendContents);
         }
-
-        
 
     }
 }

@@ -87,11 +87,12 @@ namespace TheresaBot.Main.Handler
                     workMsgs.Add(new PlainContent(pixivBusiness.getSetuRemindMsg(remindTemplate, todayLeft)));
                 }
 
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, pixivTemplate)));
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
-                BaseResult[] results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
-                Task recordTask = recordBusiness.AddPixivRecord(setuContent, command.PlatformType, results.Select(o => o.MsgId).ToArray(), command.GroupId);
+                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                var msgIds = results.Select(o => o.MsgId).ToArray();
+                var recordTask = recordBusiness.AddPixivRecord(setuContent, command.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
@@ -149,14 +150,18 @@ namespace TheresaBot.Main.Handler
                     profileInfo.PreviewFilePaths = PreviewFilePaths;
                 }
 
+                List<BaseContent> headerContents = new List<BaseContent>()
+                {
+                    new PlainContent(templateMsg)
+                };
+
                 List<SetuContent> setuContents = new List<SetuContent>();
-                setuContents.Add(new SetuContent(templateMsg));
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
                 setuContents.AddRange(pixivBusiness.getNumAndPids(profileInfo, 10));
 
                 await command.ReplyGroupMessageWithAtAsync(templateMsg);
                 await Task.Delay(1000);
-                await SendGroupSetuAsync(setuContents, command.GroupId, true);
+                await SendGroupMergeSetuAsync(setuContents, headerContents, command.GroupId);
             }
             catch (Exception ex)
             {

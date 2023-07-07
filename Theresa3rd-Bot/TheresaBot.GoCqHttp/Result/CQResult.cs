@@ -17,7 +17,5 @@ namespace TheresaBot.GoCqHttp.Result
         {
         }
 
-        public static CQResult Undo => new CQResult(0, false, String.Empty);
-
     }
 }

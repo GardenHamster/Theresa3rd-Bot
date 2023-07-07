@@ -33,5 +33,7 @@ namespace TheresaBot.Main.Helper
             return await session.SendGroupMergeAsync(groupId, sendContents);
         }
 
+
+
     }
 }

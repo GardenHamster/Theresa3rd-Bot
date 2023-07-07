@@ -12,7 +12,5 @@ namespace TheresaBot.MiraiHttpApi.Result
         {
         }
 
-        public static MiraiResult Undo => new MiraiResult(0, false, String.Empty);
-
     }
 }

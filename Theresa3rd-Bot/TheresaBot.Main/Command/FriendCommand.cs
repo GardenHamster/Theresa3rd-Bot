@@ -1,5 +1,4 @@
-﻿using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Content;
+﻿using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Result;
@@ -11,11 +10,10 @@ namespace TheresaBot.Main.Command
     {
         private CommandHandler<FriendCommand> HandlerInvoker { get; init; }
 
-        public FriendCommand(CommandHandler<FriendCommand> invoker, long msgId, string instruction, string command, long memberId)
-            : base(invoker.CommandType, msgId, instruction, command, memberId)
+        public FriendCommand(CommandHandler<FriendCommand> invoker, string instruction, string command)
+            : base(invoker.CommandType, instruction, command)
         {
             this.HandlerInvoker = invoker;
-            this.MemberId = memberId;
         }
 
         public abstract List<string> GetImageUrls();
@@ -23,14 +21,6 @@ namespace TheresaBot.Main.Command
         public abstract Task<BaseResult> ReplyFriendMessageAsync(string message);
 
         public abstract Task<BaseResult> ReplyFriendMessageAsync(List<BaseContent> contents);
-
-        public abstract Task<BaseResult> ReplyFriendTemplateAsync(string template, string defaultmsg);
-
-        public override async Task<BaseResult> ReplyError(Exception ex, string message = "")
-        {
-            List<BaseContent> contents = ex.GetErrorContents(message);
-            return await ReplyFriendMessageAsync(contents);
-        }
 
         public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
         {

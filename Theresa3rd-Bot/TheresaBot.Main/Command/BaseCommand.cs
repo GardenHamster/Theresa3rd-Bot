@@ -1,6 +1,5 @@
 ﻿using TheresaBot.Main.Helper;
 using TheresaBot.Main.Reporter;
-using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -8,34 +7,28 @@ namespace TheresaBot.Main.Command
 {
     public abstract class BaseCommand
     {
-        public long MsgId { get; set; }
-        public long MemberId { get; init; }
+        public abstract long MsgId { get; }
+        public abstract long MemberId { get; }
+        public abstract PlatformType PlatformType { get; }
+
         public string Instruction { get; init; }
         public string Command { get; set; }
         public string[] Params { get; init; }
         public string KeyWord { get; set; }
         public CommandType CommandType { get; init; }
-        public abstract PlatformType PlatformType { get; }
 
-        public BaseCommand(CommandType commandType, long msgId, string instruction, string command, long memberId)
+        public BaseCommand(CommandType commandType, string instruction, string command)
         {
-            this.MsgId = msgId;
+            this.Command = command;
             this.Instruction = instruction;
             this.CommandType = commandType;
-            this.MemberId = memberId;
-            this.Command = command;
             this.KeyWord = instruction.splitKeyWord(command);
             this.Params = instruction.splitKeyParams(command);
         }
 
         public abstract Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter);
 
-        public abstract Task<BaseResult> ReplyError(Exception ex, string message = "");
-
-        public virtual async Task Test()
-        {
-            await Task.CompletedTask;
-        }
+        public virtual async Task Test() => await Task.CompletedTask;
 
     }
 }

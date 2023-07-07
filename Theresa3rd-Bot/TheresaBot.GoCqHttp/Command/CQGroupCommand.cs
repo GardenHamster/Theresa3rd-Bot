@@ -14,19 +14,27 @@ namespace TheresaBot.GoCqHttp.Command
 {
     public class CQGroupCommand : GroupCommand
     {
-        private ICqActionSession Session;
-        private CqGroupMessagePostContext Args;
+        private ICqActionSession Session { get; init; }
+
+        private CqGroupMessagePostContext Args { get; init; }
+
         public override PlatformType PlatformType { get; } = PlatformType.GoCQHttp;
 
-        public CQGroupCommand(ICqActionSession session, CqGroupMessagePostContext args, CommandType commandType, string instruction, string command, long groupId, long memberId)
-            : base(commandType, args.MessageId, instruction, command, groupId, memberId)
+        public override long MsgId => Args.MessageId;
+
+        public override long GroupId => Args.GroupId;
+
+        public override long MemberId => Args.Sender.UserId;
+
+        public CQGroupCommand(ICqActionSession session, CqGroupMessagePostContext args, CommandType commandType, string instruction, string command)
+            : base(commandType, instruction, command)
         {
             Args = args;
             Session = session;
         }
 
-        public CQGroupCommand(CommandHandler<GroupCommand> invoker, ICqActionSession session, CqGroupMessagePostContext args, string instruction, string command, long groupId, long memberId)
-            : base(invoker, args.MessageId, instruction, command, groupId, memberId)
+        public CQGroupCommand(CommandHandler<GroupCommand> invoker, ICqActionSession session, CqGroupMessagePostContext args, string instruction, string command)
+            : base(invoker, instruction, command)
         {
             Args = args;
             Session = session;
@@ -84,17 +92,6 @@ namespace TheresaBot.GoCqHttp.Command
             List<CqMsg> msgList = new List<CqMsg>();
             msgList.Add(new CqAtMsg(MemberId));
             msgList.AddRange(chainList.ToCQMessageAsync());
-            var result = await Session.SendGroupMessageAsync(GroupId, new CqMessage(msgList));
-            return new CQResult(result);
-        }
-
-        public override async Task<BaseResult> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "")
-        {
-            template = template?.Trim()?.TrimLine();
-            if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
-            if (string.IsNullOrWhiteSpace(template)) return CQResult.Undo;
-            if (template.StartsWith(" ") == false) template = " " + template;
-            CqMsg[] msgList = template.SplitToChainAsync().ToCQMessageAsync();
             var result = await Session.SendGroupMessageAsync(GroupId, new CqMessage(msgList));
             return new CQResult(result);
         }

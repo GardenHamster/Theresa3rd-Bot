@@ -8,31 +8,31 @@ namespace TheresaBot.MiraiHttpApi.Event
 {
     public abstract class BaseEvent
     {
-        public MiraiGroupCommand GetGroupCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, string message, long groupId, long memberId)
+        public MiraiGroupCommand GetGroupCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, string instruction)
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
-                MiraiGroupCommand command = message.CheckCommand(invoker, session, args, groupId, memberId);
+                MiraiGroupCommand command = instruction.CheckCommand(invoker, session, args);
                 if (command is not null) return command;
             }
             return null;
         }
 
-        public MiraiFriendCommand GetFriendCommand(IMiraiHttpSession session, IFriendMessageEventArgs args, string message, long memberId)
+        public MiraiFriendCommand GetFriendCommand(IMiraiHttpSession session, IFriendMessageEventArgs args, string instruction)
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
-                MiraiFriendCommand command = message.CheckCommand(invoker, session, args, memberId);
+                MiraiFriendCommand command = instruction.CheckCommand(invoker, session, args);
                 if (command is not null) return command;
             }
             return null;
         }
 
-        public MiraiGroupQuoteCommand GetGroupQuoteCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, string message, long groupId, long memberId)
+        public MiraiGroupQuoteCommand GetGroupQuoteCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, string instruction)
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
-                MiraiGroupQuoteCommand command = message.CheckCommand(invoker, session, args, groupId, memberId);
+                MiraiGroupQuoteCommand command = instruction.CheckCommand(invoker, session, args);
                 if (command is not null) return command;
             }
             return null;

@@ -50,7 +50,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 
-                MiraiFriendCommand botCommand = GetFriendCommand(session, args, instruction, memberId);
+                MiraiFriendCommand botCommand = GetFriendCommand(session, args, instruction);
                 if (botCommand is not null)
                 {
                     args.BlockRemainingHandlers = await botCommand.InvokeAsync(miraiSession, miraiReporter);

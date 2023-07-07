@@ -34,17 +34,6 @@ namespace TheresaBot.Main.Helper
             return results;
         }
 
-
-
-
-
-
-
-
-
-
-
-
         public static async Task<BaseResult> ReplyAndRevokeAsync(this GroupCommand command, List<BaseContent> contentList, int revokeInterval, bool isAt = false)
         {
             BaseResult results = await command.ReplyGroupMessageAsync(contentList, isAt);
@@ -148,6 +137,66 @@ namespace TheresaBot.Main.Helper
                 LogHelper.Error(ex, "群消息撤回失败");
             }
         }
+
+        public static async Task<BaseResult> ReplyError(this GroupCommand command, Exception ex, string message = "")
+        {
+            List<BaseContent> contents = ex.GetErrorContents(message);
+            return await command.ReplyGroupMessageWithAtAsync(contents);
+        }
+
+
+        public static async Task<BaseResult> ReplyError(this FriendCommand command, Exception ex, string message = "")
+        {
+            List<BaseContent> contents = ex.GetErrorContents(message);
+            return await command.ReplyFriendMessageAsync(contents);
+        }
+
+
+        public static async Task<BaseResult> ReplyGroupTemplateWithAtAsync(this GroupCommand command, string template, string defaultmsg = "")
+        {
+            template = template?.Trim()?.TrimLine();
+            if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
+            if (string.IsNullOrWhiteSpace(template)) return BaseResult.Undo;
+            if (template.StartsWith(" ") == false) template = " " + template;
+            return await command.ReplyGroupMessageWithAtAsync(template.SplitToChainAsync());
+        }
+
+        public static async Task<BaseResult> ReplyFriendTemplateAsync(this FriendCommand command, string template, string defaultmsg)
+        {
+            template = template?.Trim()?.TrimLine();
+            if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
+            if (string.IsNullOrWhiteSpace(template)) return BaseResult.Undo;
+            return await command.ReplyFriendMessageAsync(template.SplitToChainAsync());
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public static string GetSimilarGroupCommandStrs(string keyword)
         {

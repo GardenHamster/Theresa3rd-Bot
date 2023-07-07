@@ -108,12 +108,12 @@ namespace TheresaBot.GoCqHttp.Helper
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static CQGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, ICqActionSession session, CqGroupMessagePostContext args, long groupId, long memberId)
+        public static CQGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, ICqActionSession session, CqGroupMessagePostContext args)
         {
             if (handler.Commands is null || handler.Commands.Count == 0) return null;
             foreach (string command in handler.Commands)
             {
-                if (instruction.CheckCommand(handler, session, args, command, groupId, memberId) is { } botCommand) return botCommand;
+                if (instruction.CheckCommand(handler, session, args, command) is { } botCommand) return botCommand;
             }
             return null;
         }
@@ -129,11 +129,11 @@ namespace TheresaBot.GoCqHttp.Helper
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        private static CQGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, ICqActionSession session, CqGroupMessagePostContext args, string command, long groupId, long memberId)
+        private static CQGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, ICqActionSession session, CqGroupMessagePostContext args, string command)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
             if (instruction.ToUpper().StartsWith(command.ToUpper()) == false) return null;
-            return new(handler, session, args, instruction, command, groupId, memberId);
+            return new(handler, session, args, instruction, command);
         }
 
         /// <summary>
@@ -145,12 +145,12 @@ namespace TheresaBot.GoCqHttp.Helper
         /// <param name="args"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static CQFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, ICqActionSession session, CqPrivateMessagePostContext args, long memberId)
+        public static CQFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, ICqActionSession session, CqPrivateMessagePostContext args)
         {
             if (handler.Commands is null || handler.Commands.Count == 0) return null;
             foreach (string command in handler.Commands)
             {
-                if (instruction.CheckCommand(handler, session, args, command, memberId) is { } botCommand) return botCommand;
+                if (instruction.CheckCommand(handler, session, args, command) is { } botCommand) return botCommand;
             }
             return null;
         }
@@ -165,11 +165,11 @@ namespace TheresaBot.GoCqHttp.Helper
         /// <param name="command"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        private static CQFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, ICqActionSession session, CqPrivateMessagePostContext args, string command, long memberId)
+        private static CQFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, ICqActionSession session, CqPrivateMessagePostContext args, string command)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
             if (instruction.StartsWith(command) == false) return null;
-            return new(handler, session, args, instruction, command, memberId);
+            return new(handler, session, args, instruction, command);
         }
 
         /// <summary>
@@ -182,12 +182,12 @@ namespace TheresaBot.GoCqHttp.Helper
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static CQGroupQuoteCommand CheckCommand(this string instruction, CommandHandler<GroupQuoteCommand> handler, ICqActionSession session, CqGroupMessagePostContext args, long groupId, long memberId)
+        public static CQGroupQuoteCommand CheckCommand(this string instruction, CommandHandler<GroupQuoteCommand> handler, ICqActionSession session, CqGroupMessagePostContext args)
         {
             if (handler.Commands is null || handler.Commands.Count == 0) return null;
             foreach (string command in handler.Commands)
             {
-                if (instruction.CheckCommand(handler, session, args, command, groupId, memberId) is { } botCommand) return botCommand;
+                if (instruction.CheckCommand(handler, session, args, command) is { } botCommand) return botCommand;
             }
             return null;
         }
@@ -203,11 +203,11 @@ namespace TheresaBot.GoCqHttp.Helper
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        private static CQGroupQuoteCommand CheckCommand(this string instruction, CommandHandler<GroupQuoteCommand> handler, ICqActionSession session, CqGroupMessagePostContext args, string command, long groupId, long memberId)
+        private static CQGroupQuoteCommand CheckCommand(this string instruction, CommandHandler<GroupQuoteCommand> handler, ICqActionSession session, CqGroupMessagePostContext args, string command)
         {
             if (string.IsNullOrWhiteSpace(command)) return null;
             if (instruction.ToUpper().StartsWith(command.ToUpper()) == false) return null;
-            return new(handler, session, args, instruction, command, groupId, memberId);
+            return new(handler, session, args, instruction, command);
         }
 
         /// <summary>

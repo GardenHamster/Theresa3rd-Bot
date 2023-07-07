@@ -15,19 +15,27 @@ namespace TheresaBot.MiraiHttpApi.Command
 {
     public class MiraiGroupCommand : GroupCommand
     {
-        private IMiraiHttpSession Session;
-        private IGroupMessageEventArgs Args;
+        private IMiraiHttpSession Session { get; init; }
+
+        private IGroupMessageEventArgs Args { get; init; }
+
         public override PlatformType PlatformType { get; } = PlatformType.Mirai;
 
-        public MiraiGroupCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, CommandType commandType, string instruction, string command, long groupId, long memberId)
-            : base(commandType, args.GetMessageId(), instruction, command, groupId, memberId)
+        public override long MsgId => Args.GetMessageId();
+
+        public override long GroupId => Args.Sender.Group.Id;
+
+        public override long MemberId => Args.Sender.Id;
+
+        public MiraiGroupCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, CommandType commandType, string instruction, string command)
+            : base(commandType, instruction, command)
         {
             this.Args = args;
             this.Session = session;
         }
 
-        public MiraiGroupCommand(CommandHandler<GroupCommand> invoker, IMiraiHttpSession session, IGroupMessageEventArgs args, string instruction, string command, long groupId, long memberId)
-            : base(invoker, args.GetMessageId(), instruction, command, groupId, memberId)
+        public MiraiGroupCommand(CommandHandler<GroupCommand> invoker, IMiraiHttpSession session, IGroupMessageEventArgs args, string instruction, string command)
+            : base(invoker, instruction, command)
         {
             this.Args = args;
             this.Session = session;
@@ -87,17 +95,6 @@ namespace TheresaBot.MiraiHttpApi.Command
             msgList.Add(new AtMessage(MemberId));
             msgList.AddRange(await chainList.ToMiraiMessageAsync(UploadTarget.Group));
             var msgId = await Session.SendGroupMessageAsync(GroupId, msgList.ToArray());
-            return new MiraiResult(msgId);
-        }
-
-        public override async Task<BaseResult> ReplyGroupTemplateWithAtAsync(string template, string defaultmsg = "")
-        {
-            template = template?.Trim()?.TrimLine();
-            if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
-            if (string.IsNullOrWhiteSpace(template)) return MiraiResult.Undo;
-            if (template.StartsWith(" ") == false) template = " " + template;
-            IChatMessage[] msgList = await template.SplitToChainAsync().ToMiraiMessageAsync(UploadTarget.Group);
-            var msgId = await Session.SendGroupMessageAsync(GroupId, msgList);
             return new MiraiResult(msgId);
         }
 

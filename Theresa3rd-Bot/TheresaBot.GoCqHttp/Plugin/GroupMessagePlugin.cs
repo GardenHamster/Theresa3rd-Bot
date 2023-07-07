@@ -52,7 +52,7 @@ namespace TheresaBot.GoCqHttp.Plugin
 
                 if (args.Message.Any(v => v is CqReplyMsg))//引用指令
                 {
-                    GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(session, args, instruction, groupId, memberId);
+                    GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(session, args, instruction);
                     if (quoteCommand is not null) await quoteCommand.InvokeAsync(cqSession, cqReporter);
                     return;
                 }
@@ -74,7 +74,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                     return;
                 }
 
-                CQGroupCommand command = GetGroupCommand(session, args, instruction, groupId, memberId);
+                CQGroupCommand command = GetGroupCommand(session, args, instruction);
                 if (command is not null)
                 {
                     await command.InvokeAsync(cqSession, cqReporter);

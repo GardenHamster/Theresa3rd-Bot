@@ -43,7 +43,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 MiraiFriendCommand botCommand = GetFriendCommand(session, args, instruction);
                 if (botCommand is not null)
                 {
-                    args.BlockRemainingHandlers = await botCommand.InvokeAsync(miraiSession, miraiReporter);
+                    args.BlockRemainingHandlers = await botCommand.InvokeAsync(baseSession, baseReporter);
                     return;
                 }
             }
@@ -52,7 +52,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 LogHelper.Error(ex, "私聊指令异常");
                 await ReplyFriendErrorAsync(ex, args);
                 await Task.Delay(1000);
-                await miraiReporter.SendError(ex, "私聊指令异常");
+                await baseReporter.SendError(ex, "私聊指令异常");
             }
         }
 

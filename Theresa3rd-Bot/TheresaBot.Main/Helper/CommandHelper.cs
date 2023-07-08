@@ -3,6 +3,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Invoker;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Result;
 using TheresaBot.Main.Type;
 
@@ -10,6 +11,26 @@ namespace TheresaBot.Main.Helper
 {
     public static class CommandHelper
     {
+
+        /// <summary>
+        /// 检查是一条消息是否一条有效指令，如果是返回一个指令头，否则返回null
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instruction"></param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
+        public static string CheckCommand<T>(this string instruction, CommandHandler<T> handler) where T : BaseCommand
+        {
+            if (handler.Commands is null) return null;
+            if (handler.Commands.Count == 0) return null;
+            foreach (string command in handler.Commands)
+            {
+                if (string.IsNullOrWhiteSpace(command)) continue;
+                if (instruction.StartsWith(command, StringComparison.OrdinalIgnoreCase)) return command;
+            }
+            return null;
+        }
+
         /// <summary>
         /// 发送涩图，然后撤回
         /// </summary>

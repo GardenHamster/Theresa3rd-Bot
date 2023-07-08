@@ -1,8 +1,8 @@
 ﻿using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Invoker;
 using TheresaBot.MiraiHttpApi.Command;
-using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Reporter;
 using TheresaBot.MiraiHttpApi.Session;
 
@@ -10,22 +10,23 @@ namespace TheresaBot.MiraiHttpApi.Event
 {
     public abstract class BaseEvent
     {
-        protected MiraiSession miraiSession { get; init; }
+        protected MiraiSession baseSession { get; init; }
 
-        protected MiraiReporter miraiReporter { get; init; }
+        protected MiraiReporter baseReporter { get; init; }
 
         public BaseEvent()
         {
-            this.miraiSession = new MiraiSession();
-            this.miraiReporter = new MiraiReporter();
+            this.baseSession = new MiraiSession();
+            this.baseReporter = new MiraiReporter();
         }
 
         public MiraiGroupCommand GetGroupCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, string instruction)
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
-                MiraiGroupCommand command = instruction.CheckCommand(miraiSession, invoker, session, args);
-                if (command is not null) return command;
+                string commandStr = instruction.CheckCommand(invoker);
+                if (string.IsNullOrWhiteSpace(commandStr)) continue;
+                return new MiraiGroupCommand(baseSession, invoker, session, args, instruction, commandStr);
             }
             return null;
         }
@@ -34,8 +35,9 @@ namespace TheresaBot.MiraiHttpApi.Event
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
-                MiraiFriendCommand command = instruction.CheckCommand(miraiSession, invoker, session, args);
-                if (command is not null) return command;
+                string commandStr = instruction.CheckCommand(invoker);
+                if (string.IsNullOrWhiteSpace(commandStr)) continue;
+                return new MiraiFriendCommand(baseSession, invoker, session, args, instruction, commandStr);
             }
             return null;
         }
@@ -44,8 +46,9 @@ namespace TheresaBot.MiraiHttpApi.Event
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
-                MiraiGroupQuoteCommand command = instruction.CheckCommand(miraiSession, invoker, session, args);
-                if (command is not null) return command;
+                string commandStr = instruction.CheckCommand(invoker);
+                if (string.IsNullOrWhiteSpace(commandStr)) continue;
+                return new MiraiGroupQuoteCommand(baseSession, invoker, session, args, instruction, commandStr);
             }
             return null;
         }

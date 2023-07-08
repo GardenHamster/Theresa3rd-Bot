@@ -1,15 +1,10 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
-using EleCho.GoCqHttpSdk.Post;
-using TheresaBot.GoCqHttp.Command;
 using TheresaBot.GoCqHttp.Common;
 using TheresaBot.GoCqHttp.Plugin;
-using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Model.Invoker;
-using TheresaBot.Main.Session;
 
 namespace TheresaBot.GoCqHttp.Helper
 {
@@ -97,118 +92,6 @@ namespace TheresaBot.GoCqHttp.Helper
             {
                 LogHelper.Error(ex);
             }
-        }
-
-        /// <summary>
-        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="handler"></param>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        public static CQGroupCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<GroupCommand> handler, ICqActionSession session, CqGroupMessagePostContext args)
-        {
-            if (handler.Commands is null || handler.Commands.Count == 0) return null;
-            foreach (string command in handler.Commands)
-            {
-                if (instruction.CheckCommand(baseSession, handler, session, args, command) is { } botCommand) return botCommand;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="handler"></param>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="command"></param>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        private static CQGroupCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<GroupCommand> handler, ICqActionSession session, CqGroupMessagePostContext args, string command)
-        {
-            if (string.IsNullOrWhiteSpace(command)) return null;
-            if (instruction.ToUpper().StartsWith(command.ToUpper()) == false) return null;
-            return new(baseSession, handler, session, args, instruction, command);
-        }
-
-        /// <summary>
-        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="handler"></param>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        public static CQFriendCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<FriendCommand> handler, ICqActionSession session, CqPrivateMessagePostContext args)
-        {
-            if (handler.Commands is null || handler.Commands.Count == 0) return null;
-            foreach (string command in handler.Commands)
-            {
-                if (instruction.CheckCommand(baseSession, handler, session, args, command) is { } botCommand) return botCommand;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="handler"></param>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="command"></param>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        private static CQFriendCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<FriendCommand> handler, ICqActionSession session, CqPrivateMessagePostContext args, string command)
-        {
-            if (string.IsNullOrWhiteSpace(command)) return null;
-            if (instruction.StartsWith(command) == false) return null;
-            return new(baseSession, handler, session, args, instruction, command);
-        }
-
-        /// <summary>
-        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="handler"></param>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        public static CQGroupQuoteCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<GroupQuoteCommand> handler, ICqActionSession session, CqGroupMessagePostContext args)
-        {
-            if (handler.Commands is null || handler.Commands.Count == 0) return null;
-            foreach (string command in handler.Commands)
-            {
-                if (instruction.CheckCommand(baseSession, handler, session, args, command) is { } botCommand) return botCommand;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="handler"></param>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="command"></param>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        private static CQGroupQuoteCommand CheckCommand(this string instruction, BaseSession baseSession, CommandHandler<GroupQuoteCommand> handler, ICqActionSession session, CqGroupMessagePostContext args, string command)
-        {
-            if (string.IsNullOrWhiteSpace(command)) return null;
-            if (instruction.ToUpper().StartsWith(command.ToUpper()) == false) return null;
-            return new(baseSession, handler, session, args, instruction, command);
         }
 
         /// <summary>

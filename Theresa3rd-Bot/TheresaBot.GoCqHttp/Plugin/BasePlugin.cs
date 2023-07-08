@@ -1,50 +1,53 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Post;
 using TheresaBot.GoCqHttp.Command;
-using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.GoCqHttp.Reporter;
 using TheresaBot.GoCqHttp.Session;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Invoker;
 
 namespace TheresaBot.GoCqHttp.Plugin
 {
     public class BasePlugin : CqPostPlugin
     {
-        protected CQSession cqSession { get; init; }
-        protected CQReporter cqReporter { get; init; }
+        protected CQSession baseSession { get; init; }
+        protected CQReporter baseReporter { get; init; }
 
         public BasePlugin()
         {
-            this.cqSession = new CQSession();
-            this.cqReporter = new CQReporter();
+            this.baseSession = new CQSession();
+            this.baseReporter = new CQReporter();
         }
 
-        public CQGroupCommand GetGroupCommand(ICqActionSession session, CqGroupMessagePostContext args, string message)
+        public CQGroupCommand GetGroupCommand(ICqActionSession session, CqGroupMessagePostContext args, string instruction)
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
-                CQGroupCommand command = message.CheckCommand(cqSession, invoker, session, args);
-                if (command is not null) return command;
+                string commandStr = instruction.CheckCommand(invoker);
+                if (string.IsNullOrWhiteSpace(commandStr)) continue;
+                return new CQGroupCommand(baseSession, invoker, session, args, instruction, commandStr);
             }
             return null;
         }
 
-        public CQFriendCommand GetFriendCommand(ICqActionSession session, CqPrivateMessagePostContext args, string message)
+        public CQFriendCommand GetFriendCommand(ICqActionSession session, CqPrivateMessagePostContext args, string instruction)
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
-                CQFriendCommand command = message.CheckCommand(cqSession, invoker, session, args);
-                if (command is not null) return command;
+                string commandStr = instruction.CheckCommand(invoker);
+                if (string.IsNullOrWhiteSpace(commandStr)) continue;
+                return new CQFriendCommand(baseSession, invoker, session, args, instruction, commandStr);
             }
             return null;
         }
 
-        public CQGroupQuoteCommand GetGroupQuoteCommand(ICqActionSession session, CqGroupMessagePostContext args, string message)
+        public CQGroupQuoteCommand GetGroupQuoteCommand(ICqActionSession session, CqGroupMessagePostContext args, string instruction)
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
-                CQGroupQuoteCommand command = message.CheckCommand(cqSession, invoker, session, args);
-                if (command is not null) return command;
+                string commandStr = instruction.CheckCommand(invoker);
+                if (string.IsNullOrWhiteSpace(commandStr)) continue;
+                return new CQGroupQuoteCommand(baseSession, invoker, session, args, instruction, commandStr);
             }
             return null;
         }

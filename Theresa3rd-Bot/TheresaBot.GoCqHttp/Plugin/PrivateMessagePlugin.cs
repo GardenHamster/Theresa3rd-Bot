@@ -36,7 +36,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 CQFriendCommand botCommand = GetFriendCommand(session, args, instruction);
                 if (botCommand is not null)
                 {
-                    await botCommand.InvokeAsync(cqSession, cqReporter);
+                    await botCommand.InvokeAsync(baseSession, baseReporter);
                     return;
                 }
             }
@@ -45,7 +45,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 LogHelper.Error(ex, "私聊指令异常");
                 await ReplyFriendErrorAsync(ex, args);
                 await Task.Delay(1000);
-                await cqReporter.SendError(ex, "私聊指令异常");
+                await baseReporter.SendError(ex, "私聊指令异常");
             }
         }
 

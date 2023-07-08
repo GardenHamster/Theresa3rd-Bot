@@ -363,7 +363,7 @@ namespace TheresaBot.Main.Helper
             return similarCommands.Distinct().ToList();
         }
 
-        public static List<string> GetGroupCommands()
+        private static List<string> GetGroupCommands()
         {
             List<string> returnList = new List<string>();
             foreach (var item in HandlerInvokers.GroupCommands)

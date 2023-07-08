@@ -3,7 +3,7 @@
     DownloadPath:               'BotImg/download'                                   #下载文件的存放目录
     DownPathCleanCron:          '0 0 4 * * ?'                                       #下载目录清理定时器，Cron表达式，空值表示不清理，格式：0 0 4 * * ?
     DownErrorImgPath:           'BotImg/face/error.jpg'                             #图片下载失败时的替代图片
-    ErrorGroups:                [284196392]                                         #错误日志群，发生错误时会将日志发送到这些群
+    ErrorGroups:                []                                                  #错误日志群，发生错误时会将日志发送到这些群
     ErrorMsg:                   |                                                   #处理异常时返回的消息
                                 出了点小问题，稍后再试吧
                                 [image:BotImg/face/emmm.jpg]

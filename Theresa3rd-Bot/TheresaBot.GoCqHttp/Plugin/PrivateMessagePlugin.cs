@@ -19,7 +19,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (args.Session is not ICqActionSession session) return;
                 if (memberId == CQConfig.BotQQ) return;
 
-                List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.ToString().Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
+                List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
                 if (plainList is null || plainList.Count == 0) return;
 
                 string instruction = plainList.FirstOrDefault()?.Trim() ?? "";

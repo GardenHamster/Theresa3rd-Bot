@@ -50,7 +50,8 @@ namespace TheresaBot.Main.Business
                 pixivRecord.PlatformType = platformType;
                 pixivRecord.GroupId = groupId;
                 pixivRecord.PixivId = pixivContent.WorkInfo.PixivId;
-                pixivRecord.Title = pixivContent.WorkInfo.Title;
+                pixivRecord.Title = pixivContent.WorkInfo.Title?.filterEmoji()?.cutString(100);
+                pixivRecord.UserId = pixivContent.WorkInfo.UserId;
                 pixivRecord.UserName = pixivContent.WorkInfo.UserName;
                 pixivRecord.CreateDate = DateTime.Now;
                 pixivRecordDao.Insert(pixivRecord);
@@ -73,7 +74,7 @@ namespace TheresaBot.Main.Business
                 imageRecord.PlatformType = platformType;
                 imageRecord.GroupId = groupId;
                 imageRecord.MemberId = memberId;
-                imageRecord.HttpUrl = imgUrl.Trim();
+                imageRecord.HttpUrl = imgUrl?.Trim();
                 imageRecord.CreateDate = DateTime.Now;
                 imageRecordDao.Insert(imageRecord);
                 await Task.CompletedTask;
@@ -95,7 +96,7 @@ namespace TheresaBot.Main.Business
                 messageRecord.PlatformType = platformType;
                 messageRecord.GroupId = groupId;
                 messageRecord.MemberId = memberId;
-                messageRecord.MessageText = plainMessage;
+                messageRecord.MessageText = plainMessage?.filterEmoji()?.cutString(1000);
                 messageRecord.CreateDate = DateTime.Now;
                 messageRecordDao.Insert(messageRecord);
                 await Task.CompletedTask;

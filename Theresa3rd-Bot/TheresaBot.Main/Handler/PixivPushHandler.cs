@@ -73,7 +73,7 @@ namespace TheresaBot.Main.Handler
                 }
                 catch (Exception ex)
                 {
-                    scanReport.ErrorWork++;
+                    scanReport.ErrorUser++;
                     string message = $"扫描pixiv用户[{subscribeTask.SubscribeCode}]订阅失败";
                     LogHelper.Error(ex, message);
                     await Reporter.SendError(ex, message);

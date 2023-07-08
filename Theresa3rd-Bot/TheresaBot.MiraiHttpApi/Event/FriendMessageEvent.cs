@@ -4,10 +4,8 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Content;
 using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
@@ -40,7 +38,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 
-                MiraiFriendCommand botCommand = GetFriendCommand(session, args, instruction);
+                MiraiFriendCommand botCommand = GetFriendCommand(args, instruction);
                 if (botCommand is not null)
                 {
                     args.BlockRemainingHandlers = await botCommand.InvokeAsync(baseSession, baseReporter);
@@ -50,25 +48,13 @@ namespace TheresaBot.MiraiHttpApi.Event
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "私聊指令异常");
-                await ReplyFriendErrorAsync(ex, args);
+                await baseSession.ReplyFriendErrorAsync(ex, args.Sender.Id);
                 await Task.Delay(1000);
                 await baseReporter.SendError(ex, "私聊指令异常");
             }
         }
 
-        private async Task ReplyFriendErrorAsync(Exception exception, IFriendMessageEventArgs args)
-        {
-            try
-            {
-                List<BaseContent> contents = exception.GetErrorContents();
-                IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Friend);
-                await MiraiHelper.Session.SendFriendMessageAsync(args.Sender.Id, msgList.ToArray());
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "ReplyFriendErrorAsync异常");
-            }
-        }
+
 
 
     }

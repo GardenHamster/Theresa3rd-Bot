@@ -80,7 +80,7 @@ namespace TheresaBot.Main.Handler
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
                 long quoteId = command.GetQuoteMessageId();
-                List<ImageRecordPO> imgRecords = quoteId > 0 ? recordBusiness.GetImageRecord(command.PlatformType, quoteId, command.GroupId) : new();
+                List<ImageRecordPO> imgRecords = quoteId > 0 ? recordBusiness.GetImageRecord(Session.PlatformType, quoteId, command.GroupId) : new();
                 List<string> imgList = imgRecords.Select(o => o.HttpUrl).ToList();
                 if (imgList is null || imgList.Count == 0)
                 {
@@ -386,7 +386,7 @@ namespace TheresaBot.Main.Handler
         private async Task replyAndRevoke(GroupCommand command, List<SetuContent> setuContents)
         {
             var result = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
-            var recordTask = recordBusiness.AddPixivRecord(setuContents, command.PlatformType, result.MsgId, command.GroupId);
+            var recordTask = recordBusiness.AddPixivRecord(setuContents, Session.PlatformType, result.MsgId, command.GroupId);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);

@@ -33,6 +33,32 @@ namespace TheresaBot.Main.Helper
             return await session.SendGroupMergeAsync(groupId, sendContents);
         }
 
+        public static async Task ReplyGroupErrorAsync(this BaseSession session, Exception exception, long groupId)
+        {
+            try
+            {
+                List<BaseContent> contents = exception.GetErrorContents();
+                await session.SendGroupMessageAsync(groupId, contents);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "ReplyGroupErrorAsync异常");
+            }
+        }
+
+        public static async Task ReplyFriendErrorAsync(this BaseSession session, Exception exception, long memberId)
+        {
+            try
+            {
+                List<BaseContent> contents = exception.GetErrorContents();
+                await session.SendFriendMessageAsync(memberId, contents);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "ReplyFriendErrorAsync异常");
+            }
+        }
+
 
 
     }

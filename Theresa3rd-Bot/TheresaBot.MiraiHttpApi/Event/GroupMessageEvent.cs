@@ -4,12 +4,10 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
-using Mirai.CSharp.Models;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Common;
@@ -48,7 +46,7 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 if (args.Chain.Any(v => v is QuoteMessage))//引用指令
                 {
-                    GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(session, args, instruction);
+                    GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(args, instruction);
                     if (quoteCommand is not null) args.BlockRemainingHandlers = await quoteCommand.InvokeAsync(baseSession, baseReporter);
                     return;
                 }
@@ -70,7 +68,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                     return;
                 }
 
-                MiraiGroupCommand command = GetGroupCommand(session, args, instruction);
+                MiraiGroupCommand command = GetGroupCommand(args, instruction);
                 if (command is not null)
                 {
                     args.BlockRemainingHandlers = await command.InvokeAsync(baseSession, baseReporter);
@@ -86,7 +84,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "群指令异常");
-                await ReplyGroupErrorAsync(ex, args);
+                await baseSession.ReplyGroupErrorAsync(ex, args.Sender.Group.Id);
                 await Task.Delay(1000);
                 await baseReporter.SendError(ex, "群指令异常");
             }
@@ -106,19 +104,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             }
         }
 
-        private async Task ReplyGroupErrorAsync(Exception exception, IGroupMessageEventArgs args)
-        {
-            try
-            {
-                List<BaseContent> contents = exception.GetErrorContents();
-                IChatMessage[] msgList = await contents.ToMiraiMessageAsync(UploadTarget.Group);
-                await MiraiHelper.Session.SendGroupMessageAsync(args.Sender.Group.Id, msgList);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "ReplyGroupErrorAsync异常");
-            }
-        }
+
 
 
     }

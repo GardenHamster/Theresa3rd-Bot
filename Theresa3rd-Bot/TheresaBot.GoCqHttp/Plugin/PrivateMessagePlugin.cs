@@ -3,10 +3,8 @@ using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
 using TheresaBot.GoCqHttp.Command;
 using TheresaBot.GoCqHttp.Common;
-using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Content;
 
 namespace TheresaBot.GoCqHttp.Plugin
 {
@@ -33,7 +31,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 
-                CQFriendCommand botCommand = GetFriendCommand(session, args, instruction);
+                CQFriendCommand botCommand = GetFriendCommand(args, instruction);
                 if (botCommand is not null)
                 {
                     await botCommand.InvokeAsync(baseSession, baseReporter);
@@ -43,25 +41,12 @@ namespace TheresaBot.GoCqHttp.Plugin
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "私聊指令异常");
-                await ReplyFriendErrorAsync(ex, args);
+                await baseSession.ReplyFriendErrorAsync(ex, args.Sender.UserId);
                 await Task.Delay(1000);
                 await baseReporter.SendError(ex, "私聊指令异常");
             }
         }
 
-        private async Task ReplyFriendErrorAsync(Exception exception, CqPrivateMessagePostContext args)
-        {
-            try
-            {
-                List<BaseContent> contents = exception.GetErrorContents();
-                CqMsg[] msgList = contents.ToCQMessageAsync();
-                await CQHelper.Session.SendPrivateMessageAsync(args.Sender.UserId, new CqMessage(msgList));
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "ReplyFriendErrorAsync异常");
-            }
-        }
 
     }
 }

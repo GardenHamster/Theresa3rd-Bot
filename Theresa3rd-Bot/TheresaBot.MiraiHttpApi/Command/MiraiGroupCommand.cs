@@ -1,21 +1,15 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
-using Mirai.CSharp.HttpApi.Session;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Command
 {
     public class MiraiGroupCommand : GroupCommand
     {
-        private IMiraiHttpSession MiraiSession { get; init; }
-
         private IGroupMessageEventArgs Args { get; init; }
-
-        public override PlatformType PlatformType { get; } = PlatformType.Mirai;
 
         public override long MsgId => Args.GetMessageId();
 
@@ -23,11 +17,10 @@ namespace TheresaBot.MiraiHttpApi.Command
 
         public override long MemberId => Args.Sender.Id;
 
-        public MiraiGroupCommand(BaseSession baseSession, CommandHandler<GroupCommand> invoker, IMiraiHttpSession miariSession, IGroupMessageEventArgs args, string instruction, string command)
+        public MiraiGroupCommand(BaseSession baseSession, CommandHandler<GroupCommand> invoker, IGroupMessageEventArgs args, string instruction, string command)
             : base(baseSession, invoker, instruction, command)
         {
             this.Args = args;
-            this.MiraiSession = miariSession;
         }
 
         public override List<string> GetImageUrls()

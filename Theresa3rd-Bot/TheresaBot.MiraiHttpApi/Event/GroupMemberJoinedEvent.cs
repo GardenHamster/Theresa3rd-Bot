@@ -10,12 +10,11 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
-using TheresaBot.MiraiHttpApi.Reporter;
 
 namespace TheresaBot.MiraiHttpApi.Event
 {
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IGroupMemberJoinedEventArgs, GroupMemberJoinedEventArgs>))]
-    public class GroupMemberJoinedEvent : IMiraiHttpMessageHandler<IGroupMemberJoinedEventArgs>
+    public class GroupMemberJoinedEvent : BaseEvent, IMiraiHttpMessageHandler<IGroupMemberJoinedEventArgs>
     {
         public async Task HandleMessageAsync(IMiraiHttpSession session, IGroupMemberJoinedEventArgs message)
         {
@@ -41,7 +40,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "入群事件异常");
-                await new MiraiReporter().SendError(ex, "入群事件异常");
+                await baseReporter.SendError(ex, "入群事件异常");
             }
         }
 

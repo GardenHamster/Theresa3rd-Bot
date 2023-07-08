@@ -1,20 +1,14 @@
-﻿using EleCho.GoCqHttpSdk;
-using EleCho.GoCqHttpSdk.Message;
+﻿using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.GoCqHttp.Command
 {
     public class CQGroupQuoteCommand : GroupQuoteCommand
     {
-        private ICqActionSession CQSession { get; init; }
-
         private CqGroupMessagePostContext Args { get; init; }
-
-        public override PlatformType PlatformType { get; } = PlatformType.GoCQHttp;
 
         public override long MsgId => Args.MessageId;
 
@@ -22,11 +16,10 @@ namespace TheresaBot.GoCqHttp.Command
 
         public override long MemberId => Args.Sender.UserId;
 
-        public CQGroupQuoteCommand(BaseSession baseSession, CommandHandler<GroupQuoteCommand> invoker, ICqActionSession cqSession, CqGroupMessagePostContext args, string instruction, string command)
+        public CQGroupQuoteCommand(BaseSession baseSession, CommandHandler<GroupQuoteCommand> invoker, CqGroupMessagePostContext args, string instruction, string command)
             : base(baseSession, invoker, instruction, command)
         {
             Args = args;
-            CQSession = cqSession;
         }
 
         public override List<string> GetImageUrls()

@@ -9,7 +9,6 @@ namespace TheresaBot.Main.Command
     {
         public abstract long MsgId { get; }
         public abstract long MemberId { get; }
-        public abstract PlatformType PlatformType { get; }
 
         public string Instruction { get; init; }
         public string Command { get; set; }

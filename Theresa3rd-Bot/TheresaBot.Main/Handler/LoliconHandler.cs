@@ -69,7 +69,7 @@ namespace TheresaBot.Main.Handler
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, loliconData);
                 var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
                 var msgIds = results.Select(o => o.MsgId).ToArray();
-                var recordTask = recordBusiness.AddPixivRecord(setuContent, command.PlatformType, msgIds, command.GroupId);
+                var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);

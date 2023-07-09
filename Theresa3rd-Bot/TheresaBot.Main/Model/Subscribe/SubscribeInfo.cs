@@ -9,7 +9,6 @@ namespace TheresaBot.Main.Model.Subscribe
         public SubscribeType SubscribeType { get; set; }
         public int SubscribeSubType { get; set; }
         public string SubscribeName { get; set; }
-        public string SubscribeDescription { get; set; }
         public long GroupId { get; set; }
     }
 

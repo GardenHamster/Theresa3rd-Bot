@@ -162,6 +162,7 @@ namespace TheresaBot.Main.Handler
             {
                 var groupId = item.Key;
                 var workInfos = item.Value;
+                if (workInfos.Count == 0) continue;
                 await PushPixivWorkMergeAsync(workInfos, remindMsg, groupId);
             }
         }
@@ -210,6 +211,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 int eachPage = 10;
+                if (pixivSubscribes.Count == 0) return;
                 var pixivContents = new List<PixivSetuContent>();
                 foreach (var pixivSubscribe in pixivSubscribes)
                 {

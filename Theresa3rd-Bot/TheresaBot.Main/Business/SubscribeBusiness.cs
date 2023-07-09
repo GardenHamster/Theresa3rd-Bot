@@ -79,10 +79,8 @@ namespace TheresaBot.Main.Business
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
             dbSubscribe.SubscribeName = userInfo.nickname?.filterEmoji()?.cutString(50);
-            dbSubscribe.SubscribeDescription = userInfo.introduce?.filterEmoji()?.cutString(200);
             dbSubscribe.SubscribeType = SubscribeType.米游社用户;
             dbSubscribe.SubscribeSubType = 0;
-            dbSubscribe.Isliving = false;
             dbSubscribe.CreateDate = DateTime.Now;
             return subscribeDao.Insert(dbSubscribe);
         }
@@ -94,10 +92,8 @@ namespace TheresaBot.Main.Business
             dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
             dbSubscribe.SubscribeName = userName;
-            dbSubscribe.SubscribeDescription = userName;
             dbSubscribe.SubscribeType = SubscribeType.P站画师;
             dbSubscribe.SubscribeSubType = 0;
-            dbSubscribe.Isliving = false;
             dbSubscribe.CreateDate = DateTime.Now;
             return subscribeDao.Insert(dbSubscribe);
         }
@@ -108,10 +104,8 @@ namespace TheresaBot.Main.Business
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = pixivFollowUser.userId;
             dbSubscribe.SubscribeName = userName;
-            dbSubscribe.SubscribeDescription = userName;
             dbSubscribe.SubscribeType = SubscribeType.P站画师;
             dbSubscribe.SubscribeSubType = 0;
-            dbSubscribe.Isliving = false;
             dbSubscribe.CreateDate = createDate;
             return subscribeDao.Insert(dbSubscribe);
         }
@@ -122,10 +116,8 @@ namespace TheresaBot.Main.Business
             dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = pixivTag;
             dbSubscribe.SubscribeName = pixivTag;
-            dbSubscribe.SubscribeDescription = pixivTag;
             dbSubscribe.SubscribeType = SubscribeType.P站标签;
             dbSubscribe.SubscribeSubType = 0;
-            dbSubscribe.Isliving = false;
             dbSubscribe.CreateDate = DateTime.Now;
             return subscribeDao.Insert(dbSubscribe);
         }

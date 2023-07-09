@@ -84,7 +84,7 @@ namespace TheresaBot.Main.Handler
                 chailList.Add(new PlainContent($"米游社用户[{dbSubscribe.SubscribeName}]订阅成功!"));
                 chailList.Add(new PlainContent($"目标群：{Enum.GetName(typeof(SubscribeGroupType), groupType)}"));
                 chailList.Add(new PlainContent($"uid：{dbSubscribe.SubscribeCode}"));
-                chailList.Add(new PlainContent($"签名：{dbSubscribe.SubscribeDescription}"));
+                chailList.Add(new PlainContent($"签名：{userInfoDto.data.user_info.introduce}"));
 
                 string avatar_url = userInfoDto.data.user_info.avatar_url;
                 if (string.IsNullOrWhiteSpace(avatar_url) == false)

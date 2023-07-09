@@ -61,7 +61,8 @@ namespace TheresaBot.Main.Handler
         protected async Task SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent> headerContents, long groupId, int eachPage = 10)
         {
             int startIndex = 0;
-            if (eachPage <= 0) eachPage = 5;
+            if (eachPage <= 0) eachPage = 10;
+            if (setuContents.Count == 0) return;
             while (startIndex < setuContents.Count)
             {
                 List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(eachPage).ToList();

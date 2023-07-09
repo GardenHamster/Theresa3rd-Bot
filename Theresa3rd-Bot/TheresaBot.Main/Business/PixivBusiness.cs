@@ -476,7 +476,6 @@ namespace TheresaBot.Main.Business
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;
                     if (pixivWorkInfo.hasBanTag() is not null) continue;
-                    if (checkTagWorkIsOk(pixivWorkInfo) == false) continue;
                     SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
                     PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo, subscribeTask);
                     if (pushAsync is not null)
@@ -688,10 +687,8 @@ namespace TheresaBot.Main.Business
             dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
             dbSubscribe.SubscribeName = userName;
-            dbSubscribe.SubscribeDescription = userName;
             dbSubscribe.SubscribeType = SubscribeType.P站画师;
             dbSubscribe.SubscribeSubType = 0;
-            dbSubscribe.Isliving = false;
             dbSubscribe.CreateDate = DateTime.Now;
             return subscribeDao.Insert(dbSubscribe);
         }

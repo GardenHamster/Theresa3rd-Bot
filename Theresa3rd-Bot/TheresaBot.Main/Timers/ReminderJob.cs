@@ -22,6 +22,7 @@ namespace TheresaBot.Main.Timers
                 ReminderTimer reminderTimer = (ReminderTimer)dataMap["ReminderTimer"];
                 if (reminderTimer is null) return;
                 if (reminderTimer.Groups is null || reminderTimer.Groups.Count == 0) return;
+                if (reminderTimer.Templates is null || reminderTimer.Templates.Count == 0) return;
                 await new ReminderHandler(session, reporter).SendRemindAsync(reminderTimer);
             }
             catch (Exception ex)

@@ -264,7 +264,13 @@ namespace TheresaBot.Main.Helper
             return await command.ReplyFriendMessageAsync(contents);
         }
 
-
+        /// <summary>
+        /// 艾特并使用模版回复群消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="template"></param>
+        /// <param name="defaultmsg"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyGroupTemplateWithAtAsync(this GroupCommand command, string template, string defaultmsg = "")
         {
             template = template?.Trim()?.TrimLine();
@@ -274,6 +280,13 @@ namespace TheresaBot.Main.Helper
             return await command.ReplyGroupMessageWithAtAsync(template.SplitToChainAsync());
         }
 
+        /// <summary>
+        /// 私聊并使用模版回复群消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="template"></param>
+        /// <param name="defaultmsg"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyFriendTemplateAsync(this FriendCommand command, string template, string defaultmsg)
         {
             template = template?.Trim()?.TrimLine();
@@ -282,17 +295,36 @@ namespace TheresaBot.Main.Helper
             return await command.ReplyFriendMessageAsync(template.SplitToChainAsync());
         }
 
+        /// <summary>
+        /// 艾特并回复群消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyGroupMessageWithAtAsync(this GroupCommand command, string message)
         {
             if (message.StartsWith(" ") == false) message = " " + message;
             return await command.Session.SendGroupMessageWithAtAsync(command.GroupId, command.MemberId, message);
         }
 
+        /// <summary>
+        /// 艾特并回复群消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="contents"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyGroupMessageWithAtAsync(this GroupCommand command, List<BaseContent> contents)
         {
             return await command.Session.SendGroupMessageAsync(command.GroupId, contents, new() { command.MemberId });
         }
 
+        /// <summary>
+        /// 回复群消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="message"></param>
+        /// <param name="isAt"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyGroupMessageAsync(this GroupCommand command, string message, bool isAt = false)
         {
             if (isAt)
@@ -306,6 +338,13 @@ namespace TheresaBot.Main.Helper
             }
         }
 
+        /// <summary>
+        /// 回复群消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="contents"></param>
+        /// <param name="isAt"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyGroupMessageAsync(this GroupCommand command, List<BaseContent> contents, bool isAt = false)
         {
             if (isAt)
@@ -318,21 +357,44 @@ namespace TheresaBot.Main.Helper
             }
         }
 
+        /// <summary>
+        /// 发送临时消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="contents"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> SendTempMessageAsync(this GroupCommand command, List<BaseContent> contents)
         {
             return await command.Session.SendTempMessageAsync(command.GroupId, command.MemberId, contents);
         }
 
+        /// <summary>
+        /// 发送好友消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyFriendMessageAsync(this FriendCommand command, string message)
         {
             return await command.Session.SendFriendMessageAsync(command.MemberId, message);
         }
 
+        /// <summary>
+        /// 发送好友消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="contents"></param>
+        /// <returns></returns>
         public static async Task<BaseResult> ReplyFriendMessageAsync(this FriendCommand command, List<BaseContent> contents)
         {
             return await command.Session.SendFriendMessageAsync(command.MemberId, contents);
         }
 
+        /// <summary>
+        /// 根据关键词模糊搜索相关的可用指令
+        /// </summary>
+        /// <param name="keyword"></param>
+        /// <returns></returns>
         public static string GetSimilarGroupCommandStrs(string keyword)
         {
             List<string> groupCommands = GetSimilarGroupCommands(keyword);
@@ -346,7 +408,7 @@ namespace TheresaBot.Main.Helper
             return builder.ToString();
         }
 
-        public static List<string> GetSimilarGroupCommands(string keyword)
+        private static List<string> GetSimilarGroupCommands(string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword)) return new();
             string splitString = keyword.ToLower().Replace(" ", string.Empty).Trim();

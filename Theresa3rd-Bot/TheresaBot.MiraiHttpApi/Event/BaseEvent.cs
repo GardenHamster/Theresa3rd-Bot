@@ -1,4 +1,6 @@
-﻿using Mirai.CSharp.HttpApi.Models.EventArgs;
+﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+using Mirai.CSharp.HttpApi.Models.EventArgs;
+using System.Text;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Invoker;
 using TheresaBot.MiraiHttpApi.Command;
@@ -50,6 +52,28 @@ namespace TheresaBot.MiraiHttpApi.Event
                 return new MiraiGroupQuoteCommand(baseSession, invoker, args, instruction, commandStr);
             }
             return null;
+        }
+
+        public string GetSimpleSendContent(IGroupMessageEventArgs args)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (var message in args.Chain)
+            {
+                if (builder.Length > 0) builder.Append(" ");
+                if (message is PlainMessage plainMsg)
+                {
+                    builder.Append(plainMsg.Message);
+                }
+                else if (message is ImageMessage imgMsg)
+                {
+                    builder.Append(imgMsg.ImageId + ".image");
+                }
+                else
+                {
+                    builder.Append(message.ToString());
+                }
+            }
+            return builder.ToString().Trim();
         }
 
     }

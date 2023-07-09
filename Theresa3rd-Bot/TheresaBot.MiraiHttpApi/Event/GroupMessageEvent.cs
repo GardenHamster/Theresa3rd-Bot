@@ -37,7 +37,6 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 string instruction = plainList.FirstOrDefault()?.Trim() ?? "";
                 string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray())?.Trim() : string.Empty;
-                if (string.IsNullOrWhiteSpace(message)) return;
 
                 string prefix = prefix = instruction.MatchPrefix();
                 bool isAt = args.Chain.Any(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber);
@@ -55,7 +54,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 {
                     MiraiGroupRelay relay = new MiraiGroupRelay(args, msgId, message, groupId, memberId);
                     if (StepCache.HandleStep(relay, groupId, memberId)) return; //分步处理
-                    if (RepeatCache.CheckCanRepeat(groupId, MiraiConfig.BotQQ, memberId, message)) await SendRepeat(session, args);//复读机
+                    if (RepeatCache.CheckCanRepeat(groupId, MiraiConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.Mirai, msgId, groupId, memberId);
                     List<string> plainMessages = args.Chain.Where(o => o is PlainMessage).Select(o => o.ToString()).ToList();

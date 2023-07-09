@@ -2,9 +2,9 @@
 {
     public abstract class BaseRelay
     {
-        public long MsgId { get; set; }
+        public long MsgId { get; init; }
 
-        public string Message { get; set; }
+        public string Message { get; init; }
 
         public long MemberId { get; init; }
 

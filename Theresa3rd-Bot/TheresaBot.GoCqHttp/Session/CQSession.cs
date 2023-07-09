@@ -65,7 +65,7 @@ namespace TheresaBot.GoCqHttp.Session
 
         public override async Task<BaseResult> SendTempMessageAsync(long groupId, long memberId, string message)
         {
-            var result = await CQHelper.Session.SendPrivateMessageAsync(groupId, new CqMessage(message));
+            var result = await CQHelper.Session.SendPrivateMessageAsync(memberId, groupId, new CqMessage(message));
             return new CQResult(result);
         }
 
@@ -73,7 +73,7 @@ namespace TheresaBot.GoCqHttp.Session
         {
             if (contents.Count == 0) return CQResult.Undo;
             CqMsg[] msgList = contents.ToCQMessageAsync();
-            var result = await CQHelper.Session.SendPrivateMessageAsync(memberId, new CqMessage(msgList));
+            var result = await CQHelper.Session.SendPrivateMessageAsync(memberId, groupId, new CqMessage(msgList));
             return new CQResult(result);
         }
 

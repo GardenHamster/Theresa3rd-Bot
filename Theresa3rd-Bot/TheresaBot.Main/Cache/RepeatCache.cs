@@ -14,24 +14,25 @@ namespace TheresaBot.Main.Cache
         /// <summary>
         /// 判断是否可以复读
         /// </summary>
-        /// <param name="e"></param>
         /// <param name="groupId"></param>
+        /// <param name="botId"></param>
         /// <param name="memberId"></param>
-        /// <param name="word"></param>
+        /// <param name="simpleContent"></param>
         /// <returns></returns>
-        public static bool CheckCanRepeat(long groupId, long botId, long memberId, string word)
+        public static bool CheckCanRepeat(long groupId, long botId, long memberId, string simpleContent)
         {
             lock (MemberRepeatDic)
             {
                 try
                 {
+                    if (string.IsNullOrWhiteSpace(simpleContent)) return false;
                     if (BotConfig.RepeaterConfig.Enable == false) return false;
                     if (BotConfig.RepeaterConfig.RepeatTime == 0) return false;
                     if (MemberRepeatDic.ContainsKey(groupId) == false) MemberRepeatDic[groupId] = new List<RepeatInfo>();
-                    RepeatInfo memberRepeat = new RepeatInfo(memberId, word);
+                    RepeatInfo memberRepeat = new RepeatInfo(memberId, simpleContent);
                     List<RepeatInfo> memberRepeats = MemberRepeatDic[groupId];
                     RepeatInfo lastRepeat = memberRepeats.LastOrDefault();
-                    if (lastRepeat != null && lastRepeat.Word != memberRepeat.Word)
+                    if (lastRepeat != null && lastRepeat.SendContent != memberRepeat.SendContent)
                     {
                         memberRepeats.Clear();
                     }
@@ -50,7 +51,7 @@ namespace TheresaBot.Main.Cache
                     {
                         return false;
                     }
-                    memberRepeats.Add(new RepeatInfo(botId, word));
+                    memberRepeats.Add(new RepeatInfo(botId, simpleContent));
                     return true;
                 }
                 catch (Exception ex)

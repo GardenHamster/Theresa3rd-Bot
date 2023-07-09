@@ -25,7 +25,7 @@ namespace TheresaBot.MiraiHttpApi.Command
 
         public override List<string> GetImageUrls()
         {
-            return Args.Chain.OfType<ImageMessage>().Select(o => o.Url).ToList();
+            return Args.Chain.OfType<ImageMessage>().Select(o => o.Url).Where(o => !string.IsNullOrWhiteSpace(o)).ToList();
         }
 
         public override long GetQuoteMessageId()

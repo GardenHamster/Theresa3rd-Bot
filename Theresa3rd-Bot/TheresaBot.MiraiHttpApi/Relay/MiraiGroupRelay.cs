@@ -15,7 +15,7 @@ namespace TheresaBot.MiraiHttpApi.Relay
 
         public override List<string> GetImageUrls()
         {
-            return Args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
+            return Args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).Where(o => !string.IsNullOrWhiteSpace(o)).ToList();
         }
 
     }

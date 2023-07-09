@@ -16,7 +16,7 @@ namespace TheresaBot.GoCqHttp.Relay
 
         public override List<string> GetImageUrls()
         {
-            return Args.Message.OfType<CqImageMsg>().Select(o => o.Image).ToList();
+            return Args.Message.OfType<CqImageMsg>().Select(o => o.Url?.ToString()).Where(o => !string.IsNullOrWhiteSpace(o)).ToList();
         }
 
     }

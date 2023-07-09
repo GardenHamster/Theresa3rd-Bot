@@ -159,21 +159,22 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <summary>
         /// 将通用消息转为Mirai消息
         /// </summary>
-        /// <param name="chatContents"></param>
+        /// <param name="contents"></param>
         /// <returns></returns>
-        public static async Task<IChatMessage[]> ToMiraiMessageAsync(this List<BaseContent> chatContents, UploadTarget uploadTarget)
+        public static async Task<IChatMessage[]> ToMiraiMessageAsync(this List<BaseContent> contents, UploadTarget uploadTarget)
         {
-            BaseContent lastPlainContent = chatContents.Where(o => o is PlainContent).LastOrDefault();
-            int lastPlainIndex = lastPlainContent is null ? -1 : chatContents.LastIndexOf(lastPlainContent);
-            List<IChatMessage> chatList = new List<IChatMessage>();
-            for (int i = 0; i < chatContents.Count; i++)
+            List<IChatMessage> miraiMsgs = new List<IChatMessage>();
+            for (int i = 0; i < contents.Count; i++)
             {
-                BaseContent content = chatContents[i];
-                bool isNewLine = lastPlainIndex > 0 && i < lastPlainIndex;
-                IChatMessage chatMessage = await content.ToMiraiMessageAsync(uploadTarget, isNewLine);
-                if (chatMessage is not null) chatList.Add(chatMessage);
+                BaseContent content = contents[i];
+                if (content is PlainContent plainContent)
+                {
+                    plainContent.FormatNewLine(i == contents.Count - 1);
+                }
+                IChatMessage chatMessage = await content.ToMiraiMessageAsync(uploadTarget);
+                if (chatMessage is not null) miraiMsgs.Add(chatMessage);
             }
-            return chatList.ToArray();
+            return miraiMsgs.ToArray();
         }
 
         /// <summary>
@@ -181,12 +182,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// </summary>
         /// <param name="chatContent"></param>
         /// <returns></returns>
-        public static async Task<IChatMessage> ToMiraiMessageAsync(this BaseContent chatContent, UploadTarget uploadTarget, bool isNewLine)
+        public static async Task<IChatMessage> ToMiraiMessageAsync(this BaseContent chatContent, UploadTarget uploadTarget)
         {
             if (chatContent is PlainContent plainContent)
             {
-                string message = plainContent.Content + (isNewLine && plainContent.NewLine ? "\r\n" : string.Empty);
-                return string.IsNullOrEmpty(plainContent.Content) ? null : new PlainMessage(message);
+                return string.IsNullOrEmpty(plainContent.Content) ? null : new PlainMessage(plainContent.Content);
             }
             if (chatContent is LocalImageContent localImageContent)
             {

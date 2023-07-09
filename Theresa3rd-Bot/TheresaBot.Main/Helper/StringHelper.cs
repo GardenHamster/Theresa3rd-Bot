@@ -279,6 +279,34 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 在字符串尾部添加换行符(如果没有)
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string AppendNewLineToEnd(this string str)
+        {
+            str = str.Trim();
+            if (str.EndsWith("\r")) return str;
+            if (str.EndsWith("\n")) return str;
+            return str + "\r\n";
+        }
+
+        /// <summary>
+        /// 移除字符串尾部添加换行符(如果有)
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string RemoveNewLineToEnd(this string str)
+        {
+            str = str.Trim();
+            if (str.EndsWith("\r\n")) return str.Substring(0, str.Length - 4);
+            if (str.EndsWith("\n\r")) return str.Substring(0, str.Length - 4);
+            if (str.EndsWith("\r")) return str.Substring(0, str.Length - 2);
+            if (str.EndsWith("\n")) return str.Substring(0, str.Length - 2);
+            return str;
+        }
+
+        /// <summary>
         /// 获取随机字符串
         /// </summary>
         /// <param name="length"></param>

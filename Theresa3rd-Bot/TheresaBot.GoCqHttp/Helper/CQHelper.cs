@@ -26,6 +26,7 @@ namespace TheresaBot.GoCqHttp.Helper
                 Session = new CqWsSession(options);
                 Session.UsePlugin(new GroupMessagePlugin());
                 Session.UsePlugin(new PrivateMessagePlugin());
+                Session.UsePlugin(new GroupMemberIncreasePlugin());
                 await Session.StartAsync();
                 LogHelper.Info("已成功连接到go-cqhttp...");
             }
@@ -97,21 +98,22 @@ namespace TheresaBot.GoCqHttp.Helper
         /// <summary>
         /// 将通用消息转为CQ消息
         /// </summary>
-        /// <param name="chatContents"></param>
+        /// <param name="contents"></param>
         /// <returns></returns>
-        public static CqMsg[] ToCQMessageAsync(this List<BaseContent> chatContents)
+        public static CqMsg[] ToCQMessageAsync(this List<BaseContent> contents)
         {
-            BaseContent lastPlainContent = chatContents.OfType<PlainContent>().LastOrDefault();
-            int lastPlainIndex = lastPlainContent is null ? -1 : chatContents.LastIndexOf(lastPlainContent);
-            List<CqMsg> chatList = new List<CqMsg>();
-            for (int i = 0; i < chatContents.Count; i++)
+            List<CqMsg> cqMsgs = new List<CqMsg>();
+            for (int i = 0; i < contents.Count; i++)
             {
-                BaseContent content = chatContents[i];
-                bool isNewLine = lastPlainIndex > 0 && i < lastPlainIndex;
-                CqMsg chatMessage = content.ToCQMessageAsync(isNewLine);
-                if (chatMessage is not null) chatList.Add(chatMessage);
+                BaseContent content = contents[i];
+                if (content is PlainContent plainContent)
+                {
+                    plainContent.FormatNewLine(i == contents.Count - 1);
+                }
+                CqMsg chatMessage = content.ToCQMessageAsync();
+                if (chatMessage is not null) cqMsgs.Add(chatMessage);
             }
-            return chatList.ToArray();
+            return cqMsgs.ToArray();
         }
 
         /// <summary>
@@ -119,12 +121,11 @@ namespace TheresaBot.GoCqHttp.Helper
         /// </summary>
         /// <param name="chatContent"></param>
         /// <returns></returns>
-        public static CqMsg ToCQMessageAsync(this BaseContent chatContent, bool isNewLine)
+        public static CqMsg ToCQMessageAsync(this BaseContent chatContent)
         {
             if (chatContent is PlainContent plainContent)
             {
-                string message = plainContent.Content + (isNewLine && plainContent.NewLine ? "\r\n" : string.Empty);
-                return string.IsNullOrEmpty(plainContent.Content) ? null : new CqTextMsg(message);
+                return string.IsNullOrEmpty(plainContent.Content) ? null : new CqTextMsg(plainContent.Content);
             }
             if (chatContent is LocalImageContent localImageContent)
             {

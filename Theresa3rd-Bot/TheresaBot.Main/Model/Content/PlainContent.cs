@@ -1,4 +1,6 @@
-﻿namespace TheresaBot.Main.Model.Content
+﻿using TheresaBot.Main.Helper;
+
+namespace TheresaBot.Main.Model.Content
 {
     public class PlainContent : BaseContent
     {
@@ -11,6 +13,25 @@
             this.Content = content;
             this.NewLine = newLine;
         }
+
+        public void FormatNewLine(bool isLast)
+        {
+            if (isLast)
+            {
+                Content = Content.RemoveNewLineToEnd();
+                return;
+            }
+            if (NewLine)
+            {
+                Content = Content.AppendNewLineToEnd();
+            }
+            else
+            {
+                Content = Content.RemoveNewLineToEnd();
+            }
+        }
+
+
 
     }
 }

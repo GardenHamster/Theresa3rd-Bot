@@ -52,7 +52,7 @@ namespace TheresaBot.Main.Business
                 pixivRecord.PixivId = pixivContent.WorkInfo.PixivId;
                 pixivRecord.Title = pixivContent.WorkInfo.Title?.filterEmoji()?.cutString(100);
                 pixivRecord.UserId = pixivContent.WorkInfo.UserId;
-                pixivRecord.UserName = pixivContent.WorkInfo.UserName;
+                pixivRecord.UserName = pixivContent.WorkInfo.UserName?.filterEmoji()?.cutString(100);
                 pixivRecord.CreateDate = DateTime.Now;
                 pixivRecordDao.Insert(pixivRecord);
                 await Task.CompletedTask;

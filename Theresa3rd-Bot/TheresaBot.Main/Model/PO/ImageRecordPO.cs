@@ -18,7 +18,7 @@ namespace TheresaBot.Main.Model.PO
         [SugarColumn(IsNullable = false, ColumnDescription = "发送人ID")]
         public long MemberId { get; set; }
 
-        [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "图片Http地址")]
+        [SugarColumn(IsNullable = false, Length = 300, ColumnDescription = "图片Http地址")]
         public string HttpUrl { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDescription = "发送时间")]

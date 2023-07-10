@@ -18,6 +18,12 @@ namespace TheresaBot.GoCqHttp.Plugin
 
         public override async Task OnGroupMessageReceivedAsync(CqGroupMessagePostContext args)
         {
+            Task task = HandlemessageAsync(args);
+            await Task.CompletedTask;
+        }
+
+        private async Task HandlemessageAsync(CqGroupMessagePostContext args)
+        {
             try
             {
                 long msgId = args.MessageId;
@@ -83,6 +89,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 await baseReporter.SendError(ex, "群指令异常");
             }
         }
+
 
         private async Task SendRepeat(ICqActionSession session, CqGroupMessagePostContext args)
         {

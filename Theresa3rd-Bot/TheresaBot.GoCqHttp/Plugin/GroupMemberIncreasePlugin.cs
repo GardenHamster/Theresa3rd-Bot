@@ -14,6 +14,12 @@ namespace TheresaBot.GoCqHttp.Plugin
 
         public override async Task OnGroupMemberIncreasedAsync(CqGroupMemberIncreasedPostContext args)
         {
+            Task task = HandlemessageAsync(args);
+            await Task.CompletedTask;
+        }
+
+        public async Task HandlemessageAsync(CqGroupMemberIncreasedPostContext args)
+        {
             try
             {
                 long memberId = args.UserId;
@@ -39,6 +45,10 @@ namespace TheresaBot.GoCqHttp.Plugin
                 await baseReporter.SendError(ex, "入群事件异常");
             }
         }
-    }
 
+
+
+
+
+    }
 }

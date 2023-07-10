@@ -10,7 +10,14 @@ namespace TheresaBot.GoCqHttp.Plugin
 {
     public class PrivateMessagePlugin : BasePlugin
     {
+
         public override async void OnPrivateMessageReceived(CqPrivateMessagePostContext args)
+        {
+            Task task = HandlemessageAsync(args);
+            await Task.CompletedTask;
+        }
+
+        public async Task HandlemessageAsync(CqPrivateMessagePostContext args)
         {
             try
             {
@@ -46,6 +53,8 @@ namespace TheresaBot.GoCqHttp.Plugin
                 await baseReporter.SendError(ex, "私聊指令异常");
             }
         }
+
+
 
 
     }

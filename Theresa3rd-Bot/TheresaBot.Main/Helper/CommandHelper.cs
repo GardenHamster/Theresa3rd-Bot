@@ -195,6 +195,27 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 立即撤回消息
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="msgId"></param>
+        /// <param name="groupId"></param>
+        /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
+        /// <returns></returns>
+        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long msgId, long groupId)
+        {
+            try
+            {
+                if (msgId == 0) return;
+                await command.Session.RevokeGroupMessageAsync(msgId, groupId);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "群消息撤回失败");
+            }
+        }
+
+        /// <summary>
         /// 延时撤回消息
         /// </summary>
         /// <param name="command"></param>
@@ -202,7 +223,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="groupId"></param>
         /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
         /// <returns></returns>
-        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long[] msgIds, long groupId, int revokeInterval = 0)
+        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long[] msgIds, long groupId, int revokeInterval)
         {
             if (revokeInterval <= 0) return;
             foreach (long msgId in msgIds)
@@ -221,7 +242,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="groupId"></param>
         /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
         /// <returns></returns>
-        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long msgId, long groupId, int revokeInterval = 0)
+        public static async Task RevokeGroupMessageAsync(this GroupCommand command, long msgId, long groupId, int revokeInterval)
         {
             try
             {

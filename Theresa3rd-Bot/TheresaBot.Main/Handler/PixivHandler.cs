@@ -149,10 +149,7 @@ namespace TheresaBot.Main.Handler
                     profileInfo.PreviewFilePaths = PreviewFilePaths;
                 }
 
-                List<BaseContent> headerContents = new List<BaseContent>()
-                {
-                    new PlainContent(templateMsg)
-                };
+                BaseContent[] titleContents = new BaseContent[] { new PlainContent(templateMsg) };
 
                 List<SetuContent> setuContents = new List<SetuContent>();
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
@@ -160,7 +157,7 @@ namespace TheresaBot.Main.Handler
 
                 await command.ReplyGroupMessageWithAtAsync(templateMsg);
                 await Task.Delay(1000);
-                await SendGroupMergeSetuAsync(setuContents, headerContents, command.GroupId);
+                await SendGroupMergeSetuAsync(setuContents, new() { titleContents }, command.GroupId);
             }
             catch (Exception ex)
             {

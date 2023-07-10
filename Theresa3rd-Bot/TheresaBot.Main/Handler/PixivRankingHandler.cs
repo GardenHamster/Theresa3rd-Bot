@@ -128,9 +128,13 @@ namespace TheresaBot.Main.Handler
                     pixivRankingInfo.PreviewFilePaths = PreviewFilePaths;
                 }
 
-                List<BaseContent> headerContents = new List<BaseContent>()
+                BaseContent[] titleContents = new BaseContent[]
                 {
                     new PlainContent(templateMsg)
+                };
+                BaseContent[] tipContents = new BaseContent[]
+                {
+                    new PlainContent($"使用 【#日榜 1,2,3...】或者【#日榜 {pixivRankingInfo.RankingDate} 1,2,3...】格式可以获取指定序号的作品详情")
                 };
 
                 List<SetuContent> setuContents = new List<SetuContent>();
@@ -147,7 +151,7 @@ namespace TheresaBot.Main.Handler
                 foreach (var groupId in rankingTimer.Groups)
                 {
                     if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
-                    await SendGroupMergeSetuAsync(setuContents, headerContents, groupId);
+                    await SendGroupMergeSetuAsync(setuContents, new() { titleContents, tipContents }, groupId);
                     await Task.Delay(1000);
                 }
             }
@@ -165,11 +169,13 @@ namespace TheresaBot.Main.Handler
             {
                 if (quantity <= 0) return;
                 if (groupIds is null || groupIds.Count == 0) return;
-                List<SetuContent> setuContents = new List<SetuContent>();
-                List<BaseContent> headerContents = new List<BaseContent>
+
+                BaseContent[] titleContents = new BaseContent[]
                 {
                     new PlainContent($"{pixivRankingInfo.RankingDate} {pixivRankingInfo.RankingMode.Name}详情")
                 };
+
+                List<SetuContent> setuContents = new List<SetuContent>();
                 for (int i = 0; i < pixivRankingInfo.RankingDetails.Count && i < quantity; i++)
                 {
                     PixivRankingDetail detail = pixivRankingInfo.RankingDetails[i];
@@ -187,7 +193,7 @@ namespace TheresaBot.Main.Handler
                     if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
                     bool isShowImg = groupId.IsShowSetuImg(false);
                     var sendContents = setuContents.Select(o => isShowImg ? o with { } : o with { SetuImages = new() }).ToList();
-                    await SendGroupMergeSetuAsync(sendContents, headerContents, groupId, DetailEachPage);
+                    await SendGroupMergeSetuAsync(sendContents, new() { titleContents }, groupId, DetailEachPage);
                     await Task.Delay(1000);
                 }
             }
@@ -250,9 +256,13 @@ namespace TheresaBot.Main.Handler
                     pixivRankingInfo.PreviewFilePaths = PreviewFilePaths;
                 }
 
-                List<BaseContent> headerContents = new List<BaseContent>()
+                BaseContent[] titleContents = new BaseContent[]
                 {
                     new PlainContent(templateMsg)
+                };
+                BaseContent[] tipContents = new BaseContent[]
+                {
+                    new PlainContent($"使用 【#日榜 1,2,3...】或者【#日榜 {pixivRankingInfo.RankingDate} 1,2,3...】格式可以获取指定序号的作品详情")
                 };
 
                 List<SetuContent> setuContents = new List<SetuContent>();
@@ -261,7 +271,7 @@ namespace TheresaBot.Main.Handler
 
                 await command.ReplyGroupMessageWithAtAsync(templateMsg);
                 await Task.Delay(1000);
-                await SendGroupMergeSetuAsync(setuContents, headerContents, command.GroupId);
+                await SendGroupMergeSetuAsync(setuContents, new() { titleContents, tipContents }, command.GroupId);
                 await Task.Delay(1000);
                 await sendSetuDetailAsync(pixivRankingInfo, rankingMode, new List<long>() { command.GroupId }, BotConfig.PixivRankingConfig.SendDetail);
                 CoolingCache.SetGroupPixivRankingCooling(rankingMode.Type, command.GroupId);

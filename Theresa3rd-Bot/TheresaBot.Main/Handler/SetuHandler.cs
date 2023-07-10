@@ -58,7 +58,7 @@ namespace TheresaBot.Main.Handler
             Task recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, groupId);
         }
 
-        protected async Task SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent> headerContents, long groupId, int eachPage = 10)
+        protected async Task SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent[]> headerContents, long groupId, int eachPage = 10)
         {
             int startIndex = 0;
             if (eachPage <= 0) eachPage = 10;
@@ -72,7 +72,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<BaseResult> SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent> headerContents, long groupId)
+        private async Task<BaseResult> SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent[]> headerContents, long groupId)
         {
             BaseResult result = await Session.SendGroupMergeSetuAsync(setuContents, headerContents, groupId);
             if (result.IsFailed)

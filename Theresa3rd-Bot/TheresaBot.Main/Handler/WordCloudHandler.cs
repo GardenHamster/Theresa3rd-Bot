@@ -36,7 +36,12 @@ namespace TheresaBot.Main.Handler
             string startTimeStr = string.Empty;
             string endTimeStr = string.Empty;
             string[] paramArr = groupCommand.Params;
-            if (paramArr.Length == 2)
+            if (paramArr.Length == 1)
+            {
+                startTimeStr = paramArr[0] + " 00:00:00";
+                endTimeStr = paramArr[0] + " 23:59:59";
+            }
+            else if(paramArr.Length == 2)
             {
                 startTimeStr = paramArr[0] + " 00:00:00";
                 endTimeStr = paramArr[1] + " 23:59:59";
@@ -170,6 +175,7 @@ namespace TheresaBot.Main.Handler
             {
                 long groupId = groupCommand.GroupId;
                 CoolingCache.SetWordCloudHanding(groupId);
+                await groupCommand.ReplyProcessingMessageAsync(BotConfig.WordCloudConfig.ProcessingMsg, 1000);
                 List<string> words = recordBusiness.getCloudWords(groupId, startTime, endTime);
                 if (words is null || words.Count == 0)
                 {
@@ -204,8 +210,8 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task pushDailyWordCloudAsync()
         {
-            DateTime startTime = DateTime.Now;
-            DateTime endTime = startTime.AddHours(-24);
+            DateTime endTime = DateTime.Now;
+            DateTime startTime = endTime.AddHours(-24);
             var subscribeModel = BotConfig.WordCloudConfig.Subscribes.Daily;
             var groupIds = subscribeModel.Groups;
             var remindMsg = subscribeModel.Template;
@@ -222,8 +228,8 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task pushWeeklyWordCloudAsync()
         {
-            DateTime startTime = DateTime.Now;
-            DateTime endTime = startTime.AddDays(-7);
+            DateTime endTime = DateTime.Now;
+            DateTime startTime = endTime.AddDays(-7);
             var subscribeModel = BotConfig.WordCloudConfig.Subscribes.Weekly;
             var groupIds = subscribeModel.Groups;
             var remindMsg = subscribeModel.Template;
@@ -240,8 +246,8 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task pushMonthlyWordCloudAsync()
         {
-            DateTime startTime = DateTime.Now;
-            DateTime endTime = startTime.AddDays(-30);
+            DateTime endTime = DateTime.Now;
+            DateTime startTime = endTime.AddDays(-30);
             var subscribeModel = BotConfig.WordCloudConfig.Subscribes.Monthly;
             var groupIds = subscribeModel.Groups;
             var remindMsg = subscribeModel.Template;

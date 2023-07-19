@@ -147,11 +147,13 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="command"></param>
         /// <param name="template"></param>
+        /// <param name="delay">发送模版后延迟毫秒数</param>
         /// <returns></returns>
-        public static async Task ReplyProcessingMessageAsync(this GroupCommand command, string template)
+        public static async Task ReplyProcessingMessageAsync(this GroupCommand command, string template, int delay = 0)
         {
             if (string.IsNullOrWhiteSpace(template)) return;
             await command.ReplyGroupTemplateWithAtAsync(template);
+            if (delay > 0) await Task.Delay(delay);
         }
 
         /// <summary>

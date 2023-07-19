@@ -351,6 +351,102 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
+            //自定义词云
+            new(BotConfig.WordCloudConfig?.BasicCommands, CommandType.WordCloud, new(async (botCommand, session, reporter) =>
+            {
+                WordCloudHandler handler = new WordCloudHandler(session, reporter);
+                if (await handler.CheckWordCloudEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
+                if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.replyCustomWordCloudAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //今日词云
+            new(BotConfig.WordCloudConfig?.DailyCommands, CommandType.WordCloud, new(async (botCommand, session, reporter) =>
+            {
+                WordCloudHandler handler = new WordCloudHandler(session, reporter);
+                if (await handler.CheckWordCloudEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
+                if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.replyDailyWordCloudAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //本周词云
+            new(BotConfig.WordCloudConfig?.WeeklyCommands, CommandType.WordCloud, new(async (botCommand, session, reporter) =>
+            {
+                WordCloudHandler handler = new WordCloudHandler(session, reporter);
+                if (await handler.CheckWordCloudEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
+                if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.replyWeeklyWordCloudAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //本月词云
+            new(BotConfig.WordCloudConfig?.MonthlyCommands, CommandType.WordCloud, new(async (botCommand, session, reporter) =>
+            {
+                WordCloudHandler handler = new WordCloudHandler(session, reporter);
+                if (await handler.CheckWordCloudEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
+                if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.replyMonthlyWordCloudAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //本年词云
+            new(BotConfig.WordCloudConfig?.YearlyCommands, CommandType.WordCloud, new(async (botCommand, session, reporter) =>
+            {
+                WordCloudHandler handler = new WordCloudHandler(session, reporter);
+                if (await handler.CheckWordCloudEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
+                if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.replyYearlyWordCloudAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //昨日词云
+            new(BotConfig.WordCloudConfig?.YesterdayCommands, CommandType.WordCloud, new(async (botCommand, session, reporter) =>
+            {
+                WordCloudHandler handler = new WordCloudHandler(session, reporter);
+                if (await handler.CheckWordCloudEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
+                if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.replyYesterdayWordCloudAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //上周词云
+            new(BotConfig.WordCloudConfig?.LastWeekCommands, CommandType.WordCloud, new(async (botCommand, session, reporter) =>
+            {
+                WordCloudHandler handler = new WordCloudHandler(session, reporter);
+                if (await handler.CheckWordCloudEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
+                if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.replyLastWeekWordCloudAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //上月词云
+            new(BotConfig.WordCloudConfig?.LastMonthCommands, CommandType.WordCloud, new(async (botCommand, session, reporter) =>
+            {
+                WordCloudHandler handler = new WordCloudHandler(session, reporter);
+                if (await handler.CheckWordCloudEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
+                if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.replyLastMonthWordCloudAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
             //version
             new(new List<string>() { "版本", "version" }, CommandType.Version, new(async (botCommand, session, reporter) =>
             {

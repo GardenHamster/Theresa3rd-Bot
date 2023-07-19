@@ -56,6 +56,7 @@ Permissions:                                                                    
     SaucenaoR18Groups:          [284196392]                                         #以图搜图允许发送r18结果的群
     SubscribeGroups:            [284196392]                                         #拥有订阅权限的群
     PixivRankingGroups:         [284196392]                                         #拥有查询Pixiv日榜权限的群
+    WordCloudGroups:            [284196392]                                         #拥有主动获取群词云权限的群
 
 Manage:                                                                             #管理相关
     PixivCookieCommands:        ['pixivcookie','pck']                               #更新pixiv cookie 指令，需要私聊使用
@@ -302,31 +303,31 @@ WordCloud:
     DailyCommands:              ['本日词云','今日词云','今天词云','日词云']
     WeeklyCommands:             ['本周词云','周词云']
     MonthlyCommands:            ['本月词云','月词云']
-    YearlyCommands:             ['本年词云','年词云']
+    YearlyCommands:             ['本年词云','今年词云','年词云']
     YesterdayCommands:          ['昨日词云','昨天词云']
     LastWeekCommands:           ['上周词云']
     LastMonthCommands:          ['上月词云']
-    ImgWidth:                   1200
-    ImgHeight:                  1200
+    ImgWidth:                   1000
+    ImgHeight:                  800
     MaxWords:                   500
     FontPath:                   'Font/hywenhei85w.ttf'
     MaskPaths:                  ['BotImg/mask/mask01.png']
     Subscribes:
-         Daily:
+         Daily:                                                                     #推送前24小时内的群词云
              Enable:            true
              Name:              '每日词云'
-             Cron:              '0 30 23 * * ?'
+             Cron:              '0 0 8 * * ?'
              Groups:            [284196392]
-             Template:          '晚安，今天的群词云如下'
-         Weekly:
+             Template:          '早上好，昨天的群词云如下'
+         Weekly:                                                                    #推送前7*24小时内的群词云
              Enable:            true
              Name:              '每周词云'
              Cron:              '0 0 12 ? * SUN'
              Groups:            [284196392]
-             Template:          '中午好，本周的群词云如下'
-         Monthly:
+             Template:          '中午好，上周的群词云如下'
+         Monthly:                                                                   #推送前30日内的群词云
              Enable:            true
              Name:              '每月词云'
-             Cron:              '0 0 9 L * ?'
+             Cron:              '0 0 23 L * ?'
              Groups:            [284196392]
-             Template:          '早上好，本月的群词云如下'
+             Template:          '晚安，本月的群词云如下'

@@ -28,19 +28,19 @@ namespace TheresaBot.Main.Timers
                 if (wordCloudTimer == BotConfig.WordCloudConfig.Subscribes.Daily)
                 {
                     LogHelper.Info($"开始执行每日词云推送任务...");
-                    await new WordCloudHandler(session, reporter).sendDailyWordCloud();
+                    await new WordCloudHandler(session, reporter).pushDailyWordCloudAsync();
                     return;
                 }
                 if (wordCloudTimer == BotConfig.WordCloudConfig.Subscribes.Weekly)
                 {
                     LogHelper.Info($"开始执行每周词云推送任务...");
-                    await new WordCloudHandler(session, reporter).sendWeeklyWordCloud();
+                    await new WordCloudHandler(session, reporter).pushWeeklyWordCloudAsync();
                     return;
                 }
                 if (wordCloudTimer == BotConfig.WordCloudConfig.Subscribes.Monthly)
                 {
                     LogHelper.Info($"开始执行每月词云推送任务...");
-                    await new WordCloudHandler(session, reporter).sendMonthlyWordCloud();
+                    await new WordCloudHandler(session, reporter).pushMonthlyWordCloudAsync();
                     return;
                 }
             }

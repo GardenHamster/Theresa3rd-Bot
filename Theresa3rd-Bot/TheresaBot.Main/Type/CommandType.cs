@@ -11,6 +11,7 @@
         BanMember = 6,
         Menu = 7,
         Version = 8,
-        PixivRanking = 9
+        PixivRanking = 9,
+        WordCloud = 10
     }
 }

@@ -134,6 +134,21 @@ namespace TheresaBot.Main.Handler
             return true;
         }
 
+        public async Task<bool> CheckWordCloudEnableAsync(GroupCommand command)
+        {
+            if (BotConfig.PermissionsConfig.WordCloudGroups.Contains(command.GroupId) == false)
+            {
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                return false;
+            }
+            if (BotConfig.WordCloudConfig is null || BotConfig.WordCloudConfig.Enable == false)
+            {
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                return false;
+            }
+            return true;
+        }
+
         public async Task<bool> CheckSuperManagersAsync(GroupCommand command)
         {
             if (BotConfig.PermissionsConfig.SuperManagers.Contains(command.MemberId) == false)
@@ -184,6 +199,14 @@ namespace TheresaBot.Main.Handler
             return true;
         }
 
+        public async Task<bool> CheckGroupWordCloudCoolingAsync(GroupCommand command)
+        {
+            int cdSecond = CoolingCache.GetGroupWordCloudCD(command.GroupId);
+            if (cdSecond <= 0) return false;
+            await command.ReplyGroupMessageWithAtAsync($"群功能冷却中，{cdSecond}秒后再来哦~");
+            return true;
+        }
+
         public async Task<bool> CheckSetuUseUpAsync(GroupCommand command)
         {
             if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(command.GroupId)) return false;
@@ -226,6 +249,13 @@ namespace TheresaBot.Main.Handler
         {
             if (CoolingCache.IsPixivRankingHanding() == false) return false;
             await command.ReplyGroupMessageWithAtAsync("一个日榜功能正在处理中，稍后再来吧");
+            return true;
+        }
+
+        public async Task<bool> CheckWordCloudHandingAsync(GroupCommand command)
+        {
+            if (CoolingCache.IsWordCloudHanding(command.GroupId) == false) return false;
+            await command.ReplyGroupMessageWithAtAsync("一个词云功能正在处理中，稍后再来吧");
             return true;
         }
 

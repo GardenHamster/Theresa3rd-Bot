@@ -32,5 +32,7 @@
 
         public List<long> PixivRankingGroups { get; private set; }
 
+        public List<long> WordCloudGroups { get; private set; }
+
     }
 }

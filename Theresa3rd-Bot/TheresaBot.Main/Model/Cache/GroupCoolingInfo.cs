@@ -8,7 +8,9 @@ namespace TheresaBot.Main.Model.Cache
 
         public DateTime? LastSetuTime { get; set; }
 
-        public DateTime? LastSaucenaoTime { get; set; }
+        public DateTime? LastWordCloudTime { get; set; }
+
+        public bool IsWordCloudHanding { get; set; }
 
         public Dictionary<PixivRankingType, DateTime?> LastPixivRankingTime { get; set; }
 

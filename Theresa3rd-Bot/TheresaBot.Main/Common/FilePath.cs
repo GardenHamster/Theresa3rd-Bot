@@ -10,6 +10,7 @@ namespace TheresaBot.Main.Common
         private const string MiyousheDir = "Miyoushe";
         private const string PixivWorkDir = "PixivWork";
         private const string PixivPreviewDir = "PixivPreview";
+        private const string WordCloudDir = "WordCloud";
 
         /// <summary>
         /// 获取图片下载错误后的替代图片
@@ -50,7 +51,7 @@ namespace TheresaBot.Main.Common
         }
 
         /// <summary>
-        /// 获取米游社图片存放路径
+        /// 获取临时图片存放路径
         /// </summary>
         /// <returns></returns>
         public static string GetFullTempImgSavePath(string extension = "jpg")

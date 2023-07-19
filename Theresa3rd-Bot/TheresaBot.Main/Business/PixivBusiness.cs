@@ -77,7 +77,7 @@ namespace TheresaBot.Main.Business
             if (subscribeTaskList is null || subscribeTaskList.Count == 0) return null;
             for (int i = 0; i < loopUserTimes; i++)
             {
-                int randomUserIndex = RandomHelper.getRandomBetween(0, subscribeTaskList.Count - 1);
+                int randomUserIndex = RandomHelper.RandomBetween(0, subscribeTaskList.Count - 1);
                 SubscribeTask subscribeTask = subscribeTaskList[randomUserIndex];
                 PixivUserProfileTop pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(subscribeTask.SubscribeCode);
                 if (pixivUserInfo is null) continue;
@@ -169,7 +169,7 @@ namespace TheresaBot.Main.Business
 
             for (int i = 0; i < loopPageTimes; i++)
             {
-                int randomPage = RandomHelper.getRandomBetween(0, page - 1);
+                int randomPage = RandomHelper.RandomBetween(0, page - 1);
                 PixivBookmarks randomBookmarks = randomPage == 0 ? firstBookmarksDto : await PixivHelper.GetPixivBookmarkAsync(userId, randomPage * eachPage, eachPage);
                 if (randomBookmarks is null || randomBookmarks.works is null || randomBookmarks.works.Count == 0) continue;
                 List<PixivBookmarksWork> workList = randomBookmarks.works;
@@ -218,7 +218,7 @@ namespace TheresaBot.Main.Business
 
             //乱序
             List<PixivIllust> pixivIllustList = new List<PixivIllust>();
-            Random random = RandomHelper.getRandom();
+            Random random = RandomHelper.CreateRandom();
             while (tempIllustList.Count > 0)
             {
                 PixivIllust randomIllust = tempIllustList[random.Next(0, tempIllustList.Count)];
@@ -348,7 +348,7 @@ namespace TheresaBot.Main.Business
             else if (maxPage <= pageCount + 2)
             {
                 int[] pageArr = new int[pageCount];
-                int startPage = RandomHelper.getRandomBetween(1, 2);
+                int startPage = RandomHelper.RandomBetween(1, 2);
                 for (int i = 0; i < pageCount; i++) pageArr[i] = startPage + i;
                 return pageArr;
             }
@@ -359,7 +359,7 @@ namespace TheresaBot.Main.Business
                 while (j < pageArr.Length)
                 {
                     int startPage = maxPage >= 10 ? 3 : 1;
-                    int randomPage = RandomHelper.getRandomBetween(startPage, maxPage);
+                    int randomPage = RandomHelper.RandomBetween(startPage, maxPage);
                     if (pageArr.Contains(randomPage)) continue;
                     pageArr[j] = randomPage;
                     j++;

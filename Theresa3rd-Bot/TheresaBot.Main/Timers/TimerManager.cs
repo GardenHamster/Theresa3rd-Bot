@@ -98,6 +98,27 @@ namespace TheresaBot.Main.Timers
         }
 
         /// <summary>
+        /// 初始化词云推送任务
+        /// </summary>
+        public static void initWordCloudTimers(BaseSession session, BaseReporter reporter)
+        {
+            if (BotConfig.WordCloudConfig?.Subscribes is null) return;
+            var subscribes = BotConfig.WordCloudConfig.Subscribes;
+            if (subscribes.Daily != null && subscribes.Daily.Enable)
+            {
+                createWordCloudJob(subscribes.Daily, session, reporter);
+            }
+            if (subscribes.Weekly != null && subscribes.Weekly.Enable)
+            {
+                createWordCloudJob(subscribes.Weekly, session, reporter);
+            }
+            if (subscribes.Monthly != null && subscribes.Monthly.Enable)
+            {
+                createWordCloudJob(subscribes.Monthly, session, reporter);
+            }
+        }
+
+        /// <summary>
         /// 初始化清理任务
         /// </summary>
         public static async void initTempClearJobAsync(BaseSession session, BaseReporter reporter)
@@ -229,6 +250,27 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"定时日榜推送任务[{string.Join(',', rankingTimer.Contents)}]启动失败");
+            }
+        }
+
+        private static async void createWordCloudJob(WordCloudTimer wordCloudTimer, BaseSession session, BaseReporter reporter)
+        {
+            try
+            {
+                if (wordCloudTimer.Enable == false) return;
+                ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(wordCloudTimer.Cron).Build();
+                IJobDetail jobDetail = JobBuilder.Create<WordCloudJob>().WithIdentity(wordCloudTimer.GetHashCode().ToString(), "WordCloudJob").Build();
+                IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+                jobDetail.JobDataMap.Put("WordCloudTimer", wordCloudTimer);
+                jobDetail.JobDataMap.Put("BaseReporter", reporter);
+                jobDetail.JobDataMap.Put("BaseSession", session);
+                await scheduler.ScheduleJob(jobDetail, trigger);
+                await scheduler.Start();
+                LogHelper.Info($"词云推送任务[{wordCloudTimer.Name}]启动完毕...");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"词云推送任务[{wordCloudTimer.Name}]启动失败");
             }
         }
 

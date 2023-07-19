@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Dao;
+﻿using TheresaBot.Main.Common;
+using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
@@ -21,7 +22,7 @@ namespace TheresaBot.Main.Business
 
         public List<ImageRecordPO> GetImageRecord(PlatformType platformType, long msgId, long groupId)
         {
-            return imageRecordDao.getRecord(platformType, msgId, groupId);
+            return imageRecordDao.getRecords(platformType, msgId, groupId);
         }
 
         public async Task AddImageRecord(List<string> imgUrls, PlatformType platformType, long msgId, long groupId, long memberId)
@@ -107,6 +108,16 @@ namespace TheresaBot.Main.Business
             }
         }
 
+        public List<string> getCloudWords(long groupId, DateTime startTime, DateTime endTime)
+        {
+            int wordCount = BotConfig.WordCloudConfig.MaxWords;
+            var messageRecords = messageRecordDao.getRecords(groupId, startTime, endTime);
+            var messageList = messageRecords.Select(o => o.MessageText).ToList();
+            var messagesString = string.Join(",", messageList);
+            var wordWeights = new JiebaNet.Analyser.TfidfExtractor().ExtractTagsWithWeight(messagesString, wordCount).OrderByDescending(o => o.Weight);
+            var keyWords = wordWeights.Select(o => o.Word).ToList();
+            return keyWords;
+        }
 
 
     }

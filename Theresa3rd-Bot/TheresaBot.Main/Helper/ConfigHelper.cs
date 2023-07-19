@@ -34,6 +34,7 @@ namespace TheresaBot.Main.Helper
             BotConfig.SubscribeConfig = botConfig.Subscribe;
             BotConfig.TimingSetuConfig = botConfig.TimingSetu;
             BotConfig.PixivRankingConfig = botConfig.PixivRanking;
+            BotConfig.WordCloudConfig = botConfig.WordCloudConfig;
         }
 
         public static void LoadWebsite()

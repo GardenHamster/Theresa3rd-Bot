@@ -1,6 +1,7 @@
 ﻿General:                                                                            #基础设置
     Prefixs:                    ['#','＃']                                          #指令前缀
     DownloadPath:               'BotImg/download'                                   #下载文件的存放目录
+    DefaultFontPath:            'Font/hywenhei85w.ttf'                              #默认字体文件路径
     DownPathCleanCron:          '0 0 4 * * ?'                                       #下载目录清理定时器，Cron表达式，空值表示不清理，格式：0 0 4 * * ?
     DownErrorImgPath:           'BotImg/face/error.jpg'                             #图片下载失败时的替代图片
     ErrorGroups:                []                                                  #错误日志群，发生错误时会将日志发送到这些群
@@ -292,3 +293,40 @@ PixivRanking:                                                                   
           Groups:               [284196392]                                         #推送到群
           Contents:             ['Weekly','Monthly']                                #推送内容，可选Daily/DailyAI/Male/Weekly/Monthly/DailyR18/DailyAIR18/MaleR18/WeeklyR18
           SendDetail:           10                                                  #同时发送前N个作品的图片和详情
+
+WordCloud:
+    Enable:                     true
+    GroupCD:                    300                                                 #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
+    ProcessingMsg:              '正在生成词云，需要亿点时间...'                       #开始执行前返回的消息
+    BasicCommands:              ['词云']
+    DailyCommands:              ['本日词云','今日词云','今天词云','日词云']
+    WeeklyCommands:             ['本周词云','周词云']
+    MonthlyCommands:            ['本月词云','月词云']
+    YearlyCommands:             ['本年词云','年词云']
+    YesterdayCommands:          ['昨日词云','昨天词云']
+    LastWeekCommands:           ['上周词云']
+    LastMonthCommands:          ['上月词云']
+    ImgWidth:                   1000
+    ImgHeight:                  1000
+    MaxWords:                   500
+    FontPath:                   'Font/hywenhei85w.ttf'
+    MaskPaths:                  ['BotImg/mask/mask01.jpg']
+    Subscribes:
+         Daily:
+             Enable:            true
+             Name:              '每日词云'
+             Cron:              '0 30 23 * * ?'
+             Groups:            [284196392]
+             Template:          '晚安，今天的群词云如下'
+         Weekly:
+             Enable:            true
+             Name:              '每周词云'
+             Cron:              '0 0 12 ? * SUN'
+             Groups:            [284196392]
+             Template:          '中午好，本周的群词云如下'
+         Monthly:
+             Enable:            false
+             Name:              '每月词云'
+             Cron:              '0 0 9 L * ?'
+             Groups:            [284196392]
+             Template:          '早上好，本月的群词云如下'

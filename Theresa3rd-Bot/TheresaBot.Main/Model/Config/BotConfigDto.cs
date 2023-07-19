@@ -15,6 +15,7 @@
         public SubscribeConfig Subscribe { get; private set; }
         public TimingSetuConfig TimingSetu { get; private set; }
         public PixivRankingConfig PixivRanking { get; private set; }
+        public WordCloudConfig WordCloudConfig { get; private set; }
     }
 
 }

@@ -99,7 +99,7 @@ namespace TheresaBot.Main.Handler
                 bool sendMerge = timingSetuTimer.SendMerge;
                 int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
                 bool excludeAI = groupId.IsShowAISetu() == false;
-                string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
+                string tagStr = RandomHelper.RandomItem(timingSetuTimer.Tags);
                 string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
                 int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
                 List<LoliconDataV2> dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, quantity, tagArr);

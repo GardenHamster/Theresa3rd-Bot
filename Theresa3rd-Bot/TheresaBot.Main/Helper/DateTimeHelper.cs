@@ -28,6 +28,53 @@
         }
 
         /// <summary>
+        /// 获取本周开始时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetWeekStart()
+        {
+            DateTime now = DateTime.Now;
+            DateTime temp = new DateTime(now.Year, now.Month, now.Day);
+            int count = now.DayOfWeek - DayOfWeek.Monday;
+            if (count == -1) count = 6;
+            return temp.AddDays(-count);
+        }
+
+        /// <summary>
+        /// 获取本周结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetWeekEnd()
+        {
+            DateTime now = DateTime.Now;
+            DateTime temp = new DateTime(now.Year, now.Month, now.Day, 23, 59, 59);
+            int count = now.DayOfWeek - DayOfWeek.Sunday;
+            if (count != 0) count = 7 - count;
+            return temp.AddDays(count);
+        }
+
+        /// <summary>
+        /// 获取本周开始时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetMonthStart()
+        {
+            DateTime now = DateTime.Now;
+            return new DateTime(now.Year, now.Month, 1, 0, 0, 0);
+        }
+
+        /// <summary>
+        /// 获取本周开始时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetMonthEnd()
+        {
+            DateTime now = DateTime.Now;
+            DateTime temp = new DateTime(now.Year, now.Month, 1, 23, 59, 59);
+            return temp.AddMonths(1).AddDays(-1);
+        }
+
+        /// <summary>
         /// 根据一个总秒速,返回时:分:秒格式字符串
         /// </summary>
         /// <param name="totalSecond"></param>

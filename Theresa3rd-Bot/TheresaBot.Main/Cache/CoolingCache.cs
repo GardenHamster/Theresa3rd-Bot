@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Common;
+﻿using System.Text.RegularExpressions;
+using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Type;
 
@@ -34,8 +35,11 @@ namespace TheresaBot.Main.Cache
         /// <returns></returns>
         public static int GetMemberSetuCD(long groupId, long memberId)
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return GetCDSeconds(coolingInfo.LastGetSetuTime, BotConfig.SetuConfig.MemberCD);
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                return GetCDSeconds(coolingInfo.LastGetSetuTime, BotConfig.SetuConfig.MemberCD);
+            }
         }
 
         /// <summary>
@@ -45,8 +49,11 @@ namespace TheresaBot.Main.Cache
         /// <param name="memberId"></param>
         public static void SetMemberSetuCooling(long groupId, long memberId)
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            coolingInfo.LastGetSetuTime = DateTime.Now;
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                coolingInfo.LastGetSetuTime = DateTime.Now;
+            }
         }
 
         /// <summary>
@@ -57,8 +64,11 @@ namespace TheresaBot.Main.Cache
         /// <returns></returns>
         public static int GetMemberSaucenaoCD(long groupId, long memberId)
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return GetCDSeconds(coolingInfo.LastSaucenaoTime, BotConfig.SaucenaoConfig.MemberCD);
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                return GetCDSeconds(coolingInfo.LastSaucenaoTime, BotConfig.SaucenaoConfig.MemberCD);
+            }
         }
 
         /// <summary>
@@ -68,8 +78,11 @@ namespace TheresaBot.Main.Cache
         /// <param name="memberId"></param>
         public static void SetMemberSaucenaoCooling(long groupId, long memberId)
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            coolingInfo.LastSaucenaoTime = DateTime.Now;
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                coolingInfo.LastSaucenaoTime = DateTime.Now;
+            }
         }
 
         /// <summary>
@@ -79,8 +92,11 @@ namespace TheresaBot.Main.Cache
         /// <returns></returns>
         public static int GetGroupSetuCD(long groupId)
         {
-            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-            return GetCDSeconds(coolingInfo.LastSetuTime, BotConfig.SetuConfig.GroupCD);
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                return GetCDSeconds(coolingInfo.LastSetuTime, BotConfig.SetuConfig.GroupCD);
+            }
         }
 
         /// <summary>
@@ -89,8 +105,11 @@ namespace TheresaBot.Main.Cache
         /// <param name="groupId"></param>
         public static void SetGroupSetuCooling(long groupId)
         {
-            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-            coolingInfo.LastSetuTime = DateTime.Now;
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                coolingInfo.LastSetuTime = DateTime.Now;
+            }
         }
 
         /// <summary>
@@ -100,11 +119,14 @@ namespace TheresaBot.Main.Cache
         /// <returns></returns>
         public static int GetGroupPixivRankingCD(PixivRankingType rankingType, long groupId)
         {
-            if (IsNoCD(groupId)) return 0;
-            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-            if (coolingInfo.LastPixivRankingTime.ContainsKey(rankingType) == false) return 0;
-            DateTime? lastTime = coolingInfo.LastPixivRankingTime[rankingType];
-            return GetCDSeconds(lastTime, BotConfig.PixivRankingConfig.GroupCD);
+            lock (GroupCoolingDic)
+            {
+                if (IsNoCD(groupId)) return 0;
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                if (coolingInfo.LastPixivRankingTime.ContainsKey(rankingType) == false) return 0;
+                DateTime? lastTime = coolingInfo.LastPixivRankingTime[rankingType];
+                return GetCDSeconds(lastTime, BotConfig.PixivRankingConfig.GroupCD);
+            }
         }
 
         /// <summary>
@@ -113,8 +135,11 @@ namespace TheresaBot.Main.Cache
         /// <param name="groupId"></param>
         public static void SetGroupPixivRankingCooling(PixivRankingType rankingType, long groupId)
         {
-            GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
-            coolingInfo.LastPixivRankingTime[rankingType] = DateTime.Now;
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                coolingInfo.LastPixivRankingTime[rankingType] = DateTime.Now;
+            }
         }
 
         /// <summary>
@@ -125,8 +150,11 @@ namespace TheresaBot.Main.Cache
         /// <returns></returns>
         public static bool IsHanding(long groupId, long memberId)
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            return coolingInfo.Handing;
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                return coolingInfo.Handing;
+            }
         }
 
         /// <summary>
@@ -136,8 +164,11 @@ namespace TheresaBot.Main.Cache
         /// <param name="memberId"></param>
         public static void SetHanding(long groupId, long memberId)
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            coolingInfo.Handing = true;
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                coolingInfo.Handing = true;
+            }
         }
 
         /// <summary>
@@ -147,8 +178,11 @@ namespace TheresaBot.Main.Cache
         /// <param name="memberId"></param>
         public static void SetHandFinish(long groupId, long memberId)
         {
-            MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
-            coolingInfo.Handing = false;
+            lock (MemberCoolingDic)
+            {
+                MemberCoolingInfo coolingInfo = GetMemberCoolingInfo(groupId, memberId);
+                coolingInfo.Handing = false;
+            }
         }
 
         /// <summary>
@@ -173,6 +207,33 @@ namespace TheresaBot.Main.Cache
             lock (SetuTimingCoolingInfo)
             {
                 SetuTimingCoolingInfo.LastRunTime = DateTime.Now;
+            }
+        }
+
+        /// <summary>
+        /// 检查词云功能是否在CD中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static int GetGroupWordCloudCD(long groupId)
+        {
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                return GetCDSeconds(coolingInfo.LastWordCloudTime, BotConfig.WordCloudConfig.GroupCD);
+            }
+        }
+
+        /// <summary>
+        /// 记录词云功能最后使用时间，进入CD状态
+        /// </summary>
+        /// <param name="groupId"></param>
+        public static void SetGroupWordCloudCooling(long groupId)
+        {
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                coolingInfo.LastWordCloudTime = DateTime.Now;
             }
         }
 
@@ -202,6 +263,47 @@ namespace TheresaBot.Main.Cache
         public static void SetPixivRankingHandFinish()
         {
             lock (PixivRankingHandingInfo) PixivRankingHandingInfo.IsHanding = false;
+        }
+
+
+        /// <summary>
+        /// 是否有请求在处理中
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static bool IsWordCloudHanding(long groupId)
+        {
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                return coolingInfo.IsWordCloudHanding;
+            }
+        }
+
+        /// <summary>
+        /// 标记请求处理中
+        /// </summary>
+        /// <param name="groupId"></param>
+        public static void SetWordCloudHanding(long groupId)
+        {
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                coolingInfo.IsWordCloudHanding = true;
+            }
+        }
+
+        /// <summary>
+        /// 标记请求处理完成
+        /// </summary>
+        /// <param name="groupId"></param>
+        public static void SetWordCloudHandFinish(long groupId)
+        {
+            lock (GroupCoolingDic)
+            {
+                GroupCoolingInfo coolingInfo = GetGroupCoolingInfo(groupId);
+                coolingInfo.IsWordCloudHanding = false;
+            }
         }
 
         /// <summary>
@@ -236,15 +338,12 @@ namespace TheresaBot.Main.Cache
         /// <returns></returns>
         private static MemberCoolingInfo GetMemberCoolingInfo(long groupId, long memberId)
         {
-            lock (MemberCoolingDic)
-            {
-                if (MemberCoolingDic.ContainsKey(groupId) == false) MemberCoolingDic[groupId] = new List<MemberCoolingInfo>();
-                MemberCoolingInfo coolingInfo = MemberCoolingDic[groupId].Where(o => o.MemberId == memberId).FirstOrDefault();
-                if (coolingInfo != null) return coolingInfo;
-                coolingInfo = new MemberCoolingInfo(memberId);
-                MemberCoolingDic[groupId].Add(coolingInfo);
-                return coolingInfo;
-            }
+            if (MemberCoolingDic.ContainsKey(groupId) == false) MemberCoolingDic[groupId] = new List<MemberCoolingInfo>();
+            MemberCoolingInfo coolingInfo = MemberCoolingDic[groupId].Where(o => o.MemberId == memberId).FirstOrDefault();
+            if (coolingInfo != null) return coolingInfo;
+            coolingInfo = new MemberCoolingInfo(memberId);
+            MemberCoolingDic[groupId].Add(coolingInfo);
+            return coolingInfo;
         }
 
         /// <summary>
@@ -254,11 +353,8 @@ namespace TheresaBot.Main.Cache
         /// <returns></returns>
         private static GroupCoolingInfo GetGroupCoolingInfo(long groupId)
         {
-            lock (GroupCoolingDic)
-            {
-                if (GroupCoolingDic.ContainsKey(groupId) == false) GroupCoolingDic[groupId] = new GroupCoolingInfo(groupId);
-                return GroupCoolingDic[groupId];
-            }
+            if (GroupCoolingDic.ContainsKey(groupId) == false) GroupCoolingDic[groupId] = new GroupCoolingInfo(groupId);
+            return GroupCoolingDic[groupId];
         }
 
 

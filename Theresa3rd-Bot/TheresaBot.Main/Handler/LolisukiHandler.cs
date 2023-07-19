@@ -106,7 +106,7 @@ namespace TheresaBot.Main.Handler
                 bool sendMerge = timingSetuTimer.SendMerge;
                 int aiMode = isShowAI ? 2 : 0;
                 int r18Mode = isShowR18 ? 2 : 0;
-                string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
+                string tagStr = RandomHelper.RandomItem(timingSetuTimer.Tags);
                 string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
                 int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
                 List<LolisukiData> dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, quantity, tagArr);

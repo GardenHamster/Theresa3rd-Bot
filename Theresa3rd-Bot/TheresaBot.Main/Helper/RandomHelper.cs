@@ -8,9 +8,9 @@
         /// <param name="minValue"></param>
         /// <param name="maxValue"></param>
         /// <returns></returns>
-        public static int getRandomBetween(int minValue, int maxValue)
+        public static int RandomBetween(int minValue, int maxValue)
         {
-            Random random = getRandom();
+            Random random = CreateRandom();
             return random.Next(minValue, maxValue + 1);
         }
 
@@ -18,7 +18,7 @@
         /// 获取随机数
         /// </summary>
         /// <returns></returns>
-        public static Random getRandom()
+        public static Random CreateRandom()
         {
             byte[] buffer = Guid.NewGuid().ToByteArray();
             int seed = BitConverter.ToInt32(buffer, 0);
@@ -29,7 +29,7 @@
         /// 获取随机内容
         /// </summary>
         /// <returns></returns>
-        public static T getRandomItem<T>(this List<T> list)
+        public static T RandomItem<T>(this List<T> list)
         {
             if (list is null || list.Count == 0) return default;
             int randomIndex = new Random().Next(0, list.Count);

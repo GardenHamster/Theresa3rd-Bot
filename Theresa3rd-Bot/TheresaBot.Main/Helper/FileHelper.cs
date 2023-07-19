@@ -82,9 +82,9 @@
             DirectoryInfo[] directoryInfos = sourceDirectory.GetDirectories();
             while (stList.Count < count)
             {
-                DirectoryInfo randomDirectory = directoryInfos.Length == 0 ? sourceDirectory : directoryInfos[RandomHelper.getRandomBetween(0, directoryInfos.Length - 1)];
+                DirectoryInfo randomDirectory = directoryInfos.Length == 0 ? sourceDirectory : directoryInfos[RandomHelper.RandomBetween(0, directoryInfos.Length - 1)];
                 FileInfo[] fileInfos = randomDirectory.GetFiles();
-                int randomFileIndex = RandomHelper.getRandomBetween(0, fileInfos.Length - 1);
+                int randomFileIndex = RandomHelper.RandomBetween(0, fileInfos.Length - 1);
                 FileInfo randomFile = fileInfos[randomFileIndex];
                 if (stList.Where(m => m.FullName == randomFile.FullName).ToList().Count > 0) continue;
                 stList.Add(randomFile);

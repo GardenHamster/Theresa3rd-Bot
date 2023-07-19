@@ -34,7 +34,7 @@ namespace TheresaBot.Main.Timers
                 if (wordCloudTimer == BotConfig.WordCloudConfig.Subscribes.Weekly)
                 {
                     LogHelper.Info($"开始执行每周词云推送任务...");
-                    await new WordCloudHandler(session, reporter).sendMonthlyWordCloud();
+                    await new WordCloudHandler(session, reporter).sendWeeklyWordCloud();
                     return;
                 }
                 if (wordCloudTimer == BotConfig.WordCloudConfig.Subscribes.Monthly)

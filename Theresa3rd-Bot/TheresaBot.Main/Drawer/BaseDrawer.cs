@@ -77,6 +77,7 @@ namespace TheresaBot.Main.Drawer
             try
             {
                 var defaultFont = GetDefaultFont();
+                if (defaultFont is null) return null;
                 return SKTypeface.FromFile(defaultFont.FullName);
             }
             catch (Exception ex)

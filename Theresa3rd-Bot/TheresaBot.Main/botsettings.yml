@@ -306,11 +306,11 @@ WordCloud:
     YesterdayCommands:          ['昨日词云','昨天词云']
     LastWeekCommands:           ['上周词云']
     LastMonthCommands:          ['上月词云']
-    ImgWidth:                   1000
-    ImgHeight:                  1000
+    ImgWidth:                   1200
+    ImgHeight:                  1200
     MaxWords:                   500
     FontPath:                   'Font/hywenhei85w.ttf'
-    MaskPaths:                  ['BotImg/mask/mask01.jpg']
+    MaskPaths:                  ['BotImg/mask/mask01.png']
     Subscribes:
          Daily:
              Enable:            true
@@ -325,7 +325,7 @@ WordCloud:
              Groups:            [284196392]
              Template:          '中午好，本周的群词云如下'
          Monthly:
-             Enable:            false
+             Enable:            true
              Name:              '每月词云'
              Cron:              '0 0 9 L * ?'
              Groups:            [284196392]

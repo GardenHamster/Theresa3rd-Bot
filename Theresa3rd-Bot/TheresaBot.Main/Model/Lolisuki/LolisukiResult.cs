@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Datas;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Base;
 using TheresaBot.Main.Type;
 
@@ -64,7 +65,7 @@ namespace TheresaBot.Main.Model.Lolisuki
             }
         }
 
-        public override List<string> getTags()
+        public override List<string> GetTags()
         {
             List<string> tagList = new List<string>();
             tagList.AddRange(tags);
@@ -72,12 +73,12 @@ namespace TheresaBot.Main.Model.Lolisuki
             return tagList;
         }
 
-        public override string hasBanTag()
+        public override List<string> HavingBanTags()
         {
-            return tags?.hasBanTags() ?? extags?.hasBanTags();
+            return GetTags().HavingBanTags();
         }
 
-        public override List<string> getOriginalUrls()
+        public override List<string> GetOriginalUrls()
         {
             if (urls is null) return new List<string>();
             return new List<string>() { urls.original };

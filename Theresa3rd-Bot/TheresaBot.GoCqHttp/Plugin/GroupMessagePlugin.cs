@@ -8,6 +8,7 @@ using TheresaBot.GoCqHttp.Relay;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Type;
 
@@ -32,7 +33,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (args.Session is not ICqActionSession session) return;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
                 if (memberId == CQConfig.BotQQ) return;
-                if (BusinessHelper.IsBanMember(memberId)) return; //黑名单成员
+                if (BanMemberDatas.IsBanMember(memberId)) return; //黑名单成员
 
                 List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
 

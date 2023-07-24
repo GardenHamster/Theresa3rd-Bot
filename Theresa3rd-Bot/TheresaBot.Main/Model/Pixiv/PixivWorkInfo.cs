@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Datas;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Base;
 
 namespace TheresaBot.Main.Model.Pixiv
@@ -28,20 +29,20 @@ namespace TheresaBot.Main.Model.Pixiv
 
         public bool IsIllust => illustType == 0;
 
-        public override bool IsR18 => xRestrict > 0 || getTags().IsR18();
+        public override bool IsR18 => xRestrict > 0 || GetTags().IsR18();
         public override bool IsGif => illustType == 2;
-        public override bool IsAI => aiType > 1 || getTags().IsAI();
-        public override bool IsImproper => xRestrict > 1 || getTags().IsImproper();
+        public override bool IsAI => aiType > 1 || GetTags().IsAI();
+        public override bool IsImproper => xRestrict > 1 || GetTags().IsImproper();
         public override int PixivId => illustId;
         public override int UserId => userId;
         public override string Title => illustTitle;
         public override string UserName => userName;
 
-        public override List<string> getTags() => tags?.getTags() ?? new List<string>();
+        public override List<string> GetTags() => tags?.getTags() ?? new List<string>();
 
-        public override string hasBanTag() => tags?.getFullTags()?.hasBanTags();
+        public override List<string> HavingBanTags() => GetTags().HavingBanTags();
 
-        public override List<string> getOriginalUrls()
+        public override List<string> GetOriginalUrls()
         {
             if (urls is null) return new List<string>();
             List<string> urlList = new List<string>();

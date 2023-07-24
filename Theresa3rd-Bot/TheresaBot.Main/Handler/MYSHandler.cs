@@ -2,6 +2,7 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Mys;
@@ -89,13 +90,13 @@ namespace TheresaBot.Main.Handler
                 string avatar_url = userInfoDto.data.user_info.avatar_url;
                 if (string.IsNullOrWhiteSpace(avatar_url) == false)
                 {
-                    string fullImgSavePath = FilePath.GetFullMysImgSavePath(avatar_url);
+                    string fullImgSavePath = FilePath.GetMiyousheImgSavePath(avatar_url);
                     FileInfo fileInfo = await HttpHelper.DownImgAsync(avatar_url, fullImgSavePath);
                     chailList.Add(new LocalImageContent(fileInfo));
                 }
 
                 await command.ReplyGroupMessageWithAtAsync(chailList);
-                ConfigHelper.LoadSubscribeTask();
+                SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -147,7 +148,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了id为{userId}的米游社用户~");
-                ConfigHelper.LoadSubscribeTask();
+                SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -160,10 +161,8 @@ namespace TheresaBot.Main.Handler
 
         public async Task HandleUserSubscribeAsync()
         {
-            SubscribeType subscribeType = SubscribeType.米游社用户;
-            if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return;
-            List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];
-            if (subscribeTaskList is null || subscribeTaskList.Count == 0) return;
+            var subscribeType = SubscribeType.米游社用户;
+            var subscribeTaskList = SubscribeDatas.GetSubscribeTasks(subscribeType);
             foreach (SubscribeTask subscribeTask in subscribeTaskList)
             {
                 try
@@ -196,7 +195,7 @@ namespace TheresaBot.Main.Handler
 
                 if (string.IsNullOrWhiteSpace(coverUrl) == false)
                 {
-                    string fullImgSavePath = FilePath.GetFullMysImgSavePath(coverUrl);
+                    string fullImgSavePath = FilePath.GetMiyousheImgSavePath(coverUrl);
                     FileInfo fileInfo = await HttpHelper.DownImgAsync(coverUrl, fullImgSavePath);
                     msgList.Add(new LocalImageContent(fileInfo));
                 }

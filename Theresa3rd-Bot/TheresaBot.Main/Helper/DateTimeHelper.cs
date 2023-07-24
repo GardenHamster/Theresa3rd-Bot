@@ -1,6 +1,4 @@
-﻿using Microsoft.Data.SqlClient.Server;
-using System;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace TheresaBot.Main.Helper
 {

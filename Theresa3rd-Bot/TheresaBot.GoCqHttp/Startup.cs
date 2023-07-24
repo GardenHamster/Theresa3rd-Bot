@@ -6,6 +6,7 @@ using TheresaBot.GoCqHttp.Reporter;
 using TheresaBot.GoCqHttp.Session;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Timers;
 
@@ -54,10 +55,10 @@ namespace TheresaBot.GoCqHttp
 
             try
             {
-                ConfigHelper.LoadWebsite();
-                ConfigHelper.LoadSubscribeTask();
-                ConfigHelper.LoadBanTag();
-                ConfigHelper.LoadBanMember();
+                WebsiteDatas.LoadWebsite();
+                SubscribeDatas.LoadSubscribeTask();
+                BanTagDatas.LoadDatas();
+                BanMemberDatas.LoadDatas();
                 CQSession session = new CQSession();
                 CQReporter reporter = new CQReporter();
                 TimerManager.initReminderJob(session, reporter);

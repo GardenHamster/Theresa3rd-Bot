@@ -2,7 +2,6 @@
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Handler;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Mode;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -49,7 +48,7 @@ namespace TheresaBot.Main.Timers
                 LogHelper.Error(ex, "WordCloudJob异常");
                 await reporter.SendError(ex, "WordCloudJob异常");
             }
-        } 
+        }
 
     }
 }

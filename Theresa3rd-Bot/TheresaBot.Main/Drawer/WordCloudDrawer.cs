@@ -12,7 +12,7 @@ namespace TheresaBot.Main.Drawer
             var maskFilePath = BotConfig.WordCloudConfig.MaskPaths?.RandomItem();
             var maskFile = string.IsNullOrWhiteSpace(maskFilePath) || File.Exists(maskFilePath) == false ? null : new FileInfo(maskFilePath);
             var wordCloud = new WordCloud.WordCloud(fontFile, true);
-            var fullImageSavePath = FilePath.GetFullTempImgSavePath();
+            var fullImageSavePath = FilePath.GetWordCloudImgSavePath();
             var width = BotConfig.WordCloudConfig.ImgWidth;
             var height = BotConfig.WordCloudConfig.ImgHeight;
             if (maskFile is null)

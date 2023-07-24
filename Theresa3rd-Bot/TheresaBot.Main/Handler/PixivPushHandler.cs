@@ -1,5 +1,6 @@
 ﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
@@ -21,15 +22,14 @@ namespace TheresaBot.Main.Handler
 
         public async Task<PixivTagScanReport> HandleTagPushAsync()
         {
-            SubscribeType subscribeType = SubscribeType.P站标签;
-            PixivTagScanReport scanReport = new PixivTagScanReport();
-            bool sendMerge = BotConfig.SubscribeConfig.PixivTag.SendMerge;
-            if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return scanReport;
-            List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];
-            if (subscribeTaskList is null || subscribeTaskList.Count == 0) return scanReport;
+            var subscribeType = SubscribeType.P站标签;
+            var scanReport = new PixivTagScanReport();
+            var sendMerge = BotConfig.SubscribeConfig.PixivTag.SendMerge;
+            var subscribeTasks = SubscribeDatas.GetSubscribeTasks(subscribeType);
+            if (subscribeTasks.Count == 0) return scanReport;
             Func<PixivSubscribe, Task> pushAsync = sendMerge ? null : PushTagWorkAsync;
             List<PixivSubscribe> pushList = new List<PixivSubscribe>();
-            foreach (SubscribeTask subscribeTask in subscribeTaskList)
+            foreach (SubscribeTask subscribeTask in subscribeTasks)
             {
                 try
                 {
@@ -54,15 +54,14 @@ namespace TheresaBot.Main.Handler
 
         public async Task<PixivUserScanReport> HandleUserPushAsync()
         {
-            SubscribeType subscribeType = SubscribeType.P站画师;
-            PixivUserScanReport scanReport = new PixivUserScanReport();
-            bool sendMerge = BotConfig.SubscribeConfig.PixivTag.SendMerge;
-            if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return scanReport;
-            List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType];
-            if (subscribeTaskList is null || subscribeTaskList.Count == 0) return scanReport;
+            var subscribeType = SubscribeType.P站画师;
+            var scanReport = new PixivUserScanReport();
+            var sendMerge = BotConfig.SubscribeConfig.PixivTag.SendMerge;
+            var subscribeTasks = SubscribeDatas.GetSubscribeTasks(subscribeType);
+            if (subscribeTasks.Count == 0) return scanReport;
             Func<PixivSubscribe, Task> pushAsync = sendMerge ? null : PushUserWorkAsync;
             List<PixivSubscribe> pushList = new List<PixivSubscribe>();
-            foreach (SubscribeTask subscribeTask in subscribeTaskList)
+            foreach (SubscribeTask subscribeTask in subscribeTasks)
             {
                 try
                 {

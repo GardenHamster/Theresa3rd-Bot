@@ -9,7 +9,7 @@ namespace TheresaBot.Main.Model.Config
         public string DownloadPath { get; private set; }
 
         public string DefaultFontPath { get; private set; }
-        
+
         public List<long> ErrorGroups { get; private set; }
 
         public string ErrorMsg { get; private set; }

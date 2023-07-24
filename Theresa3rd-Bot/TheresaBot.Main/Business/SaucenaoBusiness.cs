@@ -4,6 +4,7 @@ using AngleSharp.Html.Parser;
 using System.Net;
 using System.Text;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Pixiv;
@@ -223,7 +224,7 @@ namespace TheresaBot.Main.Business
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 string contentString = await response.GetContentStringAsync();
-                throw new PixivException($"saucenao返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(500)}");
+                throw new PixivException($"saucenao返回Code：{(int)response.StatusCode}，Content：{contentString.CutString(500)}");
             }
             return await response.Content.ReadAsStringAsync();
         }
@@ -235,7 +236,7 @@ namespace TheresaBot.Main.Business
         private static Dictionary<string, string> getSaucenaoHeader()
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            string cookie = BotConfig.WebsiteConfig.Saucenao.Cookie;
+            string cookie = WebsiteDatas.Saucenao.Cookie;
             if (string.IsNullOrWhiteSpace(cookie) == false) headerDic.Add("Cookie", cookie);
             return headerDic;
         }

@@ -2,6 +2,7 @@
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
@@ -114,7 +115,7 @@ namespace TheresaBot.Main.Handler
                 {
                     await command.ReplyGroupMessageWithAtAsync($"所有画师订阅完毕");
                 }
-                ConfigHelper.LoadSubscribeTask();
+                SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -191,7 +192,7 @@ namespace TheresaBot.Main.Handler
                 }
                 DbScoped.SugarScope.CommitTran();//提交事务
                 await command.ReplyGroupMessageWithAtAsync("订阅pixiv关注画师列表完毕");
-                ConfigHelper.LoadSubscribeTask();
+                SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -246,7 +247,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv用户[{pixivUserIds}]~");
-                ConfigHelper.LoadSubscribeTask();
+                SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -315,7 +316,7 @@ namespace TheresaBot.Main.Handler
 
                 SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($"标签[{pixivTags}]订阅成功,该标签总作品数为:{pageOne.illust.total}");
-                ConfigHelper.LoadSubscribeTask();
+                SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
             {
@@ -364,7 +365,7 @@ namespace TheresaBot.Main.Handler
 
                 subscribeBusiness.cancleSubscribe(dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv标签[{pixivTag}]~");
-                ConfigHelper.LoadSubscribeTask();
+                SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
             {

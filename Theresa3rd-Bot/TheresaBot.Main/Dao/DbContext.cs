@@ -61,6 +61,16 @@ namespace TheresaBot.Main.Dao
             return Db.Deleteable(t).ExecuteCommand();
         }
 
+        /// <summary>
+        /// 根据id删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual int DeleteById(int id)
+        {
+            return Db.Deleteable<T>().Where(o => o.Id == id).ExecuteCommand();
+        }
+
 
     }
 }

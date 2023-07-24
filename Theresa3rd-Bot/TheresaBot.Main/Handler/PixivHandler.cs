@@ -184,7 +184,7 @@ namespace TheresaBot.Main.Handler
             while (startIndex < profileDetails.Count)
             {
                 string fileName = $"pixiv_user_{profileInfo.UserId}_preview_{startIndex}_{startIndex + previewInPage}.jpg";
-                string fullSavePath = Path.Combine(FilePath.GetPixivPreviewSavePath(), fileName);
+                string fullSavePath = Path.Combine(FilePath.GetPixivPreviewDirectory(), fileName);
                 var partList = profileDetails.Skip(startIndex).Take(previewInPage).ToList();
                 var previewFile = await createPreviewImgAsync(profileInfo, partList, fullSavePath);
                 if (previewFile is not null) fileInfos.Add(previewFile.FullName);

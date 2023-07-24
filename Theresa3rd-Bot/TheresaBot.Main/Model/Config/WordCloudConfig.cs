@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TheresaBot.Main.Model.Config
+﻿namespace TheresaBot.Main.Model.Config
 {
     public class WordCloudConfig : BasePluginConfig
     {
@@ -18,6 +12,8 @@ namespace TheresaBot.Main.Model.Config
         public List<string> YesterdayCommands { get; private set; }
         public List<string> LastWeekCommands { get; private set; }
         public List<string> LastMonthCommands { get; private set; }
+        public List<string> AddWordCommands { get; private set; }
+        public List<string> HideWordCommands { get; private set; }
         public int ImgWidth { get; private set; }
         public int ImgHeight { get; private set; }
         public int MaxWords { get; private set; }

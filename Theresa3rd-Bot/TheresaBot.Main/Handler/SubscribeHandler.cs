@@ -2,6 +2,7 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Drawer;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
@@ -32,7 +33,7 @@ namespace TheresaBot.Main.Handler
                 var pixivUserSubList = subscribeBusiness.getSubscribes(command.GroupId, SubscribeType.P站画师);
                 var pixivTagSubList = subscribeBusiness.getSubscribes(command.GroupId, SubscribeType.P站标签).Select(o => o with { SubscribeCode = String.Empty }).ToList();
                 var drawTagList = pixivTagSubList.Select(o => o with { SubscribeCode = String.Empty });
-                string fullSavePath = FilePath.GetFullTempImgSavePath();
+                string fullSavePath = FilePath.GetTempImgSavePath();
                 FileInfo fileInfo = new SubscribeDrawer().DrawSubscribe(miyousheSubList, pixivUserSubList, pixivTagSubList, fullSavePath);
                 List<BaseContent> sendContents = new List<BaseContent>();
                 sendContents.Add(new PlainContent("当前群已订阅内容如下"));
@@ -90,7 +91,7 @@ namespace TheresaBot.Main.Handler
 
                 subscribeBusiness.cancleSubscribe(dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了{dbSubscribe.SubscribeType}[{dbSubscribe.SubscribeName}]~");
-                ConfigHelper.LoadSubscribeTask();
+                SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
             {

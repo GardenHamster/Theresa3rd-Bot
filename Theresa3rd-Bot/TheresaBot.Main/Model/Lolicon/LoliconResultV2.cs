@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Datas;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Base;
 
 namespace TheresaBot.Main.Model.Lolicon
@@ -35,11 +36,11 @@ namespace TheresaBot.Main.Model.Lolicon
         public override string Title => title;
         public override string UserName => author;
 
-        public override List<string> getTags() => tags ?? new List<string>();
+        public override List<string> GetTags() => tags ?? new List<string>();
 
-        public override string hasBanTag() => tags?.hasBanTags();
+        public override List<string> HavingBanTags() => GetTags().HavingBanTags();
 
-        public override List<string> getOriginalUrls()
+        public override List<string> GetOriginalUrls()
         {
             if (urls is null) return new List<string>();
             return new List<string>() { urls.original };

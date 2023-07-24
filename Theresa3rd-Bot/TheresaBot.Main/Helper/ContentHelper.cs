@@ -73,7 +73,7 @@ namespace TheresaBot.Main.Helper
 
         public static List<BaseContent> SetDefaultImage(this List<BaseContent> contentList)
         {
-            FileInfo errorImg = FilePath.GetDownErrorImg();
+            FileInfo errorImg = FilePath.GetErrorImgPath();
             for (int i = 0; i < contentList.Count; i++)
             {
                 if (contentList[i] is not LocalImageContent imageContent) continue;

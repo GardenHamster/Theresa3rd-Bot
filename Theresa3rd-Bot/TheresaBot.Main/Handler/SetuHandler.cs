@@ -2,12 +2,12 @@
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Base;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
@@ -137,19 +137,15 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task<bool> CheckSetuTagEnableAsync(GroupCommand command, string tagName)
         {
-            tagName = tagName.ToLower().Trim();
-
             if (string.IsNullOrWhiteSpace(tagName)) return true;
             if (tagName.IsR18() && command.GroupId.IsShowR18Setu() == false)
             {
                 await command.ReplyGroupMessageWithAtAsync("本群未设置R18权限，禁止搜索R18相关标签");
                 return false;
             }
-
-            List<BanWordPO> banSetuTagList = BotConfig.BanSetuTagList;
-            if (banSetuTagList.Any(o => tagName.Contains(o.KeyWord.ToLower().Trim())))
+            if (tagName.splitPixivTags().ToList().HavingBanTags().Count > 0)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
+                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.DisableTagsMsg, "标签中包含被禁止搜索的关键词");
                 return false;
             }
             return true;
@@ -185,10 +181,10 @@ namespace TheresaBot.Main.Handler
                 return "该作品含有R18G等内容，不显示相关内容";
             }
 
-            string banTagStr = setuInfo.hasBanTag();
-            if (string.IsNullOrWhiteSpace(banTagStr) == false)
+            var banTags = setuInfo.HavingBanTags();
+            if (banTags.Count > 0)
             {
-                return $"该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容";
+                return $"该作品含有被屏蔽的标签【{banTags.JoinList()}】，不显示相关内容";
             }
 
             if (setuInfo.IsR18 && isShowR18 == false)
@@ -273,7 +269,7 @@ namespace TheresaBot.Main.Handler
         protected async Task<List<FileInfo>> downPixivImgsAsync(BaseWorkInfo workInfo)
         {
             List<FileInfo> imgList = new List<FileInfo>();
-            List<string> originUrls = workInfo.getOriginalUrls();
+            List<string> originUrls = workInfo.GetOriginalUrls();
             int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
             for (int i = 0; i < maxCount && i < originUrls.Count; i++)
             {
@@ -295,7 +291,7 @@ namespace TheresaBot.Main.Handler
                 int gifSigma = 15;
                 bool isR18 = workInfo.IsR18;
                 int pixivId = workInfo.PixivId;
-                string fullGifSavePath = Path.Combine(FilePath.GetPixivImgSavePath(pixivId), $"{pixivId}.gif");
+                string fullGifSavePath = Path.Combine(FilePath.GetPixivImgDirectory(pixivId), $"{pixivId}.gif");
                 if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
                 PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId.ToString());
@@ -304,7 +300,7 @@ namespace TheresaBot.Main.Handler
                 FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivId.ToString(), zipHttpUrl);
                 if (zipFile == null) return null;
 
-                string unZipDirPath = Path.Combine(FilePath.GetTempSavePath(), pixivId.ToString());
+                string unZipDirPath = FilePath.GetTempUnzipDirectory();
                 ZipHelper.ZipToFile(zipFile.FullName, unZipDirPath);
 
                 DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);

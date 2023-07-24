@@ -6,6 +6,18 @@ namespace TheresaBot.Main.Helper
 {
     public static class EnumHelper
     {
+        public static object ToEnum<T>(this string str) where T : Enum
+        {
+            try
+            {
+                return Enum.Parse(typeof(T), str);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public static string PixivSyncModeOption()
         {
             StringBuilder optionBuilder = new StringBuilder();

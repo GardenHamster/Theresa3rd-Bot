@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using TheresaBot.Main.Common;
+﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Type;
 

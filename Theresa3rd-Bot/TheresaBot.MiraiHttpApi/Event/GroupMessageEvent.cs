@@ -7,6 +7,7 @@ using Mirai.CSharp.HttpApi.Session;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Command;
@@ -29,7 +30,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 long groupId = args.Sender.Group.Id;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
                 if (memberId == MiraiConfig.BotQQ) return;
-                if (BusinessHelper.IsBanMember(memberId)) return; //黑名单成员
+                if (BanMemberDatas.IsBanMember(memberId)) return; //黑名单成员
 
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();

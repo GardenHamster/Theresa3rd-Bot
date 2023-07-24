@@ -2,6 +2,7 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.PO;
@@ -41,17 +42,17 @@ namespace TheresaBot.Main.Handler
 
         public async Task<bool> CheckPixivCookieAvailableAsync(GroupCommand command)
         {
-            if (string.IsNullOrWhiteSpace(BotConfig.WebsiteConfig.Pixiv.Cookie))
+            if (string.IsNullOrWhiteSpace(WebsiteDatas.Pixiv.Cookie))
             {
                 await command.ReplyGroupMessageWithAtAsync("缺少pixiv cookie，请设置cookie");
                 return false;
             }
-            if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate)
+            if (DateTime.Now > WebsiteDatas.Pixiv.CookieExpireDate)
             {
                 await command.ReplyGroupTemplateWithAtAsync(BotConfig.PixivConfig.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
                 return false;
             }
-            if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0)
+            if (WebsiteDatas.Pixiv.UserId <= 0)
             {
                 await command.ReplyGroupMessageWithAtAsync("缺少userId，请更新cookie");
                 return false;

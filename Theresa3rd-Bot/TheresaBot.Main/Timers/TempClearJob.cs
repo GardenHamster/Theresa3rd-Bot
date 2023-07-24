@@ -39,7 +39,7 @@ namespace TheresaBot.Main.Timers
             {
                 lock (TimerManager.ClearLock)
                 {
-                    string path = FilePath.GetTempSavePath();
+                    string path = FilePath.GetTempDirectory();
                     if (Directory.Exists(path) == false) return;
                     DirectoryInfo directoryInfo = new DirectoryInfo(path);
                     directoryInfo.Delete(true);

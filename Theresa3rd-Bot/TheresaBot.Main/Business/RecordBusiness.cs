@@ -1,5 +1,4 @@
-﻿using TheresaBot.Main.Common;
-using TheresaBot.Main.Dao;
+﻿using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
@@ -51,9 +50,9 @@ namespace TheresaBot.Main.Business
                 pixivRecord.PlatformType = platformType;
                 pixivRecord.GroupId = groupId;
                 pixivRecord.PixivId = pixivContent.WorkInfo.PixivId;
-                pixivRecord.Title = pixivContent.WorkInfo.Title?.filterEmoji()?.cutString(100);
+                pixivRecord.Title = pixivContent.WorkInfo.Title?.filterEmoji()?.CutString(100);
                 pixivRecord.UserId = pixivContent.WorkInfo.UserId;
-                pixivRecord.UserName = pixivContent.WorkInfo.UserName?.filterEmoji()?.cutString(100);
+                pixivRecord.UserName = pixivContent.WorkInfo.UserName?.filterEmoji()?.CutString(100);
                 pixivRecord.CreateDate = DateTime.Now;
                 pixivRecordDao.Insert(pixivRecord);
                 await Task.CompletedTask;
@@ -97,7 +96,7 @@ namespace TheresaBot.Main.Business
                 messageRecord.PlatformType = platformType;
                 messageRecord.GroupId = groupId;
                 messageRecord.MemberId = memberId;
-                messageRecord.MessageText = plainMessage?.filterEmoji()?.cutString(1000);
+                messageRecord.MessageText = plainMessage?.filterEmoji()?.CutString(1000);
                 messageRecord.CreateDate = DateTime.Now;
                 messageRecordDao.Insert(messageRecord);
                 await Task.CompletedTask;
@@ -107,18 +106,6 @@ namespace TheresaBot.Main.Business
                 LogHelper.Error(ex);
             }
         }
-
-        public List<string> getCloudWords(long groupId, DateTime startTime, DateTime endTime)
-        {
-            int wordCount = BotConfig.WordCloudConfig.MaxWords;
-            var messageRecords = messageRecordDao.getRecords(groupId, startTime, endTime);
-            var messageList = messageRecords.Select(o => o.MessageText).ToList();
-            var messagesString = string.Join(",", messageList);
-            var wordWeights = new JiebaNet.Analyser.TfidfExtractor().ExtractTagsWithWeight(messagesString, wordCount).OrderByDescending(o => o.Weight);
-            var keyWords = wordWeights.Select(o => o.Word).ToList();
-            return keyWords;
-        }
-
 
     }
 }

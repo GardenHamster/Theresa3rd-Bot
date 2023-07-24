@@ -63,10 +63,12 @@ Manage:                                                                         
     SaucenaoCookieCommands:     ['saucenaocookie','sck']                            #更新saucenao cookie 指令，需要私聊使用
     DisableTagCommands:         ['禁止标签','屏蔽标签']                             #禁止一个涩图关键词，禁止后不允许被搜索
     EnableTagCommands:          ['解禁标签','解锁标签']                             #解禁一个涩图关键词
-    DisableMemberCommands:      ['禁止成员','拉黑成员']                             #将一个群成员拉入黑名单，所有群生效
+    DisableMemberCommands:      ['屏蔽成员','拉黑成员']                             #将一个群成员拉入黑名单，所有群生效
     EnableMemberCommands:       ['解禁成员']                                        #将一个群成员从黑名单移除，所有群生效
     ListSubCommands:            ['订阅列表','已订列表']                             #列出所有订阅列表
     RemoveSubCommands:          ['移除订阅','取消订阅']                             #通过订阅Id移除一个订阅
+    ListDicCommands:            ['词典列表']
+    RemoveDicCommands:          ['删除词汇']
     
 Menu:                                                                               #菜单指令
     Enable:                     true                                                #是否启用
@@ -307,6 +309,8 @@ WordCloud:
     YesterdayCommands:          ['昨日词云','昨天词云']
     LastWeekCommands:           ['上周词云']
     LastMonthCommands:          ['上月词云']
+    AddWordCommands:            ['添加云词']
+    HideWordCommands:           ['隐藏云词']
     ImgWidth:                   1000
     ImgHeight:                  800
     MaxWords:                   500

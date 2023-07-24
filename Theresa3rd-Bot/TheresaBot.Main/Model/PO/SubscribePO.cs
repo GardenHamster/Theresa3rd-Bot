@@ -4,7 +4,7 @@ using TheresaBot.Main.Type;
 namespace TheresaBot.Main.Model.PO
 {
     [SugarTable(tableName: "subscribe")]
-    public class SubscribePO : BasePO
+    public record SubscribePO : BasePO
     {
         [SugarColumn(IsNullable = false, Length = 100, ColumnDescription = "订阅编号")]
         public string SubscribeCode { get; set; }

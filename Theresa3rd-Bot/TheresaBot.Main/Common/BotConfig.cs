@@ -1,7 +1,4 @@
 ﻿using TheresaBot.Main.Model.Config;
-using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Model.Subscribe;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Common
 {
@@ -23,9 +20,5 @@ namespace TheresaBot.Main.Common
         public static TimingSetuConfig TimingSetuConfig = new TimingSetuConfig();
         public static PixivRankingConfig PixivRankingConfig = new PixivRankingConfig();
         public static WordCloudConfig WordCloudConfig = new WordCloudConfig();
-        public static WebsiteConfig WebsiteConfig = new WebsiteConfig();
-        public static Dictionary<SubscribeType, List<SubscribeTask>> SubscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
-        public static List<BanWordPO> BanSetuTagList = new List<BanWordPO>();
-        public static List<BanWordPO> BanMemberList = new List<BanWordPO>();
     }
 }

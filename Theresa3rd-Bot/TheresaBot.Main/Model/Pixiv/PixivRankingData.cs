@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Datas;
+using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Model.Pixiv
 {
@@ -28,13 +29,13 @@ namespace TheresaBot.Main.Model.Pixiv
         public int view_count { get; set; }
         public long illust_upload_timestamp { get; set; }
 
-        public double rating_rate => Convert.ToDouble(rating_count) / view_count;
-        public bool isIllust() => illust_type == "0";
-        public bool isR18() => getTags().IsR18();
-        public bool isGif() => getTags().IsGif();
-        public bool isImproper() => getTags().IsImproper();
-        public bool hasBanTag() => getTags()?.hasBanTags() is not null;
-        public List<string> getTags() => tags ?? new List<string>();
+        public double Rating_rate => Convert.ToDouble(rating_count) / view_count;
+        public bool IsIllust() => illust_type == "0";
+        public bool IsR18() => GetTags().IsR18();
+        public bool IsGif() => GetTags().IsGif();
+        public bool IsImproper() => GetTags().IsImproper();
+        public List<string> GetTags() => tags ?? new List<string>();
+        public List<string> HavingBanTags() => GetTags().HavingBanTags();
     }
 
 }

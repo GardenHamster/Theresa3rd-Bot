@@ -68,7 +68,7 @@ namespace TheresaBot.Main.Drawer
                 string fullFileName = imgHttpUrl.GetPreviewImgSaveName(pixivId);
                 FileInfo imgFile = await PixivHelper.DownPixivImgAsync(imgHttpUrl, pixivId, fullFileName);
                 if (imgFile is not null) return imgFile;
-                return FilePath.GetDownErrorImg();
+                return FilePath.GetErrorImgPath();
             }
             catch (Exception ex)
             {

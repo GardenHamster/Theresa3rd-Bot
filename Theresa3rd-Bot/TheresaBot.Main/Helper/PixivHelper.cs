@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Model.File;
 using TheresaBot.Main.Model.Pixiv;
@@ -253,7 +254,7 @@ namespace TheresaBot.Main.Helper
                 try
                 {
                     if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = new HttpFileInfo(url).FullFileName;
-                    string fullImgSavePath = Path.Combine(FilePath.GetPixivImgSavePath(pixivId), fullFileName);
+                    string fullImgSavePath = Path.Combine(FilePath.GetPixivImgDirectory(pixivId), fullFileName);
                     if (File.Exists(fullImgSavePath)) return new FileInfo(fullImgSavePath);
                     return await DownPixivImgAsync(url, fullImgSavePath, headerDic, timeout);
                 }
@@ -298,7 +299,7 @@ namespace TheresaBot.Main.Helper
                 try
                 {
                     if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = new HttpFileInfo(url).FullFileName;
-                    string fullFileSavePath = Path.Combine(FilePath.GetTempSavePath(), fullFileName);
+                    string fullFileSavePath = FilePath.GetTempFileSavePath(fullFileName);
                     return await DownPixivFileAsync(url, fullFileSavePath, headerDic, timeout);
                 }
                 catch (Exception ex)
@@ -337,7 +338,7 @@ namespace TheresaBot.Main.Helper
         private static Dictionary<string, string> GetPixivHeader(string referer)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            headerDic.Add("cookie", BotConfig.WebsiteConfig.Pixiv.Cookie);
+            headerDic.Add("cookie", WebsiteDatas.Pixiv.Cookie);
             headerDic.Add("referer", referer);
             //headerDic.Add("accept", "application/json");
             //headerDic.Add("sec-fetch-mode", "cors");

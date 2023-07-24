@@ -4,7 +4,7 @@ using TheresaBot.Main.Type;
 namespace TheresaBot.Main.Model.PO
 {
     [SugarTable("request_record")]
-    public class RequestRecordPO : BasePO
+    public record RequestRecordPO : BasePO
     {
         [SugarColumn(IsNullable = false, ColumnDescription = "群ID")]
         public long GroupId { get; set; }

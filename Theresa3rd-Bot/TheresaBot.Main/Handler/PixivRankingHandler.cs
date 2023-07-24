@@ -315,7 +315,7 @@ namespace TheresaBot.Main.Handler
             var rankingDetails = pixivRankingInfo.RankingDetails.Where(o => idList.Contains(o.RankingContent.rank)).ToList();
             if (rankingDetails.Count == 0)
             {
-                await command.ReplyGroupMessageWithAtAsync($"当前榜单中没有不存在指定序号的作品");
+                await command.ReplyGroupMessageWithAtAsync($"当前榜单中不存在指定序号的作品");
                 return;
             }
 
@@ -344,7 +344,7 @@ namespace TheresaBot.Main.Handler
             while (startIndex < details.Count)
             {
                 string fileName = $"{rankingMode.Code}_preview_{rankingInfo.RankingDate}_{startIndex}_{startIndex + previewInPage}.jpg";
-                string fullSavePath = Path.Combine(FilePath.GetPixivPreviewSavePath(), fileName);
+                string fullSavePath = Path.Combine(FilePath.GetPixivPreviewDirectory(), fileName);
                 var partList = details.Skip(startIndex).Take(previewInPage).ToList();
                 var previewFile = await createPreviewImgAsync(rankingInfo, partList, fullSavePath);
                 if (previewFile is not null) fileInfos.Add(previewFile.FullName);

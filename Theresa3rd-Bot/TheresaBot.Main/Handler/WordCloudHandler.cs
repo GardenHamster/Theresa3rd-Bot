@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -14,10 +13,14 @@ namespace TheresaBot.Main.Handler
     internal class WordCloudHandler : BaseHandler
     {
         private RecordBusiness recordBusiness;
+        private DictionaryBusiness dictionaryBusiness;
+        private WordCloudBusiness wordCloudBusiness;
 
         public WordCloudHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             recordBusiness = new RecordBusiness();
+            dictionaryBusiness = new DictionaryBusiness();
+            wordCloudBusiness = new WordCloudBusiness();
         }
 
         /// <summary>
@@ -41,7 +44,7 @@ namespace TheresaBot.Main.Handler
                 startTimeStr = paramArr[0] + " 00:00:00";
                 endTimeStr = paramArr[0] + " 23:59:59";
             }
-            else if(paramArr.Length == 2)
+            else if (paramArr.Length == 2)
             {
                 startTimeStr = paramArr[0] + " 00:00:00";
                 endTimeStr = paramArr[1] + " 23:59:59";
@@ -176,7 +179,7 @@ namespace TheresaBot.Main.Handler
                 long groupId = groupCommand.GroupId;
                 CoolingCache.SetWordCloudHanding(groupId);
                 await groupCommand.ReplyProcessingMessageAsync(BotConfig.WordCloudConfig.ProcessingMsg, 1000);
-                List<string> words = recordBusiness.getCloudWords(groupId, startTime, endTime);
+                List<string> words = wordCloudBusiness.getCloudWords(groupId, startTime, endTime);
                 if (words is null || words.Count == 0)
                 {
                     await groupCommand.ReplyGroupMessageWithAtAsync("未能获取足够数量的聊天记录，词云生成失败了");
@@ -271,7 +274,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 CoolingCache.SetWordCloudHanding(groupId);
-                List<string> words = recordBusiness.getCloudWords(groupId, startTime, endTime);
+                List<string> words = wordCloudBusiness.getCloudWords(groupId, startTime, endTime);
                 if (words is null || words.Count == 0) return;
                 FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words);
                 if (string.IsNullOrWhiteSpace(remindMsg) == false)

@@ -7,10 +7,32 @@ namespace TheresaBot.Main.Helper
     public static class StringHelper
     {
         /// <summary>
+        /// 忽略大小写判断字符串是否相等
+        /// </summary>
+        /// <returns></returns>
+        public static bool EqualsIgnoreCase(this string str1, string str2)
+        {
+            str1 = str1.ToUpper().Trim();
+            str2 = str2.ToUpper().Trim();
+            return str1 == str2;
+        }
+
+        /// <summary>
+        /// 忽略大小写判断str1是否包含str2
+        /// </summary>
+        /// <returns></returns>
+        public static bool ContainsIgnoreCase(this string str1, string str2)
+        {
+            str1 = str1.ToUpper().Trim();
+            str2 = str2.ToUpper().Trim();
+            return str1.Contains(str2);
+        }
+
+        /// <summary>
         /// 获取32长度的UUID
         /// </summary>
         /// <returns></returns>
-        public static string get32UUID()
+        public static string RandomUUID32()
         {
             return System.Guid.NewGuid().ToString("N");
         }
@@ -19,9 +41,9 @@ namespace TheresaBot.Main.Helper
         /// 获取16长度的UUID
         /// </summary>
         /// <returns></returns>
-        public static string get16UUID()
+        public static string RandomUUID16()
         {
-            return get32UUID().Substring(0, 16);
+            return RandomUUID32().Substring(16, 16);
         }
 
         /// <summary>
@@ -30,7 +52,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="str"></param>
         /// <param name="keepLength"></param>
         /// <returns></returns>
-        public static string cutString(this string str, int keepLength = 100, string endString = "...")
+        public static string CutString(this string str, int keepLength = 100, string endString = "...")
         {
             if (str is null) return null;
             str = str.Trim();
@@ -46,7 +68,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="message"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        public static string splitKeyWord(this string message, string command)
+        public static string SplitKeyWord(this string message, string command)
         {
             command = command.Trim();
             message = message.Trim();
@@ -64,9 +86,22 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static string[] splitKeyParams(this string message, string command)
         {
-            string paramStr = message.Trim().splitKeyWord(command);
+            string paramStr = message.Trim().SplitKeyWord(command);
             string[] paramArr = paramStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             return paramArr.Where(o => string.IsNullOrWhiteSpace(o) == false).Select(o => o.Trim()).ToArray();
+        }
+
+        /// <summary>
+        /// 将多标签拆分为每个单独的标签
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public static string[] splitPixivTags(this string tags)
+        {
+            if (string.IsNullOrWhiteSpace(tags)) return new string[0];
+            string[] tagArr = tags.Split(new string[] { " ", ",", "，" }, StringSplitOptions.RemoveEmptyEntries);
+            return tagArr.Where(o => string.IsNullOrWhiteSpace(o) == false).Select(o => o.Trim()).ToArray();
         }
 
         /// <summary>
@@ -75,7 +110,8 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static string[] splitParams(this string value)
         {
-            return value.Split(new string[] { ",", "，", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var paramArr = value.Split(new string[] { ",", "，", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            return paramArr.Where(o => !string.IsNullOrWhiteSpace(o)).Select(o => o.Trim()).ToArray();
         }
 
         /// <summary>
@@ -196,6 +232,18 @@ namespace TheresaBot.Main.Helper
                 builder.Append($"{paramKey}={id}");
             }
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// 使用分隔符连接一个集合
+        /// </summary>
+        /// <param name="strList"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string JoinList(this List<string> strList, string separator = ",")
+        {
+            if (strList.Count == 0) return string.Empty;
+            return string.Join(separator, strList);
         }
 
         /// <summary>

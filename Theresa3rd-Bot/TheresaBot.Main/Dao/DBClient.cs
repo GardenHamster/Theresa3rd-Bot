@@ -14,7 +14,9 @@ namespace TheresaBot.Main.Dao
             try
             {
                 DbScoped.SugarScope.DbMaintenance.CreateDatabase();
-                DbScoped.SugarScope.CodeFirst.InitTables(typeof(BanWordPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(BanMemberPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(BanTagPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(DictionaryPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(ImageRecordPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(MessageRecordPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(PixivRecordPO));
@@ -22,8 +24,8 @@ namespace TheresaBot.Main.Dao
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(SubscribeGroupPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(SubscribePO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(SubscribeRecordPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(SugarTag));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(WebsitePO));
-                //DbScoped.SugarScope.CodeFirst.InitTables(typeof(WordCloudPO));
             }
             catch (Exception ex)
             {

@@ -10,9 +10,9 @@
         public abstract int UserId { get; }
         public abstract string Title { get; }
         public abstract string UserName { get; }
-        public abstract string hasBanTag();
-        public abstract List<string> getTags();
-        public abstract List<string> getOriginalUrls();
+        public abstract List<string> HavingBanTags();
+        public abstract List<string> GetTags();
+        public abstract List<string> GetOriginalUrls();
         public List<string> Tags
         {
             get
@@ -21,7 +21,7 @@
                 if (IsR18) tags.Add("R-18");
                 if (IsAI) tags.Add("AI绘图");
                 if (IsGif) tags.Add("动图");
-                tags.AddRange(getTags());
+                tags.AddRange(GetTags());
                 return tags.Distinct().ToList();
             }
         }

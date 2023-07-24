@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Datas;
+using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Model.Pixiv
 {
@@ -36,10 +37,10 @@ namespace TheresaBot.Main.Model.Pixiv
         public List<string> tags { get; set; }
         public int xRestrict { get; set; }
 
-        public bool IsAI => aiType > 1 || getTags().IsAI();
-        public bool IsR18 => xRestrict > 0 || getTags().IsR18();
-        public bool IsImproper => xRestrict > 1 || getTags().IsImproper();
-        public List<string> getTags() => tags ?? new List<string>();
-        public string hasBanTag() => getTags()?.hasBanTags();
+        public bool IsAI => aiType > 1 || GetTags().IsAI();
+        public bool IsR18 => xRestrict > 0 || GetTags().IsR18();
+        public bool IsImproper => xRestrict > 1 || GetTags().IsImproper();
+        public List<string> GetTags() => tags ?? new List<string>();
+        public List<string> HavingBanTag() => GetTags().HavingBanTags();
     }
 }

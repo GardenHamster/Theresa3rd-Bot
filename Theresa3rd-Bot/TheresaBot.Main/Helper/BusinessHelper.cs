@@ -2,11 +2,11 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Model.PO;
 
 namespace TheresaBot.Main.Helper
 {
@@ -34,17 +34,6 @@ namespace TheresaBot.Main.Helper
             message = message?.Trim() ?? string.Empty;
             var prefix = prefixs.Where(o => message.StartsWith(o)).FirstOrDefault();
             return string.IsNullOrWhiteSpace(prefix) ? string.Empty : prefix;
-        }
-
-        /// <summary>
-        /// 检查是否黑名单成员
-        /// </summary>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        public static bool IsBanMember(long memberId)
-        {
-            if (memberId == 0) return false;
-            return BotConfig.BanMemberList.Any(o => o.KeyWord == memberId.ToString());
         }
 
         /// <summary>
@@ -131,32 +120,15 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 判断标签中是否包含被禁止的标签，有则返回内容，否则返回null
-        /// </summary>
-        /// <param name="tags"></param>
-        /// <returns></returns>
-        public static string hasBanTags(this List<string> tags)
-        {
-            if (tags is null || tags.Count == 0) return null;
-            List<string> banTags = new List<string>();
-            foreach (string tag in tags)
-            {
-                List<BanWordPO> banList = BotConfig.BanSetuTagList.Where(o => tag.Trim().ToUpper().Contains(o.KeyWord.Trim().ToUpper())).ToList();
-                if (banList.Count > 0) banTags.AddRange(banList.Select(o => o.KeyWord).ToList());
-            }
-            return banTags.Count > 0 ? String.Join('，', banTags.Distinct()) : null;
-        }
-
-        /// <summary>
         /// 检查pixiv cookie是否已经过期
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
         public static bool IsPixivCookieAvailable()
         {
-            if (string.IsNullOrWhiteSpace(BotConfig.WebsiteConfig.Pixiv.Cookie)) return false;
-            if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate) return false;
-            if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0) return false;
+            if (string.IsNullOrWhiteSpace(WebsiteDatas.Pixiv.Cookie)) return false;
+            if (DateTime.Now > WebsiteDatas.Pixiv.CookieExpireDate) return false;
+            if (WebsiteDatas.Pixiv.UserId <= 0) return false;
             return true;
         }
 

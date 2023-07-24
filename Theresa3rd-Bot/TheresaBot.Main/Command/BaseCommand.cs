@@ -23,7 +23,7 @@ namespace TheresaBot.Main.Command
             this.Instruction = instruction;
             this.CommandType = commandType;
             this.Session = baseSession;
-            this.KeyWord = instruction.splitKeyWord(command);
+            this.KeyWord = instruction.SplitKeyWord(command);
             this.Params = instruction.splitKeyParams(command);
         }
 

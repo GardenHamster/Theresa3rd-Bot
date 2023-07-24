@@ -1,6 +1,7 @@
 ﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Reporter;
@@ -65,7 +66,7 @@ namespace TheresaBot.Main.Handler
 
             string websiteCode = Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv) ?? string.Empty;
             WebsitePO website = websiteBusiness.updateWebsite(websiteCode, cookie, userId, BotConfig.PixivConfig.CookieExpire);
-            ConfigHelper.LoadWebsite();
+            WebsiteDatas.LoadWebsite();
             string expireDate = website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss");
             await command.ReplyFriendMessageAsync($"cookie更新完毕,过期时间为{expireDate}");
         }
@@ -119,7 +120,7 @@ namespace TheresaBot.Main.Handler
 
             string websiteCode = Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao) ?? string.Empty;
             websiteBusiness.updateWebsite(websiteCode, cookie, userId, DateTime.Now.AddYears(1));
-            ConfigHelper.LoadWebsite();
+            WebsiteDatas.LoadWebsite();
             await command.ReplyFriendMessageAsync($"cookie更新完毕");
         }
 

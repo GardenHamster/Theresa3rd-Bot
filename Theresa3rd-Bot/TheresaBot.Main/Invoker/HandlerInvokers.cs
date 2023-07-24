@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Invoker
             //拉黑成员
             new(BotConfig.ManageConfig?.DisableMemberCommands, CommandType.BanMember, new(async (botCommand, session, reporter) =>
             {
-                BanWordHandler handler = new BanWordHandler(session, reporter);
+                ManageHandler handler = new ManageHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 await handler.disableMemberAsync(botCommand);
                 await handler.addRecord(botCommand);
@@ -30,7 +30,7 @@ namespace TheresaBot.Main.Invoker
             //解禁成员
             new(BotConfig.ManageConfig?.EnableMemberCommands, CommandType.BanMember, new(async (botCommand, session, reporter) =>
             {
-                BanWordHandler handler = new BanWordHandler(session, reporter);
+                ManageHandler handler = new ManageHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 await handler.enableMemberAsync(botCommand);
                 await handler.addRecord(botCommand);
@@ -128,20 +128,38 @@ namespace TheresaBot.Main.Invoker
                 return true;
             })),
             //禁止色图标签
-            new(BotConfig.ManageConfig?.DisableTagCommands, CommandType.BanSetuTag, new(async (botCommand, session, reporter) =>
+            new(BotConfig.ManageConfig?.DisableTagCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
             {
-                BanWordHandler handler = new BanWordHandler(session, reporter);
+                ManageHandler handler = new ManageHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.disableSetuTagAsync(botCommand);
+                await handler.disableTagAsync(botCommand);
                 await handler.addRecord(botCommand);
                 return true;
             })),
             //解禁色图标签
-            new(BotConfig.ManageConfig?.EnableTagCommands, CommandType.BanSetuTag, new(async (botCommand, session, reporter) =>
+            new(BotConfig.ManageConfig?.EnableTagCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
             {
-                BanWordHandler handler = new BanWordHandler(session, reporter);
+                ManageHandler handler = new ManageHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.enableSetuTagAsync(botCommand);
+                await handler.enableTagAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //添加词云词汇
+            new(BotConfig.WordCloudConfig?.AddWordCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
+            {
+                DictionaryHandler handler = new DictionaryHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.AddCloudWordAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
+            //隐藏词云词汇
+            new(BotConfig.WordCloudConfig?.HideWordCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
+            {
+                DictionaryHandler handler = new DictionaryHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.HideCloudWordAsync(botCommand);
                 await handler.addRecord(botCommand);
                 return true;
             })),
@@ -351,7 +369,7 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
-            //自定义词云
+            //查询词云
             new(BotConfig.WordCloudConfig?.BasicCommands, CommandType.WordCloud, new(async (botCommand, session, reporter) =>
             {
                 WordCloudHandler handler = new WordCloudHandler(session, reporter);
@@ -473,7 +491,7 @@ namespace TheresaBot.Main.Invoker
                 return true;
             })),
             //SaucenaoCookie
-            new(BotConfig.ManageConfig?.SaucenaoCookieCommands, CommandType.BanSetuTag, new(async (botCommand, session, reporter) =>
+            new(BotConfig.ManageConfig?.SaucenaoCookieCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
             {
                 CookieHandler handler = new CookieHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;

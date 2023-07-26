@@ -2,6 +2,7 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
@@ -47,7 +48,7 @@ namespace TheresaBot.Main.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1, toLoliconTagArr(tagStr));
+                    dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1, toLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 
                 if (dataList.Count == 0)

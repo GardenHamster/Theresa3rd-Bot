@@ -70,7 +70,7 @@ namespace TheresaBot.Main.Handler
                 return;
             }
 
-            var remindMsg = $"自定义词云如下，统计时间段为：{startTime.Value.ToSimpleString()}-{endTime.Value.ToSimpleString()}";
+            var remindMsg = $"自定义词云如下，统计时间段为：{startTime.Value.ToSimpleString()} 至 {endTime.Value.ToSimpleString()}";
             await replyWordCloudAsync(groupCommand, startTime.Value, endTime.Value, remindMsg);
         }
 
@@ -83,7 +83,7 @@ namespace TheresaBot.Main.Handler
         {
             DateTime startTime = DateTimeHelper.GetDayStart();
             DateTime endTime = DateTimeHelper.GetDayEnd();
-            var remindMsg = $"今日词云如下，统计时间段为：{startTime.ToSimpleString()}-{endTime.ToSimpleString()}";
+            var remindMsg = $"今日词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
@@ -96,7 +96,7 @@ namespace TheresaBot.Main.Handler
         {
             DateTime startTime = DateTimeHelper.GetWeekStart();
             DateTime endTime = DateTimeHelper.GetWeekEnd();
-            var remindMsg = $"本周词云如下，统计时间段为：{startTime.ToSimpleString()}-{endTime.ToSimpleString()}";
+            var remindMsg = $"本周词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
@@ -109,7 +109,7 @@ namespace TheresaBot.Main.Handler
         {
             DateTime startTime = DateTimeHelper.GetWeekStart();
             DateTime endTime = DateTimeHelper.GetWeekEnd();
-            var remindMsg = $"本月词云如下，统计时间段为：{startTime.ToSimpleString()}-{endTime.ToSimpleString()}";
+            var remindMsg = $"本月词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
@@ -122,7 +122,7 @@ namespace TheresaBot.Main.Handler
         {
             DateTime startTime = DateTimeHelper.GetYearStart();
             DateTime endTime = DateTimeHelper.GetYearEnd();
-            var remindMsg = $"本年词云如下，统计时间段为：{startTime.ToSimpleString()}-{endTime.ToSimpleString()}";
+            var remindMsg = $"本年词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
@@ -135,7 +135,7 @@ namespace TheresaBot.Main.Handler
         {
             DateTime startTime = DateTimeHelper.GetYesterdayStart();
             DateTime endTime = DateTimeHelper.GetYesterdayEnd();
-            var remindMsg = $"昨日词云如下，统计时间段为：{startTime.ToSimpleString()}-{endTime.ToSimpleString()}";
+            var remindMsg = $"昨日词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
@@ -148,7 +148,7 @@ namespace TheresaBot.Main.Handler
         {
             DateTime startTime = DateTimeHelper.GetLastWeekStart();
             DateTime endTime = DateTimeHelper.GetLastWeekEnd();
-            var remindMsg = $"上周词云如下，统计时间段为：{startTime.ToSimpleString()}-{endTime.ToSimpleString()}";
+            var remindMsg = $"上周词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
@@ -161,7 +161,7 @@ namespace TheresaBot.Main.Handler
         {
             DateTime startTime = DateTimeHelper.GetLastMonthStart();
             DateTime endTime = DateTimeHelper.GetLastMonthEnd();
-            var remindMsg = $"上月词云如下，统计时间段为：{startTime.ToSimpleString()}-{endTime.ToSimpleString()}";
+            var remindMsg = $"上月词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
@@ -186,15 +186,14 @@ namespace TheresaBot.Main.Handler
                     await groupCommand.ReplyGroupMessageWithAtAsync("未能获取足够数量的聊天记录，词云生成失败了");
                     return;
                 }
-                FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words);
+                List<BaseContent> contents = new List<BaseContent>();
                 if (string.IsNullOrWhiteSpace(remindMsg) == false)
                 {
-                    await groupCommand.ReplyGroupMessageWithAtAsync(remindMsg);
-                    await Task.Delay(1000);
+                    contents.Add(new PlainContent(remindMsg));
                 }
-                List<BaseContent> wordCloudContnts = new List<BaseContent>();
-                wordCloudContnts.Add(new LocalImageContent(wordCloudFile));
-                await groupCommand.ReplyGroupMessageAsync(wordCloudContnts);
+                FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words);
+                contents.Add(new LocalImageContent(wordCloudFile));
+                await groupCommand.ReplyGroupMessageAsync(contents);
             }
             catch (Exception ex)
             {
@@ -238,19 +237,18 @@ namespace TheresaBot.Main.Handler
                 DateTime startTime = endTime.AddHours(-1 * timer.HourRange);
                 List<string> words = wordCloudBusiness.getCloudWords(groupId, startTime, endTime);
                 if (words is null || words.Count == 0) return;
-                FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words);
+                List<BaseContent> contents = new List<BaseContent>();
                 if (string.IsNullOrWhiteSpace(timer.Template) == false)
                 {
-                    await Session.SendGroupMessageAsync(groupId, timer.Template);
-                    await Task.Delay(1000);
+                    contents.Add(new PlainContent(timer.Template));
                 }
-                List<BaseContent> wordCloudContnts = new List<BaseContent>();
-                wordCloudContnts.Add(new LocalImageContent(wordCloudFile));
-                await Session.SendGroupMessageAsync(groupId, wordCloudContnts);
+                FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words);
+                contents.Add(new LocalImageContent(wordCloudFile));
+                await Session.SendGroupMessageAsync(groupId, contents);
             }
             catch (Exception ex)
             {
-                string errMsg = $"sendWordCloudAsync异常";
+                string errMsg = $"pushWordCloudAsync异常";
                 LogHelper.Error(ex, errMsg);
                 await Reporter.SendError(ex, errMsg);
             }

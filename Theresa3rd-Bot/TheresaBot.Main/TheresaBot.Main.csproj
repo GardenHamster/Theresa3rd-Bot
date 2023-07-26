@@ -76,6 +76,9 @@
 	  <None Update="Font\hywenhei85w.ttf">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	  <None Update="Font\simsun.ttc">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Resources\char_state_tab.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>

@@ -1,5 +1,6 @@
 ﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -31,11 +32,13 @@ namespace TheresaBot.Main.Handler
                 if (string.IsNullOrWhiteSpace(bindTags))
                 {
                     sugarTagBusiness.DelSugarTags(keyWordArr);
+                    SugarTagDatas.LoadDatas();
                     await command.ReplyGroupMessageWithAtAsync("已解绑相关标签");
                 }
                 else
                 {
                     sugarTagBusiness.SetSugarTags(keyWordArr, bindTags);
+                    SugarTagDatas.LoadDatas();
                     await command.ReplyGroupMessageWithAtAsync("标签绑定完毕！");
                 }
             }

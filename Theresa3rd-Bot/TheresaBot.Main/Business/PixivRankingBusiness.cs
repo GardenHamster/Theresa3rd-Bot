@@ -176,7 +176,7 @@ namespace TheresaBot.Main.Business
         private bool checkWorkIsOk(PixivRankingItem rankingItem, PixivWorkInfo workInfo)
         {
             if (workInfo.IsImproper) return false;
-            if (workInfo.HavingBanTags() is not null) return false;
+            if (workInfo.HavingBanTags().Count > 0) return false;
             if (workInfo.IsIllust == false) return false;
             bool isRatingCountOk, isRatingRateOk, isBookmarkCountOk, isBookmarkRateOk;
 

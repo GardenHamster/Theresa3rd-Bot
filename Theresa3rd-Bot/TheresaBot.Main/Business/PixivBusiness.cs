@@ -88,7 +88,7 @@ namespace TheresaBot.Main.Business
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper) continue;
-                    if (pixivUserWorkInfo.HavingBanTags() != null) continue;
+                    if (pixivUserWorkInfo.HavingBanTags().Count > 0) continue;
                     if (pixivUserWorkInfo.IsR18 && includeR18 == false) continue;
                     if (pixivUserWorkInfo.IsAI && includeAI == false) continue;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
@@ -139,7 +139,7 @@ namespace TheresaBot.Main.Business
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper) continue;
-                    if (pixivUserWorkInfo.HavingBanTags() != null) continue;
+                    if (pixivUserWorkInfo.HavingBanTags().Count > 0) continue;
                     if (pixivUserWorkInfo.IsR18 && includeR18 == false) continue;
                     if (pixivUserWorkInfo.IsAI && includeAI == false) continue;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
@@ -271,7 +271,7 @@ namespace TheresaBot.Main.Business
                     if (bookUpList.Count > 0) return;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivIllustList[i].id, 0);
                     if (pixivWorkInfo.IsImproper) continue;
-                    if (pixivWorkInfo.HavingBanTags() is not null) continue;
+                    if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     if (pixivWorkInfo.IsR18 && includeR18 == false) continue;
                     if (pixivWorkInfo.IsAI && includeAI == false) continue;
                     if (checkRandomWorkIsOk(pixivWorkInfo) == false) continue;
@@ -296,7 +296,7 @@ namespace TheresaBot.Main.Business
         {
             if (pixivWorkInfo is null) return false;
             double target = getTargetByWorkType(pixivWorkInfo);
-            bool isNotBanTag = pixivWorkInfo.HavingBanTags() is null;
+            bool isNotBanTag = pixivWorkInfo.HavingBanTags().Count == 0;
             bool isBookmarkOk = pixivWorkInfo.bookmarkCount >= BotConfig.SetuConfig.Pixiv.MinBookmark * target;
             bool isBookRateOk = pixivWorkInfo.bookmarkRate >= BotConfig.SetuConfig.Pixiv.MinBookRate * target;
             return isNotBanTag && isBookmarkOk && isBookRateOk;
@@ -427,7 +427,7 @@ namespace TheresaBot.Main.Business
                 startIndex += eachPage;
             }
             workList = workList.Where(o => o.IsImproper == false).ToList();
-            workList = workList.Where(o => o.HavingBanTags() is null).ToList();
+            workList = workList.Where(o => o.HavingBanTags().Count == 0).ToList();
             workList = workList.Where(o => isShowR18 || o.IsR18 == false).ToList();
             workList = workList.OrderByDescending(o => Convert.ToInt32(o.id)).ToList();
             List<PixivProfileDetail> profileDetails = new List<PixivProfileDetail>();
@@ -466,7 +466,7 @@ namespace TheresaBot.Main.Business
                     if (userWork is null) continue;
                     if (string.IsNullOrWhiteSpace(userWork.id)) continue;
                     if (userWork.IsImproper) continue;
-                    if (userWork.HavingBanTags() is not null) continue;
+                    if (userWork.HavingBanTags().Count > 0) continue;
                     if (isShowAIs == false && userWork.IsAI) continue;
                     if (isShowR18s == false && userWork.IsR18) continue;
                     if (shelfLife > 0 && userWork.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
@@ -475,7 +475,7 @@ namespace TheresaBot.Main.Business
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(userWork.id, 0);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;
-                    if (pixivWorkInfo.HavingBanTags() is not null) continue;
+                    if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
                     PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo, subscribeTask);
                     if (pushAsync is not null)
@@ -535,7 +535,7 @@ namespace TheresaBot.Main.Business
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(illuts.id, 0);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;
-                    if (pixivWorkInfo.HavingBanTags() is not null) continue;
+                    if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     if (checkTagWorkIsOk(pixivWorkInfo) == false) continue;
                     SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
                     PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo, subscribeTask);
@@ -590,7 +590,7 @@ namespace TheresaBot.Main.Business
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString(), 0);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;
-                    if (pixivWorkInfo.HavingBanTags() is not null) continue;
+                    if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     if (isShowAIs == false && pixivWorkInfo.IsAI) continue;
                     if (isShowR18s == false && pixivWorkInfo.IsR18) continue;
                     if (shelfLife > 0 && pixivWorkInfo.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;

@@ -5,16 +5,19 @@ namespace TheresaBot.GoCqHttp.Result
 {
     public class CQResult : BaseResult
     {
-        public CQResult(long msgId, bool isFailed, string errorMsg) : base(msgId, isFailed, errorMsg)
-        {
-        }
+        private long _messageId { get; init; }
+        public CqActionResult ActionResult { get; init; }
+        public override long MessageId => _messageId;
+        public override bool IsFailed => _messageId == 0;
+        public override bool IsSuccess => _messageId != 0;
+        public override string ErrorMsg => ActionResult.ErrorMsg;
 
-        public CQResult(CqSendMessageActionResult actionResult) : base(actionResult.MessageId, actionResult.Status == CqActionStatus.Failed, actionResult.ErrorMsg ?? String.Empty)
-        {
-        }
+        public CQResult() { }
 
-        public CQResult(CqSendGroupForwardMessageActionResult actionResult) : base(actionResult.MessageId, actionResult.Status == CqActionStatus.Failed, actionResult.ErrorMsg ?? String.Empty)
+        public CQResult(CqActionResult result, long messageId)
         {
+            this.ActionResult = result;
+            this._messageId = messageId;
         }
 
     }

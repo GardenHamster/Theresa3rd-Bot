@@ -11,7 +11,7 @@ namespace TheresaBot.MiraiHttpApi.Command
     {
         private IGroupMessageEventArgs Args { get; init; }
 
-        public override long MsgId => Args.GetMessageId();
+        public override long MessageId => Args.GetMessageId();
 
         public override long GroupId => Args.Sender.Group.Id;
 

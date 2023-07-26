@@ -11,7 +11,7 @@ namespace TheresaBot.MiraiHttpApi.Command
     {
         private IFriendMessageEventArgs Args { get; init; }
 
-        public override long MsgId => Args.GetMessageId();
+        public override long MessageId => Args.GetMessageId();
 
         public override long MemberId => Args.Sender.Id;
 

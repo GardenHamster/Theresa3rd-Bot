@@ -54,7 +54,7 @@ namespace TheresaBot.Main.Handler
                 SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);
                 results = await Session.SendGroupSetuAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
             }
-            long[] msgIds = results.Select(o => o.MsgId).ToArray();
+            long[] msgIds = results.Select(o => o.MessageId).ToArray();
             Task recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, groupId);
         }
 
@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Handler
             {
                 List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(eachPage).ToList();
                 BaseResult result = await SendGroupMergeSetuAsync(pageContents, headerContents, groupId);
-                Task recordTask = recordBusiness.AddPixivRecord(pageContents, Session.PlatformType, result.MsgId, groupId);
+                Task recordTask = recordBusiness.AddPixivRecord(pageContents, Session.PlatformType, result.MessageId, groupId);
                 startIndex += eachPage;
             }
         }

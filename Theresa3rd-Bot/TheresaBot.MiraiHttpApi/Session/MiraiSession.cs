@@ -29,6 +29,25 @@ namespace TheresaBot.MiraiHttpApi.Session
             return new MiraiResult(msgId);
         }
 
+        public override async Task<BaseResult> SendGroupMessageWithQuoteAsync(long groupId, long memberId, long messageId, string message)
+        {
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new QuoteMessage((int)messageId, groupId, memberId, groupId));
+            msgList.Add(new PlainMessage(message));
+            var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
+            return new MiraiResult(msgId);
+        }
+
+        public override async Task<BaseResult> SendGroupMessageWithQuoteAsync(long groupId, long memberId, long messageId, List<BaseContent> contents)
+        {
+            if (contents.Count == 0) return MiraiResult.Undo;
+            List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new QuoteMessage((int)messageId, groupId, memberId, groupId));
+            msgList.AddRange(await contents.ToMiraiMessageAsync(UploadTarget.Group));
+            var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
+            return new MiraiResult(msgId);
+        }
+
         public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers = null, bool isAtAll = false)
         {
             if (contents.Count == 0) return MiraiResult.Undo;

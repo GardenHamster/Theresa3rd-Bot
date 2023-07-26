@@ -34,7 +34,7 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                long revokeMsgId = command.MsgId;
+                long revokeMsgId = command.MessageId;
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
                 List<string> imgList = command.GetImageUrls();
@@ -88,7 +88,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                long revokeMsgId = command.MsgId;
+                long revokeMsgId = command.MessageId;
                 await HandleSearch(command, imgList, revokeMsgId);
                 CoolingCache.SetMemberSaucenaoCooling(command.GroupId, command.MemberId);
             }
@@ -386,7 +386,7 @@ namespace TheresaBot.Main.Handler
         private async Task replyAndRevoke(GroupCommand command, List<SetuContent> setuContents)
         {
             var result = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval, true);
-            var recordTask = recordBusiness.AddPixivRecord(setuContents, Session.PlatformType, result.MsgId, command.GroupId);
+            var recordTask = recordBusiness.AddPixivRecord(setuContents, Session.PlatformType, result.MessageId, command.GroupId);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);

@@ -10,7 +10,7 @@ namespace TheresaBot.GoCqHttp.Command
     {
         private CqGroupMessagePostContext Args { get; init; }
 
-        public override long MsgId => Args.MessageId;
+        public override long MessageId => Args.MessageId;
 
         public override long GroupId => Args.GroupId;
 

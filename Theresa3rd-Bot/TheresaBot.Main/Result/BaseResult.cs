@@ -1,21 +1,13 @@
 ﻿namespace TheresaBot.Main.Result
 {
-    public class BaseResult
+    public abstract class BaseResult
     {
-        public long MsgId { get; init; }
-        public bool IsFailed { get; init; }
-        public string ErrorMsg { get; init; }
-
+        public abstract long MessageId { get; }
+        public abstract bool IsFailed { get; }
+        public abstract bool IsSuccess { get; }
+        public abstract string ErrorMsg { get; }
+        public static BaseResult Undo => new UndoResult();
         protected BaseResult() { }
-
-        protected BaseResult(long msgId, bool isFailed, string errorMsg)
-        {
-            this.MsgId = msgId;
-            this.IsFailed = isFailed;
-            this.ErrorMsg = errorMsg;
-        }
-
-        public static BaseResult Undo => new BaseResult(0, false, string.Empty);
-
     }
+
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheresaBot.Main.Model.PO;
+﻿using TheresaBot.Main.Model.PO;
 
 namespace TheresaBot.Main.Dao
 {
@@ -17,7 +12,7 @@ namespace TheresaBot.Main.Dao
 
         public SugarTagPO getSugar(string keyWord)
         {
-            return Db.Queryable<SugarTagPO>().Where(o=>o.KeyWord== keyWord).First();
+            return Db.Queryable<SugarTagPO>().Where(o => o.KeyWord == keyWord).First();
         }
 
         public int delSugar(string keyWord)
@@ -25,7 +20,7 @@ namespace TheresaBot.Main.Dao
             return Db.Deleteable<SugarTagPO>().Where(o => o.KeyWord == keyWord).ExecuteCommand();
         }
 
-        
+
 
     }
 }

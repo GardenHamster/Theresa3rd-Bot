@@ -4,12 +4,17 @@ namespace TheresaBot.MiraiHttpApi.Result
 {
     public class MiraiResult : BaseResult
     {
-        public MiraiResult(long msgId) : base(msgId, msgId < 0, String.Empty)
-        {
-        }
+        private int _messageId { get; init; }
+        public override long MessageId => _messageId;
+        public override bool IsFailed => _messageId < 0;
+        public override bool IsSuccess => _messageId > 0;
+        public override string ErrorMsg => string.Empty;
 
-        public MiraiResult(long msgId, bool isFailed, string errorMsg) : base(msgId, isFailed, errorMsg)
+        public MiraiResult() { }
+
+        public MiraiResult(int messageId)
         {
+            this._messageId = messageId;
         }
 
     }

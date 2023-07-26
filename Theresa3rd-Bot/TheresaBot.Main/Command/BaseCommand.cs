@@ -7,9 +7,8 @@ namespace TheresaBot.Main.Command
 {
     public abstract class BaseCommand
     {
-        public abstract long MsgId { get; }
+        public abstract long MessageId { get; }
         public abstract long MemberId { get; }
-
         public string Instruction { get; init; }
         public string Command { get; set; }
         public string[] Params { get; init; }

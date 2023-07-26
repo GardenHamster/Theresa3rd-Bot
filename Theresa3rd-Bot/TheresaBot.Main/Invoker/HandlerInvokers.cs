@@ -145,6 +145,15 @@ namespace TheresaBot.Main.Invoker
                 await handler.addRecord(botCommand);
                 return true;
             })),
+            //绑定标签糖
+            new(BotConfig.ManageConfig?.TagSugarCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
+            {
+                SugarTagHandler handler = new SugarTagHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.BindTagSugarAsync(botCommand);
+                await handler.addRecord(botCommand);
+                return true;
+            })),
             //添加词云词汇
             new(BotConfig.WordCloudConfig?.AddWordCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
             {

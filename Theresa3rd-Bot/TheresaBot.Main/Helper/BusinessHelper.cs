@@ -51,6 +51,28 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 判断一个成员是否黑名单成员
+        /// </summary>
+        /// <param name="MemberId"></param>
+        /// <returns></returns>
+        public static bool IsBanMember(this long MemberId)
+        {
+            return BanMemberDatas.IsBanMember(MemberId);
+        }
+
+        /// <summary>
+        /// 判断字符串是否为pixivId
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool isPixivId(this string str)
+        {
+            long pixivId = 0;
+            if (!long.TryParse(str, out pixivId)) return false;
+            return pixivId > 30000000;
+        }
+
+        /// <summary>
         /// 判断标签中是否包含R18标签
         /// </summary>
         /// <param name="tags"></param>

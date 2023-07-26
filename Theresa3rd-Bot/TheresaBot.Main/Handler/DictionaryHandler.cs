@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Handler
                 string words = command.KeyWord;
                 if (string.IsNullOrEmpty(words))
                 {
-                    await command.ReplyGroupMessageWithAtAsync("没有检测需要添加的词汇，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithAtAsync("没有检测到需要添加的词汇，请确保指令格式正确");
                     return;
                 }
 
@@ -66,7 +66,7 @@ namespace TheresaBot.Main.Handler
                 string words = command.KeyWord;
                 if (string.IsNullOrEmpty(words))
                 {
-                    await command.ReplyGroupMessageWithAtAsync("没有检测需要添加的词汇，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithAtAsync("没有检测到需要添加的词汇，请确保指令格式正确");
                     return;
                 }
 

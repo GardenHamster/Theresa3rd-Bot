@@ -1,7 +1,7 @@
 ﻿General:                                                                            #基础设置
     Prefixs:                    ['#','＃']                                          #指令前缀
     DownloadPath:               'BotImg/download'                                   #下载文件的存放目录
-    DefaultFontPath:            'Font/hywenhei85w.ttf'                              #默认字体文件路径
+    DefaultFontPath:            'Font/simsun.ttc'                                   #默认字体文件路径
     DownPathCleanCron:          '0 0 4 * * ?'                                       #下载目录清理定时器，Cron表达式，空值表示不清理，格式：0 0 4 * * ?
     DownErrorImgPath:           'BotImg/face/error.jpg'                             #图片下载失败时的替代图片
     ErrorGroups:                []                                                  #错误日志群，发生错误时会将日志发送到这些群
@@ -67,9 +67,8 @@ Manage:                                                                         
     EnableMemberCommands:       ['解禁成员']                                        #将一个群成员从黑名单移除，所有群生效
     ListSubCommands:            ['订阅列表','已订列表']                             #列出所有订阅列表
     RemoveSubCommands:          ['移除订阅','取消订阅']                             #通过订阅Id移除一个订阅
-    ListDicCommands:            ['词典列表']
-    RemoveDicCommands:          ['删除词汇']
-    
+    TagSugarCommands:           ['绑定标签','标签糖']
+
 Menu:                                                                               #菜单指令
     Enable:                     true                                                #是否启用
     Commands:                   ['菜单','帮助','功能','指令','命令','help']         #命令
@@ -309,8 +308,8 @@ WordCloud:
     YesterdayCommands:          ['昨日词云','昨天词云']
     LastWeekCommands:           ['上周词云']
     LastMonthCommands:          ['上月词云']
-    AddWordCommands:            ['添加云词']
-    HideWordCommands:           ['隐藏云词']
+    AddWordCommands:            ['添加词汇','新增词汇']
+    HideWordCommands:           ['隐藏词汇']
     ImgWidth:                   1000
     ImgHeight:                  800
     MaxWords:                   500

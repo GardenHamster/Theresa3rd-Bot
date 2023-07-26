@@ -193,12 +193,12 @@ namespace TheresaBot.Main.Business
         /// </summary>
         /// <param name="pixivicSearchDto"></param>
         /// <returns></returns>
-        public async Task<PixivWorkInfo> getRandomWorkAsync(string tagNames, bool includeR18, bool includeAI)
+        public async Task<PixivWorkInfo> getRandomWorkAsync(string tagStrs, bool includeR18, bool includeAI)
         {
             int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / PageSize);
             if (pageCount < 3) pageCount = 3;
 
-            string searchWord = toPixivSearchWord(tagNames);
+            string searchWord = toPixivSearchWords(tagStrs.ToActualPixivTags());
             PixivSearch pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, includeR18);
             int total = pageOne.getIllust().total;
             int maxPage = MathHelper.getMaxPage(total, PageSize);
@@ -514,7 +514,7 @@ namespace TheresaBot.Main.Business
             List<long> groupIds = subscribeTask.GroupIdList;
             bool isShowAIs = groupIds.IsShowAISetu();
             bool isShowR18s = groupIds.IsShowR18Setu();
-            string searchWord = toPixivSearchWord(tagNames);
+            string searchWord = toPixivSearchWords(tagNames.ToActualPixivTags());
             int maxScan = BotConfig.SubscribeConfig.PixivTag.MaxScan;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
             List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
@@ -841,7 +841,7 @@ namespace TheresaBot.Main.Business
         /// </summary>
         /// <param name="tagNames"></param>
         /// <returns></returns>
-        public string toPixivSearchWord(string tagNames)
+        public string toPixivSearchWords(string tagNames)
         {
             tagNames = tagNames.Trim().Replace("(", "（").Replace(")", "）");
             string[] andArr = tagNames.Split(new char[] { ' ', '+' }, StringSplitOptions.RemoveEmptyEntries);
@@ -857,6 +857,10 @@ namespace TheresaBot.Main.Business
             }
             return searchBuilder.ToString();
         }
+
+
+
+
 
     }
 }

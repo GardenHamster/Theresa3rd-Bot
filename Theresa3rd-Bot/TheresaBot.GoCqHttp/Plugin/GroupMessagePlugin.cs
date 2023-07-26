@@ -33,7 +33,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (args.Session is not ICqActionSession session) return;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
                 if (memberId == CQConfig.BotQQ) return;
-                if (BanMemberDatas.IsBanMember(memberId)) return; //黑名单成员
+                if (memberId.IsBanMember()) return; //黑名单成员
 
                 List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
 

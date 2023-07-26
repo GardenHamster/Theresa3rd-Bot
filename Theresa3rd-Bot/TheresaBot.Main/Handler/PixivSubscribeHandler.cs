@@ -295,7 +295,7 @@ namespace TheresaBot.Main.Handler
                     groupType = (SubscribeGroupType)Convert.ToInt32(groupStep.Answer);
                 }
 
-                string searchWord = pixivBusiness.toPixivSearchWord(pixivTags);
+                string searchWord = pixivBusiness.toPixivSearchWords(pixivTags.ToActualPixivTags());
                 PixivSearch pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, command.GroupId.IsShowR18Setu());
                 if (pageOne is null || pageOne.getIllust().data.Count == 0)
                 {

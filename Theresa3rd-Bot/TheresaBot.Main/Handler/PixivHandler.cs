@@ -40,7 +40,7 @@ namespace TheresaBot.Main.Handler
                     await Task.Delay(1000);
                 }
 
-                if (StringHelper.isPureNumber(keyword))
+                if (BusinessHelper.isPixivId(keyword))
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
                     pixivWorkInfo = await pixivBusiness.getPixivWorkInfoAsync(keyword);//根据作品id获取作品

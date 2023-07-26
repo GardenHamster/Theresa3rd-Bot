@@ -5,10 +5,12 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Datas
 {
-    public static class WebsiteDatas
+    internal static class WebsiteDatas
     {
         public static WebsitePO Pixiv { get; private set; }
+
         public static WebsitePO Bili { get; private set; }
+
         public static WebsitePO Saucenao { get; private set; }
 
         public static void LoadWebsite()

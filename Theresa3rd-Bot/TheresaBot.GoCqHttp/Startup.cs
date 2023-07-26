@@ -55,10 +55,7 @@ namespace TheresaBot.GoCqHttp
 
             try
             {
-                WebsiteDatas.LoadWebsite();
-                SubscribeDatas.LoadSubscribeTask();
-                BanTagDatas.LoadDatas();
-                BanMemberDatas.LoadDatas();
+                DataManager.LoadInitDatas();
                 CQSession session = new CQSession();
                 CQReporter reporter = new CQReporter();
                 TimerManager.initReminderJob(session, reporter);

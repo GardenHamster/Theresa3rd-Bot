@@ -55,10 +55,7 @@ namespace TheresaBot.MiraiHttpApi
 
             try
             {
-                WebsiteDatas.LoadWebsite();
-                SubscribeDatas.LoadSubscribeTask();
-                BanTagDatas.LoadDatas();
-                BanMemberDatas.LoadDatas();
+                DataManager.LoadInitDatas();
                 MiraiSession session = new MiraiSession();
                 MiraiReporter reporter = new MiraiReporter();
                 TimerManager.initReminderJob(session, reporter);

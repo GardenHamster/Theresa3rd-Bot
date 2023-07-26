@@ -18,5 +18,7 @@
 
         public List<string> RemoveSubCommands { get; private set; }
 
+        public List<string> TagSugarCommands { get; private set; }
+        
     }
 }

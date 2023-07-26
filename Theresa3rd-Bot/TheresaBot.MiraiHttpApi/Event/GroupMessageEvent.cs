@@ -30,7 +30,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 long groupId = args.Sender.Group.Id;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
                 if (memberId == MiraiConfig.BotQQ) return;
-                if (BanMemberDatas.IsBanMember(memberId)) return; //黑名单成员
+                if (memberId.IsBanMember()) return; //黑名单成员
 
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
                 List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();

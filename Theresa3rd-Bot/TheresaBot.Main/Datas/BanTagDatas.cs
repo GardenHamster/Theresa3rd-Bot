@@ -5,7 +5,7 @@ using TheresaBot.Main.Model.PO;
 
 namespace TheresaBot.Main.Datas
 {
-    public static class BanTagDatas
+    internal static class BanTagDatas
     {
         private static List<BanTagPO> BanTagList = new List<BanTagPO>();
 

@@ -24,6 +24,11 @@ namespace TheresaBot.Main.Handler
             subscribeBusiness = new SubscribeBusiness();
         }
 
+        /// <summary>
+        /// 发送订阅列表
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public async Task listSubscribeAsync(GroupCommand command)
         {
             try
@@ -56,7 +61,7 @@ namespace TheresaBot.Main.Handler
 
 
         /// <summary>
-        /// 取消订阅pixiv标签
+        /// 取消一个订阅
         /// </summary>
         /// <param name="session"></param>
         /// <param name="args"></param>

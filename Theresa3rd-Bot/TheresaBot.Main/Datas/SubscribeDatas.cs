@@ -5,9 +5,9 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Datas
 {
-    public class SubscribeDatas
+    internal static class SubscribeDatas
     {
-        public static Dictionary<SubscribeType, List<SubscribeTask>> SubscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
+        private static Dictionary<SubscribeType, List<SubscribeTask>> SubscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
 
         public static void LoadSubscribeTask()
         {

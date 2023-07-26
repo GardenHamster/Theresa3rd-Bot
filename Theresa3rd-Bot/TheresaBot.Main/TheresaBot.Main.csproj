@@ -15,6 +15,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Model\WordCloud\**" />
+	  <EmbeddedResource Remove="Model\WordCloud\**" />
+	  <None Remove="Model\WordCloud\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AngleSharp" Version="0.17.1" />
 		<PackageReference Include="jieba.NET" Version="0.42.2" />
 		<PackageReference Include="log4net" Version="2.0.15" />
@@ -100,10 +106,6 @@
 	  <None Update="Resources\stopwords.txt">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Model\WordCloud\" />
 	</ItemGroup>
 
 </Project>

@@ -311,26 +311,28 @@ WordCloud:
     AddWordCommands:            ['添加词汇','新增词汇']
     HideWordCommands:           ['隐藏词汇']
     ImgWidth:                   1000
-    ImgHeight:                  800
+    ImgHeight:                  1000
     MaxWords:                   500
     FontPath:                   'Font/hywenhei85w.ttf'
     MaskPaths:                  ['BotImg/mask/mask01.png']
     Subscribes:
-         Daily:                                                                     #推送前24小时内的群词云
-             Enable:            true
-             Name:              '每日词云'
-             Cron:              '0 0 8 * * ?'
-             Groups:            [284196392]
-             Template:          '早上好，昨天的群词云如下'
-         Weekly:                                                                    #推送前7*24小时内的群词云
-             Enable:            true
-             Name:              '每周词云'
-             Cron:              '0 0 12 ? * SUN'
-             Groups:            [284196392]
-             Template:          '中午好，上周的群词云如下'
-         Monthly:                                                                   #推送前30日内的群词云
-             Enable:            true
-             Name:              '每月词云'
-             Cron:              '0 0 23 L * ?'
-             Groups:            [284196392]
-             Template:          '晚安，本月的群词云如下'
+        - Enable:               true
+          Name:                 '每日词云'
+          Cron:                 '0 0 8 * * ?'
+          Groups:               [284196392]
+          HourRange:            24
+          Template:             '早上好，昨天的群词云如下'
+                                
+        - Enable:               true
+          Name:                 '每周词云'
+          Cron:                 '0 30 22 ? * SUN'
+          Groups:               [284196392]
+          HourRange:            168
+          Template:             '晚安，本周的群词云如下'
+                                
+        - Enable:               true
+          Name:                 '每月词云'
+          Cron:                 '0 0 12 L * ?'
+          Groups:               [284196392]
+          HourRange:            720
+          Template:             '中午好，本月的群词云如下'

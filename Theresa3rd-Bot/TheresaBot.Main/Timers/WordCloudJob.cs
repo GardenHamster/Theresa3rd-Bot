@@ -22,26 +22,10 @@ namespace TheresaBot.Main.Timers
                 BaseSession session = (BaseSession)dataMap["BaseSession"];
                 WordCloudTimer wordCloudTimer = (WordCloudTimer)dataMap["WordCloudTimer"];
                 if (wordCloudTimer is null) return;
+                if (wordCloudTimer.Enable == false) return;
                 if (wordCloudTimer.Groups is null) return;
                 if (wordCloudTimer.Groups.Count == 0) return;
-                if (wordCloudTimer == BotConfig.WordCloudConfig.Subscribes.Daily)
-                {
-                    LogHelper.Info($"开始执行每日词云推送任务...");
-                    await new WordCloudHandler(session, reporter).pushDailyWordCloudAsync();
-                    return;
-                }
-                if (wordCloudTimer == BotConfig.WordCloudConfig.Subscribes.Weekly)
-                {
-                    LogHelper.Info($"开始执行每周词云推送任务...");
-                    await new WordCloudHandler(session, reporter).pushWeeklyWordCloudAsync();
-                    return;
-                }
-                if (wordCloudTimer == BotConfig.WordCloudConfig.Subscribes.Monthly)
-                {
-                    LogHelper.Info($"开始执行每月词云推送任务...");
-                    await new WordCloudHandler(session, reporter).pushMonthlyWordCloudAsync();
-                    return;
-                }
+                await new WordCloudHandler(session, reporter).pushWordCloudAsync(wordCloudTimer);
             }
             catch (Exception ex)
             {

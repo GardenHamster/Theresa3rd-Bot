@@ -19,14 +19,7 @@
         public int MaxWords { get; private set; }
         public string FontPath { get; private set; }
         public List<string> MaskPaths { get; private set; }
-        public WordCloudSubscribe Subscribes { get; private set; }
-    }
-
-    public class WordCloudSubscribe
-    {
-        public WordCloudTimer Daily { get; private set; }
-        public WordCloudTimer Weekly { get; private set; }
-        public WordCloudTimer Monthly { get; private set; }
+        public List<WordCloudTimer> Subscribes { get; private set; }
     }
 
     public class WordCloudTimer
@@ -35,6 +28,7 @@
         public string Name { get; private set; }
         public string Cron { get; private set; }
         public List<long> Groups { get; private set; }
+        public double HourRange { get; private set; }
         public string Template { get; private set; }
     }
 

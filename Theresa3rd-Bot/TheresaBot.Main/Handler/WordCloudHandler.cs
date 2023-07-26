@@ -4,6 +4,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Drawer;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -208,55 +209,14 @@ namespace TheresaBot.Main.Handler
         }
 
         /// <summary>
-        /// 推送每日词云
-        /// </summary>
-        /// <returns></returns>
-        public async Task pushDailyWordCloudAsync()
-        {
-            DateTime endTime = DateTime.Now;
-            DateTime startTime = endTime.AddHours(-24);
-            var subscribeModel = BotConfig.WordCloudConfig.Subscribes.Daily;
-            var groupIds = subscribeModel.Groups;
-            var remindMsg = subscribeModel.Template;
-            foreach (var groupId in groupIds)
-            {
-                Task task = pushWordCloudAsync(groupId, startTime, endTime, remindMsg);
-                await Task.Delay(1000);
-            }
-        }
-
-        /// <summary>
-        /// 推送每周词云
-        /// </summary>
-        /// <returns></returns>
-        public async Task pushWeeklyWordCloudAsync()
-        {
-            DateTime endTime = DateTime.Now;
-            DateTime startTime = endTime.AddDays(-7);
-            var subscribeModel = BotConfig.WordCloudConfig.Subscribes.Weekly;
-            var groupIds = subscribeModel.Groups;
-            var remindMsg = subscribeModel.Template;
-            foreach (var groupId in groupIds)
-            {
-                Task task = pushWordCloudAsync(groupId, startTime, endTime, remindMsg);
-                await Task.Delay(1000);
-            }
-        }
-
-        /// <summary>
         /// 推送每月词云
         /// </summary>
         /// <returns></returns>
-        public async Task pushMonthlyWordCloudAsync()
+        public async Task pushWordCloudAsync(WordCloudTimer timer)
         {
-            DateTime endTime = DateTime.Now;
-            DateTime startTime = endTime.AddDays(-30);
-            var subscribeModel = BotConfig.WordCloudConfig.Subscribes.Monthly;
-            var groupIds = subscribeModel.Groups;
-            var remindMsg = subscribeModel.Template;
-            foreach (var groupId in groupIds)
+            foreach (var groupId in timer.Groups)
             {
-                Task task = pushWordCloudAsync(groupId, startTime, endTime, remindMsg);
+                Task task = pushWordCloudAsync(timer, groupId);
                 await Task.Delay(1000);
             }
         }
@@ -269,17 +229,19 @@ namespace TheresaBot.Main.Handler
         /// <param name="endTime"></param>
         /// <param name="remindMsg"></param>
         /// <returns></returns>
-        private async Task pushWordCloudAsync(long groupId, DateTime startTime, DateTime endTime, string remindMsg)
+        private async Task pushWordCloudAsync(WordCloudTimer timer, long groupId)
         {
             try
             {
                 CoolingCache.SetWordCloudHanding(groupId);
+                DateTime endTime = DateTime.Now;
+                DateTime startTime = endTime.AddHours(-1 * timer.HourRange);
                 List<string> words = wordCloudBusiness.getCloudWords(groupId, startTime, endTime);
                 if (words is null || words.Count == 0) return;
                 FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words);
-                if (string.IsNullOrWhiteSpace(remindMsg) == false)
+                if (string.IsNullOrWhiteSpace(timer.Template) == false)
                 {
-                    await Session.SendGroupMessageAsync(groupId, remindMsg);
+                    await Session.SendGroupMessageAsync(groupId, timer.Template);
                     await Task.Delay(1000);
                 }
                 List<BaseContent> wordCloudContnts = new List<BaseContent>();

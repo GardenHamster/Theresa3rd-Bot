@@ -104,17 +104,10 @@ namespace TheresaBot.Main.Timers
         {
             if (BotConfig.WordCloudConfig?.Subscribes is null) return;
             var subscribes = BotConfig.WordCloudConfig.Subscribes;
-            if (subscribes.Daily != null && subscribes.Daily.Enable)
+            foreach (var subscribe in subscribes)
             {
-                createWordCloudJob(subscribes.Daily, session, reporter);
-            }
-            if (subscribes.Weekly != null && subscribes.Weekly.Enable)
-            {
-                createWordCloudJob(subscribes.Weekly, session, reporter);
-            }
-            if (subscribes.Monthly != null && subscribes.Monthly.Enable)
-            {
-                createWordCloudJob(subscribes.Monthly, session, reporter);
+                if (subscribe.Enable == false) continue;
+                createWordCloudJob(subscribe, session, reporter);
             }
         }
 

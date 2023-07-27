@@ -11,13 +11,13 @@ namespace TheresaBot.Main.Command
 
         private CommandHandler<GroupCommand> HandlerInvoker { get; init; }
 
-        public GroupCommand(BaseSession baseSession, CommandType commandType, string instruction, string command)
-            : base(baseSession, commandType, instruction, command)
+        public GroupCommand(BaseSession baseSession, CommandType commandType, string instruction, string command, string prefix)
+            : base(baseSession, commandType, instruction, command, prefix)
         {
         }
 
-        public GroupCommand(BaseSession baseSession, CommandHandler<GroupCommand> invoker, string instruction, string command)
-            : base(baseSession, invoker.CommandType, instruction, command)
+        public GroupCommand(BaseSession baseSession, CommandHandler<GroupCommand> invoker, string instruction, string command, string prefix)
+            : base(baseSession, invoker.CommandType, instruction, command, prefix)
         {
             this.HandlerInvoker = invoker;
         }

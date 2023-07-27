@@ -21,14 +21,14 @@ namespace TheresaBot.Main.Model.Step
 
         public Func<StepInfo, StepDetail, Task<string>> StepQuestion { get; set; }
 
-        public StepDetail(int waitSecond, string question, Func<GroupCommand, GroupRelay, Task<bool>> checkInput = null)
+        public StepDetail(string question, int waitSecond, Func<GroupCommand, GroupRelay, Task<bool>> checkInput = null)
         {
             this.WaitSecond = waitSecond;
             this.Question = question;
             this.CheckInput = checkInput;
         }
 
-        public StepDetail(int waitSecond, Func<StepInfo, StepDetail, Task<string>> stepQuestion, Func<GroupCommand, GroupRelay, Task<bool>> checkInput = null)
+        public StepDetail(Func<StepInfo, StepDetail, Task<string>> stepQuestion, int waitSecond, Func<GroupCommand, GroupRelay, Task<bool>> checkInput = null)
         {
             this.WaitSecond = waitSecond;
             this.StepQuestion = stepQuestion;

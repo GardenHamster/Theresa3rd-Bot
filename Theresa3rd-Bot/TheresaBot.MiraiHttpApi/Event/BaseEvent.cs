@@ -21,35 +21,35 @@ namespace TheresaBot.MiraiHttpApi.Event
             this.baseReporter = new MiraiReporter();
         }
 
-        public MiraiGroupCommand GetGroupCommand(IGroupMessageEventArgs args, string instruction)
+        public MiraiGroupCommand GetGroupCommand(IGroupMessageEventArgs args, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new MiraiGroupCommand(baseSession, invoker, args, instruction, commandStr);
+                return new MiraiGroupCommand(baseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public MiraiFriendCommand GetFriendCommand(IFriendMessageEventArgs args, string instruction)
+        public MiraiFriendCommand GetFriendCommand(IFriendMessageEventArgs args, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new MiraiFriendCommand(baseSession, invoker, args, instruction, commandStr);
+                return new MiraiFriendCommand(baseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public MiraiGroupQuoteCommand GetGroupQuoteCommand(IGroupMessageEventArgs args, string instruction)
+        public MiraiGroupQuoteCommand GetGroupQuoteCommand(IGroupMessageEventArgs args, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new MiraiGroupQuoteCommand(baseSession, invoker, args, instruction, commandStr);
+                return new MiraiGroupQuoteCommand(baseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }

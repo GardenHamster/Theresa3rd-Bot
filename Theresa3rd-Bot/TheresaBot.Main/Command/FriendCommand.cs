@@ -8,8 +8,8 @@ namespace TheresaBot.Main.Command
     {
         private CommandHandler<FriendCommand> HandlerInvoker { get; init; }
 
-        public FriendCommand(BaseSession baseSession, CommandHandler<FriendCommand> invoker, string instruction, string command)
-            : base(baseSession, invoker.CommandType, instruction, command)
+        public FriendCommand(BaseSession baseSession, CommandHandler<FriendCommand> invoker, string instruction, string command, string prefix)
+            : base(baseSession, invoker.CommandType, instruction, command, prefix)
         {
             this.HandlerInvoker = invoker;
         }

@@ -11,13 +11,15 @@ namespace TheresaBot.Main.Command
         public abstract long MemberId { get; }
         public string Instruction { get; init; }
         public string Command { get; set; }
+        public string Prefix { get; set; }
         public string[] Params { get; init; }
         public string KeyWord { get; set; }
         public CommandType CommandType { get; init; }
         public BaseSession Session { get; init; }
 
-        public BaseCommand(BaseSession baseSession, CommandType commandType, string instruction, string command)
+        public BaseCommand(BaseSession baseSession, CommandType commandType, string instruction, string command, string prefix)
         {
+            this.Prefix = prefix;
             this.Command = command;
             this.Instruction = instruction;
             this.CommandType = commandType;

@@ -65,28 +65,28 @@ namespace TheresaBot.Main.Helper
         /// <summary>
         /// 根据命令提取关键词(命令后的字符全部视为一条关键词)
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="instruction"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        public static string SplitKeyWord(this string message, string command)
+        public static string SplitKeyWord(this string instruction, string command)
         {
             command = command.Trim();
-            message = message.Trim();
+            instruction = instruction.Trim();
             string commandLower = command.ToLower();
-            string messageLower = message.ToLower();
+            string messageLower = instruction.ToLower();
             if (messageLower.StartsWith(commandLower) == false) return String.Empty;
-            return message.Substring(command.Length, message.Length - command.Length).Trim();
+            return instruction.Substring(command.Length, instruction.Length - command.Length).Trim();
         }
 
         /// <summary>
         /// 根据命令提取参数(通过空格拆分参数)
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="instruction"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        public static string[] splitKeyParams(this string message, string command)
+        public static string[] splitKeyParams(this string instruction, string command)
         {
-            string paramStr = message.Trim().SplitKeyWord(command);
+            string paramStr = instruction.Trim().SplitKeyWord(command);
             string[] paramArr = paramStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             return paramArr.Where(o => string.IsNullOrWhiteSpace(o) == false).Select(o => o.Trim()).ToArray();
         }

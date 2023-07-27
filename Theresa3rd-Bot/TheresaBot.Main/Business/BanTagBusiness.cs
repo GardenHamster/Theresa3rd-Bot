@@ -33,12 +33,12 @@ namespace TheresaBot.Main.Business
             return banTagDao.Insert(banTag);
         }
 
-        public BanTagPO AddBanTag(string keyword, TagBanType tagBanType)
+        public BanTagPO AddBanTag(string keyword, TagMatchType tagBanType)
         {
             BanTagPO banTag = new BanTagPO();
             banTag.KeyWord = keyword;
-            banTag.IsRegular = tagBanType == TagBanType.Regular;
-            banTag.FullMatch = tagBanType == TagBanType.FullMatch;
+            banTag.IsRegular = tagBanType == TagMatchType.Regular;
+            banTag.FullMatch = tagBanType == TagMatchType.FullMatch;
             banTag.CreateDate = DateTime.Now;
             return banTagDao.Insert(banTag);
         }

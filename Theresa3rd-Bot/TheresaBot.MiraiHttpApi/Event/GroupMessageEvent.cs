@@ -46,7 +46,7 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 if (args.Chain.Any(v => v is QuoteMessage))//引用指令
                 {
-                    GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(args, instruction);
+                    GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(args, instruction, prefix);
                     if (quoteCommand is not null) args.BlockRemainingHandlers = await quoteCommand.InvokeAsync(baseSession, baseReporter);
                     return;
                 }
@@ -68,7 +68,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                     return;
                 }
 
-                MiraiGroupCommand command = GetGroupCommand(args, instruction);
+                MiraiGroupCommand command = GetGroupCommand(args, instruction, prefix);
                 if (command is not null)
                 {
                     args.BlockRemainingHandlers = await command.InvokeAsync(baseSession, baseReporter);

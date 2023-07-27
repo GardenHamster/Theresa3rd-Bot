@@ -417,7 +417,6 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-
         private async Task<bool> CheckPixivTagAsync(GroupCommand command, GroupRelay relay)
         {
             return await CheckPixivTagAsync(command, relay.Message);
@@ -443,7 +442,7 @@ namespace TheresaBot.Main.Handler
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                await command.ReplyGroupMessageWithQuoteAsync("标签不可以为空");
+                await command.ReplyGroupMessageWithAtAsync("标签不可以为空");
                 return false;
             }
             return true;
@@ -453,14 +452,14 @@ namespace TheresaBot.Main.Handler
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                await command.ReplyGroupMessageWithQuoteAsync("用户id不可以为空");
+                await command.ReplyGroupMessageWithAtAsync("用户id不可以为空");
                 return false;
             }
 
             string[] pixivUserIdArr = value.splitParams();
             if (pixivUserIdArr.Length == 0)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("没有检测到用户id");
+                await command.ReplyGroupMessageWithAtAsync("没有检测到用户id");
                 return false;
             }
 
@@ -469,12 +468,12 @@ namespace TheresaBot.Main.Handler
                 long userId = 0;
                 if (long.TryParse(userIdStr, out userId) == false)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync($"用户id{userIdStr}必须为数字");
+                    await command.ReplyGroupMessageWithAtAsync($"用户id{userIdStr}必须为数字");
                     return false;
                 }
                 if (userId <= 0)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync($"用户id{userIdStr}无效");
+                    await command.ReplyGroupMessageWithAtAsync($"用户id{userIdStr}无效");
                     return false;
                 }
             }
@@ -486,12 +485,12 @@ namespace TheresaBot.Main.Handler
             int modeId;
             if (int.TryParse(value, out modeId) == false)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("mode必须为数字");
+                await command.ReplyGroupMessageWithAtAsync("mode必须为数字");
                 return false;
             }
             if (Enum.IsDefined(typeof(PixivSyncModeType), modeId) == false)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("mode不在范围内");
+                await command.ReplyGroupMessageWithAtAsync("mode不在范围内");
                 return false;
             }
             return true;
@@ -502,12 +501,12 @@ namespace TheresaBot.Main.Handler
             int typeId = 0;
             if (int.TryParse(value, out typeId) == false)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("target必须为数字");
+                await command.ReplyGroupMessageWithAtAsync("target必须为数字");
                 return false;
             }
             if (Enum.IsDefined(typeof(SubscribeGroupType), typeId) == false)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("target不在范围内");
+                await command.ReplyGroupMessageWithAtAsync("target不在范围内");
                 return false;
             }
             return true;

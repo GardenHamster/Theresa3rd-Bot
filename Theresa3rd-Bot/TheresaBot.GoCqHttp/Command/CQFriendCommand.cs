@@ -14,8 +14,8 @@ namespace TheresaBot.GoCqHttp.Command
 
         public override long MemberId => Args.Sender.UserId;
 
-        public CQFriendCommand(BaseSession baseSession, CommandHandler<FriendCommand> invoker, CqPrivateMessagePostContext args, string instruction, string command)
-            : base(baseSession, invoker, instruction, command)
+        public CQFriendCommand(BaseSession baseSession, CommandHandler<FriendCommand> invoker, CqPrivateMessagePostContext args, string instruction, string command, string prefix)
+            : base(baseSession, invoker, instruction, command, prefix)
         {
             Args = args;
         }

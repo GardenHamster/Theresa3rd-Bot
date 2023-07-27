@@ -43,10 +43,10 @@ namespace TheresaBot.Main.Handler
                 string userId;
                 SubscribeGroupType? groupType = null;
                 string[] paramArr = command.Params;
-                if (paramArr != null && paramArr.Length >= 2)
+                if (paramArr.Length >= 2)
                 {
-                    userId = paramArr.Length > 0 ? paramArr[0] : string.Empty;
-                    string groupTypeStr = paramArr.Length > 1 ? paramArr[1] : string.Empty;
+                    userId = paramArr[0];
+                    string groupTypeStr = paramArr[1];
                     if (await CheckUserIdAsync(command, userId) == false) return;
                     if (await CheckSubscribeGroupAsync(command, groupTypeStr) == false) return;
                     groupType = (SubscribeGroupType)Convert.ToInt32(groupTypeStr);
@@ -233,17 +233,17 @@ namespace TheresaBot.Main.Handler
             long userId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                await command.ReplyGroupMessageWithQuoteAsync("用户id不可以为空");
+                await command.ReplyGroupMessageWithAtAsync("用户id不可以为空");
                 return false;
             }
             if (long.TryParse(value, out userId) == false)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("用户id必须为数字");
+                await command.ReplyGroupMessageWithAtAsync("用户id必须为数字");
                 return false;
             }
             if (userId <= 0)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("用户id无效");
+                await command.ReplyGroupMessageWithAtAsync("用户id无效");
                 return false;
             }
             return true;
@@ -254,17 +254,17 @@ namespace TheresaBot.Main.Handler
             int typeId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                await command.ReplyGroupMessageWithQuoteAsync("未指定目标群");
+                await command.ReplyGroupMessageWithAtAsync("未指定目标群");
                 return false;
             }
             if (int.TryParse(value, out typeId) == false)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("目标必须为数字");
+                await command.ReplyGroupMessageWithAtAsync("目标必须为数字");
                 return false;
             }
             if (Enum.IsDefined(typeof(SubscribeGroupType), typeId) == false)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("目标不在范围内");
+                await command.ReplyGroupMessageWithAtAsync("目标不在范围内");
                 return false;
             }
             return true;

@@ -1,9 +1,12 @@
 ﻿using TheresaBot.Main.Business;
+using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
@@ -25,16 +28,49 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string tagStr = string.Empty;
-                object banTypeObj = TagBanType.Contain;
+                var tagStr = string.Empty;
+                var matchType = TagMatchType.Contain;
+                if (command.Params.Length >= 2)
+                {
+                    tagStr = command.Params[0];
+                    if (await CheckMatchTypeAsync(command, command.Params[1]) == false) return;
+                    matchType = (TagMatchType)Convert.ToInt32(command.Params[1]);
+                }
+                else
+                {
+                    StepInfo stepInfo = await StepCache.CreateStepAsync(command);
+                    StepDetail tagStep = stepInfo.AddSteps("请在60秒内发送需要屏蔽的标签");
+                    StepDetail matchStep = stepInfo.AddSteps($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
+                    stepInfo.AddSteps(tagStep, matchStep);
+                    if (await stepInfo.HandleStep() == false) return;
+                    userId = tagStep.Answer;
+                    groupType = (SubscribeGroupType)Convert.ToInt32(matchStep.Answer);
+                }
 
-                if (command.Params.Length > 0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    if (command.Params.Length > 0)
                 {
                     tagStr = command.Params[0];
                 }
                 if (command.Params.Length > 1)
                 {
-                    banTypeObj = command.Params[1].ToEnum<TagBanType>();
+                    banTypeObj = command.Params[1].ToEnum<TagMatchType>();
                 }
                 if (string.IsNullOrEmpty(tagStr))
                 {
@@ -43,10 +79,10 @@ namespace TheresaBot.Main.Handler
                 }
                 if (banTypeObj is null)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync("不存在的屏蔽类型，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithQuoteAsync("不存在的匹配方式，请确保指令格式正确");
                     return;
                 }
-                var banType = (TagBanType)banTypeObj;
+                var banType = (TagMatchType)banTypeObj;
                 var banTag = banTagBusiness.getBanTag(tagStr);
                 if (banTag is not null)
                 {
@@ -56,6 +92,11 @@ namespace TheresaBot.Main.Handler
                 banTagBusiness.AddBanTag(tagStr, banType);
                 BanTagDatas.LoadDatas();
                 await command.ReplyGroupMessageWithQuoteAsync("记录成功");
+            }
+            catch (StepException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+                return;
             }
             catch (Exception ex)
             {
@@ -160,6 +201,22 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, "enableMemberAsync异常");
                 await Reporter.SendError(ex, "enableMemberAsync异常");
             }
+        }
+
+        private async Task<bool> CheckMatchTypeAsync(GroupCommand command, string value)
+        {
+            int typeId = 0;
+            if (int.TryParse(value, out typeId) == false)
+            {
+                await command.ReplyGroupMessageWithAtAsync("目标必须为数字");
+                return false;
+            }
+            if (Enum.IsDefined(typeof(TagMatchType), typeId) == false)
+            {
+                await command.ReplyGroupMessageWithAtAsync("目标不在范围内");
+                return false;
+            }
+            return true;
         }
 
 

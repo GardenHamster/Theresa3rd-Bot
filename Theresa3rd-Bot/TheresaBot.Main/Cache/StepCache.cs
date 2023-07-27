@@ -1,4 +1,5 @@
 ﻿using TheresaBot.Main.Command;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Relay;
@@ -39,9 +40,8 @@ namespace TheresaBot.Main.Cache
                     StepInfoDic[groupId].Add(stepInfo);
                     return stepInfo;
                 }
+                throw new StepException("你的另一个指令正在执行中");
             }
-            await command.ReplyGroupMessageWithQuoteAsync("你的一个指令正在执行中");
-            return null;
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Relay;
 
 namespace TheresaBot.Main.Model.Step
 {
@@ -27,9 +28,11 @@ namespace TheresaBot.Main.Model.Step
             this.StepDetails = new List<StepDetail>();
         }
 
-        public void AddStep(StepDetail stepDetail)
+        public StepDetail AddSteps(string question, Func<GroupCommand, GroupRelay, Task<bool>> checkInput = null, int waitSecond = 60)
         {
+            var stepDetail = new StepDetail(question, waitSecond, checkInput);
             StepDetails.Add(stepDetail);
+            return stepDetail;
         }
 
         public Task<bool> HandleStep()

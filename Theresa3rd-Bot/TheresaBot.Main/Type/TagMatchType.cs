@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Type
 {
-    public enum TagBanType
+    public enum TagMatchType
     {
         Contain = 0,
         FullMatch = 1,

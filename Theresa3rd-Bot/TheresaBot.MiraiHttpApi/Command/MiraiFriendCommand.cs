@@ -15,8 +15,8 @@ namespace TheresaBot.MiraiHttpApi.Command
 
         public override long MemberId => Args.Sender.Id;
 
-        public MiraiFriendCommand(BaseSession baseSession, CommandHandler<FriendCommand> invoker, IFriendMessageEventArgs args, string instruction, string command)
-            : base(baseSession, invoker, instruction, command)
+        public MiraiFriendCommand(BaseSession baseSession, CommandHandler<FriendCommand> invoker, IFriendMessageEventArgs args, string instruction, string command, string prefix)
+            : base(baseSession, invoker, instruction, command, prefix)
         {
             this.Args = args;
         }

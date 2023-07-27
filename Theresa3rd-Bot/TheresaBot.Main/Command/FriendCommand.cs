@@ -16,6 +16,8 @@ namespace TheresaBot.Main.Command
 
         public abstract List<string> GetImageUrls();
 
+        public virtual async Task Test(FriendCommand command) => await Task.CompletedTask;
+
         public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
         {
             return await HandlerInvoker.HandleMethod.Invoke(this, session, reporter);

@@ -28,7 +28,5 @@ namespace TheresaBot.Main.Command
 
         public abstract Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter);
 
-        public virtual async Task Test() => await Task.CompletedTask;
-
     }
 }

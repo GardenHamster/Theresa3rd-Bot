@@ -205,7 +205,7 @@ namespace TheresaBot.Main.Helper
             try
             {
                 if (messageId == 0) return;
-                await command.Session.RevokeGroupMessageAsync(messageId, groupId);
+                await command.Session.RevokeGroupMessageAsync(groupId, messageId);
             }
             catch (Exception ex)
             {
@@ -248,7 +248,7 @@ namespace TheresaBot.Main.Helper
                 if (result.IsSuccess == false) return;
                 if (revokeInterval <= 0) return;
                 await Task.Delay(revokeInterval * 1000);
-                await command.Session.RevokeGroupMessageAsync(result.MessageId, groupId);
+                await command.Session.RevokeGroupMessageAsync(groupId, result.MessageId);
             }
             catch (Exception ex)
             {

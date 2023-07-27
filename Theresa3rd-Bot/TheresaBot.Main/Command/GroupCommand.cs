@@ -22,6 +22,8 @@ namespace TheresaBot.Main.Command
             this.HandlerInvoker = invoker;
         }
 
+        public virtual async Task Test(GroupCommand command) => await Task.CompletedTask;
+
         public abstract List<string> GetImageUrls();
 
         public abstract long GetQuoteMessageId();

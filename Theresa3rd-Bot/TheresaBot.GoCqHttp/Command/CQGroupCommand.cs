@@ -32,7 +32,7 @@ namespace TheresaBot.GoCqHttp.Command
             return Args.Message.OfType<CqReplyMsg>().FirstOrDefault()?.Id ?? 0;
         }
 
-        public override async Task Test()
+        public override async Task Test(GroupCommand command)
         {
             await Task.CompletedTask;
         }

@@ -483,7 +483,7 @@ namespace TheresaBot.Main.Invoker
             //test
             new(new List<string>() { "test" }, CommandType.Other, new(async (botCommand, session, reporter) =>
             {
-                await botCommand.Test();
+                await botCommand.Test(botCommand);
                 return false;
             }))
         };

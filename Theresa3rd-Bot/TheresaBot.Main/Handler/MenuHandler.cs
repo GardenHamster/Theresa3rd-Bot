@@ -21,16 +21,16 @@ namespace TheresaBot.Main.Handler
                 if (string.IsNullOrWhiteSpace(BotConfig.MenuConfig?.Template) == false)
                 {
                     List<BaseContent> templateList = BotConfig.MenuConfig.Template.SplitToChainAsync();
-                    await command.ReplyGroupMessageWithAtAsync(templateList);
+                    await command.ReplyGroupMessageWithQuoteAsync(templateList);
                     return;
                 }
 
-                await command.ReplyGroupMessageAsync(getMemberMenu());
+                await command.ReplyGroupMessageWithQuoteAsync(getMemberMenu());
 
                 if (command.MemberId.IsSuperManager())
                 {
                     await Task.Delay(1000);
-                    await command.ReplyGroupMessageAsync(getManagerMenu());
+                    await command.ReplyGroupMessageWithQuoteAsync(getManagerMenu());
                 }
 
             }

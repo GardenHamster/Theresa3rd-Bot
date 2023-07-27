@@ -25,21 +25,15 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-
+                List<LoliconDataV2> dataList;
                 string tagStr = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
                 bool isShowR18 = command.GroupId.IsShowR18Setu();
-                if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
-                if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
-                {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ProcessingMsg);
-                    await Task.Delay(1000);
-                }
-
-                List<LoliconDataV2> dataList;
                 int r18Mode = isShowR18 ? 2 : 0;
                 bool excludeAI = isShowAI == false;
+
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
+                await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.ProcessingMsg);
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
@@ -48,12 +42,13 @@ namespace TheresaBot.Main.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
+                    if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
                     dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1, toLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 
                 if (dataList.Count == 0)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
@@ -68,7 +63,7 @@ namespace TheresaBot.Main.Handler
                 workMsgs.Add(new PlainContent(loliconBusiness.getWorkInfo(loliconData, todayLeftCount, template)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, loliconData);
-                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
                 var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)

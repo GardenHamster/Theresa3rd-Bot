@@ -36,7 +36,7 @@ namespace TheresaBot.Main.Handler
 
                 if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ProcessingMsg);
+                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.ProcessingMsg);
                     await Task.Delay(1000);
                 }
 
@@ -69,7 +69,7 @@ namespace TheresaBot.Main.Handler
 
                 if (pixivWorkInfo is null)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片或者收藏比过低，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片或者收藏比过低，换个标签试试吧~");
                     return;
                 }
 
@@ -89,7 +89,7 @@ namespace TheresaBot.Main.Handler
                 workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
-                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
                 var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
@@ -122,15 +122,12 @@ namespace TheresaBot.Main.Handler
                 string userId = command.KeyWord;
                 if (StringHelper.isPureNumber(userId) == false)
                 {
-                    await command.ReplyGroupMessageWithAtAsync("请指定一个画师id~");
+                    await command.ReplyGroupMessageWithQuoteAsync("请指定一个画师id~");
                     return;
                 }
 
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);
-                if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.PixivUser.ProcessingMsg) == false)
-                {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.PixivUser.ProcessingMsg);
-                }
+                await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.PixivUser.ProcessingMsg);
 
                 PixivUserProfileInfo profileInfo = PixivUserProfileCache.GetCache(userId);
                 if (profileInfo == null)
@@ -155,7 +152,7 @@ namespace TheresaBot.Main.Handler
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
                 setuContents.AddRange(pixivBusiness.getNumAndPids(profileInfo, 10));
 
-                await command.ReplyGroupMessageWithAtAsync(templateMsg);
+                await command.ReplyGroupMessageWithQuoteAsync(templateMsg);
                 await Task.Delay(1000);
                 await SendGroupMergeSetuAsync(setuContents, new() { titleContents }, command.GroupId);
             }

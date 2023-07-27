@@ -20,6 +20,18 @@ namespace TheresaBot.GoCqHttp.Session
             return new CQResult(result, result.MessageId);
         }
 
+        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers = null, bool isAtAll = false)
+        {
+            if (contents.Count == 0) return BaseResult.Undo;
+            List<CqMsg> msgList = new List<CqMsg>();
+            if (isAtAll) msgList.Add(CqAtMsg.AtAll);
+            if (atMembers is null) atMembers = new();
+            foreach (long memberId in atMembers) msgList.Add(new CqAtMsg(memberId));
+            msgList.AddRange(contents.ToCQMessageAsync());
+            var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(msgList));
+            return new CQResult(result, result.MessageId);
+        }
+
         public override async Task<BaseResult> SendGroupMessageWithAtAsync(long groupId, long memberId, string message)
         {
             List<CqMsg> msgList = new List<CqMsg>();
@@ -29,10 +41,21 @@ namespace TheresaBot.GoCqHttp.Session
             return new CQResult(result, result.MessageId);
         }
 
+        public override async Task<BaseResult> SendGroupMessageWithAtAsync(long groupId, long memberId, List<BaseContent> contents)
+        {
+            List<CqMsg> msgList = new List<CqMsg>();
+            msgList.Add(new CqAtMsg(memberId));
+            msgList.AddRange(contents.ToCQMessageAsync());
+            var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(msgList));
+            return new CQResult(result, result.MessageId);
+        }
+
         public override async Task<BaseResult> SendGroupMessageWithQuoteAsync(long groupId, long memberId, long messageId, string message)
         {
             List<CqMsg> msgList = new List<CqMsg>();
             msgList.Add(new CqReplyMsg(messageId));
+            msgList.Add(new CqTextMsg(" "));//避免Replay和At不能同时使用
+            msgList.Add(new CqAtMsg(memberId));
             msgList.Add(new CqTextMsg(message));
             var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(msgList));
             return new CQResult(result, result.MessageId);
@@ -43,18 +66,8 @@ namespace TheresaBot.GoCqHttp.Session
             if (contents.Count == 0) return BaseResult.Undo;
             List<CqMsg> msgList = new List<CqMsg>();
             msgList.Add(new CqReplyMsg(messageId));
-            msgList.AddRange(contents.ToCQMessageAsync());
-            var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(msgList));
-            return new CQResult(result, result.MessageId);
-        }
-
-        public override async Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers = null, bool isAtAll = false)
-        {
-            if (contents.Count == 0) return BaseResult.Undo;
-            List<CqMsg> msgList = new List<CqMsg>();
-            if (isAtAll) msgList.Add(CqAtMsg.AtAll);
-            if (atMembers is null) atMembers = new();
-            foreach (long memberId in atMembers) msgList.Add(new CqAtMsg(memberId));
+            msgList.Add(new CqTextMsg(" "));//避免Replay和At不能同时使用
+            msgList.Add(new CqAtMsg(memberId));
             msgList.AddRange(contents.ToCQMessageAsync());
             var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(msgList));
             return new CQResult(result, result.MessageId);

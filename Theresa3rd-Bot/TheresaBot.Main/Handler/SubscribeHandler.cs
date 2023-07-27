@@ -43,7 +43,7 @@ namespace TheresaBot.Main.Handler
                 List<BaseContent> sendContents = new List<BaseContent>();
                 sendContents.Add(new PlainContent("当前群已订阅内容如下"));
                 sendContents.Add(new LocalImageContent(fileInfo));
-                await command.ReplyGroupMessageWithAtAsync(sendContents);
+                await command.ReplyGroupMessageWithQuoteAsync(sendContents);
             }
             catch (Exception ex)
             {
@@ -90,12 +90,12 @@ namespace TheresaBot.Main.Handler
                 SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(subscribeId);
                 if (dbSubscribe is null)
                 {
-                    await command.ReplyGroupMessageWithAtAsync($"退订失败，订阅Id{subscribeId}不存在");
+                    await command.ReplyGroupMessageWithQuoteAsync($"退订失败，订阅Id{subscribeId}不存在");
                     return;
                 }
 
                 subscribeBusiness.cancleSubscribe(dbSubscribe.Id);
-                await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了{dbSubscribe.SubscribeType}[{dbSubscribe.SubscribeName}]~");
+                await command.ReplyGroupMessageWithQuoteAsync($"已为所有群退订了{dbSubscribe.SubscribeType}[{dbSubscribe.SubscribeName}]~");
                 SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
@@ -118,7 +118,7 @@ namespace TheresaBot.Main.Handler
             int id = 0;
             if (int.TryParse(value, out id) == false)
             {
-                await command.ReplyGroupMessageWithAtAsync("id必须为数字");
+                await command.ReplyGroupMessageWithQuoteAsync("id必须为数字");
                 return false;
             }
             return true;

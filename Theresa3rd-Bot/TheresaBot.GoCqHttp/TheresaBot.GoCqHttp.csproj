@@ -42,6 +42,12 @@
 		</Content>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="Font\simsun.ttc">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 	<ProjectExtensions>
 		<VisualStudio>
 			<UserProperties appsettings_1json__JsonSchema="" appsettings_1production_1json__JsonSchema="https://beaujs.com/schema.json" />

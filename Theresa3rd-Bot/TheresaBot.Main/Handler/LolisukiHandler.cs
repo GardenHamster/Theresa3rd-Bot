@@ -26,23 +26,16 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                DateTime startDateTime = DateTime.Now;
-                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-
+                List<LolisukiData> dataList;
+                string tagStr = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
                 bool isShowR18 = command.GroupId.IsShowR18Setu();
-                string tagStr = command.KeyWord;
-                if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
-                if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
-                {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ProcessingMsg);
-                    await Task.Delay(1000);
-                }
-
-                List<LolisukiData> dataList;
                 int r18Mode = isShowR18 ? 2 : 0;
                 int aiMode = isShowAI ? 2 : 0;
+
                 string levelStr = getLevelStr(isShowR18, BotConfig.SetuConfig?.Lolisuki?.Level);
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
+                await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.ProcessingMsg);
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
@@ -51,12 +44,13 @@ namespace TheresaBot.Main.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
+                    if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
                     dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1, toLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 
                 if (dataList.Count == 0)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
@@ -68,10 +62,10 @@ namespace TheresaBot.Main.Handler
 
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.Add(new PlainContent(lolisukiBusiness.getWorkInfo(lolisukiData, startDateTime, todayLeftCount, template)));
+                workMsgs.Add(new PlainContent(lolisukiBusiness.getWorkInfo(lolisukiData, todayLeftCount, template)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, lolisukiData);
-                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
                 var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)

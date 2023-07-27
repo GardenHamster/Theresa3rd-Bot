@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Handler
                 string words = command.KeyWord;
                 if (string.IsNullOrEmpty(words))
                 {
-                    await command.ReplyGroupMessageWithAtAsync("没有检测到需要添加的词汇，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithQuoteAsync("没有检测到需要添加的词汇，请确保指令格式正确");
                     return;
                 }
 
@@ -45,11 +45,11 @@ namespace TheresaBot.Main.Handler
                 {
                     var existsWords = existsList.Select(o => o.Words).Distinct().ToList();
                     var existsWordStrs = string.Join('，', existsWords);
-                    await command.ReplyGroupMessageWithAtAsync($"添加完毕！其中词汇：{existsWordStrs}已存在");
+                    await command.ReplyGroupMessageWithQuoteAsync($"添加完毕！其中词汇：{existsWordStrs}已存在");
                 }
                 else
                 {
-                    await command.ReplyGroupMessageWithAtAsync("添加完毕！");
+                    await command.ReplyGroupMessageWithQuoteAsync("添加完毕！");
                 }
             }
             catch (Exception ex)
@@ -66,7 +66,7 @@ namespace TheresaBot.Main.Handler
                 string words = command.KeyWord;
                 if (string.IsNullOrEmpty(words))
                 {
-                    await command.ReplyGroupMessageWithAtAsync("没有检测到需要添加的词汇，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithQuoteAsync("没有检测到需要添加的词汇，请确保指令格式正确");
                     return;
                 }
 
@@ -87,11 +87,11 @@ namespace TheresaBot.Main.Handler
                 {
                     var existsWords = existsList.Select(o => o.Words).Distinct().ToList();
                     var existsWordStrs = string.Join('，', existsWords);
-                    await command.ReplyGroupMessageWithAtAsync($"隐藏完毕！其中词汇：{existsWordStrs}已隐藏");
+                    await command.ReplyGroupMessageWithQuoteAsync($"隐藏完毕！其中词汇：{existsWordStrs}已隐藏");
                 }
                 else
                 {
-                    await command.ReplyGroupMessageWithAtAsync("隐藏完毕！");
+                    await command.ReplyGroupMessageWithQuoteAsync("隐藏完毕！");
                 }
             }
             catch (Exception ex)

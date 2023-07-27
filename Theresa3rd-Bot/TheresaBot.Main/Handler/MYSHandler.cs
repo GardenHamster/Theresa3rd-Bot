@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Handler
                 MysResult<MysUserFullInfoDto> userInfoDto = await mysBusiness.geMysUserFullInfoDtoAsync(userId);
                 if (userInfoDto is null || userInfoDto.retcode != 0)
                 {
-                    await command.ReplyGroupMessageWithAtAsync("订阅失败，目标用户不存在");
+                    await command.ReplyGroupMessageWithQuoteAsync("订阅失败，目标用户不存在");
                     return;
                 }
 
@@ -76,7 +76,7 @@ namespace TheresaBot.Main.Handler
                 if (dbSubscribe is null) dbSubscribe = subscribeBusiness.insertSurscribe(userInfoDto.data.user_info, userId);
                 if (subscribeBusiness.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
                 {
-                    await command.ReplyGroupMessageWithAtAsync($"已订阅了该用户~");
+                    await command.ReplyGroupMessageWithQuoteAsync($"已订阅了该用户~");
                     return;
                 }
                 subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
@@ -95,7 +95,7 @@ namespace TheresaBot.Main.Handler
                     chailList.Add(new LocalImageContent(fileInfo));
                 }
 
-                await command.ReplyGroupMessageWithAtAsync(chailList);
+                await command.ReplyGroupMessageWithQuoteAsync(chailList);
                 SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
@@ -138,7 +138,7 @@ namespace TheresaBot.Main.Handler
                 List<SubscribePO> subscribeList = mysBusiness.getSubscribeList(userId);
                 if (subscribeList is null || subscribeList.Count == 0)
                 {
-                    await command.ReplyGroupMessageWithAtAsync("并没有订阅这个用户哦~");
+                    await command.ReplyGroupMessageWithQuoteAsync("并没有订阅这个用户哦~");
                     return;
                 }
 
@@ -147,7 +147,7 @@ namespace TheresaBot.Main.Handler
                     subscribeBusiness.cancleSubscribe(item.Id);
                 }
 
-                await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了id为{userId}的米游社用户~");
+                await command.ReplyGroupMessageWithQuoteAsync($"已为所有群退订了id为{userId}的米游社用户~");
                 SubscribeDatas.LoadSubscribeTask();
             }
             catch (Exception ex)
@@ -233,17 +233,17 @@ namespace TheresaBot.Main.Handler
             long userId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                await command.ReplyGroupMessageWithAtAsync("用户id不可以为空");
+                await command.ReplyGroupMessageWithQuoteAsync("用户id不可以为空");
                 return false;
             }
             if (long.TryParse(value, out userId) == false)
             {
-                await command.ReplyGroupMessageWithAtAsync("用户id必须为数字");
+                await command.ReplyGroupMessageWithQuoteAsync("用户id必须为数字");
                 return false;
             }
             if (userId <= 0)
             {
-                await command.ReplyGroupMessageWithAtAsync("用户id无效");
+                await command.ReplyGroupMessageWithQuoteAsync("用户id无效");
                 return false;
             }
             return true;
@@ -254,17 +254,17 @@ namespace TheresaBot.Main.Handler
             int typeId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                await command.ReplyGroupMessageWithAtAsync("未指定目标群");
+                await command.ReplyGroupMessageWithQuoteAsync("未指定目标群");
                 return false;
             }
             if (int.TryParse(value, out typeId) == false)
             {
-                await command.ReplyGroupMessageWithAtAsync("目标必须为数字");
+                await command.ReplyGroupMessageWithQuoteAsync("目标必须为数字");
                 return false;
             }
             if (Enum.IsDefined(typeof(SubscribeGroupType), typeId) == false)
             {
-                await command.ReplyGroupMessageWithAtAsync("目标不在范围内");
+                await command.ReplyGroupMessageWithQuoteAsync("目标不在范围内");
                 return false;
             }
             return true;

@@ -58,7 +58,7 @@ namespace TheresaBot.Main.Handler
 
             if (startTimeStr.Length == 0 || endTimeStr.Length == 0)
             {
-                await groupCommand.ReplyGroupMessageAsync($"错误的日期格式");
+                await groupCommand.ReplyGroupMessageWithQuoteAsync($"错误的日期格式");
                 return;
             }
 
@@ -66,7 +66,7 @@ namespace TheresaBot.Main.Handler
             DateTime? endTime = endTimeStr.ToDateTime();
             if (startTime is null || endTime is null)
             {
-                await groupCommand.ReplyGroupMessageAsync($"错误的日期格式");
+                await groupCommand.ReplyGroupMessageWithQuoteAsync($"错误的日期格式");
                 return;
             }
 
@@ -179,11 +179,11 @@ namespace TheresaBot.Main.Handler
             {
                 long groupId = groupCommand.GroupId;
                 CoolingCache.SetWordCloudHanding(groupId);
-                await groupCommand.ReplyProcessingMessageAsync(BotConfig.WordCloudConfig.ProcessingMsg, 1000);
+                await groupCommand.ReplyProcessingMessageAsync(BotConfig.WordCloudConfig.ProcessingMsg);
                 List<string> words = wordCloudBusiness.getCloudWords(groupId, startTime, endTime);
                 if (words is null || words.Count == 0)
                 {
-                    await groupCommand.ReplyGroupMessageWithAtAsync("未能获取足够数量的聊天记录，词云生成失败了");
+                    await groupCommand.ReplyGroupMessageWithQuoteAsync("未能获取足够数量的聊天记录，词云生成失败了");
                     return;
                 }
                 List<BaseContent> contents = new List<BaseContent>();
@@ -193,7 +193,7 @@ namespace TheresaBot.Main.Handler
                 }
                 FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words);
                 contents.Add(new LocalImageContent(wordCloudFile));
-                await groupCommand.ReplyGroupMessageAsync(contents);
+                await groupCommand.ReplyGroupMessageWithQuoteAsync(contents);
             }
             catch (Exception ex)
             {

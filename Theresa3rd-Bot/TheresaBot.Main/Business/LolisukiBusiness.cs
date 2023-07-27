@@ -11,7 +11,7 @@ namespace TheresaBot.Main.Business
     {
         private const int eachPage = 5;
 
-        public string getWorkInfo(LolisukiData lolisukiData, DateTime startTime, long todayLeft, string template = "")
+        public string getWorkInfo(LolisukiData lolisukiData, long todayLeft, string template = "")
         {
             template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(lolisukiData);

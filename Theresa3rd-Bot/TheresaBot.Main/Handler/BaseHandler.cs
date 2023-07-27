@@ -44,17 +44,17 @@ namespace TheresaBot.Main.Handler
         {
             if (string.IsNullOrWhiteSpace(WebsiteDatas.Pixiv.Cookie))
             {
-                await command.ReplyGroupMessageWithAtAsync("缺少pixiv cookie，请设置cookie");
+                await command.ReplyGroupMessageWithQuoteAsync("缺少pixiv cookie，请设置cookie");
                 return false;
             }
             if (DateTime.Now > WebsiteDatas.Pixiv.CookieExpireDate)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.PixivConfig.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.PixivConfig.CookieExpireMsg, "cookie过期了，让管理员更新cookie吧");
                 return false;
             }
             if (WebsiteDatas.Pixiv.UserId <= 0)
             {
-                await command.ReplyGroupMessageWithAtAsync("缺少userId，请更新cookie");
+                await command.ReplyGroupMessageWithQuoteAsync("缺少userId，请更新cookie");
                 return false;
             }
             return true;
@@ -64,12 +64,12 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(command.GroupId) == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
                 return false;
             }
             if (subscribeConfig is null || subscribeConfig.Enable == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;
             }
             return true;
@@ -79,12 +79,12 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.PermissionsConfig.SetuGroups.Contains(command.GroupId) == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
                 return false;
             }
             if (pluginConfig is null || pluginConfig.Enable == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;
             }
             return true;
@@ -94,12 +94,12 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.PermissionsConfig.SetuShowR18Groups.Contains(command.GroupId) == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync("当前群未配置R18权限");
+                await command.ReplyGroupTemplateWithQuoteAsync("当前群未配置R18权限");
                 return false;
             }
             if (BotConfig.PermissionsConfig.SetuShowR18ImgGroups.Contains(command.GroupId) == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync("当前群未配置R18图片权限");
+                await command.ReplyGroupTemplateWithQuoteAsync("当前群未配置R18图片权限");
                 return false;
             }
             return true;
@@ -109,12 +109,12 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.PermissionsConfig.SaucenaoGroups.Contains(command.GroupId) == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
                 return false;
             }
             if (BotConfig.SaucenaoConfig is null || BotConfig.SaucenaoConfig.Enable == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;
             }
             return true;
@@ -124,12 +124,12 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.PermissionsConfig.PixivRankingGroups.Contains(command.GroupId) == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
                 return false;
             }
             if (rankingItem is null || rankingItem.Enable == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;
             }
             return true;
@@ -139,12 +139,12 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.PermissionsConfig.WordCloudGroups.Contains(command.GroupId) == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
                 return false;
             }
             if (BotConfig.WordCloudConfig is null || BotConfig.WordCloudConfig.Enable == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;
             }
             return true;
@@ -154,7 +154,7 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.PermissionsConfig.SuperManagers.Contains(command.MemberId) == false)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.ManagersRequiredMsg, "该功能需要管理员执行");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.ManagersRequiredMsg, "该功能需要管理员执行");
                 return false;
             }
             return true;
@@ -176,7 +176,7 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(command.MemberId)) return false;
             int cdSecond = CoolingCache.GetMemberSetuCD(command.GroupId, command.MemberId);
             if (cdSecond <= 0) return false;
-            await command.ReplyGroupMessageWithAtAsync($"功能冷却中，{cdSecond}秒后再来哦~");
+            await command.ReplyGroupMessageWithQuoteAsync($"功能冷却中，{cdSecond}秒后再来哦~");
             return true;
         }
 
@@ -186,7 +186,7 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(command.MemberId)) return false;
             int cdSecond = CoolingCache.GetGroupSetuCD(command.GroupId);
             if (cdSecond <= 0) return false;
-            await command.ReplyGroupMessageWithAtAsync($"群功能冷却中，{cdSecond}秒后再来哦~");
+            await command.ReplyGroupMessageWithQuoteAsync($"群功能冷却中，{cdSecond}秒后再来哦~");
             return true;
         }
 
@@ -196,7 +196,7 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(command.MemberId)) return false;
             int cdSecond = CoolingCache.GetGroupPixivRankingCD(rankingType, command.GroupId);
             if (cdSecond <= 0) return false;
-            await command.ReplyGroupMessageWithAtAsync($"群功能冷却中，{cdSecond}秒后再来哦~");
+            await command.ReplyGroupMessageWithQuoteAsync($"群功能冷却中，{cdSecond}秒后再来哦~");
             return true;
         }
 
@@ -204,7 +204,7 @@ namespace TheresaBot.Main.Handler
         {
             int cdSecond = CoolingCache.GetGroupWordCloudCD(command.GroupId);
             if (cdSecond <= 0) return false;
-            await command.ReplyGroupMessageWithAtAsync($"群功能冷却中，{cdSecond}秒后再来哦~");
+            await command.ReplyGroupMessageWithQuoteAsync($"群功能冷却中，{cdSecond}秒后再来哦~");
             return true;
         }
 
@@ -215,7 +215,7 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.SetuConfig.MaxDaily == 0) return false;
             int useCount = new RequestRecordBusiness().getUsedCountToday(command.GroupId, command.MemberId, CommandType.Setu);
             if (useCount < BotConfig.SetuConfig.MaxDaily) return false;
-            await command.ReplyGroupMessageWithAtAsync("你今天的使用次数已经达到上限了，明天再来吧");
+            await command.ReplyGroupMessageWithQuoteAsync("你今天的使用次数已经达到上限了，明天再来吧");
             return true;
         }
 
@@ -225,7 +225,7 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(command.MemberId)) return false;
             int useCount = new RequestRecordBusiness().getUsedCountToday(command.GroupId, command.MemberId, CommandType.Saucenao);
             if (useCount < BotConfig.SaucenaoConfig.MaxDaily) return false;
-            await command.ReplyGroupMessageWithAtAsync("你今天的使用次数已经达到上限了，明天再来吧");
+            await command.ReplyGroupMessageWithQuoteAsync("你今天的使用次数已经达到上限了，明天再来吧");
             return true;
         }
 
@@ -235,28 +235,28 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(command.MemberId)) return false;
             int cdSecond = CoolingCache.GetMemberSaucenaoCD(command.GroupId, command.MemberId);
             if (cdSecond <= 0) return false;
-            await command.ReplyGroupMessageWithAtAsync($"功能冷却中，{cdSecond}秒后再来哦~");
+            await command.ReplyGroupMessageWithQuoteAsync($"功能冷却中，{cdSecond}秒后再来哦~");
             return true;
         }
 
         public async Task<bool> CheckHandingAsync(GroupCommand command)
         {
             if (CoolingCache.IsHanding(command.GroupId, command.MemberId) == false) return false;
-            await command.ReplyGroupMessageWithAtAsync("你的一个请求正在处理中，稍后再来吧");
+            await command.ReplyGroupMessageWithQuoteAsync("你的一个请求正在处理中，稍后再来吧");
             return true;
         }
 
         public async Task<bool> CheckPixivRankingHandingAsync(GroupCommand command)
         {
             if (CoolingCache.IsPixivRankingHanding() == false) return false;
-            await command.ReplyGroupMessageWithAtAsync("一个日榜功能正在处理中，稍后再来吧");
+            await command.ReplyGroupMessageWithQuoteAsync("一个日榜功能正在处理中，稍后再来吧");
             return true;
         }
 
         public async Task<bool> CheckWordCloudHandingAsync(GroupCommand command)
         {
             if (CoolingCache.IsWordCloudHanding(command.GroupId) == false) return false;
-            await command.ReplyGroupMessageWithAtAsync("一个词云功能正在处理中，稍后再来吧");
+            await command.ReplyGroupMessageWithQuoteAsync("一个词云功能正在处理中，稍后再来吧");
             return true;
         }
 

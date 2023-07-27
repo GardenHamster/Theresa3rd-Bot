@@ -22,7 +22,7 @@ namespace TheresaBot.Main.Datas
         /// <summary>
         /// 将标签糖转换为实际上pixiv中搜索的标签
         /// </summary>
-        /// <param name="tag"></param>
+        /// <param name="tagStr"></param>
         /// <returns></returns>
         public static string ToActualPixivTags(this string tagStr)
         {

@@ -125,7 +125,7 @@ namespace TheresaBot.Main.Handler
         public async Task<bool> CheckSetuCustomEnableAsync(GroupCommand command)
         {
             if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(command.GroupId)) return true;
-            await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.SetuCustomDisableMsg, "自定义功能已关闭");
+            await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.SetuCustomDisableMsg, "自定义功能已关闭");
             return false;
         }
 
@@ -140,12 +140,12 @@ namespace TheresaBot.Main.Handler
             if (string.IsNullOrWhiteSpace(tagName)) return true;
             if (tagName.IsR18() && command.GroupId.IsShowR18Setu() == false)
             {
-                await command.ReplyGroupMessageWithAtAsync("本群未设置R18权限，禁止搜索R18相关标签");
+                await command.ReplyGroupMessageWithQuoteAsync("本群未设置R18权限，禁止搜索R18相关标签");
                 return false;
             }
             if (tagName.splitPixivTags().ToList().HavingBanTags().Count > 0)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.DisableTagsMsg, "标签中包含被禁止搜索的关键词");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.DisableTagsMsg, "标签中包含被禁止搜索的关键词");
                 return false;
             }
             return true;
@@ -163,7 +163,7 @@ namespace TheresaBot.Main.Handler
         {
             string message = IsSetuSendable(command, setuInfo, isShowR18);
             if (string.IsNullOrWhiteSpace(message)) return true;
-            await command.ReplyGroupMessageWithAtAsync(message);
+            await command.ReplyGroupMessageWithQuoteAsync(message);
             return false;
         }
 

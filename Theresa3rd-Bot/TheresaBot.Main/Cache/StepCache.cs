@@ -40,7 +40,7 @@ namespace TheresaBot.Main.Cache
                     return stepInfo;
                 }
             }
-            await command.ReplyGroupMessageWithAtAsync("你的一个指令正在执行中");
+            await command.ReplyGroupMessageWithQuoteAsync("你的一个指令正在执行中");
             return null;
         }
 

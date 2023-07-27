@@ -44,7 +44,7 @@ namespace TheresaBot.Main.Handler
 
                 if (dataList.Count == 0)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "没有获取到任何本地涩图~");
+                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.NotFoundMsg, "没有获取到任何本地涩图~");
                     return;
                 }
 
@@ -57,7 +57,7 @@ namespace TheresaBot.Main.Handler
                 List<FileInfo> setuFiles = new() { setuInfo.FileInfo };
 
                 SetuContent setuContent = new SetuContent(workMsgs, setuFiles);
-                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
                 var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)

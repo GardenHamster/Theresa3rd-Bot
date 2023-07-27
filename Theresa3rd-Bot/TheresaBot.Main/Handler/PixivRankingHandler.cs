@@ -269,7 +269,7 @@ namespace TheresaBot.Main.Handler
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
                 setuContents.AddRange(rankingBusiness.getRankAndPids(pixivRankingInfo, 10));
 
-                await command.ReplyGroupMessageWithAtAsync(templateMsg);
+                await command.ReplyGroupMessageWithQuoteAsync(templateMsg);
                 await Task.Delay(1000);
                 await SendGroupMergeSetuAsync(setuContents, new() { titleContents, tipContents }, command.GroupId);
                 await Task.Delay(1000);
@@ -278,7 +278,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (NoRankingException ex)
             {
-                await command.ReplyGroupMessageWithAtAsync($"获取失败，api接口返回：{ex.Message}");
+                await command.ReplyGroupMessageWithQuoteAsync($"获取失败，api接口返回：{ex.Message}");
             }
             catch (Exception ex)
             {
@@ -300,7 +300,7 @@ namespace TheresaBot.Main.Handler
             var idList = idStr.SplitToIdList();
             if (idList.Count == 0)
             {
-                await command.ReplyGroupMessageWithAtAsync($"没有检测到序号，你可以使用【#日榜 20230601 11,45,14】的格式获取指定序号的作品详情");
+                await command.ReplyGroupMessageWithQuoteAsync($"没有检测到序号，你可以使用【#日榜 20230601 11,45,14】的格式获取指定序号的作品详情");
                 return;
             }
 
@@ -315,7 +315,7 @@ namespace TheresaBot.Main.Handler
             var rankingDetails = pixivRankingInfo.RankingDetails.Where(o => idList.Contains(o.RankingContent.rank)).ToList();
             if (rankingDetails.Count == 0)
             {
-                await command.ReplyGroupMessageWithAtAsync($"当前榜单中不存在指定序号的作品");
+                await command.ReplyGroupMessageWithQuoteAsync($"当前榜单中不存在指定序号的作品");
                 return;
             }
 

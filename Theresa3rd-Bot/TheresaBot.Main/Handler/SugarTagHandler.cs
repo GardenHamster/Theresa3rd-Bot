@@ -25,7 +25,7 @@ namespace TheresaBot.Main.Handler
                 var bindTags = paramArr.Length > 1 ? paramArr[1] : string.Empty;
                 if (string.IsNullOrWhiteSpace(keyWords))
                 {
-                    await command.ReplyGroupMessageWithAtAsync("没有检测到需要绑定的关键词，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithQuoteAsync("没有检测到需要绑定的关键词，请确保指令格式正确");
                     return;
                 }
                 var keyWordArr = keyWords.Split(new char[] { ',', '，' }).Where(o => !string.IsNullOrWhiteSpace(o)).ToArray();
@@ -33,13 +33,13 @@ namespace TheresaBot.Main.Handler
                 {
                     sugarTagBusiness.DelSugarTags(keyWordArr);
                     SugarTagDatas.LoadDatas();
-                    await command.ReplyGroupMessageWithAtAsync("已解绑相关标签");
+                    await command.ReplyGroupMessageWithQuoteAsync("已解绑相关标签");
                 }
                 else
                 {
                     sugarTagBusiness.SetSugarTags(keyWordArr, bindTags);
                     SugarTagDatas.LoadDatas();
-                    await command.ReplyGroupMessageWithAtAsync("标签绑定完毕！");
+                    await command.ReplyGroupMessageWithQuoteAsync("标签绑定完毕！");
                 }
             }
             catch (Exception ex)

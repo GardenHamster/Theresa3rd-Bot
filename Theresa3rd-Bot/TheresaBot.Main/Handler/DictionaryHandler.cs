@@ -28,7 +28,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                string[] wordArr = words.splitParams();
+                string[] wordArr = words.SplitParams();
                 List<DictionaryPO> existsList = new List<DictionaryPO>();
                 foreach (string word in wordArr)
                 {
@@ -70,7 +70,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                string[] wordArr = words.splitParams();
+                string[] wordArr = words.SplitParams();
                 List<DictionaryPO> existsList = new List<DictionaryPO>();
                 foreach (string word in wordArr)
                 {

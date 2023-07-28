@@ -51,7 +51,7 @@ namespace TheresaBot.Main.Business
             template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultSetuInfo(setuInfo);
             template = template.Replace("{FileName}", setuInfo.FileInfo.Name);
-            template = template.Replace("{SizeMB}", MathHelper.getMbWithByte(setuInfo.FileInfo.Length).ToString());
+            template = template.Replace("{SizeMB}", MathHelper.ByteToMB(setuInfo.FileInfo.Length).ToString());
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
@@ -60,7 +60,7 @@ namespace TheresaBot.Main.Business
 
         public string getDefaultSetuInfo(LocalSetuInfo setuInfo)
         {
-            return $"文件名：{setuInfo.FileInfo.Name}，大小：{MathHelper.getMbWithByte(setuInfo.FileInfo.Length)}MB";
+            return $"文件名：{setuInfo.FileInfo.Name}，大小：{MathHelper.ByteToMB(setuInfo.FileInfo.Length)}MB";
         }
 
     }

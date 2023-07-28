@@ -22,7 +22,7 @@ namespace TheresaBot.Main.Handler
             pixivBusiness = new PixivBusiness();
         }
 
-        public async Task pixivSearchAsync(GroupCommand command)
+        public async Task PixivSearchAsync(GroupCommand command)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace TheresaBot.Main.Handler
                     await Task.Delay(1000);
                 }
 
-                if (BusinessHelper.isPixivId(keyword))
+                if (BusinessHelper.IsPixivId(keyword))
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
                     pixivWorkInfo = await pixivBusiness.getPixivWorkInfoAsync(keyword);//根据作品id获取作品
@@ -115,12 +115,12 @@ namespace TheresaBot.Main.Handler
         }
 
 
-        public async Task pixivUserProfileAsync(GroupCommand command)
+        public async Task PixivUserProfileAsync(GroupCommand command)
         {
             try
             {
                 string userId = command.KeyWord;
-                if (StringHelper.isPureNumber(userId) == false)
+                if (StringHelper.IsPureNumber(userId) == false)
                 {
                     await command.ReplyGroupMessageWithQuoteAsync("请指定一个画师id~");
                     return;
@@ -142,7 +142,7 @@ namespace TheresaBot.Main.Handler
                 List<string> PreviewFilePaths = profileInfo.PreviewFilePaths;
                 if (PreviewFilePaths is null || PreviewFilePaths.IsFilesExists() == false)
                 {
-                    PreviewFilePaths = await createPreviewImgAsync(profileInfo);
+                    PreviewFilePaths = await CreatePreviewImgAsync(profileInfo);
                     profileInfo.PreviewFilePaths = PreviewFilePaths;
                 }
 
@@ -170,7 +170,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<List<string>> createPreviewImgAsync(PixivUserProfileInfo profileInfo)
+        private async Task<List<string>> CreatePreviewImgAsync(PixivUserProfileInfo profileInfo)
         {
             int startIndex = 0;
             int previewInPage = BotConfig.SetuConfig.PixivUser.PreviewInPage;
@@ -183,14 +183,14 @@ namespace TheresaBot.Main.Handler
                 string fileName = $"pixiv_user_{profileInfo.UserId}_preview_{startIndex}_{startIndex + previewInPage}.jpg";
                 string fullSavePath = Path.Combine(FilePath.GetPixivPreviewDirectory(), fileName);
                 var partList = profileDetails.Skip(startIndex).Take(previewInPage).ToList();
-                var previewFile = await createPreviewImgAsync(profileInfo, partList, fullSavePath);
+                var previewFile = await CreatePreviewImgAsync(profileInfo, partList, fullSavePath);
                 if (previewFile is not null) fileInfos.Add(previewFile.FullName);
                 startIndex += previewInPage;
             }
             return fileInfos;
         }
 
-        private async Task<FileInfo> createPreviewImgAsync(PixivUserProfileInfo profileInfo, List<PixivProfileDetail> details, string fullSavePath)
+        private async Task<FileInfo> CreatePreviewImgAsync(PixivUserProfileInfo profileInfo, List<PixivProfileDetail> details, string fullSavePath)
         {
             try
             {

@@ -7,7 +7,7 @@
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        public static double getMbWithByte(double bytes)
+        public static double ByteToMB(double bytes)
         {
             return Math.Round(bytes / 1024 / 1024, 2);
         }
@@ -17,7 +17,7 @@
         /// </summary>
         /// <param name="idStrs"></param>
         /// <returns></returns>
-        public static List<long> splitListFromStr(string idStrs)
+        public static List<long> SplitListFromStr(string idStrs)
         {
             List<long> idList = new List<long>();
             if (string.IsNullOrEmpty(idStrs)) return idList;
@@ -40,7 +40,7 @@
         /// <param name="total"></param>
         /// <param name="eachPage"></param>
         /// <returns></returns>
-        public static int getMaxPage(int total, int eachPage)
+        public static int GetMaxPage(int total, int eachPage)
         {
             return (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
         }
@@ -50,7 +50,7 @@
         /// </summary>
         /// <param name="number"></param>
         /// <returns></returns>
-        public static string toPercent(this double number)
+        public static string ToPercent(this double number)
         {
             return (number * 100).ToString("0.00") + "%";
         }

@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Timers
                 if (wordCloudTimer.Enable == false) return;
                 if (wordCloudTimer.Groups is null) return;
                 if (wordCloudTimer.Groups.Count == 0) return;
-                await new WordCloudHandler(session, reporter).pushWordCloudAsync(wordCloudTimer);
+                await new WordCloudHandler(session, reporter).PushWordCloudAsync(wordCloudTimer);
             }
             catch (Exception ex)
             {

@@ -60,7 +60,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                     List<string> imgUrls = args.Message.OfType<CqImageMsg>().Select(o => o.Url?.ToString()).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.GoCQHttp, msgId, groupId, memberId);
                     List<string> plainMessages = args.Message.OfType<CqTextMsg>().Select(o => o.Text).ToList();
-                    Task task2 = RecordHelper.AddPlainRecords(plainMessages, PlatformType.GoCQHttp, msgId, groupId, memberId);
+                    Task task2 = RecordHelper.AddMessageRecord(plainMessages, PlatformType.GoCQHttp, msgId, groupId, memberId);
                     return;
                 }
 

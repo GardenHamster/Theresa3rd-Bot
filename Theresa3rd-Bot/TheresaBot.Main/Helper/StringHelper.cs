@@ -84,7 +84,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="instruction"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        public static string[] splitKeyParams(this string instruction, string command)
+        public static string[] SplitKeyParams(this string instruction, string command)
         {
             string paramStr = instruction.Trim().SplitKeyWord(command);
             string[] paramArr = paramStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
@@ -97,7 +97,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="message"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        public static string[] splitPixivTags(this string tags)
+        public static string[] SplitPixivTags(this string tags)
         {
             if (string.IsNullOrWhiteSpace(tags)) return new string[0];
             string[] tagArr = tags.Split(new string[] { " ", ",", "，" }, StringSplitOptions.RemoveEmptyEntries);
@@ -108,7 +108,7 @@ namespace TheresaBot.Main.Helper
         /// 通过逗号或者换行符拆分参数
         /// </summary>
         /// <returns></returns>
-        public static string[] splitParams(this string value)
+        public static string[] SplitParams(this string value)
         {
             var paramArr = value.Split(new string[] { ",", "，", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             return paramArr.Where(o => !string.IsNullOrWhiteSpace(o)).Select(o => o.Trim()).ToArray();
@@ -119,7 +119,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="cookie"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> splitCookie(this string cookie)
+        public static Dictionary<string, string> SplitCookie(this string cookie)
         {
             Dictionary<string, string> cookieDic = new Dictionary<string, string>();
             if (string.IsNullOrEmpty(cookie)) return cookieDic;
@@ -140,7 +140,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="httpUrl"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> splitHttpParams(this string httpUrl)
+        public static Dictionary<string, string> SplitHttpParams(this string httpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>();
             if (string.IsNullOrEmpty(httpUrl)) return paramDic;
@@ -165,7 +165,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="message"></param>
         /// <param name="commandStr"></param>
         /// <returns></returns>
-        public static string[] splitHttpUrl(this string value)
+        public static string[] SplitHttpUrl(this string value)
         {
             string urlStr = value.Split(new char[] { '?', '&' }, StringSplitOptions.RemoveEmptyEntries)[0];
             return urlStr.Split('/', StringSplitOptions.RemoveEmptyEntries);
@@ -176,7 +176,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="httpUrl"></param>
         /// <returns></returns>
-        public static string formatHttpUrl(this string httpUrl, bool defaultHttps = true)
+        public static string FormatHttpUrl(this string httpUrl, bool defaultHttps = true)
         {
             if (string.IsNullOrWhiteSpace(httpUrl)) return string.Empty;
             httpUrl = httpUrl.Trim();
@@ -206,7 +206,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="cookie"></param>
         /// <returns></returns>
-        public static string joinCookie(this Dictionary<string, string> cookieDic)
+        public static string JoinCookie(this Dictionary<string, string> cookieDic)
         {
             StringBuilder builder = new StringBuilder();
             foreach (var item in cookieDic)
@@ -223,7 +223,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="ids"></param>
         /// <param name="paramKey"></param>
         /// <returns></returns>
-        public static string joinParam(this List<int> ids, string paramKey)
+        public static string JoinParam(this List<int> ids, string paramKey)
         {
             StringBuilder builder = new StringBuilder();
             foreach (var id in ids)
@@ -251,7 +251,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static string filterEmoji(this string str)
+        public static string FilterEmoji(this string str)
         {
             try
             {
@@ -276,7 +276,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str">加密字符</param>
         /// <returns></returns>
-        public static string getMD532bit(this string str)
+        public static string MD532bit(this string str)
         {
             MD5 md5 = MD5.Create();
             byte[] byteOld = Encoding.UTF8.GetBytes(str);
@@ -291,7 +291,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool isPureNumber(this string str)
+        public static bool IsPureNumber(this string str)
         {
             return Regex.IsMatch(str, @"^\d+$");
         }
@@ -301,7 +301,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool isEmptyLine(this string str)
+        public static bool IsEmptyLine(this string str)
         {
             if (string.IsNullOrWhiteSpace(str)) return true;
             str = str.Trim().ToLower();
@@ -359,7 +359,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="length"></param>
         /// <returns></returns>
-        public static string getRandomString(int length)
+        public static string RandomString(int length)
         {
             StringBuilder stringBuilder = new StringBuilder(length);
             string randomStringTemplate = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

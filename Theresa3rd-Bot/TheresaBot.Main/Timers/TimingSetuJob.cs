@@ -53,15 +53,15 @@ namespace TheresaBot.Main.Timers
                 TimingSetuSourceType sourceType = timingSetuTimer.Source;
                 if (sourceType == TimingSetuSourceType.Lolicon)
                 {
-                    await new LoliconHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
+                    await new LoliconHandler(session, reporter).SendTimingSetuAsync(timingSetuTimer, groupId);
                 }
                 else if (sourceType == TimingSetuSourceType.Lolisuki)
                 {
-                    await new LolisukiHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
+                    await new LolisukiHandler(session, reporter).SendTimingSetuAsync(timingSetuTimer, groupId);
                 }
                 else if (sourceType == TimingSetuSourceType.Local)
                 {
-                    await new LocalSetuHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
+                    await new LocalSetuHandler(session, reporter).SendTimingSetuAsync(timingSetuTimer, groupId);
                 }
             }
             catch (Exception ex)

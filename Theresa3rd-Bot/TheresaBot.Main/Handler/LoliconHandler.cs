@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Handler
             loliconBusiness = new LoliconBusiness();
         }
 
-        public async Task loliconSearchAsync(GroupCommand command)
+        public async Task LoliconSearchAsync(GroupCommand command)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace TheresaBot.Main.Handler
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
                     if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
-                    dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1, toLoliconTagArr(tagStr.ToActualPixivTags()));
+                    dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 
                 if (dataList.Count == 0)
@@ -87,7 +87,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
+        public async Task SendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
             try
             {
@@ -96,10 +96,10 @@ namespace TheresaBot.Main.Handler
                 int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
                 bool excludeAI = groupId.IsShowAISetu() == false;
                 string tagStr = RandomHelper.RandomItem(timingSetuTimer.Tags);
-                string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
+                string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : ToLoliconTagArr(tagStr);
                 int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
                 List<LoliconDataV2> dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, quantity, tagArr);
-                List<SetuContent> setuContents = await getSetuContent(dataList, groupId);
+                List<SetuContent> setuContents = await GetSetuContent(dataList, groupId);
                 await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
                 await Task.Delay(2000);
                 await SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
@@ -111,14 +111,14 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<List<SetuContent>> getSetuContent(List<LoliconDataV2> datas, long groupId)
+        private async Task<List<SetuContent>> GetSetuContent(List<LoliconDataV2> datas, long groupId)
         {
             List<SetuContent> setuContents = new List<SetuContent>();
-            foreach (var data in datas) setuContents.Add(await getSetuContent(data, groupId));
+            foreach (var data in datas) setuContents.Add(await GetSetuContent(data, groupId));
             return setuContents;
         }
 
-        private async Task<SetuContent> getSetuContent(LoliconDataV2 data, long groupId)
+        private async Task<SetuContent> GetSetuContent(LoliconDataV2 data, long groupId)
         {
             string setuInfo = loliconBusiness.getDefaultWorkInfo(data);
             List<FileInfo> setuFiles = await GetSetuFilesAsync(data, groupId);

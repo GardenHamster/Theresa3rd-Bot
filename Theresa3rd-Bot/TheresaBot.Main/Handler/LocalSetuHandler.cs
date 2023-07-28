@@ -20,7 +20,7 @@ namespace TheresaBot.Main.Handler
             localSetuBusiness = new LocalSetuBusiness();
         }
 
-        public async Task localSearchAsync(GroupCommand command)
+        public async Task LocalSearchAsync(GroupCommand command)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
+        public async Task SendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
             int margeEachPage = 5;
             bool sendMerge = timingSetuTimer.SendMerge;
@@ -92,20 +92,20 @@ namespace TheresaBot.Main.Handler
             List<LocalSetuInfo> dataList = localSetuBusiness.loadRandomDir(localPath, timingSetuTimer.Quantity, fromOneDir);
             if (dataList is null || dataList.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
             string tags = fromOneDir ? dataList[0].DirInfo.Name : "";
-            List<SetuContent> setuContents = getSetuContent(dataList);
+            List<SetuContent> setuContents = GetSetuContent(dataList);
             await sendTimingSetuMessageAsync(timingSetuTimer, tags, groupId);
             await Task.Delay(2000);
             await SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
         }
 
-        private List<SetuContent> getSetuContent(List<LocalSetuInfo> datas)
+        private List<SetuContent> GetSetuContent(List<LocalSetuInfo> datas)
         {
             List<SetuContent> setuContents = new List<SetuContent>();
-            foreach (var data in datas) setuContents.Add(getSetuContent(data));
+            foreach (var data in datas) setuContents.Add(GetSetuContent(data));
             return setuContents;
         }
 
-        private SetuContent getSetuContent(LocalSetuInfo data)
+        private SetuContent GetSetuContent(LocalSetuInfo data)
         {
             string setuInfo = localSetuBusiness.getDefaultSetuInfo(data);
             List<FileInfo> setuFiles = new List<FileInfo>() { data.FileInfo };

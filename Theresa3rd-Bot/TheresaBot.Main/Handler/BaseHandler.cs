@@ -3,9 +3,11 @@ using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
@@ -268,6 +270,18 @@ namespace TheresaBot.Main.Handler
             return true;
         }
 
+        protected async Task CheckTextAsync(GroupRelay relay)
+        {
+            if (string.IsNullOrWhiteSpace(relay.Answer)) throw new NoAnswerException();
+            await Task.CompletedTask;
+        }
+
+        protected async Task CheckImageAsync(GroupRelay relay)
+        {
+            List<string> imgList = relay.GetImageUrls();
+            if (imgList.Count == 0) throw new NoAnswerException();
+            await Task.CompletedTask;
+        }
 
     }
 }

@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Handler
             banMemberBusiness = new BanMemberBusiness();
         }
 
-        public async Task disableTagAsync(GroupCommand command)
+        public async Task DisableTagAsync(GroupCommand command)
         {
             try
             {
@@ -37,15 +37,15 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
-                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开");
-                    StepInfo matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchTypeOption()}", CheckMatchTypeAsync);
+                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
+                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开", CheckTextAsync);
+                    StepInfo matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchOptions()}", CheckMatchTypeAsync);
                     await processInfo.StartProcessing();
                     tagStr = tagStep.AnswerForString();
                     matchType = matchStep.AnswerForEnum<TagMatchType>();
                 }
                 var result = new ModifyResult();
-                var banTags = tagStr.splitParams();
+                var banTags = tagStr.SplitParams();
                 banTagBusiness.InsertOrUpdate(result, tagStr, matchType);
                 BanTagDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync($"记录成功，新增记录{result.CreateCount}条，更新记录{result.UpdateCount}条");
@@ -60,7 +60,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task enableTagAsync(GroupCommand command)
+        public async Task EnableTagAsync(GroupCommand command)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace TheresaBot.Main.Handler
                     await command.ReplyGroupMessageWithQuoteAsync("没有检测到要解除屏蔽的标签，请确保指令格式正确");
                     return;
                 }
-                var banTags = tagStr.splitParams();
+                var banTags = tagStr.SplitParams();
                 banTagBusiness.DelBanTags(banTags);
                 BanTagDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("记录成功");
@@ -85,7 +85,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task disableMemberAsync(GroupCommand command)
+        public async Task DisableMemberAsync(GroupCommand command)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task enableMemberAsync(GroupCommand command)
+        public async Task EnableMemberAsync(GroupCommand command)
         {
             try
             {

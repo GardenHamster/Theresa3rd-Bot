@@ -78,7 +78,7 @@ namespace TheresaBot.Main.Business
         {
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
-            dbSubscribe.SubscribeName = userInfo.nickname?.filterEmoji()?.CutString(50);
+            dbSubscribe.SubscribeName = userInfo.nickname?.FilterEmoji()?.CutString(50);
             dbSubscribe.SubscribeType = SubscribeType.米游社用户;
             dbSubscribe.SubscribeSubType = 0;
             dbSubscribe.CreateDate = DateTime.Now;
@@ -89,7 +89,7 @@ namespace TheresaBot.Main.Business
         {
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
-            dbSubscribe.SubscribeName = pixivUserInfoDto.extraData.meta.UserName.filterEmoji()?.Trim()?.CutString(200);
+            dbSubscribe.SubscribeName = pixivUserInfoDto.extraData.meta.UserName.FilterEmoji()?.Trim()?.CutString(200);
             dbSubscribe.SubscribeType = SubscribeType.P站画师;
             dbSubscribe.SubscribeSubType = 0;
             dbSubscribe.CreateDate = DateTime.Now;
@@ -100,7 +100,7 @@ namespace TheresaBot.Main.Business
         {
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = pixivFollowUser.userId;
-            dbSubscribe.SubscribeName = pixivFollowUser.userName.filterEmoji().CutString(200);
+            dbSubscribe.SubscribeName = pixivFollowUser.userName.FilterEmoji().CutString(200);
             dbSubscribe.SubscribeType = SubscribeType.P站画师;
             dbSubscribe.SubscribeSubType = 0;
             dbSubscribe.CreateDate = createDate;

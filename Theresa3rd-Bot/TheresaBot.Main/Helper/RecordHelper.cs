@@ -13,7 +13,7 @@ namespace TheresaBot.Main.Helper
             await recordBusiness.AddImageRecord(imageUrls, platformType, msgId, groupId, memberId);
         }
 
-        public static async Task AddPlainRecords(List<string> plainMessages, PlatformType platformType, long msgId, long groupId, long memberId)
+        public static async Task AddMessageRecord(List<string> plainMessages, PlatformType platformType, long msgId, long groupId, long memberId)
         {
             if (plainMessages is null || plainMessages.Count == 0) return;
             string plainMessage = string.Join(' ', plainMessages);

@@ -46,7 +46,7 @@ namespace TheresaBot.Main.Business
             int maxScan = BotConfig.PixivRankingConfig.MaxScan;
             if (maxScan > 500) maxScan = 500;
             if (firstpage.rank_total < maxScan) maxScan = firstpage.rank_total;
-            int maxPage = MathHelper.getMaxPage(maxScan, eachPage);
+            int maxPage = MathHelper.GetMaxPage(maxScan, eachPage);
 
             List<PixivRankingContent> rankingContents = new List<PixivRankingContent>();
             for (int page = 1; page < maxPage + 1; page++)

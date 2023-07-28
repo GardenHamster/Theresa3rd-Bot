@@ -25,7 +25,7 @@ namespace TheresaBot.Main.Command
             this.CommandType = commandType;
             this.Session = baseSession;
             this.KeyWord = instruction.SplitKeyWord(command);
-            this.Params = instruction.splitKeyParams(command);
+            this.Params = instruction.SplitKeyParams(command);
         }
 
         public abstract Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter);

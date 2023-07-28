@@ -36,7 +36,7 @@ namespace TheresaBot.Main.Handler
             }
 
             cookie = cookie.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").Replace("\"", "").Trim();
-            Dictionary<string, string> cookieDic = cookie.splitCookie();
+            Dictionary<string, string> cookieDic = cookie.SplitCookie();
             string PHPSESSID = cookieDic.ContainsKey("PHPSESSID") ? cookieDic["PHPSESSID"] : string.Empty;
             if (string.IsNullOrWhiteSpace(PHPSESSID))
             {
@@ -62,7 +62,7 @@ namespace TheresaBot.Main.Handler
             if (cookieDic.ContainsKey("cto_bundle")) cookieDic.Remove("cto_bundle");
             if (cookieDic.ContainsKey("categorized_tags")) cookieDic.Remove("cookieDic");
             if (cookieDic.ContainsKey("tag_view_ranking")) cookieDic.Remove("tag_view_ranking");
-            cookie = cookieDic.joinCookie();
+            cookie = cookieDic.JoinCookie();
 
             string websiteCode = Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv) ?? string.Empty;
             WebsitePO website = websiteBusiness.updateWebsite(websiteCode, cookie, userId, BotConfig.PixivConfig.CookieExpire);
@@ -88,7 +88,7 @@ namespace TheresaBot.Main.Handler
             }
             //token=62b9ae236fdf9; user=58109; auth=9cd37025e035f2ed99d096f2b7cf5485b7dd50a7;
             cookie = cookie.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").Replace("\"", "").Trim();
-            Dictionary<string, string> cookieDic = cookie.splitCookie();
+            Dictionary<string, string> cookieDic = cookie.SplitCookie();
 
             string tokenStr = cookieDic.ContainsKey("token") ? cookieDic["token"] : string.Empty;
             if (string.IsNullOrWhiteSpace(tokenStr))

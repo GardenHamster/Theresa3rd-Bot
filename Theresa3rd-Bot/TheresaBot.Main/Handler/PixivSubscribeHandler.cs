@@ -46,11 +46,11 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
                     StepInfo uidStep = processInfo.CreateStep("请在60秒内发送要订阅用户的id，多个id之间可以用逗号或者换行隔开", CheckUserIdsAsync);
-                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckPushTypeAsync);
+                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions()}", CheckPushTypeAsync);
                     await processInfo.StartProcessing();
-                    userIds = uidStep.Answer.splitParams();
+                    userIds = uidStep.Answer.SplitParams();
                     pushType = typeStep.AnswerForEnum<GroupPushType>();
                 }
 
@@ -108,7 +108,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithQuoteAsync($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~");
 
                 await Task.Delay(1000);
-                await sendUserNewestAsync(command, dbSubscribe, command.GroupId.IsShowR18Setu(), command.GroupId.IsShowAISetu());
+                await SendUserNewestAsync(command, dbSubscribe, command.GroupId.IsShowR18Setu(), command.GroupId.IsShowAISetu());
             }
             catch (Exception ex)
             {
@@ -129,9 +129,9 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
-                StepInfo modeStep = processInfo.CreateStep($"请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncModeOption()}", CheckSyncModeAsync);
-                StepInfo groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckPushTypeAsync);
+                ProcessInfo processInfo = ProcessCache.CreateProcess(command);
+                StepInfo modeStep = processInfo.CreateStep($"请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncOptions()}", CheckSyncModeAsync);
+                StepInfo groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions()}", CheckPushTypeAsync);
                 await processInfo.StartProcessing();
                 PixivSyncType syncMode = modeStep.AnswerForEnum<PixivSyncType>();
                 GroupPushType pushType = groupStep.AnswerForEnum<GroupPushType>();
@@ -199,7 +199,7 @@ namespace TheresaBot.Main.Handler
         /// <param name="message"></param>
         /// <param name="isGroupSubscribe"></param>
         /// <returns></returns>
-        public async Task cancleSubscribeUserAsync(GroupCommand command)
+        public async Task CancleSubscribeUserAsync(GroupCommand command)
         {
             try
             {
@@ -210,10 +210,10 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
                     StepInfo uidStep = processInfo.CreateStep("请在60秒内发送要退订用户的id，多个id之间可以用逗号或者换行隔开", CheckUserIdsAsync);
                     await processInfo.StartProcessing();
-                    userIds = uidStep.Answer.splitParams();
+                    userIds = uidStep.Answer.SplitParams();
                 }
                 foreach (string userId in userIds)
                 {
@@ -245,7 +245,7 @@ namespace TheresaBot.Main.Handler
         /// <param name="args"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task subscribeTagAsync(GroupCommand command)
+        public async Task SubscribeTagAsync(GroupCommand command)
         {
             try
             {
@@ -258,9 +258,9 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
                     StepInfo tagStep = processInfo.CreateStep($"请在60秒内发送要订阅的标签名");
-                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckPushTypeAsync);
+                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions()}", CheckPushTypeAsync);
                     await processInfo.StartProcessing();
                     pixivTag = tagStep.AnswerForString();
                     pushType = typeStep.AnswerForEnum<GroupPushType>();
@@ -304,15 +304,15 @@ namespace TheresaBot.Main.Handler
         /// <param name="args"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task cancleSubscribeTagAsync(GroupCommand command)
+        public async Task CancleSubscribeTagAsync(GroupCommand command)
         {
             try
             {
                 var pixivTag = command.KeyWord;
                 if (pixivTag.Length == 0)
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
-                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送要退订的标签");
+                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
+                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送要退订的标签", CheckTextAsync);
                     await processInfo.StartProcessing();
                     pixivTag = tagStep.AnswerForString();
                 }
@@ -344,7 +344,7 @@ namespace TheresaBot.Main.Handler
         /// <param name="isShowR18"></param>
         /// <param name="isShowAI"></param>
         /// <returns></returns>
-        private async Task sendUserNewestAsync(GroupCommand command, SubscribePO dbSubscribe, bool isShowR18, bool isShowAI)
+        private async Task SendUserNewestAsync(GroupCommand command, SubscribePO dbSubscribe, bool isShowR18, bool isShowAI)
         {
             try
             {
@@ -374,7 +374,7 @@ namespace TheresaBot.Main.Handler
 
         private async Task<string[]> CheckUserIdsAsync(string value)
         {
-            string[] idArr = value.splitParams();
+            string[] idArr = value.SplitParams();
             if (idArr.Length == 0)
             {
                 throw new ProcessException("没有检测到用户id");

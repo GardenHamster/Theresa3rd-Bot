@@ -59,7 +59,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                     List<string> imgUrls = args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.Mirai, msgId, groupId, memberId);
                     List<string> plainMessages = args.Chain.Where(o => o is PlainMessage).Select(o => o.ToString()).ToList();
-                    Task task2 = RecordHelper.AddPlainRecords(plainMessages, PlatformType.Mirai, msgId, groupId, memberId);
+                    Task task2 = RecordHelper.AddMessageRecord(plainMessages, PlatformType.Mirai, msgId, groupId, memberId);
                     return;
                 }
 

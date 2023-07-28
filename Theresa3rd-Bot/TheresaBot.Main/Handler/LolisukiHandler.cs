@@ -22,7 +22,7 @@ namespace TheresaBot.Main.Handler
             lolisukiBusiness = new LolisukiBusiness();
         }
 
-        public async Task lolisukiSearchAsync(GroupCommand command)
+        public async Task LolisukiSearchAsync(GroupCommand command)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace TheresaBot.Main.Handler
                 int r18Mode = isShowR18 ? 2 : 0;
                 int aiMode = isShowAI ? 2 : 0;
 
-                string levelStr = getLevelStr(isShowR18, BotConfig.SetuConfig?.Lolisuki?.Level);
+                string levelStr = GetLevelStr(isShowR18, BotConfig.SetuConfig?.Lolisuki?.Level);
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
                 await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.ProcessingMsg);
 
@@ -45,7 +45,7 @@ namespace TheresaBot.Main.Handler
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
                     if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
-                    dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1, toLoliconTagArr(tagStr.ToActualPixivTags()));
+                    dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 
                 if (dataList.Count == 0)
@@ -90,22 +90,22 @@ namespace TheresaBot.Main.Handler
         }
 
 
-        public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
+        public async Task SendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
             try
             {
                 int margeEachPage = 5;
                 bool isShowAI = groupId.IsShowAISetu();
                 bool isShowR18 = groupId.IsShowR18Setu();
-                string levelStr = getLevelStr(isShowR18, BotConfig.TimingSetuConfig?.LolisukiLevel);
+                string levelStr = GetLevelStr(isShowR18, BotConfig.TimingSetuConfig?.LolisukiLevel);
                 bool sendMerge = timingSetuTimer.SendMerge;
                 int aiMode = isShowAI ? 2 : 0;
                 int r18Mode = isShowR18 ? 2 : 0;
                 string tagStr = RandomHelper.RandomItem(timingSetuTimer.Tags);
-                string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
+                string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : ToLoliconTagArr(tagStr);
                 int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
                 List<LolisukiData> dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, quantity, tagArr);
-                List<SetuContent> setuContents = await getSetuContent(dataList, groupId);
+                List<SetuContent> setuContents = await GetSetuContent(dataList, groupId);
                 await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
                 await Task.Delay(2000);
                 await SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
@@ -117,21 +117,21 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<List<SetuContent>> getSetuContent(List<LolisukiData> datas, long groupId)
+        private async Task<List<SetuContent>> GetSetuContent(List<LolisukiData> datas, long groupId)
         {
             List<SetuContent> setuContents = new List<SetuContent>();
-            foreach (var data in datas) setuContents.Add(await getSetuContent(data, groupId));
+            foreach (var data in datas) setuContents.Add(await GetSetuContent(data, groupId));
             return setuContents;
         }
 
-        private async Task<SetuContent> getSetuContent(LolisukiData data, long groupId)
+        private async Task<SetuContent> GetSetuContent(LolisukiData data, long groupId)
         {
             string setuInfo = lolisukiBusiness.getDefaultWorkInfo(data);
             List<FileInfo> setuFiles = await GetSetuFilesAsync(data, groupId);
             return new SetuContent(setuInfo, setuFiles);
         }
 
-        private string getLevelStr(bool isShowR18, string settingLevel)
+        private string GetLevelStr(bool isShowR18, string settingLevel)
         {
             if (string.IsNullOrWhiteSpace(settingLevel)) return $"{(int)LolisukiLevel.Level0}-{(int)LolisukiLevel.Level2}";
             string[] levelArr = settingLevel.Split('-', StringSplitOptions.RemoveEmptyEntries);

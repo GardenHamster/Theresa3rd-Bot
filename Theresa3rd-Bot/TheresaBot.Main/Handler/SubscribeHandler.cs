@@ -54,7 +54,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task cancleSubscribeAsync(GroupCommand command)
+        public async Task CancleSubscribeAsync(GroupCommand command)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
                     StepInfo tagStep = processInfo.CreateStep("请在60秒内发送要退订的Id", CheckSubscribeIdAsync);
                     await processInfo.StartProcessing();
                     subscribeId = tagStep.AnswerForInt();

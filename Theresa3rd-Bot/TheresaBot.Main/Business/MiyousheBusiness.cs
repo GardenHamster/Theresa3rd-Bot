@@ -90,8 +90,8 @@ namespace TheresaBot.Main.Business
                     if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, postId)) continue;
                     SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                    subscribeRecord.Title = item.post.subject?.filterEmoji().CutString(200);
-                    subscribeRecord.Content = item.post.content?.filterEmoji().CutString(200);
+                    subscribeRecord.Title = item.post.subject?.FilterEmoji().CutString(200);
+                    subscribeRecord.Content = item.post.content?.FilterEmoji().CutString(200);
                     subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
                     subscribeRecord.LinkUrl = HttpUrl.getMysArticleUrl(postId);
                     subscribeRecord.DynamicCode = postId;

@@ -65,7 +65,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool isPixivId(this string str)
+        public static bool IsPixivId(this string str)
         {
             long pixivId = 0;
             if (!long.TryParse(str, out pixivId)) return false;
@@ -198,7 +198,7 @@ namespace TheresaBot.Main.Helper
             {
                 string code = item?.Trim();
                 if (string.IsNullOrEmpty(code)) continue;
-                if (code.isEmptyLine()) continue;
+                if (code.IsEmptyLine()) continue;
                 if (Regex.Match(code, ImageCodeRegex).Success)
                 {
                     string path = code.Substring(ImageCodeHeader.Length, code.Length - ImageCodeHeader.Length - 1);

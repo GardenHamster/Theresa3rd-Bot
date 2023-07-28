@@ -29,11 +29,11 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="groupCommand"></param>
         /// <returns></returns>
-        public async Task replyCustomWordCloudAsync(GroupCommand groupCommand)
+        public async Task ReplyCustomWordCloudAsync(GroupCommand groupCommand)
         {
             if (groupCommand.Params.Length == 0)
             {
-                await replyDailyWordCloudAsync(groupCommand);
+                await ReplyDailyWordCloudAsync(groupCommand);
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace TheresaBot.Main.Handler
             }
 
             var remindMsg = $"自定义词云如下，统计时间段为：{startTime.Value.ToSimpleString()} 至 {endTime.Value.ToSimpleString()}";
-            await replyWordCloudAsync(groupCommand, startTime.Value, endTime.Value, remindMsg);
+            await ReplyWordCloudAsync(groupCommand, startTime.Value, endTime.Value, remindMsg);
         }
 
         /// <summary>
@@ -79,12 +79,12 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="groupCommand"></param>
         /// <returns></returns>
-        public async Task replyDailyWordCloudAsync(GroupCommand groupCommand)
+        public async Task ReplyDailyWordCloudAsync(GroupCommand groupCommand)
         {
             DateTime startTime = DateTimeHelper.GetDayStart();
             DateTime endTime = DateTimeHelper.GetDayEnd();
             var remindMsg = $"今日词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
-            await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
+            await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
         /// <summary>
@@ -92,12 +92,12 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="groupCommand"></param>
         /// <returns></returns>
-        public async Task replyWeeklyWordCloudAsync(GroupCommand groupCommand)
+        public async Task ReplyWeeklyWordCloudAsync(GroupCommand groupCommand)
         {
             DateTime startTime = DateTimeHelper.GetWeekStart();
             DateTime endTime = DateTimeHelper.GetWeekEnd();
             var remindMsg = $"本周词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
-            await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
+            await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
         /// <summary>
@@ -105,12 +105,12 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="groupCommand"></param>
         /// <returns></returns>
-        public async Task replyMonthlyWordCloudAsync(GroupCommand groupCommand)
+        public async Task ReplyMonthlyWordCloudAsync(GroupCommand groupCommand)
         {
             DateTime startTime = DateTimeHelper.GetWeekStart();
             DateTime endTime = DateTimeHelper.GetWeekEnd();
             var remindMsg = $"本月词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
-            await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
+            await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
         /// <summary>
@@ -118,12 +118,12 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="groupCommand"></param>
         /// <returns></returns>
-        public async Task replyYearlyWordCloudAsync(GroupCommand groupCommand)
+        public async Task ReplyYearlyWordCloudAsync(GroupCommand groupCommand)
         {
             DateTime startTime = DateTimeHelper.GetYearStart();
             DateTime endTime = DateTimeHelper.GetYearEnd();
             var remindMsg = $"本年词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
-            await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
+            await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
         /// <summary>
@@ -131,12 +131,12 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="groupCommand"></param>
         /// <returns></returns>
-        public async Task replyYesterdayWordCloudAsync(GroupCommand groupCommand)
+        public async Task ReplyYesterdayWordCloudAsync(GroupCommand groupCommand)
         {
             DateTime startTime = DateTimeHelper.GetYesterdayStart();
             DateTime endTime = DateTimeHelper.GetYesterdayEnd();
             var remindMsg = $"昨日词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
-            await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
+            await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
         /// <summary>
@@ -144,12 +144,12 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="groupCommand"></param>
         /// <returns></returns>
-        public async Task replyLastWeekWordCloudAsync(GroupCommand groupCommand)
+        public async Task ReplyLastWeekWordCloudAsync(GroupCommand groupCommand)
         {
             DateTime startTime = DateTimeHelper.GetLastWeekStart();
             DateTime endTime = DateTimeHelper.GetLastWeekEnd();
             var remindMsg = $"上周词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
-            await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
+            await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
         /// <summary>
@@ -157,12 +157,12 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="groupCommand"></param>
         /// <returns></returns>
-        public async Task replyLastMonthWordCloudAsync(GroupCommand groupCommand)
+        public async Task ReplyLastMonthWordCloudAsync(GroupCommand groupCommand)
         {
             DateTime startTime = DateTimeHelper.GetLastMonthStart();
             DateTime endTime = DateTimeHelper.GetLastMonthEnd();
             var remindMsg = $"上月词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
-            await replyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
+            await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace TheresaBot.Main.Handler
         /// <param name="endTime"></param>
         /// <param name="remindMsg"></param>
         /// <returns></returns>
-        private async Task replyWordCloudAsync(GroupCommand groupCommand, DateTime startTime, DateTime endTime, string remindMsg)
+        private async Task ReplyWordCloudAsync(GroupCommand groupCommand, DateTime startTime, DateTime endTime, string remindMsg)
         {
             try
             {
@@ -211,11 +211,11 @@ namespace TheresaBot.Main.Handler
         /// 推送每月词云
         /// </summary>
         /// <returns></returns>
-        public async Task pushWordCloudAsync(WordCloudTimer timer)
+        public async Task PushWordCloudAsync(WordCloudTimer timer)
         {
             foreach (var groupId in timer.Groups)
             {
-                Task task = pushWordCloudAsync(timer, groupId);
+                Task task = PushWordCloudAsync(timer, groupId);
                 await Task.Delay(1000);
             }
         }
@@ -228,7 +228,7 @@ namespace TheresaBot.Main.Handler
         /// <param name="endTime"></param>
         /// <param name="remindMsg"></param>
         /// <returns></returns>
-        private async Task pushWordCloudAsync(WordCloudTimer timer, long groupId)
+        private async Task PushWordCloudAsync(WordCloudTimer timer, long groupId)
         {
             try
             {

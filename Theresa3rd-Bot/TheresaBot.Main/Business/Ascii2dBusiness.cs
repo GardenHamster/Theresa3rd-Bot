@@ -53,14 +53,14 @@ namespace TheresaBot.Main.Business
             //https://www.pixiv.net/artworks/100378274
             if (hrefLower.Contains("www.pixiv.net/artworks"))
             {
-                string illustId = href.splitHttpUrl().LastOrDefault() ?? string.Empty;
+                string illustId = href.SplitHttpUrl().LastOrDefault() ?? string.Empty;
                 return new Ascii2dItem(SetuSourceType.Pixiv, href, illustId);
             }
 
             //https://twitter.com/1_tri_pic/status/1560897111624802304
             if (hrefLower.Contains("twitter.com") && hrefLower.Contains("/status/"))
             {
-                string illustId = href.splitHttpUrl().LastOrDefault() ?? string.Empty;
+                string illustId = href.SplitHttpUrl().LastOrDefault() ?? string.Empty;
                 return new Ascii2dItem(SetuSourceType.Twitter, href, illustId);
             }
             return null;

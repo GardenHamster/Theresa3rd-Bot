@@ -61,7 +61,7 @@ namespace TheresaBot.Main.Business
 
             href = href.Trim();
             string hrefLower = href.ToLower();
-            Dictionary<string, string> paramDic = StringHelper.splitHttpParams(href);
+            Dictionary<string, string> paramDic = StringHelper.SplitHttpParams(href);
 
             //https://www.pixiv.net/member_illust.php?mode=medium&illust_id=73572009
             if (hrefLower.Contains("www.pixiv.net/member_illust"))

@@ -201,7 +201,7 @@ namespace TheresaBot.Main.Business
             string searchWord = toPixivSearchWords(tagStrs.ToActualPixivTags());
             PixivSearch pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, includeR18);
             int total = pageOne.getIllust().total;
-            int maxPage = MathHelper.getMaxPage(total, PageSize);
+            int maxPage = MathHelper.GetMaxPage(total, PageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
             await Task.Delay(1000);
 
@@ -658,7 +658,7 @@ namespace TheresaBot.Main.Business
         /// <returns></returns>
         private async Task<List<PixivIllust>> getTagIllustListAsync(string searchWord, int maxScan, int shelfLife)
         {
-            int maxPage = MathHelper.getMaxPage(maxScan, PageSize);
+            int maxPage = MathHelper.GetMaxPage(maxScan, PageSize);
             List<PixivIllust> pixivIllustList = new List<PixivIllust>();
             for (int i = 1; i <= maxPage; i++)
             {
@@ -681,7 +681,7 @@ namespace TheresaBot.Main.Business
         private SubscribePO getOrInsertUserSubscribe(PixivWorkInfo pixivWorkInfo)
         {
             string userId = pixivWorkInfo.userId.ToString();
-            string userName = StringHelper.filterEmoji(pixivWorkInfo.userName)?.filterEmoji().CutString(50);
+            string userName = StringHelper.FilterEmoji(pixivWorkInfo.userName)?.FilterEmoji().CutString(50);
             SubscribePO dbSubscribe = subscribeDao.getSubscribe(userId, SubscribeType.P站画师);
             if (dbSubscribe != null) return dbSubscribe;
             dbSubscribe = new SubscribePO();
@@ -696,7 +696,7 @@ namespace TheresaBot.Main.Business
         private SubscribeRecordPO toSubscribeRecord(PixivWorkInfo workInfo, int subscribeId)
         {
             SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-            subscribeRecord.Title = StringHelper.filterEmoji(workInfo.illustTitle);
+            subscribeRecord.Title = StringHelper.FilterEmoji(workInfo.illustTitle);
             subscribeRecord.Content = subscribeRecord.Title;
             subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId.ToString());
             subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId.ToString());

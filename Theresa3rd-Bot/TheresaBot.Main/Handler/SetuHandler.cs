@@ -109,8 +109,8 @@ namespace TheresaBot.Main.Handler
 
         protected async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo)
         {
-            if (workInfo.IsGif) return new() { await downAndComposeGifAsync(workInfo) };
-            List<FileInfo> setuFiles = await downPixivImgsAsync(workInfo);
+            if (workInfo.IsGif) return new() { await DownAndComposeGifAsync(workInfo) };
+            List<FileInfo> setuFiles = await DownPixivImgsAsync(workInfo);
             if (workInfo.IsR18 == false) return setuFiles;
             float sigma = BotConfig.PixivConfig.R18ImgBlur;
             return setuFiles.ReduceAndBlur(sigma, 300);
@@ -143,7 +143,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithQuoteAsync("本群未设置R18权限，禁止搜索R18相关标签");
                 return false;
             }
-            if (tagName.splitPixivTags().ToList().HavingBanTags().Count > 0)
+            if (tagName.SplitPixivTags().ToList().HavingBanTags().Count > 0)
             {
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.DisableTagsMsg, "标签中包含被禁止搜索的关键词");
                 return false;
@@ -253,7 +253,7 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="tagStr"></param>
         /// <returns></returns>
-        public string[] toLoliconTagArr(string tagStr)
+        public string[] ToLoliconTagArr(string tagStr)
         {
             if (string.IsNullOrWhiteSpace(tagStr)) return new string[0];
             tagStr = tagStr.Trim().Replace(",", "|").Replace("，", "|");
@@ -266,7 +266,7 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="workInfo"></param>
         /// <returns></returns>
-        protected async Task<List<FileInfo>> downPixivImgsAsync(BaseWorkInfo workInfo)
+        protected async Task<List<FileInfo>> DownPixivImgsAsync(BaseWorkInfo workInfo)
         {
             List<FileInfo> imgList = new List<FileInfo>();
             List<string> originUrls = workInfo.GetOriginalUrls();
@@ -284,7 +284,7 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
         /// <returns></returns>
-        protected async Task<FileInfo> downAndComposeGifAsync(BaseWorkInfo workInfo)
+        protected async Task<FileInfo> DownAndComposeGifAsync(BaseWorkInfo workInfo)
         {
             try
             {

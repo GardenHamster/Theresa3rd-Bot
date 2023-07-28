@@ -90,8 +90,8 @@ namespace TheresaBot.Main.Drawer
             int x = startX;
             int y = startY;
             PixivRankingContent content = detail.RankingContent;
-            string likeRate = detail.WorkInfo.likeRate.toPercent();
-            string bookRate = detail.WorkInfo.bookmarkRate.toPercent();
+            string likeRate = detail.WorkInfo.likeRate.ToPercent();
+            string bookRate = detail.WorkInfo.bookmarkRate.ToPercent();
             string drawText = $"#{content.rank} {content.illust_id} {likeRate}/{bookRate}";
             canvas.DrawText(drawText, new SKPoint(x, y), TitlePaint);
         }

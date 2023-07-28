@@ -358,7 +358,7 @@ namespace TheresaBot.Main.Helper
         {
             using HttpClient client = GetHttpClient();
             client.BaseAddress = new Uri(url);
-            client.addHeaders(headerDic);
+            client.AddHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", HttpHelper.GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             if (BotConfig.PixivConfig.FreeProxy) url = url.ToHttpUrl();

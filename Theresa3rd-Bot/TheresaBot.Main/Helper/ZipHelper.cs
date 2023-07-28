@@ -27,7 +27,7 @@ namespace TheresaBot.Main.Helper
                         streamWriter.Write(buffer, 0, size);
                         size = zipInputStream.Read(buffer, 0, 2048);
                     }
-                    closeStream(streamWriter);
+                    CloseStream(streamWriter);
                     fileEntry = zipInputStream.GetNextEntry();
                 }
                 return unZipDirPath;
@@ -43,7 +43,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        private static void closeStream(FileStream streamWriter)
+        private static void CloseStream(FileStream streamWriter)
         {
             try
             {

@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Common
         public static string GetPixivUserProfileIllustsAsync(string userid, List<int> workIds, bool isFirstPage)
         {
             string is_first_page = isFirstPage ? "1" : "0";
-            return $"{PixivHomeUrl}/ajax/user/{userid}/profile/illusts?{workIds.joinParam("ids[]")}&work_category=illustManga&is_first_page={is_first_page}&lang=zh";
+            return $"{PixivHomeUrl}/ajax/user/{userid}/profile/illusts?{workIds.JoinParam("ids[]")}&work_category=illustManga&is_first_page={is_first_page}&lang=zh";
         }
 
         /// <summary>

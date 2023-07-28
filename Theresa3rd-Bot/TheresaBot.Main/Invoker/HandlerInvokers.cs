@@ -15,7 +15,7 @@ namespace TheresaBot.Main.Invoker
             //菜单
             new(BotConfig.MenuConfig?.Commands, CommandType.Menu, new(async (botCommand, session, reporter) =>
             {
-                await new MenuHandler(session, reporter).sendMenuAsync(botCommand);
+                await new MenuHandler(session, reporter).SendMenuAsync(botCommand);
                 return true;
             })),
             //拉黑成员
@@ -23,7 +23,7 @@ namespace TheresaBot.Main.Invoker
             {
                 ManageHandler handler = new ManageHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.disableMemberAsync(botCommand);
+                await handler.DisableMemberAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -32,7 +32,7 @@ namespace TheresaBot.Main.Invoker
             {
                 ManageHandler handler = new ManageHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.enableMemberAsync(botCommand);
+                await handler.EnableMemberAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -50,7 +50,7 @@ namespace TheresaBot.Main.Invoker
             {
                 SubscribeHandler handler = new SubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.cancleSubscribeAsync(botCommand);
+                await handler.CancleSubscribeAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -82,7 +82,7 @@ namespace TheresaBot.Main.Invoker
                 PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivUser) == false) return false;
-                await handler.cancleSubscribeUserAsync(botCommand);
+                await handler.CancleSubscribeUserAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -93,7 +93,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivTag) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
-                await handler.subscribeTagAsync(botCommand);
+                await handler.SubscribeTagAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -103,7 +103,7 @@ namespace TheresaBot.Main.Invoker
                 PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivTag) == false) return false;
-                await handler.cancleSubscribeTagAsync(botCommand);
+                await handler.CancleSubscribeTagAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -132,7 +132,7 @@ namespace TheresaBot.Main.Invoker
             {
                 ManageHandler handler = new ManageHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.disableTagAsync(botCommand);
+                await handler.DisableTagAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -141,7 +141,7 @@ namespace TheresaBot.Main.Invoker
             {
                 ManageHandler handler = new ManageHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.enableTagAsync(botCommand);
+                await handler.EnableTagAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -183,7 +183,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckSetuUseUpAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
                 CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
-                await handler.pixivSearchAsync(botCommand);
+                await handler.PixivSearchAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -198,7 +198,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckSetuUseUpAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
                 CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
-                await handler.pixivUserProfileAsync(botCommand);
+                await handler.PixivUserProfileAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -212,7 +212,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckSetuUseUpAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
                 CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
-                await handler.loliconSearchAsync(botCommand);
+                await handler.LoliconSearchAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -226,7 +226,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckSetuUseUpAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
                 CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
-                await handler.lolisukiSearchAsync(botCommand);
+                await handler.LolisukiSearchAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -240,7 +240,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckSetuUseUpAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
                 CoolingCache.SetGroupSetuCooling(botCommand.GroupId);
-                await handler.localSearchAsync(botCommand);
+                await handler.LocalSearchAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -266,7 +266,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Daily)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.sendDailyRanking(botCommand);
+                await handler.SendDailyRanking(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -279,7 +279,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.DailyAI)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.sendDailyAIRanking(botCommand);
+                await handler.SendDailyAIRanking(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -292,7 +292,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Male)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.sendMaleRanking(botCommand);
+                await handler.SendMaleRanking(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -305,7 +305,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Weekly)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.sendWeeklyRanking(botCommand);
+                await handler.SendWeeklyRanking(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -318,7 +318,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Monthly)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.sendMonthlyRanking(botCommand);
+                await handler.SendMonthlyRanking(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -332,7 +332,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Daily)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.sendDailyR18Ranking(botCommand);
+                await handler.SendDailyR18Ranking(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -346,7 +346,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.DailyAI)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.sendDailyAIR18Ranking(botCommand);
+                await handler.SendDailyAIR18Ranking(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -360,7 +360,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Male)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.sendMaleR18Ranking(botCommand);
+                await handler.SendMaleR18Ranking(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -374,7 +374,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupRankingCoolingAsync(botCommand, PixivRankingType.Weekly)) return false;
                 if (await handler.CheckPixivRankingHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.sendWeeklyR18Ranking(botCommand);
+                await handler.SendWeeklyR18Ranking(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -386,7 +386,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
                 if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.replyCustomWordCloudAsync(botCommand);
+                await handler.ReplyCustomWordCloudAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -398,7 +398,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
                 if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.replyDailyWordCloudAsync(botCommand);
+                await handler.ReplyDailyWordCloudAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -410,7 +410,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
                 if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.replyWeeklyWordCloudAsync(botCommand);
+                await handler.ReplyWeeklyWordCloudAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -422,7 +422,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
                 if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.replyMonthlyWordCloudAsync(botCommand);
+                await handler.ReplyMonthlyWordCloudAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -434,7 +434,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
                 if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.replyYearlyWordCloudAsync(botCommand);
+                await handler.ReplyYearlyWordCloudAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -446,7 +446,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
                 if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.replyYesterdayWordCloudAsync(botCommand);
+                await handler.ReplyYesterdayWordCloudAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -458,7 +458,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
                 if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.replyLastWeekWordCloudAsync(botCommand);
+                await handler.ReplyLastWeekWordCloudAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -470,7 +470,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckGroupWordCloudCoolingAsync(botCommand)) return false;
                 if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.replyLastMonthWordCloudAsync(botCommand);
+                await handler.ReplyLastMonthWordCloudAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),

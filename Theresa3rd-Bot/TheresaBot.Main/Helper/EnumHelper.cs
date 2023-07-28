@@ -6,7 +6,7 @@ namespace TheresaBot.Main.Helper
 {
     public static class EnumHelper
     {
-        public static string PixivSyncModeOption()
+        public static string PixivSyncOptions()
         {
             StringBuilder optionBuilder = new StringBuilder();
             optionBuilder.AppendLine($"{(int)PixivSyncType.Merge}：合并（只添加不存在的订阅，保留在不关注列表中的订阅）");
@@ -14,7 +14,7 @@ namespace TheresaBot.Main.Helper
             return optionBuilder.ToString();
         }
 
-        public static string PixivSyncGroupOption()
+        public static string GroupPushOptions()
         {
             StringBuilder optionBuilder = new StringBuilder();
             optionBuilder.AppendLine($"{(int)GroupPushType.AllGroup}：所有拥有订阅权限的群");
@@ -22,7 +22,7 @@ namespace TheresaBot.Main.Helper
             return optionBuilder.ToString();
         }
 
-        public static string TagMatchTypeOption()
+        public static string TagMatchOptions()
         {
             StringBuilder optionBuilder = new StringBuilder();
             optionBuilder.AppendLine($"{(int)TagMatchType.Contain}：部分一致");

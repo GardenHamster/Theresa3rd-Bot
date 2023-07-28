@@ -15,7 +15,7 @@ namespace TheresaBot.Main.Cache
         /// <param name="command"></param>
         /// <returns></returns>
         /// <exception cref="ProcessException"></exception>
-        public static ProcessInfo CreateProcessAsync(GroupCommand command)
+        public static ProcessInfo CreateProcess(GroupCommand command)
         {
             lock (ProcessDic)
             {
@@ -53,7 +53,6 @@ namespace TheresaBot.Main.Cache
             ProcessInfo processInfo;
             lock (ProcessDic)
             {
-                if (string.IsNullOrWhiteSpace(relay.Answer)) return false;
                 if (ProcessDic.ContainsKey(groupId) == false) return false;
                 List<ProcessInfo> stepInfos = ProcessDic[groupId];
                 if (stepInfos is null) return false;

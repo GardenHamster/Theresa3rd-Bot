@@ -8,7 +8,7 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Mys;
 using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Model.Step;
+using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;

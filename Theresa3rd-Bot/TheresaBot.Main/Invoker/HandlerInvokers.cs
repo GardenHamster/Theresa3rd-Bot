@@ -72,7 +72,7 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivUser) == false) return false;
                 if (await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
-                await handler.subscribeFollowUserAsync(botCommand);
+                await handler.SubscribeFollowUserAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),

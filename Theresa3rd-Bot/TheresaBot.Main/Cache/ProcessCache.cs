@@ -1,6 +1,6 @@
 ﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Exceptions;
-using TheresaBot.Main.Model.Step;
+using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Relay;
 
 namespace TheresaBot.Main.Cache

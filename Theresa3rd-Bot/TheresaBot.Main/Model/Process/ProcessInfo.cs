@@ -3,7 +3,7 @@ using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Relay;
 
-namespace TheresaBot.Main.Model.Step
+namespace TheresaBot.Main.Model.Process
 {
     public class ProcessInfo
     {
@@ -19,11 +19,11 @@ namespace TheresaBot.Main.Model.Step
 
         public ProcessInfo(GroupCommand command)
         {
-            this.IsFinish = false;
-            this.GroupCommand = command;
-            this.GroupId = command.GroupId;
-            this.MemberId = command.MemberId;
-            this.StepInfos = new List<StepInfo>();
+            IsFinish = false;
+            GroupCommand = command;
+            GroupId = command.GroupId;
+            MemberId = command.MemberId;
+            StepInfos = new List<StepInfo>();
         }
 
         public StepInfo CreateStep(string question, int waitSecond = 60)

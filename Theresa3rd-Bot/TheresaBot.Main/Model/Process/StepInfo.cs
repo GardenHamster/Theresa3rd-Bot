@@ -3,7 +3,7 @@ using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Relay;
 
-namespace TheresaBot.Main.Model.Step
+namespace TheresaBot.Main.Model.Process
 {
     public record StepInfo
     {
@@ -27,29 +27,29 @@ namespace TheresaBot.Main.Model.Step
 
         public StepInfo(GroupCommand command, string question, int waitSecond)
         {
-            this.GroupCommand = command;
-            this.WaitSecond = waitSecond;
-            this.Question = question;
-            this.CheckInputFunc = (o) => Task.CompletedTask;
-            this.CheckReplyFunc = (o) => Task.CompletedTask;
+            GroupCommand = command;
+            WaitSecond = waitSecond;
+            Question = question;
+            CheckInputFunc = (o) => Task.CompletedTask;
+            CheckReplyFunc = (o) => Task.CompletedTask;
         }
 
         public StepInfo(GroupCommand command, string question, int waitSecond, Func<string, Task> checkInput)
         {
-            this.GroupCommand = command;
-            this.WaitSecond = waitSecond;
-            this.Question = question;
-            this.CheckInputFunc = checkInput;
-            this.CheckReplyFunc = (o) => Task.CompletedTask;
+            GroupCommand = command;
+            WaitSecond = waitSecond;
+            Question = question;
+            CheckInputFunc = checkInput;
+            CheckReplyFunc = (o) => Task.CompletedTask;
         }
 
         public StepInfo(GroupCommand command, string question, int waitSecond, Func<GroupRelay, Task> checkReply)
         {
-            this.GroupCommand = command;
-            this.WaitSecond = waitSecond;
-            this.Question = question;
-            this.CheckInputFunc = (o) => Task.CompletedTask;
-            this.CheckReplyFunc = checkReply;
+            GroupCommand = command;
+            WaitSecond = waitSecond;
+            Question = question;
+            CheckInputFunc = (o) => Task.CompletedTask;
+            CheckReplyFunc = checkReply;
         }
 
         public string AnswerForString() => Answer;
@@ -65,14 +65,14 @@ namespace TheresaBot.Main.Model.Step
 
         public void StartStep()
         {
-            this.StartTime = DateTime.Now;
+            StartTime = DateTime.Now;
         }
 
         public void FinishStep(GroupRelay relay)
         {
-            this.Relay = relay;
-            this.Answer = relay.Answer;
-            this.IsFinish = true;
+            Relay = relay;
+            Answer = relay.Answer;
+            IsFinish = true;
         }
 
         public async Task<bool> CheckInputAsync(GroupRelay relay)

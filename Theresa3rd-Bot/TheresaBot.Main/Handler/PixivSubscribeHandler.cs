@@ -8,7 +8,7 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Model.Step;
+using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -31,9 +31,7 @@ namespace TheresaBot.Main.Handler
         /// <summary>
         /// 订阅pixiv画师
         /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="message"></param>
+        /// <param name="command"></param>
         /// <returns></returns>
         public async Task SubscribeUserAsync(GroupCommand command)
         {
@@ -50,10 +48,10 @@ namespace TheresaBot.Main.Handler
                 {
                     ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
                     StepInfo uidStep = processInfo.CreateStep("请在60秒内发送要订阅用户的id，多个id之间可以用逗号或者换行隔开", CheckUserIdsAsync);
-                    StepInfo groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckPushTypeAsync);
+                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckPushTypeAsync);
                     await processInfo.StartProcessing();
                     userIds = uidStep.Answer.splitParams();
-                    pushType = uidStep.AnswerForEnum<GroupPushType>();
+                    pushType = typeStep.AnswerForEnum<GroupPushType>();
                 }
 
                 if (userIds.Length > 1)
@@ -123,27 +121,20 @@ namespace TheresaBot.Main.Handler
         }
 
         /// <summary>
-        /// 订阅pixiv关注画师列表
+        /// 订阅pixiv关注画师
         /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="message"></param>
+        /// <param name="command"></param>
         /// <returns></returns>
-        public async Task subscribeFollowUserAsync(GroupCommand command)
+        public async Task SubscribeFollowUserAsync(GroupCommand command)
         {
             try
             {
-                ProcessInfo stepInfo = await ProcessCache.CreateProcessAsync(command);
-                if (stepInfo is null) return;
-
-                StepInfo modeStep = new StepDetail(60, $"请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncModeOption()}", CheckSyncModeAsync);
-                StepInfo groupStep = new StepDetail(60, $"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckGroupTypeAsync);
-                stepInfo.AddStep(modeStep);
-                stepInfo.AddStep(groupStep);
-                if (await stepInfo.StartProcessing() == false) return;
-
-                PixivSyncType syncMode = (PixivSyncType)Convert.ToInt32(modeStep.Answer);
-                GroupPushType syncGroup = (GroupPushType)Convert.ToInt32(groupStep.Answer);
+                ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                StepInfo modeStep = processInfo.CreateStep($"请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncModeOption()}", CheckSyncModeAsync);
+                StepInfo groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckPushTypeAsync);
+                await processInfo.StartProcessing();
+                PixivSyncType syncMode = modeStep.AnswerForEnum<PixivSyncType>();
+                GroupPushType pushType = groupStep.AnswerForEnum<GroupPushType>();
 
                 await command.ReplyGroupMessageWithAtAsync("正在获取pixiv账号中已关注的画师列表...");
                 await Task.Delay(1000);
@@ -170,7 +161,7 @@ namespace TheresaBot.Main.Handler
                     dbSubscribeList.Add(dbSubscribe);
                 }
 
-                long subscribeGroupId = syncGroup == GroupPushType.AllGroup ? 0 : command.GroupId;
+                long subscribeGroupId = pushType == GroupPushType.AllGroup ? 0 : command.GroupId;
                 if (syncMode == PixivSyncType.Overwrite)
                 {
                     List<SubscribePO> subscribeList = subscribeBusiness.getSubscribes(SubscribeType.P站画师);
@@ -189,20 +180,20 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithAtAsync("订阅pixiv关注画师列表完毕");
                 SubscribeDatas.LoadSubscribeTask();
             }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
             catch (Exception ex)
             {
-                string errMsg = $"订阅pixiv关注画师列表失败";
-                LogHelper.Error(ex, errMsg);
-                DbScoped.SugarScope.RollbackTran();//事务回滚
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                DbScoped.SugarScope.RollbackTran();
+                await LogAndReportError(command, ex, $"订阅关注列表失败");
             }
         }
 
 
         /// <summary>
-        /// 取消订阅pixiv画师
+        /// 取消pixiv画师订阅
         /// </summary>
         /// <param name="e"></param>
         /// <param name="message"></param>
@@ -212,45 +203,38 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string pixivUserIds;
-                string paramStr = command.KeyWord;
-                if (string.IsNullOrWhiteSpace(paramStr))
+                var userIds = new string[0];
+                if (command.KeyWord.Length > 0)
                 {
-                    ProcessInfo stepInfo = await ProcessCache.CreateProcessAsync(command);
-                    if (stepInfo is null) return;
-                    StepInfo uidStep = new StepDetail(60, "请在60秒内发送要退订用户的id，多个id之间可以用逗号或者换行隔开", CheckPixivUserIdsAsync);
-                    stepInfo.AddStep(uidStep);
-                    if (await stepInfo.StartProcessing() == false) return;
-                    pixivUserIds = uidStep.Answer;
+                    userIds = await CheckUserIdsAsync(command.KeyWord);
                 }
                 else
                 {
-                    pixivUserIds = paramStr.Trim();
-                    if (await CheckUserIdsAsync(command, pixivUserIds) == false) return;
+                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                    StepInfo uidStep = processInfo.CreateStep("请在60秒内发送要退订用户的id，多个id之间可以用逗号或者换行隔开", CheckUserIdsAsync);
+                    await processInfo.StartProcessing();
+                    userIds = uidStep.Answer.splitParams();
                 }
-
-                string[] pixivUserIdArr = pixivUserIds.splitParams();
-                foreach (string pixivUserId in pixivUserIdArr)
+                foreach (string userId in userIds)
                 {
-                    SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivUserId, SubscribeType.P站画师);
+                    SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(userId, SubscribeType.P站画师);
                     if (dbSubscribe is null)
                     {
-                        await command.ReplyGroupMessageWithAtAsync($"退订失败，userId={pixivUserId}的订阅不存在");
+                        await command.ReplyGroupMessageWithAtAsync($"退订失败，userId={userId}的订阅不存在");
                         return;
                     }
                     subscribeBusiness.cancleSubscribe(dbSubscribe.Id);
                 }
-
-                await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv用户[{pixivUserIds}]~");
+                await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv用户[{userIds}]~");
                 SubscribeDatas.LoadSubscribeTask();
+            }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
             }
             catch (Exception ex)
             {
-                string errMsg = $"取消pixiv画师订阅失败";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReportError(command, ex, "取消画师订阅异常");
             }
         }
 
@@ -265,32 +249,24 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string pixivTags;
-                GroupPushType? groupType;
-
-                string[] paramArr = command.Params;
-                if (paramArr != null && paramArr.Length >= 2)
+                var pixivTag = string.Empty;
+                var pushType = GroupPushType.CurrentGroup;
+                if (command.Params.Length >= 2)
                 {
-                    pixivTags = paramArr.Length > 0 ? paramArr[0] : string.Empty;
-                    string groupTypeStr = paramArr.Length > 1 ? paramArr[1] : string.Empty;
-                    if (await CheckPixivTagAsync(command, pixivTags) == false) return;
-                    if (await CheckPushTypeAsync(command, groupTypeStr) == false) return;
-                    groupType = (GroupPushType)Convert.ToInt32(groupTypeStr);
+                    pixivTag = command.Params[0].Trim();
+                    pushType = await CheckPushTypeAsync(command.Params[1]);
                 }
                 else
                 {
-                    ProcessInfo stepInfo = await ProcessCache.CreateProcessAsync(command);
-                    if (stepInfo is null) return;
-                    StepInfo tagStep = new StepDetail(60, $"请在60秒内发送要订阅的标签名", CheckPixivTagAsync);
-                    StepInfo groupStep = new StepDetail(60, $"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckGroupTypeAsync);
-                    stepInfo.AddStep(tagStep);
-                    stepInfo.AddStep(groupStep);
-                    if (await stepInfo.StartProcessing() == false) return;
-                    pixivTags = tagStep.Answer;
-                    groupType = (GroupPushType)Convert.ToInt32(groupStep.Answer);
+                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                    StepInfo tagStep = processInfo.CreateStep($"请在60秒内发送要订阅的标签名");
+                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckPushTypeAsync);
+                    await processInfo.StartProcessing();
+                    pixivTag = tagStep.AnswerForString();
+                    pushType = typeStep.AnswerForEnum<GroupPushType>();
                 }
 
-                string searchWord = pixivBusiness.toPixivSearchWords(pixivTags.ToActualPixivTags());
+                string searchWord = pixivBusiness.toPixivSearchWords(pixivTag.ToActualPixivTags());
                 PixivSearch pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, command.GroupId.IsShowR18Setu());
                 if (pageOne is null || pageOne.getIllust().data.Count == 0)
                 {
@@ -298,28 +274,26 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivTags, SubscribeType.P站标签);
-                if (dbSubscribe is null) dbSubscribe = subscribeBusiness.insertSurscribe(pixivTags);
+                SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivTag, SubscribeType.P站标签);
+                if (dbSubscribe is null) dbSubscribe = subscribeBusiness.insertSurscribe(pixivTag);
 
-                long subscribeGroupId = groupType == GroupPushType.AllGroup ? 0 : command.GroupId;
+                long subscribeGroupId = pushType == GroupPushType.AllGroup ? 0 : command.GroupId;
                 if (subscribeBusiness.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
                 {
-                    //关联订阅
                     await command.ReplyGroupMessageWithAtAsync($"这个标签已经被订阅了~");
                     return;
                 }
-
                 SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
-                await command.ReplyGroupMessageWithAtAsync($"标签[{pixivTags}]订阅成功,该标签总作品数为:{pageOne.illust.total}");
+                await command.ReplyGroupMessageWithAtAsync($"标签[{pixivTag}]订阅成功,该标签总作品数为:{pageOne.illust.total}");
                 SubscribeDatas.LoadSubscribeTask();
+            }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
             }
             catch (Exception ex)
             {
-                string errMsg = $"订阅pixiv标签失败";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReportError(command, ex, "Pixiv标签订阅异常");
             }
         }
 
@@ -334,41 +308,31 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string pixivTag;
-                string paramStr = command.KeyWord;
-                if (string.IsNullOrWhiteSpace(paramStr))
+                var pixivTag = command.KeyWord;
+                if (pixivTag.Length == 0)
                 {
-                    ProcessInfo stepInfo = await ProcessCache.CreateProcessAsync(command);
-                    if (stepInfo is null) return;
-                    StepInfo tagStep = new StepDetail(60, "请在60秒内发送要退订的标签名", CheckPixivTagAsync);
-                    stepInfo.AddStep(tagStep);
-                    if (await stepInfo.StartProcessing() == false) return;
-                    pixivTag = tagStep.Answer;
+                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送要退订的标签");
+                    await processInfo.StartProcessing();
+                    pixivTag = tagStep.AnswerForString();
                 }
-                else
-                {
-                    pixivTag = paramStr.Trim();
-                    if (await CheckPixivTagAsync(command, pixivTag) == false) return;
-                }
-
                 SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivTag, SubscribeType.P站标签);
                 if (dbSubscribe is null)
                 {
                     await command.ReplyGroupMessageWithAtAsync($"退订失败，标签为[{pixivTag}]的订阅不存在");
                     return;
                 }
-
                 subscribeBusiness.cancleSubscribe(dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv标签[{pixivTag}]~");
                 SubscribeDatas.LoadSubscribeTask();
             }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
             catch (Exception ex)
             {
-                string errMsg = $"退订pixiv标签失败";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReportError(command, ex, "Pixiv标签退订异常");
             }
         }
 
@@ -404,11 +368,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                string errMsg = $"读取画师[{dbSubscribe.SubscribeName}]的最新作品失败";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReportError(command, ex, $"读取画师[{dbSubscribe.SubscribeName}]最新作品失败");
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using Mirai.CSharp.Framework.Models.General;
-using Mirai.CSharp.HttpApi.Models.ChatMessages;
+﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.Models;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Result;

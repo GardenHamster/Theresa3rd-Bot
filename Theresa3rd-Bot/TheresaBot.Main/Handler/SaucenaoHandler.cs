@@ -9,8 +9,8 @@ using TheresaBot.Main.Model.Ascii2d;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Saucenao;
-using TheresaBot.Main.Model.Step;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -326,7 +326,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        
+
         private async Task replyAndRevoke(GroupCommand command, List<BaseContent> contentList)
         {
             await command.ReplyAndRevokeAsync(contentList, BotConfig.SaucenaoConfig.RevokeInterval);

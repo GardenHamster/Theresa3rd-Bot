@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Type;
-
-namespace TheresaBot.Main.Model.Config
+﻿namespace TheresaBot.Main.Model.Config
 {
     public class SaucenaoConfig : BasePluginConfig
     {

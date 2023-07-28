@@ -51,11 +51,9 @@ namespace TheresaBot.Main.Model.Process
         {
             try
             {
-                for (int i = 0; i < StepInfos.Count; i++)
+                foreach (var stepInfo in StepInfos)
                 {
-                    StepInfo stepInfo = StepInfos[i];
-                    if (stepInfo.IsFinish) continue;
-                    if (stepInfo.StartTime is null) stepInfo.StartStep();
+                    stepInfo.StartStep();
                     await GroupCommand.ReplyGroupMessageWithAtAsync(stepInfo.Question);
                     await StartAndWaitAsync(stepInfo);
                 }
@@ -76,7 +74,7 @@ namespace TheresaBot.Main.Model.Process
                 {
                     throw new StepTimeoutException("操作超时了，请重新发送指令开始操作");
                 }
-                await Task.Delay(1000);
+                await Task.Delay(500);
             }
         }
 

@@ -1,19 +1,15 @@
-﻿using AngleSharp.Text;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Model.Step;
-using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
-using YamlDotNet.Core.Tokens;
 
 namespace TheresaBot.Main.Handler
 {
@@ -32,20 +28,19 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string tagStr = string.Empty;
-                TagMatchType matchType = TagMatchType.Contain;
+                var tagStr = string.Empty;
+                var matchType = TagMatchType.Contain;
                 if (command.Params.Length >= 2)
                 {
                     tagStr = command.Params[0];
-                    await CheckMatchTypeAsync(command.Params[1]);
-                    matchType = (TagMatchType)Convert.ToInt32(command.Params[1]);
+                    matchType = await CheckMatchTypeAsync(command.Params[1]);
                 }
                 else
                 {
-                    ProcessInfo process = ProcessCache.CreateProcessAsync(command);
-                    StepInfo tagStep = process.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开");
-                    StepInfo matchStep = process.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchTypeOption()}", CheckMatchTypeAsync);
-                    await process.StartProcessing();
+                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开");
+                    StepInfo matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchTypeOption()}", CheckMatchTypeAsync);
+                    await processInfo.StartProcessing();
                     tagStr = tagStep.AnswerForString();
                     matchType = matchStep.AnswerForEnum<TagMatchType>();
                 }
@@ -58,12 +53,10 @@ namespace TheresaBot.Main.Handler
             catch (ProcessException ex)
             {
                 await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
-                return;
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "disableTagAsync异常");
-                await Reporter.SendError(ex, "disableTagAsync异常");
+                await LogAndReportError(command, ex, "屏蔽标签异常");
             }
         }
 
@@ -71,21 +64,24 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string tagStr = command.KeyWord;
+                var tagStr = command.KeyWord;
                 if (string.IsNullOrEmpty(tagStr))
                 {
                     await command.ReplyGroupMessageWithQuoteAsync("没有检测到要解除屏蔽的标签，请确保指令格式正确");
                     return;
                 }
                 var banTags = tagStr.splitParams();
-                int count = banTagBusiness.DelBanTags(banTags);
+                banTagBusiness.DelBanTags(banTags);
                 BanTagDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "enableTagAsync异常");
-                await Reporter.SendError(ex, "enableTagAsync异常");
+                await LogAndReportError(command, ex, "解除标签屏蔽异常");
             }
         }
 
@@ -114,10 +110,13 @@ namespace TheresaBot.Main.Handler
                 BanMemberDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "disableMemberAsync异常");
-                await Reporter.SendError(ex, "disableMemberAsync异常");
+                await LogAndReportError(command, ex, "屏蔽成员异常");
             }
         }
 
@@ -141,14 +140,17 @@ namespace TheresaBot.Main.Handler
                 BanMemberDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("解除成功");
             }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "enableMemberAsync异常");
-                await Reporter.SendError(ex, "enableMemberAsync异常");
+                await LogAndReportError(command, ex, "解除成员屏蔽异常");
             }
         }
 
-        private async Task CheckMatchTypeAsync(string value)
+        private async Task<TagMatchType> CheckMatchTypeAsync(string value)
         {
             int typeId = 0;
             if (int.TryParse(value, out typeId) == false)
@@ -159,7 +161,7 @@ namespace TheresaBot.Main.Handler
             {
                 throw new ProcessException("匹配方式不在范围内");
             }
-            await Task.CompletedTask;
+            return await Task.FromResult((TagMatchType)typeId);
         }
 
     }

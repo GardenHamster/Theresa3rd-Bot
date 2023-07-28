@@ -4,6 +4,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Drawer;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
@@ -24,11 +25,6 @@ namespace TheresaBot.Main.Handler
             subscribeBusiness = new SubscribeBusiness();
         }
 
-        /// <summary>
-        /// 发送订阅列表
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
         public async Task listSubscribeAsync(GroupCommand command)
         {
             try
@@ -59,34 +55,23 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-
-        /// <summary>
-        /// 取消一个订阅
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
         public async Task cancleSubscribeAsync(GroupCommand command)
         {
             try
             {
-                string subscribeIdStr = command.KeyWord;
-                if (string.IsNullOrWhiteSpace(subscribeIdStr))
+                int subscribeId = 0;
+                if (command.KeyWord.Length > 0)
                 {
-                    ProcessInfo stepInfo = await ProcessCache.CreateProcessAsync(command);
-                    if (stepInfo is null) return;
-                    StepInfo tagStep = new StepDetail(60, "请在60秒内发送要退订的Id", CheckSubscribeIdAsync);
-                    stepInfo.AddStep(tagStep);
-                    if (await stepInfo.StartProcessing() == false) return;
-                    subscribeIdStr = tagStep.Answer;
+                    subscribeId = await CheckSubscribeIdAsync(command.KeyWord);
                 }
                 else
                 {
-                    if (await CheckSubscribeIdAsync(command, subscribeIdStr) == false) return;
+                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送要退订的Id", CheckSubscribeIdAsync);
+                    await processInfo.StartProcessing();
+                    subscribeId = tagStep.AnswerForInt();
                 }
 
-                int subscribeId = Convert.ToInt32(subscribeIdStr);
                 SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(subscribeId);
                 if (dbSubscribe is null)
                 {
@@ -98,30 +83,24 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithQuoteAsync($"已为所有群退订了{dbSubscribe.SubscribeType}[{dbSubscribe.SubscribeName}]~");
                 SubscribeDatas.LoadSubscribeTask();
             }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
             catch (Exception ex)
             {
-                string errMsg = $"取消订阅失败";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReportError(command, ex, "取消订阅失败");
             }
         }
 
-        private async Task<bool> CheckSubscribeIdAsync(GroupCommand command, GroupRelay relay)
+        private async Task<int> CheckSubscribeIdAsync(string value)
         {
-            return await CheckSubscribeIdAsync(command, relay.Answer);
-        }
-
-        private async Task<bool> CheckSubscribeIdAsync(GroupCommand command, string value)
-        {
-            int id = 0;
-            if (int.TryParse(value, out id) == false)
+            int subscribeId = 0;
+            if (int.TryParse(value, out subscribeId) == false)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("id必须为数字");
-                return false;
+                throw new ProcessException("id必须为数字");
             }
-            return true;
+            return await Task.FromResult(subscribeId);
         }
 
     }

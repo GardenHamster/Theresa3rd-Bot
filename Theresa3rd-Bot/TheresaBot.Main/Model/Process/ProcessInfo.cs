@@ -15,7 +15,7 @@ namespace TheresaBot.Main.Model.Step
 
         public GroupCommand GroupCommand { get; set; }
 
-        public List<StepInfo> StepDetails { get; set; }
+        public List<StepInfo> StepInfos { get; set; }
 
         public ProcessInfo(GroupCommand command)
         {
@@ -23,43 +23,41 @@ namespace TheresaBot.Main.Model.Step
             this.GroupCommand = command;
             this.GroupId = command.GroupId;
             this.MemberId = command.MemberId;
-            this.StepDetails = new List<StepInfo>();
+            this.StepInfos = new List<StepInfo>();
         }
 
         public StepInfo CreateStep(string question, int waitSecond = 60)
         {
-            var stepDetail = new StepInfo(GroupCommand, question, waitSecond);
-            StepDetails.Add(stepDetail);
-            return stepDetail;
+            var stepInfo = new StepInfo(GroupCommand, question, waitSecond);
+            StepInfos.Add(stepInfo);
+            return stepInfo;
         }
 
         public StepInfo CreateStep(string question, Func<string, Task> checkInput, int waitSecond = 60)
         {
-            var stepDetail = new StepInfo(GroupCommand, question, waitSecond, checkInput);
-            StepDetails.Add(stepDetail);
-            return stepDetail;
+            var stepInfo = new StepInfo(GroupCommand, question, waitSecond, checkInput);
+            StepInfos.Add(stepInfo);
+            return stepInfo;
+        }
+
+        public StepInfo CreateStep(string question, Func<GroupRelay, Task> checkInput, int waitSecond = 60)
+        {
+            var stepInfo = new StepInfo(GroupCommand, question, waitSecond, checkInput);
+            StepInfos.Add(stepInfo);
+            return stepInfo;
         }
 
         public async Task StartProcessing()
         {
             try
             {
-                for (int i = 0; i < StepDetails.Count; i++)
+                for (int i = 0; i < StepInfos.Count; i++)
                 {
-                    StepInfo stepDetail = StepDetails[i];
-                    if (stepDetail.IsFinish) continue;
-                    if (stepDetail.StartTime is null) stepDetail.StartStep();
-                    await GroupCommand.ReplyGroupMessageWithAtAsync(stepDetail.Question);
-                    while (true)
-                    {
-                        if (stepDetail.IsFinish) break;
-                        int secondDiff = DateTimeHelper.GetSecondDiff(stepDetail.StartTime.Value, DateTime.Now);
-                        if (secondDiff < 0 || secondDiff >= stepDetail.WaitSecond)
-                        {
-                            throw new ProcessException("操作超时了，请重新发送指令开始操作");
-                        }
-                        await Task.Delay(1000);
-                    }
+                    StepInfo stepInfo = StepInfos[i];
+                    if (stepInfo.IsFinish) continue;
+                    if (stepInfo.StartTime is null) stepInfo.StartStep();
+                    await GroupCommand.ReplyGroupMessageWithAtAsync(stepInfo.Question);
+                    await StartAndWaitAsync(stepInfo);
                 }
             }
             finally
@@ -68,6 +66,19 @@ namespace TheresaBot.Main.Model.Step
             }
         }
 
+        private async Task StartAndWaitAsync(StepInfo stepInfo)
+        {
+            while (true)
+            {
+                if (stepInfo.IsFinish) break;
+                int secondDiff = DateTimeHelper.GetSecondDiff(stepInfo.StartTime.Value, DateTime.Now);
+                if (secondDiff < 0 || secondDiff >= stepInfo.WaitSecond)
+                {
+                    throw new StepTimeoutException("操作超时了，请重新发送指令开始操作");
+                }
+                await Task.Delay(1000);
+            }
+        }
 
     }
 }

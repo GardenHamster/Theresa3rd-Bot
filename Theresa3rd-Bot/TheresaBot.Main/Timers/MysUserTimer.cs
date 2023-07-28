@@ -28,7 +28,7 @@ namespace TheresaBot.Main.Timers
             try
             {
                 SystemTimer.Enabled = false;
-                new MYSHandler(Session, Reporter).HandleUserSubscribeAsync().Wait();
+                new MiyousheHandler(Session, Reporter).HandleSubscribeAsync().Wait();
             }
             catch (Exception ex)
             {

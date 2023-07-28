@@ -3,6 +3,7 @@ using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Ascii2d;
 using TheresaBot.Main.Model.Content;
@@ -30,42 +31,39 @@ namespace TheresaBot.Main.Handler
             ascii2dBusiness = new Ascii2dBusiness();
         }
 
-        public async Task searchResult(GroupCommand command)
+        public async Task SearchSource(GroupCommand command)
         {
             try
             {
-                long revokeMsgId = command.MessageId;
-                DateTime startDateTime = DateTime.Now;
-                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-                List<string> imgList = command.GetImageUrls();
+                var revokeMsgId = command.MessageId;
+                var imgList = command.GetImageUrls();
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);
 
-                if (imgList is null || imgList.Count == 0)
+                if (imgList.Count == 0)
                 {
-                    ProcessInfo stepInfo = await ProcessCache.CreateProcessAsync(command);
-                    if (stepInfo is null) return;
-                    StepInfo imgStep = new StepDetail(60, "请在60秒内发送要查找的图片", CheckImageSourceAsync);
-                    stepInfo.AddStep(imgStep);
-                    if (await stepInfo.StartProcessing() == false) return;
+                    ProcessInfo processInfo = ProcessCache.CreateProcessAsync(command);
+                    StepInfo imgStep = processInfo.CreateStep("请在60秒内发送要查找的图片", CheckImageSourceAsync);
+                    await processInfo.StartProcessing();
                     imgList = imgStep.Relay.GetImageUrls();
                     revokeMsgId = imgStep.Relay.MsgId;
                 }
 
-                if (imgList is null || imgList.Count == 0)
+                if (imgList.Count == 0)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync($"没有接收到图片，请重新发送指令开始操作");
+                    await command.ReplyGroupMessageWithAtAsync($"没有接收到图片，请重新发送指令进行操作");
                     return;
                 }
 
                 await HandleSearch(command, imgList, revokeMsgId);
                 CoolingCache.SetMemberSaucenaoCooling(command.GroupId, command.MemberId);
             }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
             catch (Exception ex)
             {
-                string errMsg = $"searchResult异常";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReportError(command, ex, "原图搜索功能异常");
             }
             finally
             {
@@ -73,7 +71,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task searchResult(GroupQuoteCommand command)
+        public async Task SearchSource(GroupQuoteCommand command)
         {
             try
             {
@@ -82,23 +80,22 @@ namespace TheresaBot.Main.Handler
                 long quoteId = command.GetQuoteMessageId();
                 List<ImageRecordPO> imgRecords = quoteId > 0 ? recordBusiness.GetImageRecord(Session.PlatformType, quoteId, command.GroupId) : new();
                 List<string> imgList = imgRecords.Select(o => o.HttpUrl).ToList();
-                if (imgList is null || imgList.Count == 0)
+                if (imgList.Count == 0)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync($"没能获取到引用消息中的图片，请尝试使用搜图指令搜索");
+                    await command.ReplyGroupMessageWithAtAsync($"没能获取到引用消息中的图片，请尝试使用搜图指令搜索");
                     return;
                 }
-
                 long revokeMsgId = command.MessageId;
                 await HandleSearch(command, imgList, revokeMsgId);
                 CoolingCache.SetMemberSaucenaoCooling(command.GroupId, command.MemberId);
             }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
             catch (Exception ex)
             {
-                string errMsg = $"searchResult异常";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReportError(command, ex, "原图搜索功能异常");
             }
             finally
             {
@@ -109,29 +106,29 @@ namespace TheresaBot.Main.Handler
         private async Task HandleSearch(GroupCommand command, List<string> imgList, long revokeMsgId)
         {
             await command.ReplyProcessingMessageAsync(BotConfig.SaucenaoConfig.ProcessingMsg);
-
             if (BotConfig.SaucenaoConfig.MaxReceive > 0 && imgList.Count > BotConfig.SaucenaoConfig.MaxReceive)
             {
                 imgList = imgList.Take(BotConfig.SaucenaoConfig.MaxReceive).ToList();
-                await command.ReplyGroupMessageWithQuoteAsync($"总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~");
+                string remindMsg = $"总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~";
+                await command.ReplyGroupMessageWithAtAsync(remindMsg);
                 await Task.Delay(1000);
             }
 
             List<string> notFoundList = new List<string>();
             for (int i = 0; i < imgList.Count; i++)
             {
-                bool isFound = await searchWithSaucenao(command, imgList[i]);
+                bool isFound = await SearchWithSaucenao(command, imgList[i]);
                 if (isFound == false) notFoundList.Add(imgList[i]);
             }
 
-            if (imgList.Count == notFoundList.Count && BotConfig.SaucenaoConfig.ContinueAscii2d == YNAType.No)
+            if (imgList.Count == notFoundList.Count && BotConfig.SaucenaoConfig.ContinueAscii2d == false)
             {
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SaucenaoConfig.NotFoundMsg, "找不到相似的图，换一张完整的图片试试吧~");
             }
-            else if (notFoundList.Count > 0 && await CheckContinueAscii2d(command, notFoundList))
+            else if (notFoundList.Count > 0 && BotConfig.SaucenaoConfig.ContinueAscii2d)
             {
                 await command.ReplyGroupMessageWithAtAsync($"Saucenao共有{notFoundList.Count}张图片搜索失败，正在通过ascii2d尝试搜索剩余图片...");
-                for (int i = 0; i < notFoundList.Count; i++) await searchWithAscii2d(command, notFoundList[i]);
+                for (int i = 0; i < notFoundList.Count; i++) await SearchWithAscii2d(command, notFoundList[i]);
             }
             else if (notFoundList.Count > 0)
             {
@@ -145,32 +142,14 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<bool> CheckContinueAscii2d(GroupCommand command, List<string> notFoundList)
-        {
-            YNAType ynaType = BotConfig.SaucenaoConfig.ContinueAscii2d;
-            if (ynaType == YNAType.Yes) return true;
-            if (ynaType == YNAType.No) return false;
-            ProcessInfo stepInfo = await ProcessCache.CreateStepInfoAsync(command, false);
-            if (stepInfo is null) return false;
-
-            StringBuilder questionBuilder = new StringBuilder();
-            questionBuilder.AppendLine($"共有{notFoundList.Count}张图片搜索失败，是否使用Ascii2d继续搜索剩余的图片？");
-            questionBuilder.AppendLine($"请在30秒内发送 1：是，0：否");
-            foreach (string imgUrl in notFoundList) questionBuilder.AppendLine(imgUrl);
-            StepInfo askStep = new StepDetail(30, questionBuilder.ToString(), null);
-            stepInfo.AddStep(askStep);
-            if (await stepInfo.StartProcessing() == false) return false;
-            return askStep.Answer == "1";
-        }
-
-        private async Task<bool> CheckImageSourceAsync(GroupCommand command, GroupRelay relay)
+        private async Task CheckImageSourceAsync(GroupRelay relay)
         {
             List<string> imgList = relay.GetImageUrls();
-            if (imgList is null || imgList.Count == 0) return await Task.FromResult(false);
-            return await Task.FromResult(true);
+            if (imgList.Count == 0) throw new NoAnswerException();
+            await Task.CompletedTask;
         }
 
-        private async Task<bool> searchWithSaucenao(GroupCommand command, string imgUrl)
+        private async Task<bool> SearchWithSaucenao(GroupCommand command, string imgUrl)
         {
             try
             {
@@ -206,11 +185,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                string errMsg = $"searchWithSaucenao异常，url={imgUrl}";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReportError(command, ex, "SearchWithSaucenao异常");
                 return true;
             }
         }
@@ -291,7 +266,7 @@ namespace TheresaBot.Main.Handler
             return msgList;
         }
 
-        private async Task searchWithAscii2d(GroupCommand command, string imgUrl)
+        private async Task SearchWithAscii2d(GroupCommand command, string imgUrl)
         {
             try
             {
@@ -299,7 +274,7 @@ namespace TheresaBot.Main.Handler
                 Ascii2dResult ascii2dResult = await ascii2dBusiness.getAscii2dResultAsync(imgUrl);
                 if (ascii2dResult is null || ascii2dResult.Items.Count == 0)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync("ascii2d中找不到相似的图片");
+                    await command.ReplyGroupMessageWithAtAsync("ascii2d中找不到相似的图片");
                     return;
                 }
 
@@ -318,7 +293,7 @@ namespace TheresaBot.Main.Handler
                 List<Ascii2dItem> matchList = await ascii2dBusiness.getBestMatchAsync(ascii2dItems);
                 if (matchList is null || matchList.Count == 0)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync("ascii2d中找不到相似的图片");
+                    await command.ReplyGroupMessageWithAtAsync("ascii2d中找不到相似的图片");
                     return;
                 }
 
@@ -347,21 +322,11 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                string errMsg = $"searchWithAscii2d异常，url={imgUrl}";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReportError(command, ex, "SearchWithAscii2d异常");
             }
         }
 
-        /// <summary>
-        /// 发送并撤回消息
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="saucenaoMessage"></param>
-        /// <returns></returns>
+        
         private async Task replyAndRevoke(GroupCommand command, List<BaseContent> contentList)
         {
             await command.ReplyAndRevokeAsync(contentList, BotConfig.SaucenaoConfig.RevokeInterval);
@@ -372,13 +337,6 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        /// <summary>
-        /// 发送并撤回消息
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="args"></param>
-        /// <param name="saucenaoMessage"></param>
-        /// <returns></returns>
         private async Task replyAndRevoke(GroupCommand command, List<SetuContent> setuContents)
         {
             var result = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval);

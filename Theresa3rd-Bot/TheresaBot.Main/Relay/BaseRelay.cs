@@ -11,7 +11,7 @@
         public BaseRelay(long msgId, string answer, long memberId)
         {
             this.MsgId = msgId;
-            this.Answer = answer;
+            this.Answer = answer?.Trim() ?? string.Empty;
             this.MemberId = memberId;
         }
 

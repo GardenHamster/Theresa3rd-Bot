@@ -23,12 +23,15 @@ namespace TheresaBot.Main.Model.Step
 
         public Func<string, Task> CheckInputFunc { get; set; }
 
+        public Func<GroupRelay, Task> CheckReplyFunc { get; set; }
+
         public StepInfo(GroupCommand command, string question, int waitSecond)
         {
             this.GroupCommand = command;
             this.WaitSecond = waitSecond;
             this.Question = question;
             this.CheckInputFunc = (o) => Task.CompletedTask;
+            this.CheckReplyFunc = (o) => Task.CompletedTask;
         }
 
         public StepInfo(GroupCommand command, string question, int waitSecond, Func<string, Task> checkInput)
@@ -37,6 +40,27 @@ namespace TheresaBot.Main.Model.Step
             this.WaitSecond = waitSecond;
             this.Question = question;
             this.CheckInputFunc = checkInput;
+            this.CheckReplyFunc = (o) => Task.CompletedTask;
+        }
+
+        public StepInfo(GroupCommand command, string question, int waitSecond, Func<GroupRelay, Task> checkReply)
+        {
+            this.GroupCommand = command;
+            this.WaitSecond = waitSecond;
+            this.Question = question;
+            this.CheckInputFunc = (o) => Task.CompletedTask;
+            this.CheckReplyFunc = checkReply;
+        }
+
+        public string AnswerForString() => Answer;
+
+        public int AnswerForInt() => Convert.ToInt32(Answer);
+
+        public long AnswerForLong() => Convert.ToInt64(Answer);
+
+        public T AnswerForEnum<T>() where T : Enum
+        {
+            return (T)Enum.ToObject(typeof(T), Convert.ToInt32(Answer));
         }
 
         public void StartStep()
@@ -55,8 +79,13 @@ namespace TheresaBot.Main.Model.Step
         {
             try
             {
+                await CheckReplyFunc(relay);
                 await CheckInputFunc(relay.Answer);
                 return true;
+            }
+            catch (NoAnswerException)
+            {
+                return false;
             }
             catch (ProcessException ex)
             {
@@ -64,18 +93,6 @@ namespace TheresaBot.Main.Model.Step
                 return false;
             }
         }
-
-        public string AnswerForString()
-        {
-            return Answer;
-        }
-
-        public T AnswerForEnum<T>() where T : Enum
-        {
-            return (T)Enum.ToObject(typeof(T), Convert.ToInt32(Answer));
-        }
-
-
 
     }
 }

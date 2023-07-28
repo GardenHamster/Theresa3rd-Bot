@@ -10,13 +10,13 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business
 {
-    internal class MYSBusiness
+    internal class MiyousheBusiness
     {
         private SubscribeDao subscribeDao;
         private SubscribeGroupDao subscribeGroupDao;
         private SubscribeRecordDao subscribeRecordDao;
 
-        public MYSBusiness()
+        public MiyousheBusiness()
         {
             subscribeDao = new SubscribeDao();
             subscribeGroupDao = new SubscribeGroupDao();
@@ -115,9 +115,9 @@ namespace TheresaBot.Main.Business
         }
 
 
-        public string getPostInfoAsync(MysSubscribe mysSubscribe, string template = "")
+        public string getPostInfoAsync(MysSubscribe mysSubscribe)
         {
-            template = template?.Trim()?.TrimLine();
+            string template = BotConfig.SubscribeConfig.Miyoushe.Template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultPostInfoAsync(mysSubscribe);
             template = template.Replace("{UserName}", mysSubscribe.MysUserPostDto.user.nickname);
             template = template.Replace("{CreateTime}", mysSubscribe.CreateTime.ToSimpleString());

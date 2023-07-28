@@ -25,17 +25,25 @@ namespace TheresaBot.Main.Handler
             this.requestRecordBusiness = new RequestRecordBusiness();
         }
 
-        public async Task<int> getUsedCountToday(long groupId, long memberId, params CommandType[] commandTypeArr)
+        public async Task LogAndReportError(GroupCommand command, Exception ex, string message = "")
+        {
+            LogHelper.Error(ex, message);
+            await command.ReplyError(ex, message);
+            await Task.Delay(1000);
+            await Reporter.SendError(ex, message);
+        }
+
+        public async Task<int> GetUsedCountToday(long groupId, long memberId, params CommandType[] commandTypeArr)
         {
             return await Task.FromResult(requestRecordBusiness.getUsedCountToday(groupId, memberId, commandTypeArr));
         }
 
-        public async Task<RequestRecordPO> addRecord(GroupCommand command)
+        public async Task<RequestRecordPO> InsertRecord(GroupCommand command)
         {
             return await Task.FromResult(requestRecordBusiness.addRecord(command.GroupId, command.MemberId, command.CommandType, command.Instruction));
         }
 
-        public async Task<RequestRecordPO> addRecord(FriendCommand command)
+        public async Task<RequestRecordPO> InsertRecord(FriendCommand command)
         {
             return await Task.FromResult(requestRecordBusiness.addRecord(0, command.MemberId, command.CommandType, command.Instruction));
         }

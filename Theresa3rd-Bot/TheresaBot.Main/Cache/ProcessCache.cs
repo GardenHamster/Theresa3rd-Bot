@@ -40,6 +40,7 @@ namespace TheresaBot.Main.Cache
 
         public static bool HandleStep(GroupRelay relay, long groupId, long memberId)
         {
+            if (string.IsNullOrWhiteSpace(relay.Answer)) return false;
             if (ProcessDic.ContainsKey(groupId) == false) return false;
             List<ProcessInfo> stepInfos = ProcessDic[groupId];
             if (stepInfos is null) return false;
@@ -48,7 +49,7 @@ namespace TheresaBot.Main.Cache
             lock (stepInfo)
             {
                 if (stepInfo.IsFinish) return false;
-                List<StepInfo> stepDetails = stepInfo.StepDetails;
+                List<StepInfo> stepDetails = stepInfo.StepInfos;
                 if (stepDetails.Count == 0) return false;
                 StepInfo stepDetail = stepDetails.Where(x => x.IsFinish == false).FirstOrDefault();
                 if (stepDetail is null) return false;

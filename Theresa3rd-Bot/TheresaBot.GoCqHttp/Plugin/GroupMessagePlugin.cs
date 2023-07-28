@@ -55,7 +55,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (isAt == false && isInstruct == false)//复读,分步操作,保存消息记录
                 {
                     CQGroupRelay relay = new CQGroupRelay(args, msgId, message, groupId, memberId);
-                    if (StepCache.HandleStep(relay, groupId, memberId)) return; //分步处理
+                    if (ProcessCache.HandleStep(relay, groupId, memberId)) return; //分步处理
                     if (RepeatCache.CheckCanRepeat(groupId, CQConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Message.OfType<CqImageMsg>().Select(o => o.Url?.ToString()).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.GoCQHttp, msgId, groupId, memberId);

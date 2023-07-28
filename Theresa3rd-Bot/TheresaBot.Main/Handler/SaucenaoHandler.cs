@@ -41,11 +41,11 @@ namespace TheresaBot.Main.Handler
 
                 if (imgList is null || imgList.Count == 0)
                 {
-                    StepInfo stepInfo = await StepCache.CreateStepAsync(command);
+                    ProcessInfo stepInfo = await ProcessCache.CreateProcessAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail imgStep = new StepDetail(60, "请在60秒内发送要查找的图片", CheckImageSourceAsync);
+                    StepInfo imgStep = new StepDetail(60, "请在60秒内发送要查找的图片", CheckImageSourceAsync);
                     stepInfo.AddStep(imgStep);
-                    if (await stepInfo.HandleStep() == false) return;
+                    if (await stepInfo.StartProcessing() == false) return;
                     imgList = imgStep.Relay.GetImageUrls();
                     revokeMsgId = imgStep.Relay.MsgId;
                 }
@@ -150,16 +150,16 @@ namespace TheresaBot.Main.Handler
             YNAType ynaType = BotConfig.SaucenaoConfig.ContinueAscii2d;
             if (ynaType == YNAType.Yes) return true;
             if (ynaType == YNAType.No) return false;
-            StepInfo stepInfo = await StepCache.CreateStepAsync(command, false);
+            ProcessInfo stepInfo = await ProcessCache.CreateStepInfoAsync(command, false);
             if (stepInfo is null) return false;
 
             StringBuilder questionBuilder = new StringBuilder();
             questionBuilder.AppendLine($"共有{notFoundList.Count}张图片搜索失败，是否使用Ascii2d继续搜索剩余的图片？");
             questionBuilder.AppendLine($"请在30秒内发送 1：是，0：否");
             foreach (string imgUrl in notFoundList) questionBuilder.AppendLine(imgUrl);
-            StepDetail askStep = new StepDetail(30, questionBuilder.ToString(), null);
+            StepInfo askStep = new StepDetail(30, questionBuilder.ToString(), null);
             stepInfo.AddStep(askStep);
-            if (await stepInfo.HandleStep() == false) return false;
+            if (await stepInfo.StartProcessing() == false) return false;
             return askStep.Answer == "1";
         }
 

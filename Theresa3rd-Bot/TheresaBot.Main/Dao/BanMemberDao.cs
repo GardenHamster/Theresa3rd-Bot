@@ -14,5 +14,10 @@ namespace TheresaBot.Main.Dao
             return Db.Queryable<BanMemberPO>().Where(o => o.MemberId == memberId).First();
         }
 
+        public int delBanMember(long memberId)
+        {
+            return Db.Deleteable<BanMemberPO>().Where(o => o.MemberId == memberId).ExecuteCommand();
+        }
+
     }
 }

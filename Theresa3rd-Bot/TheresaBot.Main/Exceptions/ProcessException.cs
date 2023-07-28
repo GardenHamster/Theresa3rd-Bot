@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace TheresaBot.Main.Exceptions
 {
-    public class StepException : Exception
+    public class ProcessException : Exception
     {
         public string RemindMessage { get; init; }
 
-        public StepException(string message) : base(message)
+        public ProcessException(string message) : base(message)
         {
             this.RemindMessage = message;
         }

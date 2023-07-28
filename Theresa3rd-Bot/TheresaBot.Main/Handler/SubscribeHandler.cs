@@ -74,11 +74,11 @@ namespace TheresaBot.Main.Handler
                 string subscribeIdStr = command.KeyWord;
                 if (string.IsNullOrWhiteSpace(subscribeIdStr))
                 {
-                    StepInfo stepInfo = await StepCache.CreateStepAsync(command);
+                    ProcessInfo stepInfo = await ProcessCache.CreateProcessAsync(command);
                     if (stepInfo is null) return;
-                    StepDetail tagStep = new StepDetail(60, "请在60秒内发送要退订的Id", CheckSubscribeIdAsync);
+                    StepInfo tagStep = new StepDetail(60, "请在60秒内发送要退订的Id", CheckSubscribeIdAsync);
                     stepInfo.AddStep(tagStep);
-                    if (await stepInfo.HandleStep() == false) return;
+                    if (await stepInfo.StartProcessing() == false) return;
                     subscribeIdStr = tagStep.Answer;
                 }
                 else
@@ -110,7 +110,7 @@ namespace TheresaBot.Main.Handler
 
         private async Task<bool> CheckSubscribeIdAsync(GroupCommand command, GroupRelay relay)
         {
-            return await CheckSubscribeIdAsync(command, relay.Message);
+            return await CheckSubscribeIdAsync(command, relay.Answer);
         }
 
         private async Task<bool> CheckSubscribeIdAsync(GroupCommand command, string value)

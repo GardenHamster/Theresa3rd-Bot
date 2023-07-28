@@ -30,9 +30,9 @@ namespace TheresaBot.Main.Business
             return banMemberDao.Insert(banMember);
         }
 
-        public int DelBanMember(BanMemberPO banMember)
+        public int DelBanMember(long memberId)
         {
-            return banMemberDao.Delete(banMember);
+            return banMemberDao.delBanMember(memberId);
         }
 
 

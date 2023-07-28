@@ -6,18 +6,6 @@ namespace TheresaBot.Main.Helper
 {
     public static class EnumHelper
     {
-        public static object ToEnum<T>(this string str) where T : Enum
-        {
-            try
-            {
-                return Enum.Parse(typeof(T), str);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
         public static string PixivSyncModeOption()
         {
             StringBuilder optionBuilder = new StringBuilder();
@@ -31,6 +19,15 @@ namespace TheresaBot.Main.Helper
             StringBuilder optionBuilder = new StringBuilder();
             optionBuilder.AppendLine($"{(int)SubscribeGroupType.All}：所有拥有订阅权限的群");
             optionBuilder.AppendLine($"{(int)SubscribeGroupType.Current}：当前群");
+            return optionBuilder.ToString();
+        }
+
+        public static string TagMatchTypeOption()
+        {
+            StringBuilder optionBuilder = new StringBuilder();
+            optionBuilder.AppendLine($"{(int)TagMatchType.Contain}：部分一致");
+            optionBuilder.AppendLine($"{(int)TagMatchType.FullMatch}：全词匹配");
+            optionBuilder.AppendLine($"{(int)TagMatchType.Regular}：正则匹配");
             return optionBuilder.ToString();
         }
 

@@ -54,7 +54,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (isAt == false && isInstruct == false)//复读,分步操作,保存消息记录
                 {
                     MiraiGroupRelay relay = new MiraiGroupRelay(args, msgId, message, groupId, memberId);
-                    if (StepCache.HandleStep(relay, groupId, memberId)) return; //分步处理
+                    if (ProcessCache.HandleStep(relay, groupId, memberId)) return; //分步处理
                     if (RepeatCache.CheckCanRepeat(groupId, MiraiConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.Mirai, msgId, groupId, memberId);

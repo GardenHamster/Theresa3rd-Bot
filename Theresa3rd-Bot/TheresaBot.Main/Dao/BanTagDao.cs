@@ -14,5 +14,10 @@ namespace TheresaBot.Main.Dao
             return Db.Queryable<BanTagPO>().Where(o => o.KeyWord == keyWord).First();
         }
 
+        public int delBanTag(string keyWord)
+        {
+            return Db.Deleteable<BanTagPO>().Where(o => o.KeyWord == keyWord).ExecuteCommand();
+        }
+
     }
 }

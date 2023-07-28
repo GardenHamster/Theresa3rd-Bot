@@ -6,7 +6,7 @@
 
         public GroupRelay(long msgId, string message, long groupId, long memberId) : base(msgId, message, memberId)
         {
-            this.GroupId = GroupId;
+            this.GroupId = groupId;
         }
 
         public abstract List<string> GetImageUrls();

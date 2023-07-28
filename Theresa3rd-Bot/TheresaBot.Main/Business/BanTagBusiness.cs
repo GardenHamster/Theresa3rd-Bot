@@ -1,5 +1,6 @@
 ﻿using TheresaBot.Main.Dao;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Business
@@ -18,34 +19,64 @@ namespace TheresaBot.Main.Business
             return banTagDao.getBanTags();
         }
 
-        public BanTagPO getBanTag(string keyword)
+        public BanTagPO GetBanTag(string keyword)
         {
-            return banTagDao.getBanTag(keyword);
+            return banTagDao.getBanTag(keyword.Trim().ToUpper());
         }
 
-        public BanTagPO AddBanTag(string keyword, bool fullMatch, bool isRegular = false)
+        public void InsertOrUpdate(ModifyResult result, string[] keywords, TagMatchType tagMatchType)
+        {
+            foreach (string keyword in keywords)
+            {
+                InsertOrUpdate(result, keyword, tagMatchType);
+            }
+        }
+
+        public void InsertOrUpdate(ModifyResult result, string keyword, TagMatchType tagMatchType)
+        {
+            var banTag = GetBanTag(keyword);
+            if (banTag is null)
+            {
+                InsertBanTag(keyword, tagMatchType);
+                result.CreateCount++;
+            }
+            else
+            {
+                UpdateBanTag(banTag, tagMatchType);
+                result.UpdateCount++;
+            }
+        }
+
+        public BanTagPO InsertBanTag(string keyword, TagMatchType tagMatchType)
         {
             BanTagPO banTag = new BanTagPO();
-            banTag.KeyWord = keyword;
-            banTag.IsRegular = isRegular;
-            banTag.FullMatch = fullMatch;
+            banTag.KeyWord = keyword.Trim().ToUpper();
+            banTag.IsRegular = tagMatchType == TagMatchType.Regular;
+            banTag.FullMatch = tagMatchType == TagMatchType.FullMatch;
             banTag.CreateDate = DateTime.Now;
             return banTagDao.Insert(banTag);
         }
 
-        public BanTagPO AddBanTag(string keyword, TagMatchType tagBanType)
+        public int UpdateBanTag(BanTagPO banTag, TagMatchType tagMatchType)
         {
-            BanTagPO banTag = new BanTagPO();
-            banTag.KeyWord = keyword;
-            banTag.IsRegular = tagBanType == TagMatchType.Regular;
-            banTag.FullMatch = tagBanType == TagMatchType.FullMatch;
-            banTag.CreateDate = DateTime.Now;
-            return banTagDao.Insert(banTag);
+            banTag.IsRegular = tagMatchType == TagMatchType.Regular;
+            banTag.FullMatch = tagMatchType == TagMatchType.FullMatch;
+            return banTagDao.Update(banTag);
         }
 
-        public int DelBanTag(BanTagPO banTag)
+        public int DelBanTags(string[] keywords)
         {
-            return banTagDao.Delete(banTag);
+            int count = 0;
+            foreach (string keyword in keywords)
+            {
+                count += banTagDao.delBanTag(keyword);
+            }
+            return count;
+        }
+
+        public int DelBanTag(string keyword)
+        {
+            return banTagDao.delBanTag(keyword.Trim().ToUpper());
         }
 
 

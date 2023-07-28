@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Business;
+﻿using AngleSharp.Text;
+using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
@@ -6,10 +7,13 @@ using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Model.Step;
+using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
+using YamlDotNet.Core.Tokens;
 
 namespace TheresaBot.Main.Handler
 {
@@ -28,72 +32,30 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                var tagStr = string.Empty;
-                var matchType = TagMatchType.Contain;
+                string tagStr = string.Empty;
+                TagMatchType matchType = TagMatchType.Contain;
                 if (command.Params.Length >= 2)
                 {
                     tagStr = command.Params[0];
-                    if (await CheckMatchTypeAsync(command, command.Params[1]) == false) return;
+                    await CheckMatchTypeAsync(command.Params[1]);
                     matchType = (TagMatchType)Convert.ToInt32(command.Params[1]);
                 }
                 else
                 {
-                    StepInfo stepInfo = await StepCache.CreateStepAsync(command);
-                    StepDetail tagStep = stepInfo.AddSteps("请在60秒内发送需要屏蔽的标签");
-                    StepDetail matchStep = stepInfo.AddSteps($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.PixivSyncGroupOption()}", CheckSubscribeGroupAsync);
-                    stepInfo.AddSteps(tagStep, matchStep);
-                    if (await stepInfo.HandleStep() == false) return;
-                    userId = tagStep.Answer;
-                    groupType = (SubscribeGroupType)Convert.ToInt32(matchStep.Answer);
+                    ProcessInfo process = ProcessCache.CreateProcessAsync(command);
+                    StepInfo tagStep = process.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开");
+                    StepInfo matchStep = process.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchTypeOption()}", CheckMatchTypeAsync);
+                    await process.StartProcessing();
+                    tagStr = tagStep.AnswerForString();
+                    matchType = matchStep.AnswerForEnum<TagMatchType>();
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    if (command.Params.Length > 0)
-                {
-                    tagStr = command.Params[0];
-                }
-                if (command.Params.Length > 1)
-                {
-                    banTypeObj = command.Params[1].ToEnum<TagMatchType>();
-                }
-                if (string.IsNullOrEmpty(tagStr))
-                {
-                    await command.ReplyGroupMessageWithQuoteAsync("没有检测到需要屏蔽的标签，请确保指令格式正确");
-                    return;
-                }
-                if (banTypeObj is null)
-                {
-                    await command.ReplyGroupMessageWithQuoteAsync("不存在的匹配方式，请确保指令格式正确");
-                    return;
-                }
-                var banType = (TagMatchType)banTypeObj;
-                var banTag = banTagBusiness.getBanTag(tagStr);
-                if (banTag is not null)
-                {
-                    await command.ReplyGroupMessageWithQuoteAsync("该标签已有记录了");
-                    return;
-                }
-                banTagBusiness.AddBanTag(tagStr, banType);
+                var result = new ModifyResult();
+                var banTags = tagStr.splitParams();
+                banTagBusiness.InsertOrUpdate(result, tagStr, matchType);
                 BanTagDatas.LoadDatas();
-                await command.ReplyGroupMessageWithQuoteAsync("记录成功");
+                await command.ReplyGroupMessageWithAtAsync($"记录成功，新增记录{result.CreateCount}条，更新记录{result.UpdateCount}条");
             }
-            catch (StepException ex)
+            catch (ProcessException ex)
             {
                 await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
                 return;
@@ -115,15 +77,10 @@ namespace TheresaBot.Main.Handler
                     await command.ReplyGroupMessageWithQuoteAsync("没有检测到要解除屏蔽的标签，请确保指令格式正确");
                     return;
                 }
-                BanTagPO banTag = banTagBusiness.getBanTag(tagStr);
-                if (banTag is null)
-                {
-                    await command.ReplyGroupMessageWithQuoteAsync("该标签未有记录了");
-                    return;
-                }
-                banTagBusiness.DelBanTag(banTag);
+                var banTags = tagStr.splitParams();
+                int count = banTagBusiness.DelBanTags(banTags);
                 BanTagDatas.LoadDatas();
-                await command.ReplyGroupMessageWithQuoteAsync("解除成功");
+                await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
             catch (Exception ex)
             {
@@ -139,29 +96,23 @@ namespace TheresaBot.Main.Handler
                 string memberCode = command.KeyWord;
                 if (string.IsNullOrEmpty(memberCode))
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync("没有检测到要屏蔽的QQ号，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithAtAsync("没有检测到要屏蔽的QQ号，请确保指令格式正确");
                     return;
                 }
                 long memberId = 0;
                 if (long.TryParse(memberCode, out memberId) == false || memberId <= 0)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync("QQ号格式不正确");
+                    await command.ReplyGroupMessageWithAtAsync("QQ号格式不正确");
                     return;
                 }
                 if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId))
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync("无法拉黑超级管理员");
-                    return;
-                }
-                BanMemberPO banMember = banMemberBusiness.getBanMember(memberId);
-                if (banMember != null)
-                {
-                    await command.ReplyGroupMessageWithQuoteAsync("该QQ号已有记录了");
+                    await command.ReplyGroupMessageWithAtAsync("无法拉黑超级管理员");
                     return;
                 }
                 banMemberBusiness.insertBanMembers(memberId);
                 BanMemberDatas.LoadDatas();
-                await command.ReplyGroupMessageWithQuoteAsync("记录成功");
+                await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
             catch (Exception ex)
             {
@@ -177,24 +128,18 @@ namespace TheresaBot.Main.Handler
                 string memberCode = command.KeyWord;
                 if (string.IsNullOrEmpty(memberCode))
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync("没有检测到要解除屏蔽的QQ号，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithAtAsync("没有检测到要解除屏蔽的QQ号，请确保指令格式正确");
                     return;
                 }
                 long memberId = 0;
                 if (long.TryParse(memberCode, out memberId) == false || memberId <= 0)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync("QQ号格式不正确");
+                    await command.ReplyGroupMessageWithAtAsync("QQ号格式不正确");
                     return;
                 }
-                BanMemberPO banMember = banMemberBusiness.getBanMember(memberId);
-                if (banMember is null)
-                {
-                    await command.ReplyGroupMessageWithQuoteAsync("该QQ号未有记录");
-                    return;
-                }
-                banMemberBusiness.DelBanMember(banMember);
+                banMemberBusiness.DelBanMember(memberId);
                 BanMemberDatas.LoadDatas();
-                await command.ReplyGroupMessageWithQuoteAsync("解除成功");
+                await command.ReplyGroupMessageWithAtAsync("解除成功");
             }
             catch (Exception ex)
             {
@@ -203,22 +148,19 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<bool> CheckMatchTypeAsync(GroupCommand command, string value)
+        private async Task CheckMatchTypeAsync(string value)
         {
             int typeId = 0;
             if (int.TryParse(value, out typeId) == false)
             {
-                await command.ReplyGroupMessageWithAtAsync("目标必须为数字");
-                return false;
+                throw new ProcessException("匹配方式不在范围内");
             }
             if (Enum.IsDefined(typeof(TagMatchType), typeId) == false)
             {
-                await command.ReplyGroupMessageWithAtAsync("目标不在范围内");
-                return false;
+                throw new ProcessException("匹配方式不在范围内");
             }
-            return true;
+            await Task.CompletedTask;
         }
-
 
     }
 }

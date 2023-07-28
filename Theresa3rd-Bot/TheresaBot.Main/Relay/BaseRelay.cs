@@ -4,14 +4,14 @@
     {
         public long MsgId { get; init; }
 
-        public string Message { get; init; }
+        public string Answer { get; init; }
 
         public long MemberId { get; init; }
 
-        public BaseRelay(long msgId, string message, long memberId)
+        public BaseRelay(long msgId, string answer, long memberId)
         {
             this.MsgId = msgId;
-            this.Message = message;
+            this.Answer = answer;
             this.MemberId = memberId;
         }
 

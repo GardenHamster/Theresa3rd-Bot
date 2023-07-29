@@ -15,12 +15,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Model\WordCloud\**" />
-	  <EmbeddedResource Remove="Model\WordCloud\**" />
-	  <None Remove="Model\WordCloud\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="AngleSharp" Version="0.17.1" />
 		<PackageReference Include="jieba.NET" Version="0.42.2" />
 		<PackageReference Include="log4net" Version="2.0.15" />
@@ -35,23 +29,6 @@
 		<PackageReference Include="SqlSugarCore" Version="5.1.4.89" />
 		<PackageReference Include="WordCloud.NetCore" Version="1.0.0" />
 		<PackageReference Include="YamlDotNet" Version="13.1.1" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Remove="botsettings.yml" />
-		<None Remove="log4net.config" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Content Include="botsettings.yml">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
-		</Content>
-		<Content Include="log4net.config">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
-		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -73,11 +50,20 @@
 	  <None Update="BotImg\mask\mask01.png">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	  <None Update="botsettings.yml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+	  </None>
 	  <None Update="Font\hywenhei85w.ttf">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Font\simsun.ttc">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="log4net.config">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>Always</CopyToPublishDirectory>
 	  </None>
 	  <None Update="Resources\char_state_tab.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>

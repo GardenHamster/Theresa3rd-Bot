@@ -46,7 +46,7 @@ namespace TheresaBot.Main.Handler
                 }
                 var result = new ModifyResult();
                 var banTags = tagStr.SplitParams();
-                banTagBusiness.InsertOrUpdate(result, tagStr, matchType);
+                banTagBusiness.InsertOrUpdate(result, banTags, matchType);
                 BanTagDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync($"记录成功，新增记录{result.CreateCount}条，更新记录{result.UpdateCount}条");
             }

@@ -26,19 +26,14 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-
                 PixivWorkInfo pixivWorkInfo;
                 string keyword = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
                 bool isShowR18 = command.GroupId.IsShowR18Setu();
-                if (await CheckSetuTagEnableAsync(command, keyword) == false) return;
 
-                if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
-                {
-                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.ProcessingMsg);
-                    await Task.Delay(1000);
-                }
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
+                if (await CheckSetuTagEnableAsync(command, keyword) == false) return;
+                await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.ProcessingMsg);
 
                 if (BusinessHelper.IsPixivId(keyword))
                 {

@@ -33,8 +33,9 @@ namespace TheresaBot.Main.Handler
                 int r18Mode = isShowR18 ? 2 : 0;
                 int aiMode = isShowAI ? 2 : 0;
 
-                string levelStr = GetLevelStr(isShowR18, BotConfig.SetuConfig?.Lolisuki?.Level);
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
+                if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
+                string levelStr = GetLevelStr(isShowR18, BotConfig.SetuConfig?.Lolisuki?.Level);
                 await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.ProcessingMsg);
 
                 if (string.IsNullOrEmpty(tagStr))
@@ -44,7 +45,6 @@ namespace TheresaBot.Main.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
                     dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 

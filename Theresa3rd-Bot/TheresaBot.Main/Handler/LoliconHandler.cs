@@ -33,6 +33,7 @@ namespace TheresaBot.Main.Handler
                 bool excludeAI = isShowAI == false;
 
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
+                if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
                 await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.ProcessingMsg);
 
                 if (string.IsNullOrEmpty(tagStr))
@@ -42,7 +43,7 @@ namespace TheresaBot.Main.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
+                    
                     dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 

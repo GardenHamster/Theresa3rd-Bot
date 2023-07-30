@@ -41,7 +41,7 @@ namespace TheresaBot.Main.Handler
                 if (imgList.Count == 0)
                 {
                     ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo imgStep = processInfo.CreateStep("请在60秒内发送要查找的图片", CheckImageAsync);
+                    StepInfo imgStep = processInfo.CreateStep("请在60秒内发送需要查找的图片", CheckImageAsync);
                     await processInfo.StartProcessing();
                     imgList = imgStep.Relay.GetImageUrls();
                     revokeMsgId = imgStep.Relay.MsgId;

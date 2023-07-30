@@ -57,7 +57,8 @@ namespace TheresaBot.MiraiHttpApi.Event
         public string GetSimpleSendContent(IGroupMessageEventArgs args)
         {
             StringBuilder builder = new StringBuilder();
-            foreach (var message in args.Chain)
+            var chainList = args.Chain.Skip(1).ToList();
+            foreach (var message in chainList)
             {
                 if (builder.Length > 0) builder.Append(" ");
                 if (message is PlainMessage plainMsg)

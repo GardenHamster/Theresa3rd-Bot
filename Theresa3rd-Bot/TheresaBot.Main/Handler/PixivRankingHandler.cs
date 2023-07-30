@@ -134,7 +134,7 @@ namespace TheresaBot.Main.Handler
                 };
                 BaseContent[] tipContents = new BaseContent[]
                 {
-                    new PlainContent($"使用 【#日榜 1,2,3...】或者【#日榜 {pixivRankingInfo.RankingDate} 1,2,3...】格式可以获取指定序号的作品详情")
+                    new PlainContent($"使用 【#日榜 1,2,3...】或者【#日榜 {pixivRankingInfo.RankingDate} 1,2,3...】格式可以获取指定排名的作品详情")
                 };
 
                 List<SetuContent> setuContents = new List<SetuContent>();
@@ -262,7 +262,7 @@ namespace TheresaBot.Main.Handler
                 };
                 BaseContent[] tipContents = new BaseContent[]
                 {
-                    new PlainContent($"使用 【#日榜 1,2,3...】或者【#日榜 {pixivRankingInfo.RankingDate} 1,2,3...】格式可以获取指定序号的作品详情")
+                    new PlainContent($"使用 【#日榜 1,2,3...】或者【#日榜 {pixivRankingInfo.RankingDate} 1,2,3...】格式可以获取指定排名的作品详情")
                 };
 
                 List<SetuContent> setuContents = new List<SetuContent>();
@@ -300,7 +300,7 @@ namespace TheresaBot.Main.Handler
             var idList = idStr.SplitToIdList();
             if (idList.Count == 0)
             {
-                await command.ReplyGroupMessageWithQuoteAsync($"没有检测到序号，你可以使用【#日榜 20230601 11,45,14】的格式获取指定序号的作品详情");
+                await command.ReplyGroupMessageWithQuoteAsync($"没有检测到序号，你可以使用【#日榜 20230601 11,45,14】的格式获取指定排名的作品详情");
                 return;
             }
 
@@ -315,7 +315,7 @@ namespace TheresaBot.Main.Handler
             var rankingDetails = pixivRankingInfo.RankingDetails.Where(o => idList.Contains(o.RankingContent.rank)).ToList();
             if (rankingDetails.Count == 0)
             {
-                await command.ReplyGroupMessageWithQuoteAsync($"当前榜单中不存在指定序号的作品");
+                await command.ReplyGroupMessageWithQuoteAsync($"当前榜单中不存在指定排名的作品");
                 return;
             }
 

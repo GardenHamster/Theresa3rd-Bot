@@ -38,6 +38,7 @@ namespace TheresaBot.MiraiHttpApi.Session
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             msgList.Add(new AtMessage(memberId));
+            msgList.Add(new PlainMessage(" "));
             msgList.Add(new PlainMessage(message));
             var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
             return new MiraiResult(msgId);
@@ -47,6 +48,7 @@ namespace TheresaBot.MiraiHttpApi.Session
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
             msgList.Add(new AtMessage(memberId));
+            msgList.Add(new PlainMessage(" "));
             msgList.AddRange(await contents.ToMiraiMessageAsync(UploadTarget.Group));
             var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());
             return new MiraiResult(msgId);
@@ -55,6 +57,8 @@ namespace TheresaBot.MiraiHttpApi.Session
         public override async Task<BaseResult> SendGroupMessageWithQuoteAsync(long groupId, long memberId, long quoteMsgId, string message)
         {
             List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new AtMessage(memberId));
+            msgList.Add(new PlainMessage(" "));
             msgList.Add(new PlainMessage(message));
             var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray(), (int)quoteMsgId);
             return new MiraiResult(msgId);
@@ -64,6 +68,8 @@ namespace TheresaBot.MiraiHttpApi.Session
         {
             if (contents.Count == 0) return MiraiResult.Undo;
             List<IChatMessage> msgList = new List<IChatMessage>();
+            msgList.Add(new AtMessage(memberId));
+            msgList.Add(new PlainMessage(" "));
             msgList.AddRange(await contents.ToMiraiMessageAsync(UploadTarget.Group));
             var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray(), (int)quoteMsgId);
             return new MiraiResult(msgId);

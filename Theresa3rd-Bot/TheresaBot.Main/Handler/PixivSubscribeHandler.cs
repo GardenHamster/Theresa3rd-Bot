@@ -100,12 +100,12 @@ namespace TheresaBot.Main.Handler
                 if (subscribeBusiness.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
                 {
                     //关联订阅
-                    await command.ReplyGroupMessageWithQuoteAsync($"画师id[{userId}]已经被订阅了~");
+                    await command.ReplyGroupMessageWithAtAsync($"画师id[{userId}]已经被订阅了~");
                     return;
                 }
 
                 SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
-                await command.ReplyGroupMessageWithQuoteAsync($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~");
+                await command.ReplyGroupMessageWithAtAsync($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~");
 
                 await Task.Delay(1000);
                 await SendUserNewestAsync(command, dbSubscribe, command.GroupId.IsShowR18Setu(), command.GroupId.IsShowAISetu());

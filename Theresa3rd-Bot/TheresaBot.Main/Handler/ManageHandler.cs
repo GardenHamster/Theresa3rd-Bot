@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Handler
                 var tagStr = command.KeyWord;
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync("没有检测到要解除屏蔽的标签，请确保指令格式正确");
+                    await command.ReplyGroupMessageWithAtAsync("没有检测到要解除屏蔽的标签，请确保指令格式正确");
                     return;
                 }
                 var banTags = tagStr.SplitParams();

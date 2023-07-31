@@ -62,6 +62,7 @@ namespace TheresaBot.MiraiHttpApi
                 TimerManager.initTimingSetuJob(session, reporter);
                 TimerManager.initSubscribeTimers(session, reporter);
                 TimerManager.initTimingRankingJobAsync(session, reporter);
+                TimerManager.initWordCloudTimers(session, reporter);
                 TimerManager.initCookieJobAsync(session, reporter);
                 TimerManager.initTempClearJobAsync(session, reporter);
                 TimerManager.initDownloadClearJobAsync(session, reporter);

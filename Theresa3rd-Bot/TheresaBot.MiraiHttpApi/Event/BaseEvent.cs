@@ -71,7 +71,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 }
                 else
                 {
-                    builder.Append(message.ToString());
+                    builder.Append(message.Rawdata.ToString());
                 }
             }
             return builder.ToString().Trim();

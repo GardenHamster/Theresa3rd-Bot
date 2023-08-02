@@ -3,6 +3,11 @@
     public class ReminderConfig : BasePluginConfig
     {
         public List<ReminderTimer> Timers { get; private set; }
+
+        public override ReminderConfig FormatConfig()
+        {
+            return this;
+        }
     }
 
     public class ReminderTimer

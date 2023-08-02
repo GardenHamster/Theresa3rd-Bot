@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class BasePluginConfig
+    public abstract class BasePluginConfig : BaseConfig
     {
         public bool Enable { get; protected set; }
     }

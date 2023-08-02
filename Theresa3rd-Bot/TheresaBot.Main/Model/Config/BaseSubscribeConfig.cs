@@ -9,5 +9,11 @@
         public string Template { get; protected set; }
 
         public int ScanInterval { get; protected set; }
+
+        public override BasePluginConfig FormatConfig()
+        {
+            return this;
+        }
+
     }
 }

@@ -6,5 +6,10 @@
 
         public string Template { get; private set; }
 
+        public override BasePluginConfig FormatConfig()
+        {
+            return this;
+        }
+
     }
 }

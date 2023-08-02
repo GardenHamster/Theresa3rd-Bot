@@ -2,7 +2,7 @@
 
 namespace TheresaBot.Main.Model.Config
 {
-    public class GeneralConfig
+    public class GeneralConfig : BaseConfig
     {
         public List<string> Prefixs { get; private set; }
 
@@ -30,7 +30,7 @@ namespace TheresaBot.Main.Model.Config
 
         public string DefaultPrefix => Prefixs.FirstOrDefault() ?? string.Empty;
 
-        public GeneralConfig FormatConfig()
+        public override GeneralConfig FormatConfig()
         {
             this.Prefixs = this.Prefixs?.Trim() ?? new();
             return this;

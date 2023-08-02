@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class SetuConfig
+    public class SetuConfig : BaseConfig
     {
         public int GroupCD { get; private set; }
 
@@ -27,6 +27,15 @@
         public LocalSetuConfig Local { get; private set; }
 
         public PixivUserConfig PixivUser { get; private set; }
+
+        public override SetuConfig FormatConfig()
+        {
+            Pixiv.FormatConfig();
+            Lolicon.FormatConfig();
+            Lolisuki.FormatConfig();
+            Local.FormatConfig();
+            return this;
+        }
     }
 
 

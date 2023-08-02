@@ -8,6 +8,11 @@ namespace TheresaBot.Main.Model.Config
         public bool FromOneDir { get; private set; }
         public string LolisukiLevel { get; private set; }
         public List<TimingSetuTimer> Timers { get; private set; }
+
+        public override TimingSetuConfig FormatConfig()
+        {
+            return this;
+        }
     }
 
     public class TimingSetuTimer

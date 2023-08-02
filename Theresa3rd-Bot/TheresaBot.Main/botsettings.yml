@@ -299,6 +299,10 @@ PixivRanking:                                                                   
 WordCloud:
     Enable:                     true
     GroupCD:                    300                                                 #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
+    MaxWords:                   500
+    DefaultWidth:               1000
+    DefaultHeitht:              1000
+    FontPath:                   'Font/hywenhei85w.ttf'
     ProcessingMsg:              '正在生成词云，需要亿点时间...'                       #开始执行前返回的消息
     BasicCommands:              ['词云']
     DailyCommands:              ['本日词云','今日词云','今天词云','日词云']
@@ -310,15 +314,18 @@ WordCloud:
     LastMonthCommands:          ['上月词云']
     AddWordCommands:            ['添加词汇','新增词汇']
     HideWordCommands:           ['隐藏词汇']
-    ImgWidth:                   1000
-    ImgHeight:                  1000
-    MaxWords:                   500
-    FontPath:                   'Font/hywenhei85w.ttf'
-    MaskPaths:                  ['BotImg/mask/mask01.png']
+    DefaultMasks:               ['theresa']
+    
+    Masks:
+        - Name:                 'theresa'
+          Path:                 'BotImg/mask/mask01.png'
+          Width:                1000
+
     Subscribes:
         - Enable:               true
           Name:                 '每日词云'
           Cron:                 '0 0 8 * * ?'
+          Masks:                ['theresa']
           Groups:               [284196392]
           HourRange:            24
           Template:             '早上好，昨天的群词云如下'
@@ -326,6 +333,7 @@ WordCloud:
         - Enable:               true
           Name:                 '每周词云'
           Cron:                 '0 30 22 ? * SUN'
+          Masks:                ['theresa']
           Groups:               [284196392]
           HourRange:            168
           Template:             '晚安，本周的群词云如下'
@@ -333,6 +341,7 @@ WordCloud:
         - Enable:               true
           Name:                 '每月词云'
           Cron:                 '0 0 12 L * ?'
+          Masks:                ['theresa']
           Groups:               [284196392]
           HourRange:            720
           Template:             '中午好，本月的群词云如下'

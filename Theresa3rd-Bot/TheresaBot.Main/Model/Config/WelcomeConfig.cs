@@ -5,6 +5,11 @@
         public string Template { get; private set; }
 
         public List<WelcomeSpecial> Special { get; private set; }
+
+        public override WelcomeConfig FormatConfig()
+        {
+            return this;
+        }
     }
 
     public class WelcomeSpecial

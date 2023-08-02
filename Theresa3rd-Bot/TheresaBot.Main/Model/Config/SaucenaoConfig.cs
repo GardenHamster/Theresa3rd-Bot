@@ -22,6 +22,11 @@
         public bool Ascii2dWithIp { get; set; }
         public int Ascii2dReadCount { get; private set; } = 3;
 
+        public override SaucenaoConfig FormatConfig()
+        {
+            return this;
+        }
+
 
     }
 }

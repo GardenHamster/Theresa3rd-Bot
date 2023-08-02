@@ -16,5 +16,10 @@
             this.CacheSeconds = 3600;
         }
 
+        public override BasePluginConfig FormatConfig()
+        {
+            return this;
+        }
+
     }
 }

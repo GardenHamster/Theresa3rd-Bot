@@ -3,7 +3,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Config
 {
-    public class PixivConfig
+    public class PixivConfig : BaseConfig
     {
         public bool FreeProxy { get; private set; }
         public string HttpProxy { get; private set; }
@@ -25,7 +25,7 @@ namespace TheresaBot.Main.Model.Config
         public double AITarget { get; set; } = 0.5;
         public double R18Target { get; set; } = 1.2;
 
-        public PixivConfig FormatConfig()
+        public override PixivConfig FormatConfig()
         {
             this.ImgProxy = StringHelper.FormatHttpUrl(ImgProxy);
             this.HttpProxy = StringHelper.FormatHttpUrl(HttpProxy, false);

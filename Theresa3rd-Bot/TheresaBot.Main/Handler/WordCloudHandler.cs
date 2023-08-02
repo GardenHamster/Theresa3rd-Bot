@@ -191,7 +191,9 @@ namespace TheresaBot.Main.Handler
                 {
                     contents.Add(new PlainContent(remindMsg));
                 }
-                FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words);
+                var maskNames = BotConfig.WordCloudConfig.DefaultMasks ?? new();
+                var maskItem = GetRandomMaskItem(maskNames);
+                var wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words, maskItem);
                 contents.Add(new LocalImageContent(wordCloudFile));
                 await groupCommand.ReplyGroupMessageWithQuoteAsync(contents);
             }
@@ -205,6 +207,29 @@ namespace TheresaBot.Main.Handler
             {
                 CoolingCache.SetWordCloudHandFinish(groupCommand.GroupId);
             }
+        }
+
+        /// <summary>
+        /// 获取随机的可用的蒙版文件
+        /// </summary>
+        /// <param name="maskNames"></param>
+        /// <returns></returns>
+        private WordCloudMask GetRandomMaskItem(List<string> maskNames)
+        {
+            var maskItems = maskNames.Select(o => GetMaskItem(o)).Where(o => o is not null).ToList();
+            if (maskItems.Count == 0) return null;
+            return maskItems.RandomItem();
+        }
+
+        /// <summary>
+        /// 获取蒙版文件，如果蒙版不存在，返回null
+        /// </summary>
+        /// <param name="maskName"></param>
+        /// <returns></returns>
+        private WordCloudMask GetMaskItem(string maskName)
+        {
+            if (string.IsNullOrWhiteSpace(maskName)) return null;
+            return BotConfig.WordCloudConfig.Masks?.FirstOrDefault(o => o.Name == maskName);
         }
 
         /// <summary>
@@ -242,7 +267,9 @@ namespace TheresaBot.Main.Handler
                 {
                     contents.Add(new PlainContent(timer.Template));
                 }
-                FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words);
+                var maskNames = timer.Masks ?? new();
+                var maskItem = GetRandomMaskItem(maskNames);
+                FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words, maskItem);
                 contents.Add(new LocalImageContent(wordCloudFile));
                 await Session.SendGroupMessageAsync(groupId, contents);
             }

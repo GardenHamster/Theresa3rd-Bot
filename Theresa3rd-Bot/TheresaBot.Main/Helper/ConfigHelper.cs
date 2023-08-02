@@ -19,19 +19,19 @@ namespace TheresaBot.Main.Helper
             Deserializer deserializer = new Deserializer();
             BotConfigDto botConfig = deserializer.Deserialize<BotConfigDto>(reader);
             BotConfig.GeneralConfig = botConfig.General.FormatConfig();
-            BotConfig.PixivConfig = botConfig.Pixiv.FormatConfig();
-            BotConfig.PermissionsConfig = botConfig.Permissions;
-            BotConfig.ManageConfig = botConfig.Manage;
-            BotConfig.MenuConfig = botConfig.Menu;
-            BotConfig.RepeaterConfig = botConfig.Repeater;
-            BotConfig.WelcomeConfig = botConfig.Welcome;
-            BotConfig.ReminderConfig = botConfig.Reminder;
-            BotConfig.SetuConfig = botConfig.Setu;
-            BotConfig.SaucenaoConfig = botConfig.Saucenao;
-            BotConfig.SubscribeConfig = botConfig.Subscribe;
-            BotConfig.TimingSetuConfig = botConfig.TimingSetu;
-            BotConfig.PixivRankingConfig = botConfig.PixivRanking;
-            BotConfig.WordCloudConfig = botConfig.WordCloud;
+            BotConfig.PixivConfig = botConfig.Pixiv.FormatConfig().FormatConfig();
+            BotConfig.PermissionsConfig = botConfig.Permissions.FormatConfig();
+            BotConfig.ManageConfig = botConfig.Manage.FormatConfig();
+            BotConfig.MenuConfig = botConfig.Menu.FormatConfig();
+            BotConfig.RepeaterConfig = botConfig.Repeater.FormatConfig();
+            BotConfig.WelcomeConfig = botConfig.Welcome.FormatConfig();
+            BotConfig.ReminderConfig = botConfig.Reminder.FormatConfig();
+            BotConfig.SetuConfig = botConfig.Setu.FormatConfig();
+            BotConfig.SaucenaoConfig = botConfig.Saucenao.FormatConfig();
+            BotConfig.SubscribeConfig = botConfig.Subscribe.FormatConfig();
+            BotConfig.TimingSetuConfig = botConfig.TimingSetu.FormatConfig();
+            BotConfig.PixivRankingConfig = botConfig.PixivRanking.FormatConfig();
+            BotConfig.WordCloudConfig = botConfig.WordCloud.FormatConfig();
         }
 
 

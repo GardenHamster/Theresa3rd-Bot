@@ -132,33 +132,11 @@ namespace TheresaBot.Main.Handler
             string warnMessage = $"{cookieName}将在{expireDate.ToString("yyyy-MM-dd HH:mm:ss")}过期，请尽快更新cookie";
             foreach (long groupId in BotConfig.GeneralConfig.ErrorGroups)
             {
-                try
-                {
-                    await Session.SendGroupMessageAsync(groupId, warnMessage);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex);
-                }
-                finally
-                {
-                    await Task.Delay(1000);
-                }
+                await Session.SendGroupMessageAsync(groupId, warnMessage);
             }
             foreach (long memberId in BotConfig.PermissionsConfig.SuperManagers)
             {
-                try
-                {
-                    await Session.SendFriendMessageAsync(memberId, warnMessage);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex);
-                }
-                finally
-                {
-                    await Task.Delay(1000);
-                }
+                await Session.SendFriendMessageAsync(memberId, warnMessage);
             }
         }
 

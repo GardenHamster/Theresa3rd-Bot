@@ -65,15 +65,11 @@ namespace TheresaBot.Main.Handler
                     await Task.Delay(1000);
                     Task sendTempTask = command.SendTempSetuAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
                 }
-
                 CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "localSearchAsync异常");
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, "localSearchAsync异常");
+                await LogAndReplyError(command, ex, "本地涩图功能异常");
             }
             finally
             {

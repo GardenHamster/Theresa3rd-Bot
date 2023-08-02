@@ -41,7 +41,7 @@ namespace TheresaBot.Main.Handler
                 catch (Exception ex)
                 {
                     scanReport.ErrorTag++;
-                    LogHelper.Error(ex, $"扫描pixiv标签[{subscribeTask.SubscribeCode}]订阅失败");
+                    await LogAndReportError(ex, $"扫描pixiv标签[{subscribeTask.SubscribeCode}]最新作品失败");
                 }
             }
             if (pushList.Count > 0)
@@ -73,9 +73,7 @@ namespace TheresaBot.Main.Handler
                 catch (Exception ex)
                 {
                     scanReport.ErrorUser++;
-                    string message = $"扫描pixiv用户[{subscribeTask.SubscribeCode}]订阅失败";
-                    LogHelper.Error(ex, message);
-                    await Reporter.SendError(ex, message);
+                    await LogAndReportError(ex, $"扫描pixiv用户[{subscribeTask.SubscribeCode}]最新作品失败");
                 }
             }
             if (pushList.Count > 0)
@@ -102,9 +100,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                string message = $"扫描pixiv关注用户最新作品失败";
-                LogHelper.Error(ex, message);
-                await Reporter.SendError(ex, message);
+                await LogAndReportError(ex, $"扫描pixiv关注用户最新作品失败");
             }
             return scanReport;
         }
@@ -136,7 +132,6 @@ namespace TheresaBot.Main.Handler
                 await Task.Delay(1000);
             }
         }
-
 
         /// <summary>
         /// 合并推送

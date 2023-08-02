@@ -328,8 +328,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "gif合成失败");
-                await Reporter.SendError(ex, "gif合成失败");
+                await LogAndReportError(ex, "Gif合成失败");
                 return null;
             }
         }

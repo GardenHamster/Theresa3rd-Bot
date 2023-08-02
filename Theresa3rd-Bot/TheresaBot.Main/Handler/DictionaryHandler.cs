@@ -54,8 +54,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "AddCloudWordAsync异常");
-                await Reporter.SendError(ex, "AddCloudWordAsync异常");
+                await LogAndReplyError(command, ex, "添加词汇异常");
             }
         }
 
@@ -96,8 +95,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "HideCloudWordAsync异常");
-                await Reporter.SendError(ex, "HideCloudWordAsync异常");
+                await LogAndReplyError(command, ex, "隐藏词汇异常");
             }
         }
 

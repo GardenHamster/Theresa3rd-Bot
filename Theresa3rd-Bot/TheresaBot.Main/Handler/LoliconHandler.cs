@@ -43,7 +43,7 @@ namespace TheresaBot.Main.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    
+
                     dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 
@@ -77,10 +77,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "loliconSearchAsync异常");
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, "loliconSearchAsync异常");
+                await LogAndReplyError(command, ex, "Lolicon涩图功能异常");
             }
             finally
             {

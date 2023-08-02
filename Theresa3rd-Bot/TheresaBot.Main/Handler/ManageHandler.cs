@@ -56,7 +56,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "屏蔽标签异常");
+                await LogAndReplyError(command, ex, "屏蔽标签异常");
             }
         }
 
@@ -81,7 +81,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "解除标签屏蔽异常");
+                await LogAndReplyError(command, ex, "解除标签屏蔽异常");
             }
         }
 
@@ -116,7 +116,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "屏蔽成员异常");
+                await LogAndReplyError(command, ex, "屏蔽成员异常");
             }
         }
 
@@ -146,7 +146,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "解除成员屏蔽异常");
+                await LogAndReplyError(command, ex, "解除成员屏蔽异常");
             }
         }
 

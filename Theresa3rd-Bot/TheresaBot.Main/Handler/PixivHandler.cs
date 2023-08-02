@@ -153,11 +153,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                string errMsg = $"pixivUserProfileAsync异常";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReplyError(command, ex, "画师作品一览功能异常");
             }
             finally
             {
@@ -193,8 +189,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "画师作品一览图合成失败");
-                await Reporter.SendError(ex, "画师作品一览图合成失败");
+                await LogAndReportError(ex, "画师作品一览合成失败");
                 return null;
             }
         }

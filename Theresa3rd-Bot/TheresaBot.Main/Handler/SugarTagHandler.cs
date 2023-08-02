@@ -44,8 +44,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "BindTagSugarAsync异常");
-                await Reporter.SendError(ex, "BindTagSugarAsync异常");
+                await LogAndReplyError(command, ex, "标签绑定异常");
             }
         }
 

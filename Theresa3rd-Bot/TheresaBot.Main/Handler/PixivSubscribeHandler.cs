@@ -73,7 +73,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, $"pixiv用户订阅异常");
+                await LogAndReplyError(command, ex, $"pixiv用户订阅异常");
             }
         }
 
@@ -112,7 +112,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, $"pixiv画师[{userId}]订阅失败");
+                await LogAndReplyError(command, ex, $"pixiv画师[{userId}]订阅失败");
             }
             finally
             {
@@ -187,7 +187,7 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 DbScoped.SugarScope.RollbackTran();
-                await LogAndReportError(command, ex, $"订阅关注列表失败");
+                await LogAndReplyError(command, ex, $"订阅关注列表失败");
             }
         }
 
@@ -234,7 +234,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "取消画师订阅异常");
+                await LogAndReplyError(command, ex, "取消画师订阅异常");
             }
         }
 
@@ -293,7 +293,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "Pixiv标签订阅异常");
+                await LogAndReplyError(command, ex, "Pixiv标签订阅异常");
             }
         }
 
@@ -332,7 +332,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "Pixiv标签退订异常");
+                await LogAndReplyError(command, ex, "Pixiv标签退订异常");
             }
         }
 
@@ -368,7 +368,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, $"读取画师[{dbSubscribe.SubscribeName}]最新作品失败");
+                await LogAndReplyError(command, ex, $"读取画师[{dbSubscribe.SubscribeName}]最新作品失败");
             }
         }
 

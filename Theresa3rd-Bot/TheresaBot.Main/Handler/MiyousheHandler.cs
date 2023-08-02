@@ -90,7 +90,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "订阅米游社用户异常");
+                await LogAndReplyError(command, ex, "订阅米游社用户异常");
             }
         }
 
@@ -118,7 +118,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "退订米游社用户异常");
+                await LogAndReplyError(command, ex, "退订米游社用户异常");
             }
         }
 

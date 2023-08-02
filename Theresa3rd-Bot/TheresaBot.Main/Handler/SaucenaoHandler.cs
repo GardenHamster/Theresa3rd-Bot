@@ -62,7 +62,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "原图搜索功能异常");
+                await LogAndReplyError(command, ex, "原图搜索功能异常");
             }
             finally
             {
@@ -94,7 +94,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "原图搜索功能异常");
+                await LogAndReplyError(command, ex, "原图搜索功能异常");
             }
             finally
             {
@@ -177,7 +177,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "SearchWithSaucenao异常");
+                await LogAndReplyError(command, ex, "SearchWithSaucenao异常");
                 return true;
             }
         }
@@ -314,7 +314,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "SearchWithAscii2d异常");
+                await LogAndReplyError(command, ex, "SearchWithAscii2d异常");
             }
         }
 

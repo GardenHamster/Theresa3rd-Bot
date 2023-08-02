@@ -27,11 +27,17 @@ namespace TheresaBot.Main.Handler
             this.requestRecordBusiness = new RequestRecordBusiness();
         }
 
-        public async Task LogAndReportError(GroupCommand command, Exception ex, string message = "")
+        public async Task LogAndReplyError(GroupCommand command, Exception ex, string message = "")
         {
             LogHelper.Error(ex, message);
             await command.ReplyError(ex, message);
             await Task.Delay(1000);
+            await Reporter.SendError(ex, message);
+        }
+
+        public async Task LogAndReportError(Exception ex, string message = "")
+        {
+            LogHelper.Error(ex, message);
             await Reporter.SendError(ex, message);
         }
 

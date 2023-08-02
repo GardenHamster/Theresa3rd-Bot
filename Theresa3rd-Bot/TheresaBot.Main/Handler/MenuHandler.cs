@@ -32,12 +32,10 @@ namespace TheresaBot.Main.Handler
                     await Task.Delay(1000);
                     await command.ReplyGroupMessageWithQuoteAsync(GetManagerMenu());
                 }
-
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "菜单发送失败");
-                await Reporter.SendError(ex, "菜单发送失败");
+                await LogAndReplyError(command, ex, "Lolisuki涩图功能异常");
             }
         }
 

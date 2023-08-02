@@ -41,7 +41,7 @@ namespace TheresaBot.Main.Invoker
             {
                 SubscribeHandler handler = new SubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.listSubscribeAsync(botCommand);
+                await handler.ListSubscribeAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),

@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Handler
             subscribeBusiness = new SubscribeBusiness();
         }
 
-        public async Task listSubscribeAsync(GroupCommand command)
+        public async Task ListSubscribeAsync(GroupCommand command)
         {
             try
             {
@@ -42,11 +42,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                string errMsg = $"查询订阅失败";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                await Reporter.SendError(ex, errMsg);
+                await LogAndReplyError(command, ex, "查询订阅列表异常");
             }
             finally
             {
@@ -88,7 +84,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReportError(command, ex, "取消订阅失败");
+                await LogAndReplyError(command, ex, "取消订阅失败");
             }
         }
 

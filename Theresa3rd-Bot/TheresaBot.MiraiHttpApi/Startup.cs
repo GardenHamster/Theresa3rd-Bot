@@ -50,6 +50,7 @@ namespace TheresaBot.MiraiHttpApi
             catch (Exception ex)
             {
                 LogHelper.FATAL(ex, "∆Ù∂Ø“Ï≥£");
+                Environment.Exit(0);
                 throw;
             }
 
@@ -125,12 +126,12 @@ namespace TheresaBot.MiraiHttpApi
 
         private void OnStopping()
         {
-            //"On-stopping" logic
+            Environment.Exit(0);
         }
 
         private void OnStopped()
         {
-            //"On-stopped" logic
+            Environment.Exit(0);
         }
 
 

@@ -321,6 +321,10 @@ WordCloud:
           Path:                 'BotImg/mask/mask01.png'
           Width:                1000
 
+        - Name:                 'fish'
+          Path:                 'BotImg/mask/mask02.png'
+          Width:                1000
+
     Subscribes:
         - Enable:               true
           Name:                 '每日词云'

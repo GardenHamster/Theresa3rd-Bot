@@ -50,6 +50,9 @@
 	  <None Update="BotImg\mask\mask01.png">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	  <None Update="BotImg\mask\mask02.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	  <None Update="botsettings.yml">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	    <CopyToPublishDirectory>Always</CopyToPublishDirectory>

@@ -18,10 +18,22 @@
 
         public List<string> RemoveSubCommands { get; private set; }
 
-        public List<string> TagSugarCommands { get; private set; }
+        public List<string> BindTagCommands { get; private set; }
+
+        public List<string> UnBindTagCommands { get; private set; }
 
         public override ManageConfig FormatConfig()
         {
+            if (PixivCookieCommands is null) PixivCookieCommands = new();
+            if (SaucenaoCookieCommands is null) SaucenaoCookieCommands = new();
+            if (DisableTagCommands is null) DisableTagCommands = new();
+            if (EnableTagCommands is null) EnableTagCommands = new();
+            if (DisableMemberCommands is null) DisableMemberCommands = new();
+            if (EnableMemberCommands is null) EnableMemberCommands = new();
+            if (ListSubCommands is null) ListSubCommands = new();
+            if (RemoveSubCommands is null) RemoveSubCommands = new();
+            if (BindTagCommands is null) BindTagCommands = new();
+            if (UnBindTagCommands is null) UnBindTagCommands = new();
             return this;
         }
 

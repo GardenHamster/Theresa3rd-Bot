@@ -67,7 +67,8 @@ Manage:                                                                         
     EnableMemberCommands:       ['解禁成员']                                        #将一个群成员从黑名单移除，所有群生效
     ListSubCommands:            ['订阅列表','已订列表']                             #列出所有订阅列表
     RemoveSubCommands:          ['移除订阅','取消订阅']                             #通过订阅Id移除一个订阅
-    TagSugarCommands:           ['绑定标签','标签糖']
+    BindTagCommands:            ['绑定标签','标签糖']
+    UnBindTagCommands:          ['解绑标签']
 
 Menu:                                                                               #菜单指令
     Enable:                     true                                                #是否启用

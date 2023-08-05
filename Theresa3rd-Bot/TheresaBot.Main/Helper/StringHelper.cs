@@ -63,6 +63,19 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 提取一个分隔符以后的全部内容
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string TakeAfter(this string str, string separator)
+        {
+            int startIndex = str.IndexOf(separator);
+            if (startIndex < 0) return string.Empty;
+            return str.Substring(startIndex).Trim();
+        }
+
+        /// <summary>
         /// 根据命令提取关键词(命令后的字符全部视为一条关键词)
         /// </summary>
         /// <param name="instruction"></param>

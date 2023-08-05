@@ -65,7 +65,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 var tagStr = command.KeyWord;
-                if (string.IsNullOrEmpty(tagStr))
+                if (string.IsNullOrWhiteSpace(tagStr))
                 {
                     await command.ReplyGroupMessageWithAtAsync("没有检测到要解除屏蔽的标签，请确保指令格式正确");
                     return;
@@ -90,7 +90,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 string memberCode = command.KeyWord;
-                if (string.IsNullOrEmpty(memberCode))
+                if (string.IsNullOrWhiteSpace(memberCode))
                 {
                     await command.ReplyGroupMessageWithAtAsync("没有检测到要屏蔽的QQ号，请确保指令格式正确");
                     return;
@@ -125,7 +125,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 string memberCode = command.KeyWord;
-                if (string.IsNullOrEmpty(memberCode))
+                if (string.IsNullOrWhiteSpace(memberCode))
                 {
                     await command.ReplyGroupMessageWithAtAsync("没有检测到要解除屏蔽的QQ号，请确保指令格式正确");
                     return;

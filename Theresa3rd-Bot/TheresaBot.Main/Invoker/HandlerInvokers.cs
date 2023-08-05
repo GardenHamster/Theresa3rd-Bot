@@ -145,12 +145,21 @@ namespace TheresaBot.Main.Invoker
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
-            //绑定标签糖
-            new(BotConfig.ManageConfig?.TagSugarCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
+            //绑定标签
+            new(BotConfig.ManageConfig?.BindTagCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
             {
                 SugarTagHandler handler = new SugarTagHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.BindTagSugarAsync(botCommand);
+                await handler.BindPixivTagAsync(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //解绑标签
+            new(BotConfig.ManageConfig?.UnBindTagCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
+            {
+                SugarTagHandler handler = new SugarTagHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.UnBindPixivTagAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),

@@ -1,9 +1,14 @@
-﻿using TheresaBot.Main.Business;
+﻿using System.IO;
+using TheresaBot.Main.Business;
+using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Datas;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
@@ -16,35 +21,59 @@ namespace TheresaBot.Main.Handler
             sugarTagBusiness = new SugarTagBusiness();
         }
 
-        public async Task BindTagSugarAsync(GroupCommand command)
+        public async Task BindPixivTagAsync(GroupCommand command)
         {
             try
             {
-                var paramArr = command.Params;
-                var keyWords = paramArr.Length > 0 ? paramArr[0] : string.Empty;
-                var bindTags = paramArr.Length > 1 ? paramArr[1] : string.Empty;
-                if (string.IsNullOrWhiteSpace(keyWords))
+                string keyWords = string.Empty;
+                string bindTags = string.Empty;
+                if (command.Params.Length >= 2)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync("没有检测到需要绑定的关键词，请确保指令格式正确");
-                    return;
-                }
-                var keyWordArr = keyWords.Split(new char[] { ',', '，' }).Where(o => !string.IsNullOrWhiteSpace(o)).ToArray();
-                if (string.IsNullOrWhiteSpace(bindTags))
-                {
-                    sugarTagBusiness.DelSugarTags(keyWordArr);
-                    SugarTagDatas.LoadDatas();
-                    await command.ReplyGroupMessageWithQuoteAsync("已解绑相关标签");
+                    keyWords = command.Params[0];
+                    bindTags = command.KeyWord.TakeAfter(" ");
                 }
                 else
                 {
-                    sugarTagBusiness.SetSugarTags(keyWordArr, bindTags);
-                    SugarTagDatas.LoadDatas();
-                    await command.ReplyGroupMessageWithQuoteAsync("标签绑定完毕！");
+                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
+                    StepInfo keyWordsStep = processInfo.CreateStep("请在60秒内发送关键词，多个关键词之间用逗号隔开", CheckTextAsync);
+                    StepInfo bindTagsStep = processInfo.CreateStep("请在60秒内发送需要绑定的的Pixiv标签，多个标签之间用逗号隔开", CheckTextAsync);
+                    await processInfo.StartProcessing();
+                    keyWords = keyWordsStep.AnswerForString();
+                    bindTags = bindTagsStep.AnswerForString();
                 }
+                var keyWordArr = keyWords.Split(new char[] { ',', '，' }).Where(o => !string.IsNullOrWhiteSpace(o)).ToArray();
+                sugarTagBusiness.SetSugarTags(keyWordArr, bindTags);
+                SugarTagDatas.LoadDatas();
+                await command.ReplyGroupMessageWithQuoteAsync("标签绑定完毕！");
+            }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
             }
             catch (Exception ex)
             {
                 await LogAndReplyError(command, ex, "标签绑定异常");
+            }
+        }
+
+        public async Task UnBindPixivTagAsync(GroupCommand command)
+        {
+            try
+            {
+                string keyWords = command.KeyWord;
+                if (string.IsNullOrWhiteSpace(keyWords))
+                {
+                    await command.ReplyGroupMessageWithAtAsync("没有检测到要解除绑定的标签，请确保指令格式正确");
+                    return;
+                }
+                var keyWordArr = keyWords.Split(new char[] { ',', '，' }).Where(o => !string.IsNullOrWhiteSpace(o)).ToArray();
+                sugarTagBusiness.DelSugarTags(keyWordArr);
+                SugarTagDatas.LoadDatas();
+                await command.ReplyGroupMessageWithQuoteAsync("已解绑相关标签");
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, "标签解绑异常");
             }
         }
 

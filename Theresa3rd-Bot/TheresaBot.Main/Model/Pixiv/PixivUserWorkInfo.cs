@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Model.Pixiv
@@ -20,10 +16,10 @@ namespace TheresaBot.Main.Model.Pixiv
         public DateTime createDate { get; set; }
         public int xRestrict { get; set; }
         public int aiType { get; set; }
-        public bool IsImproper => xRestrict > 1 || getTags().IsImproper();
-        public bool IsR18 => xRestrict > 0 || getTags().IsR18();
-        public bool IsAI => aiType > 1 || getTags().IsAI();
-        public string hasBanTag() => getTags().hasBanTags();
-        public List<string> getTags() => tags ?? new List<string>();
+        public bool IsImproper => xRestrict > 1 || GetTags().IsImproper();
+        public bool IsR18 => xRestrict > 0 || GetTags().IsR18();
+        public bool IsAI => aiType > 1 || GetTags().IsAI();
+        public List<string> GetTags() => tags ?? new List<string>();
+        public List<string> HavingBanTags() => GetTags().HavingBanTags();
     }
 }

@@ -1,11 +1,12 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Model.PO;
 
 namespace TheresaBot.Main.Helper
 {
@@ -21,16 +22,18 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         private static string ImageCodeHeader = @"[image:";
 
-
         /// <summary>
-        /// 检查是否黑名单成员
+        /// 匹配对应的指令前缀
         /// </summary>
-        /// <param name="memberId"></param>
+        /// <param name="message"></param>
         /// <returns></returns>
-        public static bool IsBanMember(long memberId)
+        public static string MatchPrefix(this string message)
         {
-            if (memberId == 0) return false;
-            return BotConfig.BanMemberList.Where(o => o.KeyWord == memberId.ToString()).Any();
+            var prefixs = BotConfig.GeneralConfig.Prefixs;
+            if (prefixs is null || prefixs.Count == 0) return string.Empty;
+            message = message?.Trim() ?? string.Empty;
+            var prefix = prefixs.Where(o => message.StartsWith(o)).FirstOrDefault();
+            return string.IsNullOrWhiteSpace(prefix) ? string.Empty : prefix;
         }
 
         /// <summary>
@@ -45,6 +48,28 @@ namespace TheresaBot.Main.Helper
             List<long> acceptGroups = permissionsConfig.AcceptGroups;
             if (acceptGroups is null) return false;
             return acceptGroups.Contains(groupId);
+        }
+
+        /// <summary>
+        /// 判断一个成员是否黑名单成员
+        /// </summary>
+        /// <param name="MemberId"></param>
+        /// <returns></returns>
+        public static bool IsBanMember(this long MemberId)
+        {
+            return BanMemberDatas.IsBanMember(MemberId);
+        }
+
+        /// <summary>
+        /// 判断字符串是否为pixivId
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool IsPixivId(this string str)
+        {
+            long pixivId = 0;
+            if (!long.TryParse(str, out pixivId)) return false;
+            return pixivId > 30000000;
         }
 
         /// <summary>
@@ -67,7 +92,7 @@ namespace TheresaBot.Main.Helper
         public static bool IsR18(this List<string> tags)
         {
             if (tags is null || tags.Count == 0) return false;
-            return tags.Where(o => o.IsR18()).Any();
+            return tags.Any(o => o.IsR18());
         }
 
         /// <summary>
@@ -90,7 +115,7 @@ namespace TheresaBot.Main.Helper
         public static bool IsAI(this List<string> tags)
         {
             if (tags is null || tags.Count == 0) return false;
-            return tags.Where(o => o.IsAI()).Any();
+            return tags.Any(o => o.IsAI());
         }
 
         /// <summary>
@@ -101,7 +126,7 @@ namespace TheresaBot.Main.Helper
         public static bool IsImproper(this List<string> tags)
         {
             if (tags is null || tags.Count == 0) return false;
-            if (tags.Where(o => o.ToUpper().Replace("-", "").Replace(" ", "").Contains("R18G")).Any()) return true;
+            if (tags.Any(o => o.ToUpper().Replace("-", "").Replace(" ", "").Contains("R18G"))) return true;
             return false;
         }
 
@@ -113,24 +138,7 @@ namespace TheresaBot.Main.Helper
         public static bool IsGif(this List<string> tags)
         {
             if (tags is null || tags.Count == 0) return false;
-            return tags.Where(o => o == "うごイラ" || o == "动图" || o == "動圖" || o.ToLower() == "ugoira").Any();
-        }
-
-        /// <summary>
-        /// 判断标签中是否包含被禁止的标签，有则返回内容，否则返回null
-        /// </summary>
-        /// <param name="tags"></param>
-        /// <returns></returns>
-        public static string hasBanTags(this List<string> tags)
-        {
-            if (tags is null || tags.Count == 0) return null;
-            List<string> banTags = new List<string>();
-            foreach (string tag in tags)
-            {
-                List<BanWordPO> banList = BotConfig.BanSetuTagList.Where(o => tag.Trim().ToUpper().Contains(o.KeyWord.Trim().ToUpper())).ToList();
-                if (banList.Count > 0) banTags.AddRange(banList.Select(o => o.KeyWord).ToList());
-            }
-            return banTags.Count > 0 ? String.Join('，', banTags.Distinct()) : null;
+            return tags.Any(o => o == "うごイラ" || o == "动图" || o == "動圖" || o.ToLower() == "ugoira");
         }
 
         /// <summary>
@@ -140,10 +148,39 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static bool IsPixivCookieAvailable()
         {
-            if (string.IsNullOrWhiteSpace(BotConfig.WebsiteConfig.Pixiv.Cookie)) return false;
-            if (DateTime.Now > BotConfig.WebsiteConfig.Pixiv.CookieExpireDate) return false;
-            if (BotConfig.WebsiteConfig.Pixiv.UserId <= 0) return false;
+            if (string.IsNullOrWhiteSpace(WebsiteDatas.Pixiv.Cookie)) return false;
+            if (DateTime.Now > WebsiteDatas.Pixiv.CookieExpireDate) return false;
+            if (WebsiteDatas.Pixiv.UserId <= 0) return false;
             return true;
+        }
+
+        /// <summary>
+        /// 判断字符串是否为符合yyyyMMdd格式的日期字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool IsShortDateStr(this string str)
+        {
+            DateTime outTime = DateTime.Now;
+            return DateTime.TryParseExact(str, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out outTime);
+        }
+
+        /// <summary>
+        /// 将Id字符串通过逗号拆分成一个int集合
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static List<int> SplitToIdList(this string str)
+        {
+            if (string.IsNullOrEmpty(str)) return new();
+            var splitArr = str.Trim().Split(new char[] { '，', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var numList = new List<int>();
+            foreach (var item in splitArr)
+            {
+                int num = 0;
+                if (int.TryParse(item, out num)) numList.Add(num);
+            }
+            return numList;
         }
 
         /// <summary>
@@ -161,7 +198,7 @@ namespace TheresaBot.Main.Helper
             {
                 string code = item?.Trim();
                 if (string.IsNullOrEmpty(code)) continue;
-                if (code.isEmptyLine()) continue;
+                if (code.IsEmptyLine()) continue;
                 if (Regex.Match(code, ImageCodeRegex).Success)
                 {
                     string path = code.Substring(ImageCodeHeader.Length, code.Length - ImageCodeHeader.Length - 1);
@@ -174,6 +211,20 @@ namespace TheresaBot.Main.Helper
                 }
             }
             return chatContents;
+        }
+
+        /// <summary>
+        /// 获取欢迎消息
+        /// </summary>
+        /// <returns></returns>
+        public static string GetStartUpMessage()
+        {
+            StringBuilder msgBuilder = new StringBuilder();
+            msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot v{BotConfig.BotVersion}】");
+            msgBuilder.AppendLine($"群聊发送【#菜单】可以查看指令");
+            msgBuilder.AppendLine($"部署或者使用教程请访问");
+            msgBuilder.Append($"{BotConfig.BotHomepage}");
+            return msgBuilder.ToString();
         }
 
         /// <summary>

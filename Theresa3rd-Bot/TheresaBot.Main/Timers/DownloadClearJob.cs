@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "DownloadClearJob异常");
-                reporter.SendError(ex, "DownloadClearJob异常");
+                await reporter.SendError(ex, "DownloadClearJob异常");
             }
         }
 
@@ -37,7 +37,7 @@ namespace TheresaBot.Main.Timers
             {
                 lock (TimerManager.ClearLock)
                 {
-                    string path = FilePath.GetDownFileSavePath();
+                    string path = FilePath.GetDownloadDirectory();
                     if (Directory.Exists(path) == false) return;
                     DirectoryInfo directoryInfo = new DirectoryInfo(path);
                     directoryInfo.Delete(true);
@@ -47,7 +47,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "图片下载目录清理失败");
-                reporter.SendError(ex, "图片下载目录清理失败");
+                reporter.SendError(ex, "图片下载目录清理失败").Wait();
             }
         }
 

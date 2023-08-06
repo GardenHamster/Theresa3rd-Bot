@@ -14,7 +14,7 @@ namespace TheresaBot.Main.Dao
         /// <returns></returns>
         public bool isExistsSubscribeGroup(long groupId, int subscribeId)
         {
-            return Db.Queryable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).Any();
+            return Db.Queryable<SubscribeGroupPO>().Any(o => o.GroupId == groupId && o.SubscribeId == subscribeId);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace TheresaBot.Main.Dao
         /// <returns></returns>
         public bool isExistsSubscribeGroup(int subscribeId)
         {
-            return Db.Queryable<SubscribeGroupPO>().Where(o => o.SubscribeId == subscribeId).Any();
+            return Db.Queryable<SubscribeGroupPO>().Any(o => o.SubscribeId == subscribeId);
         }
 
         /// <summary>
@@ -46,7 +46,6 @@ namespace TheresaBot.Main.Dao
                 SubscribeType = s.SubscribeType,
                 SubscribeSubType = s.SubscribeSubType,
                 SubscribeName = s.SubscribeName,
-                SubscribeDescription = s.SubscribeDescription,
                 GroupId = sg.GroupId
             }).ToList();
         }

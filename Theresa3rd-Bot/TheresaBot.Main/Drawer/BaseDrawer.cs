@@ -1,9 +1,4 @@
 ﻿using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 
@@ -17,7 +12,7 @@ namespace TheresaBot.Main.Drawer
 
         public BaseDrawer()
         {
-            DefaultTypeface = GetTypeface();
+            DefaultTypeface = GetDefaultTypeface();
         }
 
         protected SKPaint getDefaultPaint(int fontSize)
@@ -62,16 +57,28 @@ namespace TheresaBot.Main.Drawer
             };
         }
 
-        protected SKTypeface GetTypeface()
+        protected FileInfo GetDefaultFont()
         {
             try
             {
-                if (Directory.Exists(FontDir) == false) return null;
-                var fontDirectory = new DirectoryInfo(FontDir);
-                var fontFiles = fontDirectory.GetFiles();
-                if (fontFiles.Length == 0) return null;
-                var firstFont = fontFiles.First();
-                return SKTypeface.FromFile(firstFont.FullName);
+                String fontPath = BotConfig.GeneralConfig.DefaultFontPath;
+                if (File.Exists(fontPath) == false) return null;
+                return new FileInfo(fontPath);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                return null;
+            }
+        }
+
+        protected SKTypeface GetDefaultTypeface()
+        {
+            try
+            {
+                var defaultFont = GetDefaultFont();
+                if (defaultFont is null) return null;
+                return SKTypeface.FromFile(defaultFont.FullName);
             }
             catch (Exception ex)
             {

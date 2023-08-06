@@ -1,34 +1,81 @@
-﻿using Mirai.CSharp.HttpApi.Models.EventArgs;
-using Mirai.CSharp.HttpApi.Session;
+﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
+using Mirai.CSharp.HttpApi.Models.EventArgs;
+using System.Text;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Invoker;
 using TheresaBot.MiraiHttpApi.Command;
-using TheresaBot.MiraiHttpApi.Helper;
+using TheresaBot.MiraiHttpApi.Reporter;
+using TheresaBot.MiraiHttpApi.Session;
 
 namespace TheresaBot.MiraiHttpApi.Event
 {
     public abstract class BaseEvent
     {
+        protected MiraiSession baseSession { get; init; }
 
-        public static MiraiGroupCommand GetGroupCommand(IMiraiHttpSession session, IGroupMessageEventArgs args, string message, long groupId, long memberId)
+        protected MiraiReporter baseReporter { get; init; }
+
+        public BaseEvent()
+        {
+            this.baseSession = new MiraiSession();
+            this.baseReporter = new MiraiReporter();
+        }
+
+        public MiraiGroupCommand GetGroupCommand(IGroupMessageEventArgs args, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
-                MiraiGroupCommand command = message.CheckCommand(invoker, session, args, groupId, memberId);
-                if (command is not null) return command;
+                string commandStr = instruction.CheckCommand(invoker);
+                if (string.IsNullOrWhiteSpace(commandStr)) continue;
+                return new MiraiGroupCommand(baseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public static MiraiFriendCommand GetFriendCommand(IMiraiHttpSession session, IFriendMessageEventArgs args, string message, long memberId)
+        public MiraiFriendCommand GetFriendCommand(IFriendMessageEventArgs args, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
-                MiraiFriendCommand command = message.CheckCommand(invoker, session, args, memberId);
-                if (command is not null) return command;
+                string commandStr = instruction.CheckCommand(invoker);
+                if (string.IsNullOrWhiteSpace(commandStr)) continue;
+                return new MiraiFriendCommand(baseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }
 
+        public MiraiGroupQuoteCommand GetGroupQuoteCommand(IGroupMessageEventArgs args, string instruction, string prefix)
+        {
+            foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
+            {
+                string commandStr = instruction.CheckCommand(invoker);
+                if (string.IsNullOrWhiteSpace(commandStr)) continue;
+                return new MiraiGroupQuoteCommand(baseSession, invoker, args, instruction, commandStr, prefix);
+            }
+            return null;
+        }
+
+        public string GetSimpleSendContent(IGroupMessageEventArgs args)
+        {
+            StringBuilder builder = new StringBuilder();
+            var chainList = args.Chain.Skip(1).ToList();
+            foreach (var message in chainList)
+            {
+                if (builder.Length > 0) builder.Append(" ");
+                if (message is PlainMessage plainMsg)
+                {
+                    builder.Append(plainMsg.Message);
+                }
+                else if (message is ImageMessage imgMsg)
+                {
+                    builder.Append(imgMsg.ImageId + ".image");
+                }
+                else
+                {
+                    builder.Append(message.Rawdata.ToString());
+                }
+            }
+            return builder.ToString().Trim();
+        }
 
     }
 }

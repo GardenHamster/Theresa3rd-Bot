@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Type;
-
-namespace TheresaBot.Main.Model.Config
+﻿namespace TheresaBot.Main.Model.Config
 {
     public class PixivUserConfig : BasePluginConfig
     {
@@ -16,6 +14,11 @@ namespace TheresaBot.Main.Model.Config
             this.MaxScan = 90;
             this.PreviewInPage = 30;
             this.CacheSeconds = 3600;
+        }
+
+        public override BasePluginConfig FormatConfig()
+        {
+            return this;
         }
 
     }

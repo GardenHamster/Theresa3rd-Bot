@@ -14,11 +14,17 @@ namespace TheresaBot.Main.Dao
             try
             {
                 DbScoped.SugarScope.DbMaintenance.CreateDatabase();
-                DbScoped.SugarScope.CodeFirst.InitTables(typeof(BanWordPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(BanMemberPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(BanTagPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(DictionaryPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(ImageRecordPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(MessageRecordPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(PixivRecordPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(RequestRecordPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(SubscribeGroupPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(SubscribePO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(SubscribeRecordPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(SugarTagPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(WebsitePO));
             }
             catch (Exception ex)

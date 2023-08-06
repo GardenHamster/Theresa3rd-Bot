@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Helper;
-
-namespace TheresaBot.Main.Model.Config
+﻿namespace TheresaBot.Main.Model.Config
 {
     public class BotConfigDto
     {
@@ -17,6 +15,7 @@ namespace TheresaBot.Main.Model.Config
         public SubscribeConfig Subscribe { get; private set; }
         public TimingSetuConfig TimingSetu { get; private set; }
         public PixivRankingConfig PixivRanking { get; private set; }
+        public WordCloudConfig WordCloud { get; private set; }
     }
 
 }

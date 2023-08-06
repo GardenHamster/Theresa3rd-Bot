@@ -9,48 +9,50 @@ namespace TheresaBot.Main.Cache
         /// <summary>
         /// 复读功能字典
         /// </summary>
-        public static Dictionary<long, List<RepeatInfo>> MemberRepeatDic = new Dictionary<long, List<RepeatInfo>>();
+        public static Dictionary<long, List<RepeatInfo>> GroupRepeatDic = new Dictionary<long, List<RepeatInfo>>();
 
         /// <summary>
         /// 判断是否可以复读
         /// </summary>
-        /// <param name="e"></param>
         /// <param name="groupId"></param>
+        /// <param name="botId"></param>
         /// <param name="memberId"></param>
-        /// <param name="word"></param>
+        /// <param name="simpleContent"></param>
         /// <returns></returns>
-        public static bool CheckCanRepeat(long groupId, long botId, long memberId, string word)
+        public static bool CheckCanRepeat(long groupId, long botId, long memberId, string simpleContent)
         {
-            lock (MemberRepeatDic)
+            lock (GroupRepeatDic)
             {
                 try
                 {
                     if (BotConfig.RepeaterConfig.Enable == false) return false;
+                    if (string.IsNullOrWhiteSpace(simpleContent)) return false;
                     if (BotConfig.RepeaterConfig.RepeatTime == 0) return false;
-                    if (MemberRepeatDic.ContainsKey(groupId) == false) MemberRepeatDic[groupId] = new List<RepeatInfo>();
-                    RepeatInfo memberRepeat = new RepeatInfo(memberId, word);
-                    List<RepeatInfo> memberRepeats = MemberRepeatDic[groupId];
-                    RepeatInfo lastRepeat = memberRepeats.LastOrDefault();
-                    if (lastRepeat != null && lastRepeat.Word != memberRepeat.Word)
+                    if (GroupRepeatDic.ContainsKey(groupId) == false) GroupRepeatDic[groupId] = new List<RepeatInfo>();
+                    RepeatInfo memberRepeat = new RepeatInfo(memberId, simpleContent);
+                    List<RepeatInfo> repeatList = GroupRepeatDic[groupId];
+                    RepeatInfo lastRepeat = repeatList.LastOrDefault();
+                    if (lastRepeat is not null && lastRepeat.SendContent != memberRepeat.SendContent)
                     {
-                        memberRepeats.Clear();
+                        repeatList.Clear();
                     }
-                    RepeatInfo sameRepeat = memberRepeats.Where(o => o.MemberId == memberId).FirstOrDefault();
-                    if (sameRepeat != null)
-                    {
-                        return false;
-                    }
-                    RepeatInfo robotRepeat = memberRepeats.Where(o => o.MemberId == botId).FirstOrDefault();
-                    if (robotRepeat != null)
+                    RepeatInfo sameRepeat = repeatList.Where(o => o.MemberId == memberId).FirstOrDefault();
+                    if (sameRepeat is not null)
                     {
                         return false;
                     }
-                    memberRepeats.Add(memberRepeat);
-                    if (memberRepeats.Count < BotConfig.RepeaterConfig.RepeatTime)
+                    RepeatInfo botRepeat = repeatList.Where(o => o.MemberId == botId).FirstOrDefault();
+                    if (botRepeat is not null)
                     {
                         return false;
                     }
-                    memberRepeats.Add(new RepeatInfo(botId, word));
+                    repeatList.Add(memberRepeat);
+                    if (repeatList.Count < BotConfig.RepeaterConfig.RepeatTime)
+                    {
+                        return false;
+                    }
+                    botRepeat = new RepeatInfo(botId, simpleContent);
+                    repeatList.Add(botRepeat);//添加bot复读记录，避免重复触发复读
                     return true;
                 }
                 catch (Exception ex)

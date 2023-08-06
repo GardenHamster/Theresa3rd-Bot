@@ -69,7 +69,7 @@ namespace TheresaBot.Main.Drawer
             return new FileInfo(fullSavePath);
         }
 
-        private void DrawHeader(SKCanvas canvas, string userId,string userName, int startX, int startY)
+        private void DrawHeader(SKCanvas canvas, string userId, string userName, int startX, int startY)
         {
             int x = startX;
             int y = startY + HeaderMargin + HeaderFontSize;
@@ -118,7 +118,7 @@ namespace TheresaBot.Main.Drawer
         {
             int x = startX;
             int y = startY + WatermarkMargin;
-            string watermarkText = $"Create by Theresa-Bot {BotConfig.BotVersion} Doc {BotConfig.BotHomepage}";
+            string watermarkText = $"Create by Theresa-Bot v{BotConfig.BotVersion} Doc {BotConfig.BotHomepage}";
             canvas.DrawText(watermarkText, new SKPoint(x, y), WatermarkPaint);
         }
 

@@ -2,6 +2,7 @@
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
@@ -21,27 +22,21 @@ namespace TheresaBot.Main.Handler
             lolisukiBusiness = new LolisukiBusiness();
         }
 
-        public async Task lolisukiSearchAsync(GroupCommand command)
+        public async Task LolisukiSearchAsync(GroupCommand command)
         {
             try
             {
-                DateTime startDateTime = DateTime.Now;
-                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-
+                List<LolisukiData> dataList;
+                string tagStr = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
                 bool isShowR18 = command.GroupId.IsShowR18Setu();
-                string tagStr = command.KeyWord;
-                if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
-                if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
-                {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ProcessingMsg);
-                    await Task.Delay(1000);
-                }
-
-                List<LolisukiData> dataList;
                 int r18Mode = isShowR18 ? 2 : 0;
                 int aiMode = isShowAI ? 2 : 0;
-                string levelStr = getLevelStr(isShowR18, BotConfig.SetuConfig?.Lolisuki?.Level);
+
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
+                if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
+                string levelStr = GetLevelStr(isShowR18, BotConfig.SetuConfig?.Lolisuki?.Level);
+                await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.ProcessingMsg);
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
@@ -50,12 +45,12 @@ namespace TheresaBot.Main.Handler
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1, toLoliconTagArr(tagStr));
+                    dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 
                 if (dataList.Count == 0)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
@@ -67,24 +62,23 @@ namespace TheresaBot.Main.Handler
 
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.Add(new PlainContent(lolisukiBusiness.getWorkInfo(lolisukiData, startDateTime, todayLeftCount, template)));
+                workMsgs.Add(new PlainContent(lolisukiBusiness.getWorkInfo(lolisukiData, todayLeftCount, template)));
 
-                SetuContent setuContent = new SetuContent(workMsgs, setuFiles);
-                Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, lolisukiData);
+                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
+                var msgIds = results.Select(o => o.MessageId).ToArray();
+                var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = command.ReplyTempMessageAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    Task sendTempTask = command.SendTempSetuAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
                 }
 
                 CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "lolisukiSearchAsync异常");
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                Reporter.SendError(ex, "lolisukiSearchAsync异常");
+                await LogAndReplyError(command, ex, "Lolisuki涩图功能异常");
             }
             finally
             {
@@ -93,22 +87,22 @@ namespace TheresaBot.Main.Handler
         }
 
 
-        public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
+        public async Task SendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
             try
             {
                 int margeEachPage = 5;
                 bool isShowAI = groupId.IsShowAISetu();
                 bool isShowR18 = groupId.IsShowR18Setu();
-                string levelStr = getLevelStr(isShowR18, BotConfig.TimingSetuConfig?.LolisukiLevel);
+                string levelStr = GetLevelStr(isShowR18, BotConfig.TimingSetuConfig?.LolisukiLevel);
                 bool sendMerge = timingSetuTimer.SendMerge;
                 int aiMode = isShowAI ? 2 : 0;
                 int r18Mode = isShowR18 ? 2 : 0;
-                string tagStr = RandomHelper.getRandomItem(timingSetuTimer.Tags);
-                string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : toLoliconTagArr(tagStr);
+                string tagStr = RandomHelper.RandomItem(timingSetuTimer.Tags);
+                string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : ToLoliconTagArr(tagStr);
                 int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
                 List<LolisukiData> dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, quantity, tagArr);
-                List<SetuContent> setuContents = await getSetuContent(dataList, groupId);
+                List<SetuContent> setuContents = await GetSetuContent(dataList, groupId);
                 await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
                 await Task.Delay(2000);
                 await SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
@@ -116,25 +110,25 @@ namespace TheresaBot.Main.Handler
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "定时涩图异常");
-                Reporter.SendError(ex, "定时涩图异常");
+                await Reporter.SendError(ex, "定时涩图异常");
             }
         }
 
-        private async Task<List<SetuContent>> getSetuContent(List<LolisukiData> datas, long groupId)
+        private async Task<List<SetuContent>> GetSetuContent(List<LolisukiData> datas, long groupId)
         {
             List<SetuContent> setuContents = new List<SetuContent>();
-            foreach (var data in datas) setuContents.Add(await getSetuContent(data, groupId));
+            foreach (var data in datas) setuContents.Add(await GetSetuContent(data, groupId));
             return setuContents;
         }
 
-        private async Task<SetuContent> getSetuContent(LolisukiData data, long groupId)
+        private async Task<SetuContent> GetSetuContent(LolisukiData data, long groupId)
         {
             string setuInfo = lolisukiBusiness.getDefaultWorkInfo(data);
             List<FileInfo> setuFiles = await GetSetuFilesAsync(data, groupId);
             return new SetuContent(setuInfo, setuFiles);
         }
 
-        private string getLevelStr(bool isShowR18, string settingLevel)
+        private string GetLevelStr(bool isShowR18, string settingLevel)
         {
             if (string.IsNullOrWhiteSpace(settingLevel)) return $"{(int)LolisukiLevel.Level0}-{(int)LolisukiLevel.Level2}";
             string[] levelArr = settingLevel.Split('-', StringSplitOptions.RemoveEmptyEntries);

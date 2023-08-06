@@ -4,7 +4,7 @@ using TheresaBot.Main.Type;
 namespace TheresaBot.Main.Model.PO
 {
     [SugarTable(tableName: "subscribe")]
-    public class SubscribePO : BasePO
+    public record SubscribePO : BasePO
     {
         [SugarColumn(IsNullable = false, Length = 100, ColumnDescription = "订阅编号")]
         public string SubscribeCode { get; set; }
@@ -18,19 +18,12 @@ namespace TheresaBot.Main.Model.PO
         [SugarColumn(IsNullable = false, ColumnDescription = "订阅子类型")]
         public int SubscribeSubType { get; set; }
 
-        [SugarColumn(IsNullable = false, Length = 200, ColumnDescription = "订阅描述")]
-        public string SubscribeDescription { get; set; }
-
-        [SugarColumn(IsNullable = false, ColumnDataType = "tinyint", ColumnDescription = "是否直播中")]
-        public bool Isliving { get; set; }
-
         [SugarColumn(IsNullable = false, ColumnDescription = "添加时间")]
         public DateTime CreateDate { get; set; }
 
         public SubscribePO()
         {
             this.SubscribeName = string.Empty;
-            this.SubscribeDescription = string.Empty;
             this.CreateDate = DateTime.Now;
         }
 

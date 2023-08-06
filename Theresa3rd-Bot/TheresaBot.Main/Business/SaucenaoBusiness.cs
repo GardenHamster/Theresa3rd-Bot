@@ -4,10 +4,9 @@ using AngleSharp.Html.Parser;
 using System.Net;
 using System.Text;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Base;
-using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Type;
@@ -47,7 +46,7 @@ namespace TheresaBot.Main.Business
                 {
                     SaucenaoItem saucenaoItem = getSaucenaoItem(linkifyElement, similarity);
                     if (saucenaoItem is null) continue;
-                    if (itemList.Where(o => o.SourceUrl == saucenaoItem.SourceUrl).Any()) continue;
+                    if (itemList.Any(o => o.SourceUrl == saucenaoItem.SourceUrl)) continue;
                     itemList.Add(saucenaoItem);
                 }
             }
@@ -62,7 +61,7 @@ namespace TheresaBot.Main.Business
 
             href = href.Trim();
             string hrefLower = href.ToLower();
-            Dictionary<string, string> paramDic = StringHelper.splitHttpParams(href);
+            Dictionary<string, string> paramDic = StringHelper.SplitHttpParams(href);
 
             //https://www.pixiv.net/member_illust.php?mode=medium&illust_id=73572009
             if (hrefLower.Contains("www.pixiv.net/member_illust"))
@@ -225,7 +224,7 @@ namespace TheresaBot.Main.Business
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 string contentString = await response.GetContentStringAsync();
-                throw new PixivException($"saucenao返回Code：{(int)response.StatusCode}，Content：{contentString.cutString(500)}");
+                throw new PixivException($"saucenao返回Code：{(int)response.StatusCode}，Content：{contentString.CutString(500)}");
             }
             return await response.Content.ReadAsStringAsync();
         }
@@ -237,7 +236,7 @@ namespace TheresaBot.Main.Business
         private static Dictionary<string, string> getSaucenaoHeader()
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
-            string cookie = BotConfig.WebsiteConfig.Saucenao.Cookie;
+            string cookie = WebsiteDatas.Saucenao.Cookie;
             if (string.IsNullOrWhiteSpace(cookie) == false) headerDic.Add("Cookie", cookie);
             return headerDic;
         }

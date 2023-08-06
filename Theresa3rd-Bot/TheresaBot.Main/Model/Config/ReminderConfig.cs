@@ -3,6 +3,11 @@
     public class ReminderConfig : BasePluginConfig
     {
         public List<ReminderTimer> Timers { get; private set; }
+
+        public override ReminderConfig FormatConfig()
+        {
+            return this;
+        }
     }
 
     public class ReminderTimer
@@ -19,8 +24,12 @@
 
         public List<long> AtMembers { get; private set; }
 
-        public string Template { get; private set; }
+        public List<RemindTemplate> Templates { get; private set; }
     }
 
+    public class RemindTemplate
+    {
+        public string Template { get; private set; }
+    }
 
 }

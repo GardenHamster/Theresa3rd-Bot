@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Mirai.CSharp.Builders;
+﻿using Mirai.CSharp.Builders;
 using Mirai.CSharp.HttpApi.Builder;
 using Mirai.CSharp.HttpApi.Invoking;
 using Mirai.CSharp.HttpApi.Models.ChatMessages;
@@ -8,19 +6,9 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Options;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Model.Invoker;
-using TheresaBot.Main.Type;
-using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Event;
 
@@ -43,20 +31,17 @@ namespace TheresaBot.MiraiHttpApi.Helper
                                                                .Services
                                                                .AddDefaultMiraiHttpFramework()
                                                                .AddInvoker<MiraiHttpMessageHandlerInvoker>()
-                                                               .AddHandler<BotInvitedJoinGroupEvent>()
                                                                .AddHandler<FriendMessageEvent>()
-                                                               .AddHandler<GroupApplyEvent>()
                                                                .AddHandler<GroupMessageEvent>()
-                                                               .AddHandler<NewFriendApplyEvent>()
                                                                .AddHandler<GroupMemberJoinedEvent>()
                                                                .AddHandler<DisconnectedEvent>()
                                                                .AddClient<MiraiHttpSession>()
                                                                .Services
                                                                .Configure<MiraiHttpSessionOptions>(options =>
                                                                {
-                                                                   options.Host = MiraiConfig.MiraiHost;
-                                                                   options.Port = MiraiConfig.MiraiPort;
-                                                                   options.AuthKey = MiraiConfig.MiraiAuthKey;
+                                                                   options.Host = MiraiConfig.Host;
+                                                                   options.Port = MiraiConfig.Port;
+                                                                   options.AuthKey = MiraiConfig.AuthKey;
                                                                    options.SuppressAwaitMessageInvoker = true;
                                                                })
                                                                .AddLogging()
@@ -64,7 +49,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 Scope = Services.CreateAsyncScope();
                 Services = Scope.ServiceProvider;
                 Session = Services.GetRequiredService<IMiraiHttpSession>();
-                await Session.ConnectAsync(MiraiConfig.MiraiBotQQ);
+                await Session.ConnectAsync(MiraiConfig.BotQQ);
                 LogHelper.Info("已成功连接到mirai-console...");
             }
             catch (Exception ex)
@@ -77,13 +62,13 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <summary>
         /// 加载MiraiHttpApi配置
         /// </summary>
-        public static void LoadMiraiConfig(IConfiguration configuration)
+        public static void LoadAppSettings(IConfiguration configuration)
         {
             MiraiConfig.ConnectionString = configuration["Database:ConnectionString"];
-            MiraiConfig.MiraiHost = configuration["Mirai:host"];
-            MiraiConfig.MiraiPort = Convert.ToInt32(configuration["Mirai:port"]);
-            MiraiConfig.MiraiAuthKey = configuration["Mirai:authKey"];
-            MiraiConfig.MiraiBotQQ = Convert.ToInt64(configuration["Mirai:botQQ"]);
+            MiraiConfig.Host = configuration["Mirai:host"];
+            MiraiConfig.Port = Convert.ToInt32(configuration["Mirai:port"]);
+            MiraiConfig.AuthKey = configuration["Mirai:authKey"];
+            MiraiConfig.BotQQ = Convert.ToInt64(configuration["Mirai:botQQ"]);
         }
 
         /// <summary>
@@ -94,8 +79,9 @@ namespace TheresaBot.MiraiHttpApi.Helper
         {
             try
             {
-                IBotProfile profile = await MiraiHelper.Session.GetBotProfileAsync();
-                MiraiConfig.MiraiBotName = profile?.Nickname ?? "Bot";
+                IBotProfile profile = await Session.GetBotProfileAsync();
+                if (profile is null) throw new Exception("Bot名片获取失败");
+                MiraiConfig.BotName = profile?.Nickname ?? "Bot";
                 LogHelper.Info($"Bot名片获取完毕，QQNumber={Session.QQNumber}，Nickname={profile?.Nickname ?? ""}");
             }
             catch (Exception ex)
@@ -107,26 +93,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
         public static async Task SendStartUpMessageAsync()
         {
             await Task.Delay(3000);
-            List<IChatMessage> msgList = new List<IChatMessage>();
-            StringBuilder msgBuilder=new StringBuilder();
-            msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot {BotConfig.BotVersion}】");
-            msgBuilder.AppendLine($"群聊发送【#菜单】可以查看指令");
-            msgBuilder.AppendLine($"部署或者使用教程请访问");
-            msgBuilder.Append($"{BotConfig.BotHomepage}");
-            IChatMessage welcomeMessage = new PlainMessage(msgBuilder.ToString());
+            IChatMessage welcomeMessage = new PlainMessage(BusinessHelper.GetStartUpMessage());
             foreach (var memberId in BotConfig.PermissionsConfig.SuperManagers)
             {
-                try
-                {
-                    await Session.SendFriendMessageAsync(memberId, welcomeMessage);
-                }
-                catch (Exception)
-                {
-                }
-                finally
-                {
-                    await Task.Delay(1000);
-                }
+                await Session.SendFriendMessageAsync(memberId, welcomeMessage);
+                await Task.Delay(1000);
             }
         }
 
@@ -148,69 +119,11 @@ namespace TheresaBot.MiraiHttpApi.Helper
         }
 
         /// <summary>
-        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        public static MiraiGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, long groupId, long memberId)
-        {
-            if (handler.Commands is null || handler.Commands.Count == 0) return null;
-            foreach (string command in handler.Commands)
-            {
-                if (instruction.CheckCommand(handler, session, args, command, groupId, memberId) is { } botCommand) return botCommand;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        private static MiraiGroupCommand CheckCommand(this string instruction, CommandHandler<GroupCommand> handler, IMiraiHttpSession session, IGroupMessageEventArgs args, string command, long groupId, long memberId)
-        {
-            if (string.IsNullOrWhiteSpace(command)) return null;
-            if (instruction.ToLower().StartsWith(command.ToLower()) == false) return null;
-            return new(handler, session, args, instruction, command, groupId, memberId);
-        }
-
-        /// <summary>
-        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        public static MiraiFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, IMiraiHttpSession session, IFriendMessageEventArgs args, long memberId)
-        {
-            if (handler.Commands is null || handler.Commands.Count == 0) return null;
-            foreach (string command in handler.Commands)
-            {
-                if (instruction.CheckCommand(handler, session, args, command, memberId) is { } botCommand) return botCommand;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 检查是一条消息是否一条有效指令，如果是返回一个指令对象
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        private static MiraiFriendCommand CheckCommand(this string instruction, CommandHandler<FriendCommand> handler, IMiraiHttpSession session, IFriendMessageEventArgs args, string command, long memberId)
-        {
-            if (string.IsNullOrWhiteSpace(command)) return null;
-            if (instruction.StartsWith(command) == false) return null;
-            return new(handler, session, args, instruction, command, memberId);
-        }
-
-        /// <summary>
         /// 获取消息id
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static int GetMessageId(this IGroupMessageEventArgs args)
+        public static long GetMessageId(this IGroupMessageEventArgs args)
         {
             try
             {
@@ -246,21 +159,22 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <summary>
         /// 将通用消息转为Mirai消息
         /// </summary>
-        /// <param name="chatContents"></param>
+        /// <param name="contents"></param>
         /// <returns></returns>
-        public static async Task<IChatMessage[]> ToMiraiMessageAsync(this List<BaseContent> chatContents, UploadTarget uploadTarget)
+        public static async Task<IChatMessage[]> ToMiraiMessageAsync(this List<BaseContent> contents, UploadTarget uploadTarget)
         {
-            BaseContent lastPlainContent = chatContents.Where(o => o is PlainContent).LastOrDefault();
-            int lastPlainIndex = lastPlainContent is null ? -1 : chatContents.LastIndexOf(lastPlainContent);
-            List<IChatMessage> chatList = new List<IChatMessage>();
-            for (int i = 0; i < chatContents.Count; i++)
+            List<IChatMessage> miraiMsgs = new List<IChatMessage>();
+            for (int i = 0; i < contents.Count; i++)
             {
-                BaseContent content = chatContents[i];
-                bool isNewLine = lastPlainIndex > 0 && i < lastPlainIndex;
-                IChatMessage chatMessage = await content.ToMiraiMessageAsync(uploadTarget, isNewLine);
-                if (chatMessage is not null) chatList.Add(chatMessage);
+                BaseContent content = contents[i];
+                if (content is PlainContent plainContent)
+                {
+                    plainContent.FormatNewLine(i == contents.Count - 1);
+                }
+                IChatMessage chatMessage = await content.ToMiraiMessageAsync(uploadTarget);
+                if (chatMessage is not null) miraiMsgs.Add(chatMessage);
             }
-            return chatList.ToArray();
+            return miraiMsgs.ToArray();
         }
 
         /// <summary>
@@ -268,58 +182,33 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// </summary>
         /// <param name="chatContent"></param>
         /// <returns></returns>
-        public static async Task<IChatMessage> ToMiraiMessageAsync(this BaseContent chatContent, UploadTarget uploadTarget, bool isNewLine)
+        public static async Task<IChatMessage> ToMiraiMessageAsync(this BaseContent chatContent, UploadTarget uploadTarget)
         {
             if (chatContent is PlainContent plainContent)
             {
-                string message = plainContent.Content + (isNewLine && plainContent.NewLine ? "\r\n" : string.Empty);
-                return string.IsNullOrEmpty(plainContent.Content) ? null : new PlainMessage(message);
+                return string.IsNullOrEmpty(plainContent.Content) ? null : new PlainMessage(plainContent.Content);
             }
             if (chatContent is LocalImageContent localImageContent)
             {
-                return await UploadPictureAsync(localImageContent, uploadTarget);
+                return localImageContent.FileInfo is null ? null : await UploadPictureAsync(localImageContent, uploadTarget);
             }
             if (chatContent is WebImageContent webImageContent)
             {
-                return new ImageMessage(null, webImageContent.Url, null);
+                return string.IsNullOrWhiteSpace(webImageContent.Url) ? null : new ImageMessage(null, webImageContent.Url, null);
             }
             return null;
         }
 
         /// <summary>
-        /// 上传图片,返回mirai图片消息
-        /// </summary>
-        /// <param name="setuFiles"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public static async Task<List<IChatMessage>> UploadPictureAsync(this List<FileInfo> setuFiles, UploadTarget target)
-        {
-            List<IChatMessage> imgMsgs = new List<IChatMessage>();
-            foreach (FileInfo setuFile in setuFiles)
-            {
-                if(setuFile is not null)
-                {
-                    imgMsgs.Add((IChatMessage)await Session.UploadPictureAsync(target, setuFile.FullName));
-                    continue;
-                }
-                FileInfo errorImg = FilePath.GetDownErrorImg();
-                if(errorImg is not null)
-                {
-                    imgMsgs.Add((IChatMessage)await Session.UploadPictureAsync(target, errorImg.FullName));
-                }
-            }
-            return imgMsgs;
-        }
-
-        /// <summary>
-        /// 上传图片,返回mirai图片消息
+        /// 上传图片，返回mirai图片消息
         /// </summary>
         /// <param name="imageContent"></param>
         /// <returns></returns>
-        private static async Task<IChatMessage> UploadPictureAsync(LocalImageContent imageContent, UploadTarget uploadTarget)
+        private static async Task<IChatMessage> UploadPictureAsync(LocalImageContent imageContent, UploadTarget target)
         {
-            if (imageContent?.FileInfo == null) return null;
-            return (IImageMessage)await Session.UploadPictureAsync(uploadTarget, imageContent.FileInfo.FullName);
+            FileInfo imageFile = imageContent.FileInfo;
+            if (imageFile is null || imageFile.Exists == false) return null;
+            return (IChatMessage)await Session.UploadPictureAsync(target, imageFile.FullName);
         }
 
     }

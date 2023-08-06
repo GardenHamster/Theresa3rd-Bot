@@ -3,6 +3,15 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+
+
+Theresa3rd-Bot/TheresaBot.GoCqHttp/BotImg/
+Theresa3rd-Bot/TheresaBot.MiraiHttpApi/BotImg/
+
+Theresa3rd-Bot/TheresaBot.GoCqHttp/Font/
+Theresa3rd-Bot/TheresaBot.MiraiHttpApi/Font/
+
+
 .config
 
 # User-specific files
@@ -26,7 +35,6 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-Result/
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
@@ -36,7 +44,6 @@ Result/
 Generated\ Files/
 
 # MSTest test Results
-[Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
 # NUNIT

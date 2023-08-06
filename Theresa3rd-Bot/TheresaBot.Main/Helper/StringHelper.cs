@@ -7,10 +7,32 @@ namespace TheresaBot.Main.Helper
     public static class StringHelper
     {
         /// <summary>
+        /// 忽略大小写判断字符串是否相等
+        /// </summary>
+        /// <returns></returns>
+        public static bool EqualsIgnoreCase(this string str1, string str2)
+        {
+            str1 = str1.ToUpper().Trim();
+            str2 = str2.ToUpper().Trim();
+            return str1 == str2;
+        }
+
+        /// <summary>
+        /// 忽略大小写判断str1是否包含str2
+        /// </summary>
+        /// <returns></returns>
+        public static bool ContainsIgnoreCase(this string str1, string str2)
+        {
+            str1 = str1.ToUpper().Trim();
+            str2 = str2.ToUpper().Trim();
+            return str1.Contains(str2);
+        }
+
+        /// <summary>
         /// 获取32长度的UUID
         /// </summary>
         /// <returns></returns>
-        public static string get32UUID()
+        public static string RandomUUID32()
         {
             return System.Guid.NewGuid().ToString("N");
         }
@@ -19,9 +41,9 @@ namespace TheresaBot.Main.Helper
         /// 获取16长度的UUID
         /// </summary>
         /// <returns></returns>
-        public static string get16UUID()
+        public static string RandomUUID16()
         {
-            return get32UUID().Substring(0, 16);
+            return RandomUUID32().Substring(16, 16);
         }
 
         /// <summary>
@@ -30,7 +52,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="str"></param>
         /// <param name="keepLength"></param>
         /// <returns></returns>
-        public static string cutString(this string str, int keepLength = 100, string endString = "...")
+        public static string CutString(this string str, int keepLength = 100, string endString = "...")
         {
             if (str is null) return null;
             str = str.Trim();
@@ -41,41 +63,68 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 提取一个分隔符以后的全部内容
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string TakeAfter(this string str, string separator)
+        {
+            int startIndex = str.IndexOf(separator);
+            if (startIndex < 0) return string.Empty;
+            return str.Substring(startIndex).Trim();
+        }
+
+        /// <summary>
         /// 根据命令提取关键词(命令后的字符全部视为一条关键词)
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="instruction"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        public static string splitKeyWord(this string message, string command)
+        public static string SplitKeyWord(this string instruction, string command)
         {
             command = command.Trim();
-            message = message.Trim();
+            instruction = instruction.Trim();
             string commandLower = command.ToLower();
-            string messageLower = message.ToLower();
+            string messageLower = instruction.ToLower();
             if (messageLower.StartsWith(commandLower) == false) return String.Empty;
-            return message.Substring(command.Length, message.Length - command.Length).Trim();
+            return instruction.Substring(command.Length, instruction.Length - command.Length).Trim();
         }
 
         /// <summary>
         /// 根据命令提取参数(通过空格拆分参数)
         /// </summary>
+        /// <param name="instruction"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public static string[] SplitKeyParams(this string instruction, string command)
+        {
+            string paramStr = instruction.Trim().SplitKeyWord(command);
+            string[] paramArr = paramStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            return paramArr.Where(o => string.IsNullOrWhiteSpace(o) == false).Select(o => o.Trim()).ToArray();
+        }
+
+        /// <summary>
+        /// 将多标签拆分为每个单独的标签
+        /// </summary>
         /// <param name="message"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        public static string[] splitKeyParams(this string message, string command)
+        public static string[] SplitPixivTags(this string tags)
         {
-            string paramStr = message.Trim().splitKeyWord(command);
-            string[] paramArr = paramStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            return paramArr.Where(o => string.IsNullOrWhiteSpace(o) == false).Select(o => o.Trim()).ToArray();
+            if (string.IsNullOrWhiteSpace(tags)) return new string[0];
+            string[] tagArr = tags.Split(new string[] { " ", ",", "，" }, StringSplitOptions.RemoveEmptyEntries);
+            return tagArr.Where(o => string.IsNullOrWhiteSpace(o) == false).Select(o => o.Trim()).ToArray();
         }
 
         /// <summary>
         /// 通过逗号或者换行符拆分参数
         /// </summary>
         /// <returns></returns>
-        public static string[] splitParams(this string value)
+        public static string[] SplitParams(this string value)
         {
-            return value.Split(new string[] { ",", "，", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var paramArr = value.Split(new string[] { ",", "，", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            return paramArr.Where(o => !string.IsNullOrWhiteSpace(o)).Select(o => o.Trim()).ToArray();
         }
 
         /// <summary>
@@ -83,7 +132,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="cookie"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> splitCookie(this string cookie)
+        public static Dictionary<string, string> SplitCookie(this string cookie)
         {
             Dictionary<string, string> cookieDic = new Dictionary<string, string>();
             if (string.IsNullOrEmpty(cookie)) return cookieDic;
@@ -104,7 +153,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="httpUrl"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> splitHttpParams(this string httpUrl)
+        public static Dictionary<string, string> SplitHttpParams(this string httpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>();
             if (string.IsNullOrEmpty(httpUrl)) return paramDic;
@@ -129,7 +178,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="message"></param>
         /// <param name="commandStr"></param>
         /// <returns></returns>
-        public static string[] splitHttpUrl(this string value)
+        public static string[] SplitHttpUrl(this string value)
         {
             string urlStr = value.Split(new char[] { '?', '&' }, StringSplitOptions.RemoveEmptyEntries)[0];
             return urlStr.Split('/', StringSplitOptions.RemoveEmptyEntries);
@@ -140,7 +189,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="httpUrl"></param>
         /// <returns></returns>
-        public static string formatHttpUrl(this string httpUrl, bool defaultHttps = true)
+        public static string FormatHttpUrl(this string httpUrl, bool defaultHttps = true)
         {
             if (string.IsNullOrWhiteSpace(httpUrl)) return string.Empty;
             httpUrl = httpUrl.Trim();
@@ -170,7 +219,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="cookie"></param>
         /// <returns></returns>
-        public static string joinCookie(this Dictionary<string, string> cookieDic)
+        public static string JoinCookie(this Dictionary<string, string> cookieDic)
         {
             StringBuilder builder = new StringBuilder();
             foreach (var item in cookieDic)
@@ -187,7 +236,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="ids"></param>
         /// <param name="paramKey"></param>
         /// <returns></returns>
-        public static string joinParam(this List<int> ids, string paramKey)
+        public static string JoinParam(this List<int> ids, string paramKey)
         {
             StringBuilder builder = new StringBuilder();
             foreach (var id in ids)
@@ -199,11 +248,23 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 使用分隔符连接一个集合
+        /// </summary>
+        /// <param name="strList"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string JoinList(this List<string> strList, string separator = ",")
+        {
+            if (strList.Count == 0) return string.Empty;
+            return string.Join(separator, strList);
+        }
+
+        /// <summary>
         /// 过滤表情符号
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static string filterEmoji(this string str)
+        public static string FilterEmoji(this string str)
         {
             try
             {
@@ -228,7 +289,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str">加密字符</param>
         /// <returns></returns>
-        public static string getMD532bit(this string str)
+        public static string MD532bit(this string str)
         {
             MD5 md5 = MD5.Create();
             byte[] byteOld = Encoding.UTF8.GetBytes(str);
@@ -243,7 +304,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool isPureNumber(this string str)
+        public static bool IsPureNumber(this string str)
         {
             return Regex.IsMatch(str, @"^\d+$");
         }
@@ -253,7 +314,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool isEmptyLine(this string str)
+        public static bool IsEmptyLine(this string str)
         {
             if (string.IsNullOrWhiteSpace(str)) return true;
             str = str.Trim().ToLower();
@@ -279,11 +340,39 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 在字符串尾部添加换行符(如果没有)
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string AppendNewLineToEnd(this string str)
+        {
+            str = str.Trim();
+            if (str.EndsWith("\r")) return str;
+            if (str.EndsWith("\n")) return str;
+            return str + "\r\n";
+        }
+
+        /// <summary>
+        /// 移除字符串尾部添加换行符(如果有)
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string RemoveNewLineToEnd(this string str)
+        {
+            str = str.Trim();
+            if (str.EndsWith("\r\n")) return str.Substring(0, str.Length - 4);
+            if (str.EndsWith("\n\r")) return str.Substring(0, str.Length - 4);
+            if (str.EndsWith("\r")) return str.Substring(0, str.Length - 2);
+            if (str.EndsWith("\n")) return str.Substring(0, str.Length - 2);
+            return str;
+        }
+
+        /// <summary>
         /// 获取随机字符串
         /// </summary>
         /// <param name="length"></param>
         /// <returns></returns>
-        public static string getRandomString(int length)
+        public static string RandomString(int length)
         {
             StringBuilder stringBuilder = new StringBuilder(length);
             string randomStringTemplate = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

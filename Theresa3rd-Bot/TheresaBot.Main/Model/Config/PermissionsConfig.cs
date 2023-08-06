@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class PermissionsConfig
+    public class PermissionsConfig : BaseConfig
     {
         public List<long> AcceptGroups { get; private set; }
 
@@ -31,6 +31,13 @@
         public List<long> SubscribeGroups { get; private set; }
 
         public List<long> PixivRankingGroups { get; private set; }
-        
+
+        public List<long> WordCloudGroups { get; private set; }
+
+        public override PermissionsConfig FormatConfig()
+        {
+            return this;
+        }
+
     }
 }

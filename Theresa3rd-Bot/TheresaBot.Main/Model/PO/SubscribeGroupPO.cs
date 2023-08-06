@@ -3,7 +3,7 @@
 namespace TheresaBot.Main.Model.PO
 {
     [SugarTable("subscribe_group")]
-    public class SubscribeGroupPO : BasePO
+    public record SubscribeGroupPO : BasePO
     {
         [SugarColumn(IsNullable = false, ColumnDescription = "订阅ID")]
         public int SubscribeId { get; set; }

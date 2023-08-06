@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Datas;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Base;
 
 namespace TheresaBot.Main.Model.Lolicon
@@ -12,9 +13,9 @@ namespace TheresaBot.Main.Model.Lolicon
 
     public class LoliconDataV2 : BaseWorkInfo
     {
-        public long pid { get; set; }
+        public int pid { get; set; }
         public int p { get; set; }
-        public string uid { get; set; }
+        public int uid { get; set; }
         public string title { get; set; }
         public string author { get; set; }
         public bool r18 { get; set; }
@@ -30,13 +31,16 @@ namespace TheresaBot.Main.Model.Lolicon
         public override bool IsGif => tags != null && tags.IsGif();
         public override bool IsAI => aiType > 1;
         public override bool IsImproper => tags != null && tags.IsImproper();
-        public override string PixivId => pid.ToString();
+        public override int PixivId => pid;
+        public override int UserId => uid;
+        public override string Title => title;
+        public override string UserName => author;
 
-        public override List<string> getTags() => tags ?? new List<string>();
+        public override List<string> GetTags() => tags ?? new List<string>();
 
-        public override string hasBanTag() => tags?.hasBanTags();
+        public override List<string> HavingBanTags() => GetTags().HavingBanTags();
 
-        public override List<string> getOriginalUrls()
+        public override List<string> GetOriginalUrls()
         {
             if (urls is null) return new List<string>();
             return new List<string>() { urls.original };

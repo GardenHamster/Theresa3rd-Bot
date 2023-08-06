@@ -7,28 +7,28 @@ namespace TheresaBot.Main.Command
 {
     public abstract class BaseCommand
     {
-        public int MsgId { get; set; }
-        public long MemberId { get; init; }
+        public abstract long MessageId { get; }
+        public abstract long MemberId { get; }
         public string Instruction { get; init; }
         public string Command { get; set; }
+        public string Prefix { get; set; }
         public string[] Params { get; init; }
         public string KeyWord { get; set; }
         public CommandType CommandType { get; init; }
+        public BaseSession Session { get; init; }
 
-        public BaseCommand(int msgId, CommandType commandType, string instruction, string command, long memberId)
+        public BaseCommand(BaseSession baseSession, CommandType commandType, string instruction, string command, string prefix)
         {
-            this.MsgId = msgId;
+            this.Prefix = prefix;
+            this.Command = command;
             this.Instruction = instruction;
             this.CommandType = commandType;
-            this.MemberId = memberId;
-            this.Command = command;
-            this.KeyWord = instruction.splitKeyWord(command);
-            this.Params = instruction.splitKeyParams(command);
+            this.Session = baseSession;
+            this.KeyWord = instruction.SplitKeyWord(command);
+            this.Params = instruction.SplitKeyParams(command);
         }
 
         public abstract Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter);
-
-        public abstract Task ReplyError(Exception ex, string message = "");
 
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Quartz;
-using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Handler;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Reporter;
@@ -19,12 +19,12 @@ namespace TheresaBot.Main.Timers
                 JobDataMap dataMap = context.MergedJobDataMap;
                 reporter = (BaseReporter)dataMap["BaseReporter"];
                 BaseSession session = (BaseSession)dataMap["BaseSession"];
-                await new CookieHandler(session, reporter).CheckAndWarn(BotConfig.WebsiteConfig.Pixiv, 2, "Pixiv Cookie");
+                await new CookieHandler(session, reporter).CheckAndWarn(WebsiteDatas.Pixiv, 2, "Pixiv Cookie");
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "CookieWarningJob异常");
-                reporter.SendError(ex, "CookieWarningJob异常");
+                await reporter.SendError(ex, "CookieWarningJob异常");
             }
         }
 

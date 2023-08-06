@@ -2,14 +2,14 @@
 {
     public abstract class GroupRelay : BaseRelay
     {
-        public int GroupId { get; set; }
+        public long GroupId { get; set; }
 
-        public GroupRelay(int msgId, string message, long groupId, long memberId) : base(msgId, message, memberId)
+        public GroupRelay(long msgId, string message, long groupId, long memberId) : base(msgId, message, memberId)
         {
-            this.GroupId = GroupId;
+            this.GroupId = groupId;
         }
 
-        public abstract List<string> GetReplyImageUrls();
+        public abstract List<string> GetImageUrls();
 
     }
 }

@@ -3,7 +3,7 @@
 namespace TheresaBot.Main.Model.PO
 {
     [SugarTable("website")]
-    public class WebsitePO : BasePO
+    public record WebsitePO : BasePO
     {
         [SugarColumn(IsNullable = false, Length = 50, ColumnDescription = "编码")]
         public string Code { get; set; }

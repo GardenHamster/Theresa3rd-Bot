@@ -20,7 +20,7 @@ namespace TheresaBot.Main.Handler
             localSetuBusiness = new LocalSetuBusiness();
         }
 
-        public async Task localSearchAsync(GroupCommand command)
+        public async Task LocalSearchAsync(GroupCommand command)
         {
             try
             {
@@ -32,9 +32,6 @@ namespace TheresaBot.Main.Handler
                 string localPath = BotConfig.SetuConfig.Local.LocalPath;
                 if (string.IsNullOrWhiteSpace(localPath)) throw new Exception($"未配置LocalPath");
                 if (Directory.Exists(localPath) == false) throw new Exception($"本地涩图路径：{localPath}不存在");
-                
-                if (await CheckSetuTagEnableAsync(command, tagName) == false) return;
-
                 if (string.IsNullOrEmpty(tagName))
                 {
                     dataList = localSetuBusiness.loadRandomDir(localPath, 1, true);
@@ -47,7 +44,7 @@ namespace TheresaBot.Main.Handler
 
                 if (dataList.Count == 0)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "没有获取到任何本地涩图~");
+                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.NotFoundMsg, "没有获取到任何本地涩图~");
                     return;
                 }
 
@@ -60,21 +57,19 @@ namespace TheresaBot.Main.Handler
                 List<FileInfo> setuFiles = new() { setuInfo.FileInfo };
 
                 SetuContent setuContent = new SetuContent(workMsgs, setuFiles);
-                Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
+                var msgIds = results.Select(o => o.MessageId).ToArray();
+                var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = command.ReplyTempMessageAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    Task sendTempTask = command.SendTempSetuAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
                 }
-
                 CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "localSearchAsync异常");
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                Reporter.SendError(ex, "localSearchAsync异常");
+                await LogAndReplyError(command, ex, "本地涩图功能异常");
             }
             finally
             {
@@ -82,7 +77,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task sendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
+        public async Task SendTimingSetuAsync(TimingSetuTimer timingSetuTimer, long groupId)
         {
             int margeEachPage = 5;
             bool sendMerge = timingSetuTimer.SendMerge;
@@ -93,20 +88,20 @@ namespace TheresaBot.Main.Handler
             List<LocalSetuInfo> dataList = localSetuBusiness.loadRandomDir(localPath, timingSetuTimer.Quantity, fromOneDir);
             if (dataList is null || dataList.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
             string tags = fromOneDir ? dataList[0].DirInfo.Name : "";
-            List<SetuContent> setuContents = getSetuContent(dataList);
+            List<SetuContent> setuContents = GetSetuContent(dataList);
             await sendTimingSetuMessageAsync(timingSetuTimer, tags, groupId);
             await Task.Delay(2000);
             await SendGroupSetuAsync(setuContents, groupId, sendMerge, margeEachPage);
         }
 
-        private List<SetuContent> getSetuContent(List<LocalSetuInfo> datas)
+        private List<SetuContent> GetSetuContent(List<LocalSetuInfo> datas)
         {
             List<SetuContent> setuContents = new List<SetuContent>();
-            foreach (var data in datas) setuContents.Add(getSetuContent(data));
+            foreach (var data in datas) setuContents.Add(GetSetuContent(data));
             return setuContents;
         }
 
-        private SetuContent getSetuContent(LocalSetuInfo data)
+        private SetuContent GetSetuContent(LocalSetuInfo data)
         {
             string setuInfo = localSetuBusiness.getDefaultSetuInfo(data);
             List<FileInfo> setuFiles = new List<FileInfo>() { data.FileInfo };

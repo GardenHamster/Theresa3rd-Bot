@@ -12,7 +12,7 @@ namespace TheresaBot.Main.Reporter
         private static int LastSendHour = DateTime.Now.Hour;
         private static Dictionary<System.Type, List<ErrorRecord>> SendDic = new Dictionary<System.Type, List<ErrorRecord>>();
 
-        protected abstract Task<int> SendReport(long groupId, string message);
+        protected abstract Task<long> SendReport(long groupId, string message);
 
         /// <summary>
         /// 将错误日志发送到日志群中
@@ -20,7 +20,7 @@ namespace TheresaBot.Main.Reporter
         /// </summary>
         /// <param name="exception"></param>
         /// <param name="message"></param>
-        public async void SendError(Exception exception, string message = "")
+        public async Task SendError(Exception exception, string message = "")
         {
             try
             {
@@ -49,7 +49,7 @@ namespace TheresaBot.Main.Reporter
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex);
+                LogHelper.Error(ex, "错误日志发送失败");
             }
         }
 
@@ -68,7 +68,7 @@ namespace TheresaBot.Main.Reporter
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex);
+                LogHelper.Error(ex, "错误日志发送失败");
             }
         }
 

@@ -6,11 +6,12 @@
         SetCookie = 1,
         Subscribe = 2,
         Setu = 3,
-        BanSetuTag = 4,
+        Manage = 4,
         Saucenao = 5,
         BanMember = 6,
         Menu = 7,
         Version = 8,
-        PixivRanking = 9
+        PixivRanking = 9,
+        WordCloud = 10
     }
 }

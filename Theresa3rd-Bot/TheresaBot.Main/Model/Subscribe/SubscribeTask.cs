@@ -9,7 +9,6 @@ namespace TheresaBot.Main.Model.Subscribe
         public SubscribeType SubscribeType { get; set; }
         public int SubscribeSubType { get; set; }
         public string SubscribeName { get; set; }
-        public string SubscribeDescription { get; set; }
         public List<long> GroupIdList { get; set; }
 
         public SubscribeTask(SubscribeInfo subscribeInfo)
@@ -19,7 +18,6 @@ namespace TheresaBot.Main.Model.Subscribe
             this.SubscribeType = subscribeInfo.SubscribeType;
             this.SubscribeSubType = subscribeInfo.SubscribeSubType;
             this.SubscribeName = subscribeInfo.SubscribeName;
-            this.SubscribeDescription = subscribeInfo.SubscribeDescription;
             this.GroupIdList = new List<long>();
         }
 

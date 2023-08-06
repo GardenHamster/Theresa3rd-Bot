@@ -5,8 +5,9 @@
 		<RootNamespace>TheresaBot.MiraiHttpApi</RootNamespace>
 		<StartupObject></StartupObject>
 		<BaseOutputPath></BaseOutputPath>
-		<Version>0.9.0</Version>
+		<Version>0.10.0</Version>
 		<Nullable>disable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<WarningLevel>3</WarningLevel>
 	</PropertyGroup>
 
@@ -43,10 +44,14 @@
 		</Content>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="运行TheresaBot-MiraiHttpApi-8088.ps1">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 	<ProjectExtensions>
-		<VisualStudio>
-			<UserProperties appsettings_1json__JsonSchema="" appsettings_1production_1json__JsonSchema="https://beaujs.com/schema.json" />
-		</VisualStudio>
+		<VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio>
 	</ProjectExtensions>
 
 </Project>

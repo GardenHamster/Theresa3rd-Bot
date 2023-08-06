@@ -1,8 +1,6 @@
 ﻿using Mirai.CSharp.HttpApi.Handlers;
 using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
-using System;
-using System.Threading.Tasks;
 using TheresaBot.Main.Helper;
 using TheresaBot.MiraiHttpApi.Common;
 
@@ -18,7 +16,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             {
                 try
                 {
-                    await session.ConnectAsync(MiraiConfig.MiraiBotQQ);
+                    await session.ConnectAsync(MiraiConfig.BotQQ);
                     e.BlockRemainingHandlers = true;
                     LogHelper.Info("已重新连接到mcl...");
                     break;

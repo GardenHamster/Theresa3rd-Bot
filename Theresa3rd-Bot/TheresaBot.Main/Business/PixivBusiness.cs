@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Content;
@@ -51,7 +52,8 @@ namespace TheresaBot.Main.Business
         /// <summary>
         /// 随机获取一个指定标签中的作品
         /// </summary>
-        /// <param name="e"></param>
+        /// <param name="includeR18"></param>
+        /// <param name="includeAI"></param>
         /// <returns></returns>
         public async Task<PixivWorkInfo> getRandomWorkInTagsAsync(bool includeR18, bool includeAI)
         {
@@ -70,13 +72,12 @@ namespace TheresaBot.Main.Business
         {
             int loopUserTimes = 3;
             int loopWorkTimes = 5;
-            SubscribeType subscribeType = SubscribeType.P站画师;
-            if (BotConfig.SubscribeTaskMap.ContainsKey(subscribeType) == false) return null;
-            List<SubscribeTask> subscribeTaskList = BotConfig.SubscribeTaskMap[subscribeType].Where(m => m.GroupIdList.Contains(groupId)).ToList();
-            if (subscribeTaskList is null || subscribeTaskList.Count == 0) return null;
+            var subscribeType = SubscribeType.P站画师;
+            var subscribeTaskList = SubscribeDatas.GetSubscribeTasks(subscribeType, groupId);
+            if (subscribeTaskList.Count == 0) return null;
             for (int i = 0; i < loopUserTimes; i++)
             {
-                int randomUserIndex = RandomHelper.getRandomBetween(0, subscribeTaskList.Count - 1);
+                int randomUserIndex = RandomHelper.RandomBetween(0, subscribeTaskList.Count - 1);
                 SubscribeTask subscribeTask = subscribeTaskList[randomUserIndex];
                 PixivUserProfileTop pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(subscribeTask.SubscribeCode);
                 if (pixivUserInfo is null) continue;
@@ -87,7 +88,7 @@ namespace TheresaBot.Main.Business
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper) continue;
-                    if (pixivUserWorkInfo.hasBanTag() != null) continue;
+                    if (pixivUserWorkInfo.HavingBanTags().Count > 0) continue;
                     if (pixivUserWorkInfo.IsR18 && includeR18 == false) continue;
                     if (pixivUserWorkInfo.IsAI && includeAI == false) continue;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
@@ -109,7 +110,7 @@ namespace TheresaBot.Main.Business
             int eachPage = 24;
             int loopUserTimes = 3;
             int loopWorkTimes = 5;
-            long userId = BotConfig.WebsiteConfig.Pixiv.UserId;
+            long userId = WebsiteDatas.Pixiv.UserId;
             PixivFollow firstFollowDto = await PixivHelper.GetPixivFollowAsync(userId, 0, eachPage);
             int total = firstFollowDto.total;
             int page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
@@ -138,7 +139,7 @@ namespace TheresaBot.Main.Business
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper) continue;
-                    if (pixivUserWorkInfo.hasBanTag() != null) continue;
+                    if (pixivUserWorkInfo.HavingBanTags().Count > 0) continue;
                     if (pixivUserWorkInfo.IsR18 && includeR18 == false) continue;
                     if (pixivUserWorkInfo.IsAI && includeAI == false) continue;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
@@ -160,7 +161,7 @@ namespace TheresaBot.Main.Business
             int eachPage = 48;
             int loopPageTimes = 3;
             int loopWorkTimes = 5;
-            long userId = BotConfig.WebsiteConfig.Pixiv.UserId;
+            long userId = WebsiteDatas.Pixiv.UserId;
 
             PixivBookmarks firstBookmarksDto = await PixivHelper.GetPixivBookmarkAsync(userId, 0, eachPage);
             int total = firstBookmarksDto.total;
@@ -168,7 +169,7 @@ namespace TheresaBot.Main.Business
 
             for (int i = 0; i < loopPageTimes; i++)
             {
-                int randomPage = RandomHelper.getRandomBetween(0, page - 1);
+                int randomPage = RandomHelper.RandomBetween(0, page - 1);
                 PixivBookmarks randomBookmarks = randomPage == 0 ? firstBookmarksDto : await PixivHelper.GetPixivBookmarkAsync(userId, randomPage * eachPage, eachPage);
                 if (randomBookmarks is null || randomBookmarks.works is null || randomBookmarks.works.Count == 0) continue;
                 List<PixivBookmarksWork> workList = randomBookmarks.works;
@@ -176,9 +177,9 @@ namespace TheresaBot.Main.Business
                 {
                     PixivBookmarksWork randomWork = workList[new Random().Next(0, workList.Count)];
                     if (randomWork.IsImproper()) continue;
-                    if (randomWork.hasBanTag() != null) continue;
-                    if (randomWork.isR18() && includeR18 == false) continue;
-                    if (randomWork.isAI() && includeAI == false) continue;
+                    if (randomWork.HavingBanTags().Count > 0) continue;
+                    if (randomWork.IsR18() && includeR18 == false) continue;
+                    if (randomWork.IsAI() && includeAI == false) continue;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(randomWork.id);
                     if (pixivWorkInfo is null) continue;
                     return pixivWorkInfo;
@@ -192,17 +193,17 @@ namespace TheresaBot.Main.Business
         /// </summary>
         /// <param name="pixivicSearchDto"></param>
         /// <returns></returns>
-        public async Task<PixivWorkInfo> getRandomWorkAsync(string tagNames, bool includeR18, bool includeAI)
+        public async Task<PixivWorkInfo> getRandomWorkAsync(string tagStrs, bool includeR18, bool includeAI)
         {
             int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / PageSize);
             if (pageCount < 3) pageCount = 3;
 
-            string searchWord = toPixivSearchWord(tagNames);
+            string searchWord = toPixivSearchWords(tagStrs.ToActualPixivTags());
             PixivSearch pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, includeR18);
             int total = pageOne.getIllust().total;
-            int maxPage = MathHelper.getMaxPage(total, PageSize);
+            int maxPage = MathHelper.GetMaxPage(total, PageSize);
             maxPage = maxPage > 1000 ? 1000 : maxPage;
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
 
             //获取随机页中的所有作品
             int[] pageArr = getRandomPageNo(maxPage, pageCount);
@@ -212,12 +213,12 @@ namespace TheresaBot.Main.Business
                 PixivSearch pixivSearchDto = await PixivHelper.GetPixivSearchAsync(searchWord, page, false, includeR18);
                 if (pixivSearchDto?.getIllust()?.data is null) continue;
                 tempIllustList.AddRange(pixivSearchDto.getIllust().data);
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
             }
 
             //乱序
             List<PixivIllust> pixivIllustList = new List<PixivIllust>();
-            Random random = RandomHelper.getRandom();
+            Random random = RandomHelper.CreateRandom();
             while (tempIllustList.Count > 0)
             {
                 PixivIllust randomIllust = tempIllustList[random.Next(0, tempIllustList.Count)];
@@ -270,7 +271,7 @@ namespace TheresaBot.Main.Business
                     if (bookUpList.Count > 0) return;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivIllustList[i].id, 0);
                     if (pixivWorkInfo.IsImproper) continue;
-                    if (pixivWorkInfo.hasBanTag() is not null) continue;
+                    if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     if (pixivWorkInfo.IsR18 && includeR18 == false) continue;
                     if (pixivWorkInfo.IsAI && includeAI == false) continue;
                     if (checkRandomWorkIsOk(pixivWorkInfo) == false) continue;
@@ -281,7 +282,7 @@ namespace TheresaBot.Main.Business
                 }
                 finally
                 {
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000);
                 }
             }
         }
@@ -295,7 +296,7 @@ namespace TheresaBot.Main.Business
         {
             if (pixivWorkInfo is null) return false;
             double target = getTargetByWorkType(pixivWorkInfo);
-            bool isNotBanTag = pixivWorkInfo.hasBanTag() is null;
+            bool isNotBanTag = pixivWorkInfo.HavingBanTags().Count == 0;
             bool isBookmarkOk = pixivWorkInfo.bookmarkCount >= BotConfig.SetuConfig.Pixiv.MinBookmark * target;
             bool isBookRateOk = pixivWorkInfo.bookmarkRate >= BotConfig.SetuConfig.Pixiv.MinBookRate * target;
             return isNotBanTag && isBookmarkOk && isBookRateOk;
@@ -347,7 +348,7 @@ namespace TheresaBot.Main.Business
             else if (maxPage <= pageCount + 2)
             {
                 int[] pageArr = new int[pageCount];
-                int startPage = RandomHelper.getRandomBetween(1, 2);
+                int startPage = RandomHelper.RandomBetween(1, 2);
                 for (int i = 0; i < pageCount; i++) pageArr[i] = startPage + i;
                 return pageArr;
             }
@@ -358,7 +359,7 @@ namespace TheresaBot.Main.Business
                 while (j < pageArr.Length)
                 {
                     int startPage = maxPage >= 10 ? 3 : 1;
-                    int randomPage = RandomHelper.getRandomBetween(startPage, maxPage);
+                    int randomPage = RandomHelper.RandomBetween(startPage, maxPage);
                     if (pageArr.Contains(randomPage)) continue;
                     pageArr[j] = randomPage;
                     j++;
@@ -392,7 +393,7 @@ namespace TheresaBot.Main.Business
                 PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(userWork.id);
                 if (pixivWorkInfo is null) continue;
                 SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
-                PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo);
+                PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo, null);
                 pixivSubscribeList.Add(pixivSubscribe);
             }
             return pixivSubscribeList;
@@ -426,7 +427,7 @@ namespace TheresaBot.Main.Business
                 startIndex += eachPage;
             }
             workList = workList.Where(o => o.IsImproper == false).ToList();
-            workList = workList.Where(o => o.hasBanTag() is null).ToList();
+            workList = workList.Where(o => o.HavingBanTags().Count == 0).ToList();
             workList = workList.Where(o => isShowR18 || o.IsR18 == false).ToList();
             workList = workList.OrderByDescending(o => Convert.ToInt32(o.id)).ToList();
             List<PixivProfileDetail> profileDetails = new List<PixivProfileDetail>();
@@ -441,7 +442,7 @@ namespace TheresaBot.Main.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task scanAndPushUserAsync(SubscribeTask subscribeTask, PixivUserScanReport scanReport, Func<PixivSubscribe, List<long>, Task> pushAsync)
+        public async Task<List<PixivSubscribe>> scanUserWorkAsync(SubscribeTask subscribeTask, PixivUserScanReport scanReport, Func<PixivSubscribe, Task> pushAsync = null)
         {
             int index = 0;
             int getCount = 5;
@@ -451,30 +452,41 @@ namespace TheresaBot.Main.Business
             bool isShowAIs = groupIds.IsShowAISetu();
             bool isShowR18s = groupIds.IsShowR18Setu();
             PixivUserProfileTop pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(userId);
-            if (pixivUserInfo is null) return;
+            if (pixivUserInfo is null) return new();
             Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo?.illusts;
-            if (illusts is null || illusts.Count == 0) return;
+            if (illusts is null || illusts.Count == 0) return new();
             int shelfLife = BotConfig.SubscribeConfig.PixivUser.ShelfLife;
-            List<PixivUserWorkInfo> workInfoList = illusts.Select(o => o.Value).OrderByDescending(o => o.createDate).ToList();
-            foreach (PixivUserWorkInfo workInfo in workInfoList)
+            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
+            List<PixivUserWorkInfo> userWorks = illusts.Select(o => o.Value).OrderByDescending(o => o.createDate).ToList();
+            foreach (PixivUserWorkInfo userWork in userWorks)
             {
                 try
                 {
                     if (++index > getCount) break;
-                    if (workInfo is null || string.IsNullOrWhiteSpace(workInfo.id)) continue;
-                    if (workInfo.IsImproper) continue;
-                    if (workInfo.hasBanTag() is not null) continue;
-                    if (isShowAIs == false && workInfo.IsAI) continue;
-                    if (isShowR18s == false && workInfo.IsR18) continue;
-                    if (shelfLife > 0 && workInfo.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
-                    if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, workInfo.id)) continue;
+                    if (userWork is null) continue;
+                    if (string.IsNullOrWhiteSpace(userWork.id)) continue;
+                    if (userWork.IsImproper) continue;
+                    if (userWork.HavingBanTags().Count > 0) continue;
+                    if (isShowAIs == false && userWork.IsAI) continue;
+                    if (isShowR18s == false && userWork.IsR18) continue;
+                    if (shelfLife > 0 && userWork.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
+                    if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, userWork.id)) continue;
                     scanReport.ScanWork++;
-                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(workInfo.id, 0);
+                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(userWork.id, 0);
                     if (pixivWorkInfo is null) continue;
+                    if (pixivWorkInfo.IsImproper) continue;
+                    if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
-                    subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                    PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo);
-                    await pushAsync(pixivSubscribe, subscribeTask.GroupIdList);
+                    PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo, subscribeTask);
+                    if (pushAsync is not null)
+                    {
+                        await pushAsync(pixivSubscribe);
+                        await insertSubscribeRecord(pixivSubscribe);
+                    }
+                    else
+                    {
+                        pixivSubscribeList.Add(pixivSubscribe);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -486,6 +498,7 @@ namespace TheresaBot.Main.Business
                     await Task.Delay(1000);
                 }
             }
+            return pixivSubscribeList;
         }
 
         /// <summary>
@@ -494,36 +507,47 @@ namespace TheresaBot.Main.Business
         /// <param name="tagName"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public async Task scanAndPushTagAsync(SubscribeTask subscribeTask, PixivTagScanReport scanReport, Func<SubscribeTask, PixivSubscribe, Task> pushAsync)
+        public async Task<List<PixivSubscribe>> scanTagWorkAsync(SubscribeTask subscribeTask, PixivTagScanReport scanReport, Func<PixivSubscribe, Task> pushAsync = null)
         {
             string tagNames = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
             List<long> groupIds = subscribeTask.GroupIdList;
             bool isShowAIs = groupIds.IsShowAISetu();
             bool isShowR18s = groupIds.IsShowR18Setu();
-            string searchWord = toPixivSearchWord(tagNames);
+            string searchWord = toPixivSearchWords(tagNames.ToActualPixivTags());
             int maxScan = BotConfig.SubscribeConfig.PixivTag.MaxScan;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
+            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             List<PixivIllust> illutsList = await getTagIllustListAsync(searchWord, maxScan, shelfLife);
-            foreach (PixivIllust item in illutsList)
+            foreach (PixivIllust illuts in illutsList)
             {
                 try
                 {
-                    if (item is null || string.IsNullOrWhiteSpace(item.id)) continue;
-                    if (item.IsImproper) continue;
-                    if (isShowAIs == false && item.IsAI) continue;
-                    if (isShowR18s == false && item.IsR18) continue;
-                    if (shelfLife > 0 && item.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
-                    if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, item.id)) continue;
+                    if (illuts is null) continue;
+                    if (string.IsNullOrWhiteSpace(illuts.id)) continue;
+                    if (illuts.IsImproper) continue;
+                    if (illuts.HavingBanTag() is not null) continue;
+                    if (isShowAIs == false && illuts.IsAI) continue;
+                    if (isShowR18s == false && illuts.IsR18) continue;
+                    if (shelfLife > 0 && illuts.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
+                    if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, illuts.id)) continue;
                     scanReport.ScanWork++;
-                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(item.id, 0);
+                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(illuts.id, 0);
                     if (pixivWorkInfo is null) continue;
-                    if (pixivWorkInfo.hasBanTag() is not null) continue;
+                    if (pixivWorkInfo.IsImproper) continue;
+                    if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     if (checkTagWorkIsOk(pixivWorkInfo) == false) continue;
                     SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
-                    subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                    PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo);
-                    await pushAsync(subscribeTask, pixivSubscribe);
+                    PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo, subscribeTask);
+                    if (pushAsync is not null)
+                    {
+                        await pushAsync(pixivSubscribe);
+                        await insertSubscribeRecord(pixivSubscribe);
+                    }
+                    else
+                    {
+                        pixivSubscribeList.Add(pixivSubscribe);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -535,6 +559,7 @@ namespace TheresaBot.Main.Business
                     await Task.Delay(1000);
                 }
             }
+            return pixivSubscribeList;
         }
 
         /// <summary>
@@ -544,15 +569,16 @@ namespace TheresaBot.Main.Business
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task scanAndPushFollowAsync(PixivUserScanReport scanReport, Func<PixivSubscribe, List<long>, Task> pushAsync)
+        public async Task<List<PixivSubscribe>> scanFollowWorkAsync(PixivUserScanReport scanReport, Func<PixivSubscribe, Task> pushAsync = null)
         {
             int pageIndex = 1;
             List<long> groupIds = BotConfig.PermissionsConfig.SubscribeGroups;
             bool isShowAIs = groupIds.IsShowAISetu();
             bool isShowR18s = groupIds.IsShowR18Setu();
             PixivFollowLatest pageOne = await PixivHelper.GetPixivFollowLatestAsync(pageIndex);
-            if (pageOne?.page?.ids is null) return;
+            if (pageOne?.page?.ids is null) return new();
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
+            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
             List<int> wordIdList = pageOne.page.ids.OrderByDescending(o => o).ToList();
             foreach (int workId in wordIdList)
             {
@@ -564,15 +590,22 @@ namespace TheresaBot.Main.Business
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString(), 0);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;
-                    if (pixivWorkInfo.hasBanTag() is not null) continue;
+                    if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     if (isShowAIs == false && pixivWorkInfo.IsAI) continue;
                     if (isShowR18s == false && pixivWorkInfo.IsR18) continue;
                     if (shelfLife > 0 && pixivWorkInfo.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     SubscribePO dbSubscribe = getOrInsertUserSubscribe(pixivWorkInfo);
                     SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, dbSubscribe.Id);
-                    subscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
-                    PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo);
-                    await pushAsync(pixivSubscribe, groupIds);
+                    PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo, null);
+                    if (pushAsync is not null)
+                    {
+                        await pushAsync(pixivSubscribe);
+                        await insertSubscribeRecord(pixivSubscribe);
+                    }
+                    else
+                    {
+                        pixivSubscribeList.Add(pixivSubscribe);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -584,6 +617,37 @@ namespace TheresaBot.Main.Business
                     await Task.Delay(1000);
                 }
             }
+            return pixivSubscribeList;
+        }
+
+
+        /// <summary>
+        /// 添加订阅发送记录
+        /// </summary>
+        /// <param name="pixivSubscribes"></param>
+        public async Task insertSubscribeRecord(List<PixivSubscribe> pixivSubscribes)
+        {
+            foreach (var subscribe in pixivSubscribes)
+            {
+                await insertSubscribeRecord(subscribe);
+            }
+        }
+
+        /// <summary>
+        /// 添加订阅发送记录
+        /// </summary>
+        /// <param name="pixivSubscribe"></param>
+        public async Task insertSubscribeRecord(PixivSubscribe pixivSubscribe)
+        {
+            try
+            {
+                subscribeRecordDao.Insert(pixivSubscribe.SubscribeRecord);
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
         }
 
         /// <summary>
@@ -594,7 +658,7 @@ namespace TheresaBot.Main.Business
         /// <returns></returns>
         private async Task<List<PixivIllust>> getTagIllustListAsync(string searchWord, int maxScan, int shelfLife)
         {
-            int maxPage = MathHelper.getMaxPage(maxScan, PageSize);
+            int maxPage = MathHelper.GetMaxPage(maxScan, PageSize);
             List<PixivIllust> pixivIllustList = new List<PixivIllust>();
             for (int i = 1; i <= maxPage; i++)
             {
@@ -617,16 +681,14 @@ namespace TheresaBot.Main.Business
         private SubscribePO getOrInsertUserSubscribe(PixivWorkInfo pixivWorkInfo)
         {
             string userId = pixivWorkInfo.userId.ToString();
-            string userName = StringHelper.filterEmoji(pixivWorkInfo.userName)?.filterEmoji().cutString(50);
+            string userName = StringHelper.FilterEmoji(pixivWorkInfo.userName)?.FilterEmoji().CutString(50);
             SubscribePO dbSubscribe = subscribeDao.getSubscribe(userId, SubscribeType.P站画师);
             if (dbSubscribe != null) return dbSubscribe;
             dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
             dbSubscribe.SubscribeName = userName;
-            dbSubscribe.SubscribeDescription = userName;
             dbSubscribe.SubscribeType = SubscribeType.P站画师;
             dbSubscribe.SubscribeSubType = 0;
-            dbSubscribe.Isliving = false;
             dbSubscribe.CreateDate = DateTime.Now;
             return subscribeDao.Insert(dbSubscribe);
         }
@@ -634,11 +696,11 @@ namespace TheresaBot.Main.Business
         private SubscribeRecordPO toSubscribeRecord(PixivWorkInfo workInfo, int subscribeId)
         {
             SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-            subscribeRecord.Title = StringHelper.filterEmoji(workInfo.illustTitle);
+            subscribeRecord.Title = StringHelper.FilterEmoji(workInfo.illustTitle);
             subscribeRecord.Content = subscribeRecord.Title;
-            subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId);
-            subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId);
-            subscribeRecord.DynamicCode = workInfo.illustId;
+            subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId.ToString());
+            subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId.ToString());
+            subscribeRecord.DynamicCode = workInfo.illustId.ToString();
             subscribeRecord.DynamicType = SubscribeDynamicType.插画;
             return subscribeRecord;
         }
@@ -652,7 +714,7 @@ namespace TheresaBot.Main.Business
         {
             int offset = 0;
             int eachPage = 24;
-            long userId = BotConfig.WebsiteConfig.Pixiv.UserId;
+            long userId = WebsiteDatas.Pixiv.UserId;
             List<PixivFollowUser> followUserList = new List<PixivFollowUser>();
             PixivFollow firstFollowDto = await PixivHelper.GetPixivFollowAsync(userId, 0, eachPage);
             int total = firstFollowDto.total;
@@ -682,28 +744,42 @@ namespace TheresaBot.Main.Business
             return template;
         }
 
-        public string getUserPushRemindMsg(string template, string userName)
+        public string getUserPushRemindMsg(PixivSubscribe pixivSubscribe)
         {
-            template = template?.Trim()?.TrimLine();
-            template = template.Replace("{UserName}", userName);
-            return template;
+            string userName = pixivSubscribe.PixivWorkInfo.userName;
+            string template = BotConfig.SubscribeConfig?.PixivUser?.Template?.Trim()?.TrimLine();
+            if (string.IsNullOrWhiteSpace(template))
+            {
+                return $"pixiv画师[{userName}]发布了新作品：";
+            }
+            else
+            {
+                return template.Replace("{UserName}", userName);
+            }
         }
 
-        public string getTagPushRemindMsg(string template, string tagName)
+        public string getTagPushRemindMsg(PixivSubscribe pixivSubscribe)
         {
-            template = template?.Trim()?.TrimLine();
-            template = template.Replace("{TagName}", tagName);
-            return template;
+            string tagName = pixivSubscribe.SubscribeTask.SubscribeName;
+            string template = BotConfig.SubscribeConfig?.PixivTag?.Template?.Trim()?.TrimLine();
+            if (string.IsNullOrWhiteSpace(template))
+            {
+                return $"pixiv标签[{tagName}]发布了新作品：";
+            }
+            else
+            {
+                return template.Replace("{TagName}", tagName);
+            }
         }
 
-        public string getWorkInfo(PixivWorkInfo pixivWorkInfo, string template)
+        public string getWorkInfo(PixivWorkInfo pixivWorkInfo)
         {
-            template = template?.Trim()?.TrimLine();
+            string template = BotConfig.PixivConfig?.Template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(pixivWorkInfo);
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
             template = template.Replace("{IllustTitle}", pixivWorkInfo.illustTitle);
-            template = template.Replace("{PixivId}", pixivWorkInfo.illustId);
+            template = template.Replace("{PixivId}", pixivWorkInfo.illustId.ToString());
             template = template.Replace("{UserName}", pixivWorkInfo.userName);
             template = template.Replace("{UserId}", pixivWorkInfo.userId.ToString());
             template = template.Replace("{CreateTime}", pixivWorkInfo.createDate.ToSimpleString());
@@ -765,7 +841,7 @@ namespace TheresaBot.Main.Business
         /// </summary>
         /// <param name="tagNames"></param>
         /// <returns></returns>
-        public string toPixivSearchWord(string tagNames)
+        public string toPixivSearchWords(string tagNames)
         {
             tagNames = tagNames.Trim().Replace("(", "（").Replace(")", "）");
             string[] andArr = tagNames.Split(new char[] { ' ', '+' }, StringSplitOptions.RemoveEmptyEntries);
@@ -781,6 +857,10 @@ namespace TheresaBot.Main.Business
             }
             return searchBuilder.ToString();
         }
+
+
+
+
 
     }
 }

@@ -20,5 +20,10 @@ namespace TheresaBot.Main.Model.Config
             this.MinBookRate = 0.05;
         }
 
+        public override BasePluginConfig FormatConfig()
+        {
+            return this;
+        }
+
     }
 }

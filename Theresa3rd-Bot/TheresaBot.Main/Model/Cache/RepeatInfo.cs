@@ -4,14 +4,14 @@
     {
         public long MemberId { get; set; }
 
-        public string Word { get; set; }
+        public string SendContent { get; set; }
 
         public DateTime SendTime { get; set; }
 
-        public RepeatInfo(long memberId, string word)
+        public RepeatInfo(long memberId, string sendContent)
         {
             this.MemberId = memberId;
-            this.Word = word;
+            this.SendContent = sendContent;
             this.SendTime = DateTime.Now;
         }
 

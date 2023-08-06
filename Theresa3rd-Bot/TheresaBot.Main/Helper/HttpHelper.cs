@@ -53,7 +53,7 @@ namespace TheresaBot.Main.Helper
         {
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.BaseAddress = new Uri(url);
-            client.addHeaders(headerDic);
+            client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             HttpResponseMessage response = await client.GetAsync(url);
             //response.EnsureSuccessStatusCode();
@@ -71,7 +71,7 @@ namespace TheresaBot.Main.Helper
         {
             using HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
             client.BaseAddress = new Uri(url);
-            client.addHeaders(headerDic);
+            client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             HttpResponseMessage response = await client.GetAsync(url);
             //response.EnsureSuccessStatusCode();
@@ -91,7 +91,7 @@ namespace TheresaBot.Main.Helper
             HttpContent content = new StringContent(postJsonStr);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
-            client.addHeaders(headerDic);
+            client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             HttpResponseMessage response = await client.PostAsync(url, content);
             //response.EnsureSuccessStatusCode();
@@ -109,7 +109,7 @@ namespace TheresaBot.Main.Helper
         public static async Task<HttpResponseMessage> PostFormForHtml(string url, Dictionary<string, string> paramDic, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
-            client.addHeaders(headerDic);
+            client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             return await client.PostAsync(url, new FormUrlEncodedContent(paramDic));
         }
@@ -125,7 +125,7 @@ namespace TheresaBot.Main.Helper
         {
             using FileStream fs = new FileStream(imageFile.FullName, FileMode.Open, FileAccess.Read);
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
-            client.addHeaders(headerDic);
+            client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             MultipartFormDataContent formData = new MultipartFormDataContent();//表单
             StreamContent fileContent = new StreamContent(fs);//图片stream
@@ -146,7 +146,7 @@ namespace TheresaBot.Main.Helper
         public static async Task<string> GetHtmlAsync(string httpUrl, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
-            client.addHeaders(headerDic);
+            client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             return await client.GetStringAsync(httpUrl);
         }
@@ -172,7 +172,7 @@ namespace TheresaBot.Main.Helper
         {
             if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
-            client.addHeaders(headerDic);
+            client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
             using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
@@ -193,7 +193,7 @@ namespace TheresaBot.Main.Helper
         {
             if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
             using HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
-            client.addHeaders(headerDic);
+            client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
             using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
@@ -209,7 +209,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="request"></param>
         /// <param name="headerDic"></param>
         /// <returns></returns>
-        public static void addHeaders(this HttpClient client, Dictionary<string, string> headerDic)
+        public static void AddHeaders(this HttpClient client, Dictionary<string, string> headerDic)
         {
             if (headerDic is null) headerDic = new Dictionary<string, string>();
             foreach (var item in headerDic)
@@ -256,7 +256,7 @@ namespace TheresaBot.Main.Helper
         /// 创建一个忽略https证书验证的HttpClientHandler
         /// </summary>
         /// <returns></returns>
-        private static HttpClientHandler getHttpClientHandler()
+        private static HttpClientHandler GetHttpClientHandler()
         {
             HttpClientHandler clientHandler = new HttpClientHandler();
             clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;

@@ -1,14 +1,8 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using SqlSugar.IOC;
-using System;
 using System.Net;
-using System.Threading.Tasks;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Timers;
 using TheresaBot.MiraiHttpApi.Common;
@@ -34,7 +28,7 @@ namespace TheresaBot.MiraiHttpApi
                 LogHelper.ConfigureLog();
                 LogHelper.Info($"日志配置完毕...");
 
-                MiraiHelper.LoadMiraiConfig(Configuration);
+                MiraiHelper.LoadAppSettings(Configuration);
                 ConfigHelper.LoadBotConfig();
                 LogHelper.Info($"配置文件加载完毕...");
 
@@ -56,25 +50,24 @@ namespace TheresaBot.MiraiHttpApi
             catch (Exception ex)
             {
                 LogHelper.FATAL(ex, "启动异常");
+                Environment.Exit(0);
                 throw;
             }
 
             try
             {
-                ConfigHelper.LoadWebsite();
-                ConfigHelper.LoadSubscribeTask();
-                ConfigHelper.LoadBanTag();
-                ConfigHelper.LoadBanMember();
+                DataManager.LoadInitDatas();
                 MiraiSession session = new MiraiSession();
                 MiraiReporter reporter = new MiraiReporter();
                 TimerManager.initReminderJob(session, reporter);
                 TimerManager.initTimingSetuJob(session, reporter);
                 TimerManager.initSubscribeTimers(session, reporter);
                 TimerManager.initTimingRankingJobAsync(session, reporter);
+                TimerManager.initWordCloudTimers(session, reporter);
                 TimerManager.initCookieJobAsync(session, reporter);
                 TimerManager.initTempClearJobAsync(session, reporter);
                 TimerManager.initDownloadClearJobAsync(session, reporter);
-                LogHelper.Info($"Theresa3rd-Bot启动完毕，版本：{BotConfig.BotVersion}");
+                LogHelper.Info($"Theresa3rd-Bot启动完毕，版本：v{BotConfig.BotVersion}");
                 Task welcomeTask = MiraiHelper.SendStartUpMessageAsync();
             }
             catch (Exception ex)
@@ -133,12 +126,12 @@ namespace TheresaBot.MiraiHttpApi
 
         private void OnStopping()
         {
-            //"On-stopping" logic
+            Environment.Exit(0);
         }
 
         private void OnStopped()
         {
-            //"On-stopped" logic
+            Environment.Exit(0);
         }
 
 

@@ -18,6 +18,11 @@ namespace TheresaBot.Main.Model.Config
         public PixivRankingItem Weekly { get; private set; }
         public PixivRankingItem Monthly { get; private set; }
         public List<PixivRankingTimer> Subscribes { get; private set; }
+
+        public override PixivRankingConfig FormatConfig()
+        {
+            return this;
+        }
     }
 
     public class PixivRankingItem

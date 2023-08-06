@@ -2,16 +2,16 @@
 {
     public abstract class BaseRelay
     {
-        public int MsgId { get; set; }
+        public long MsgId { get; init; }
 
-        public string Message { get; set; }
+        public string Answer { get; init; }
 
         public long MemberId { get; init; }
 
-        public BaseRelay(int msgId, string message, long memberId)
+        public BaseRelay(long msgId, string answer, long memberId)
         {
             this.MsgId = msgId;
-            this.Message = message;
+            this.Answer = answer?.Trim() ?? string.Empty;
             this.MemberId = memberId;
         }
 

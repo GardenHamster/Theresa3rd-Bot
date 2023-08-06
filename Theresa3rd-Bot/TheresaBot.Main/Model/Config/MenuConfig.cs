@@ -6,5 +6,10 @@
 
         public string Template { get; private set; }
 
+        public override MenuConfig FormatConfig()
+        {
+            return this;
+        }
+
     }
 }

@@ -46,7 +46,7 @@ namespace TheresaBot.Main.Business
             int maxScan = BotConfig.PixivRankingConfig.MaxScan;
             if (maxScan > 500) maxScan = 500;
             if (firstpage.rank_total < maxScan) maxScan = firstpage.rank_total;
-            int maxPage = MathHelper.getMaxPage(maxScan, eachPage);
+            int maxPage = MathHelper.GetMaxPage(maxScan, eachPage);
 
             List<PixivRankingContent> rankingContents = new List<PixivRankingContent>();
             for (int page = 1; page < maxPage + 1; page++)
@@ -159,11 +159,11 @@ namespace TheresaBot.Main.Business
         /// <returns></returns>
         private bool checkContentIsOk(PixivRankingItem rankingItem, PixivRankingContent rankingContent, PixivRankingMode rankingMode)
         {
-            if (rankingContent.isImproper()) return false;
-            if (rankingContent.hasBanTag()) return false;
-            if (rankingContent.isIllust() == false) return false;
+            if (rankingContent.IsImproper()) return false;
+            if (rankingContent.HavingBanTags().Count() > 0) return false;
+            if (rankingContent.IsIllust() == false) return false;
             if (rankingContent.rating_count < rankingItem.MinRatingCount) return false;
-            if (rankingContent.rating_rate < rankingItem.MinRatingRate) return false;
+            if (rankingContent.Rating_rate < rankingItem.MinRatingRate) return false;
             return true;
         }
 
@@ -176,7 +176,7 @@ namespace TheresaBot.Main.Business
         private bool checkWorkIsOk(PixivRankingItem rankingItem, PixivWorkInfo workInfo)
         {
             if (workInfo.IsImproper) return false;
-            if (workInfo.hasBanTag() is not null) return false;
+            if (workInfo.HavingBanTags().Count > 0) return false;
             if (workInfo.IsIllust == false) return false;
             bool isRatingCountOk, isRatingRateOk, isBookmarkCountOk, isBookmarkRateOk;
 

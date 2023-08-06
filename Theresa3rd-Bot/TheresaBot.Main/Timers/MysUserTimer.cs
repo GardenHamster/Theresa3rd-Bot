@@ -28,12 +28,12 @@ namespace TheresaBot.Main.Timers
             try
             {
                 SystemTimer.Enabled = false;
-                new MYSHandler(Session, Reporter).HandleUserSubscribeAsync().Wait();
+                new MiyousheHandler(Session, Reporter).HandleSubscribeAsync().Wait();
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "MysUserTimer异常");
-                Reporter.SendError(ex, "MysUserTimer异常");
+                Reporter.SendError(ex, "MysUserTimer异常").Wait();
             }
             finally
             {

@@ -42,7 +42,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "TimingSetuJob异常");
-                reporter.SendError(ex, "TimingSetuJob异常");
+                await reporter.SendError(ex, "TimingSetuJob异常");
             }
         }
 
@@ -53,21 +53,21 @@ namespace TheresaBot.Main.Timers
                 TimingSetuSourceType sourceType = timingSetuTimer.Source;
                 if (sourceType == TimingSetuSourceType.Lolicon)
                 {
-                    await new LoliconHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
+                    await new LoliconHandler(session, reporter).SendTimingSetuAsync(timingSetuTimer, groupId);
                 }
                 else if (sourceType == TimingSetuSourceType.Lolisuki)
                 {
-                    await new LolisukiHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
+                    await new LolisukiHandler(session, reporter).SendTimingSetuAsync(timingSetuTimer, groupId);
                 }
                 else if (sourceType == TimingSetuSourceType.Local)
                 {
-                    await new LocalSetuHandler(session, reporter).sendTimingSetuAsync(timingSetuTimer, groupId);
+                    await new LocalSetuHandler(session, reporter).SendTimingSetuAsync(timingSetuTimer, groupId);
                 }
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"{timingSetuTimer.Name}定时任务异常");
-                reporter.SendError(ex, $"{timingSetuTimer.Name}定时任务异常");
+                await reporter.SendError(ex, $"{timingSetuTimer.Name}定时任务异常");
             }
         }
 

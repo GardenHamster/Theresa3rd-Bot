@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Design;
-using TheresaBot.Main.Common;
+﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Mys;
@@ -79,40 +78,31 @@ namespace TheresaBot.Main.Business
         {
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
-            dbSubscribe.SubscribeName = userInfo.nickname?.filterEmoji()?.cutString(50);
-            dbSubscribe.SubscribeDescription = userInfo.introduce?.filterEmoji()?.cutString(200);
+            dbSubscribe.SubscribeName = userInfo.nickname?.FilterEmoji()?.CutString(50);
             dbSubscribe.SubscribeType = SubscribeType.米游社用户;
             dbSubscribe.SubscribeSubType = 0;
-            dbSubscribe.Isliving = false;
             dbSubscribe.CreateDate = DateTime.Now;
             return subscribeDao.Insert(dbSubscribe);
         }
 
         public SubscribePO insertSurscribe(PixivUserProfileTop pixivUserInfoDto, string userId)
         {
-            string userName = pixivUserInfoDto.extraData.meta.UserName.filterEmoji()?.Trim()?.cutString(200);
             SubscribePO dbSubscribe = new SubscribePO();
-            dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
-            dbSubscribe.SubscribeName = userName;
-            dbSubscribe.SubscribeDescription = userName;
+            dbSubscribe.SubscribeName = pixivUserInfoDto.extraData.meta.UserName.FilterEmoji()?.Trim()?.CutString(200);
             dbSubscribe.SubscribeType = SubscribeType.P站画师;
             dbSubscribe.SubscribeSubType = 0;
-            dbSubscribe.Isliving = false;
             dbSubscribe.CreateDate = DateTime.Now;
             return subscribeDao.Insert(dbSubscribe);
         }
 
         public SubscribePO insertSurscribe(PixivFollowUser pixivFollowUser, DateTime createDate)
         {
-            string userName = pixivFollowUser.userName.filterEmoji().cutString(200);
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = pixivFollowUser.userId;
-            dbSubscribe.SubscribeName = userName;
-            dbSubscribe.SubscribeDescription = userName;
+            dbSubscribe.SubscribeName = pixivFollowUser.userName.FilterEmoji().CutString(200);
             dbSubscribe.SubscribeType = SubscribeType.P站画师;
             dbSubscribe.SubscribeSubType = 0;
-            dbSubscribe.Isliving = false;
             dbSubscribe.CreateDate = createDate;
             return subscribeDao.Insert(dbSubscribe);
         }
@@ -120,13 +110,10 @@ namespace TheresaBot.Main.Business
         public SubscribePO insertSurscribe(string pixivTag)
         {
             SubscribePO dbSubscribe = new SubscribePO();
-            dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = pixivTag;
             dbSubscribe.SubscribeName = pixivTag;
-            dbSubscribe.SubscribeDescription = pixivTag;
             dbSubscribe.SubscribeType = SubscribeType.P站标签;
             dbSubscribe.SubscribeSubType = 0;
-            dbSubscribe.Isliving = false;
             dbSubscribe.CreateDate = DateTime.Now;
             return subscribeDao.Insert(dbSubscribe);
         }

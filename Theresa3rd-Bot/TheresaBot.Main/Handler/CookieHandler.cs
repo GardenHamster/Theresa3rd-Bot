@@ -1,6 +1,7 @@
 ﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Reporter;
@@ -35,7 +36,7 @@ namespace TheresaBot.Main.Handler
             }
 
             cookie = cookie.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").Replace("\"", "").Trim();
-            Dictionary<string, string> cookieDic = cookie.splitCookie();
+            Dictionary<string, string> cookieDic = cookie.SplitCookie();
             string PHPSESSID = cookieDic.ContainsKey("PHPSESSID") ? cookieDic["PHPSESSID"] : string.Empty;
             if (string.IsNullOrWhiteSpace(PHPSESSID))
             {
@@ -61,11 +62,11 @@ namespace TheresaBot.Main.Handler
             if (cookieDic.ContainsKey("cto_bundle")) cookieDic.Remove("cto_bundle");
             if (cookieDic.ContainsKey("categorized_tags")) cookieDic.Remove("cookieDic");
             if (cookieDic.ContainsKey("tag_view_ranking")) cookieDic.Remove("tag_view_ranking");
-            cookie = cookieDic.joinCookie();
+            cookie = cookieDic.JoinCookie();
 
             string websiteCode = Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv) ?? string.Empty;
             WebsitePO website = websiteBusiness.updateWebsite(websiteCode, cookie, userId, BotConfig.PixivConfig.CookieExpire);
-            ConfigHelper.LoadWebsite();
+            WebsiteDatas.LoadWebsite();
             string expireDate = website.CookieExpireDate.ToString("yyyy-MM-dd HH:mm:ss");
             await command.ReplyFriendMessageAsync($"cookie更新完毕,过期时间为{expireDate}");
         }
@@ -87,7 +88,7 @@ namespace TheresaBot.Main.Handler
             }
             //token=62b9ae236fdf9; user=58109; auth=9cd37025e035f2ed99d096f2b7cf5485b7dd50a7;
             cookie = cookie.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").Replace("\"", "").Trim();
-            Dictionary<string, string> cookieDic = cookie.splitCookie();
+            Dictionary<string, string> cookieDic = cookie.SplitCookie();
 
             string tokenStr = cookieDic.ContainsKey("token") ? cookieDic["token"] : string.Empty;
             if (string.IsNullOrWhiteSpace(tokenStr))
@@ -119,7 +120,7 @@ namespace TheresaBot.Main.Handler
 
             string websiteCode = Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao) ?? string.Empty;
             websiteBusiness.updateWebsite(websiteCode, cookie, userId, DateTime.Now.AddYears(1));
-            ConfigHelper.LoadWebsite();
+            WebsiteDatas.LoadWebsite();
             await command.ReplyFriendMessageAsync($"cookie更新完毕");
         }
 
@@ -131,33 +132,11 @@ namespace TheresaBot.Main.Handler
             string warnMessage = $"{cookieName}将在{expireDate.ToString("yyyy-MM-dd HH:mm:ss")}过期，请尽快更新cookie";
             foreach (long groupId in BotConfig.GeneralConfig.ErrorGroups)
             {
-                try
-                {
-                    await Session.SendGroupMessageAsync(groupId, warnMessage);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex);
-                }
-                finally
-                {
-                    await Task.Delay(1000);
-                }
+                await Session.SendGroupMessageAsync(groupId, warnMessage);
             }
             foreach (long memberId in BotConfig.PermissionsConfig.SuperManagers)
             {
-                try
-                {
-                    await Session.SendFriendMessageAsync(memberId, warnMessage);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex);
-                }
-                finally
-                {
-                    await Task.Delay(1000);
-                }
+                await Session.SendFriendMessageAsync(memberId, warnMessage);
             }
         }
 

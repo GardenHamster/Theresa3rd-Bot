@@ -1,9 +1,6 @@
 ﻿using System.Text;
-using TheresaBot.Main.Business;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Config;
-using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Type;
 using YamlDotNet.Serialization;
 
 namespace TheresaBot.Main.Helper
@@ -21,78 +18,20 @@ namespace TheresaBot.Main.Helper
             using TextReader reader = new StreamReader(fileStream, Encoding.GetEncoding("gb2312"));
             Deserializer deserializer = new Deserializer();
             BotConfigDto botConfig = deserializer.Deserialize<BotConfigDto>(reader);
-            BotConfig.GeneralConfig = botConfig.General;
-            BotConfig.PixivConfig = botConfig.Pixiv.FormatConfig();
-            BotConfig.PermissionsConfig = botConfig.Permissions;
-            BotConfig.ManageConfig = botConfig.Manage;
-            BotConfig.MenuConfig = botConfig.Menu;
-            BotConfig.RepeaterConfig = botConfig.Repeater;
-            BotConfig.WelcomeConfig = botConfig.Welcome;
-            BotConfig.ReminderConfig = botConfig.Reminder;
-            BotConfig.SetuConfig = botConfig.Setu;
-            BotConfig.SaucenaoConfig = botConfig.Saucenao;
-            BotConfig.SubscribeConfig = botConfig.Subscribe;
-            BotConfig.TimingSetuConfig = botConfig.TimingSetu;
-            BotConfig.PixivRankingConfig = botConfig.PixivRanking;
-        }
-
-        public static void LoadWebsite()
-        {
-            try
-            {
-                WebsiteBusiness websiteBusiness = new WebsiteBusiness();
-                WebsitePO pixivWebsite = new WebsiteBusiness().getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv));
-                WebsitePO biliWebsite = new WebsiteBusiness().getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Bili));
-                WebsitePO saucenaoWebsite = new WebsiteBusiness().getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao));
-                BotConfig.WebsiteConfig.Pixiv = pixivWebsite;
-                BotConfig.WebsiteConfig.Bili = biliWebsite;
-                BotConfig.WebsiteConfig.Saucenao = saucenaoWebsite;
-                LogHelper.Info("网站cookie加载完成...");
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "加载cookie失败");
-            }
-        }
-
-        public static void LoadSubscribeTask()
-        {
-            try
-            {
-                BotConfig.SubscribeTaskMap = new SubscribeBusiness().getSubscribeTask();
-                LogHelper.Info("订阅任务加载完成...");
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "订阅任务加载失败");
-            }
-        }
-
-
-        public static void LoadBanTag()
-        {
-            try
-            {
-                BotConfig.BanSetuTagList = new BanWordBusiness().getBanSetuTagList();
-                LogHelper.Info("加载禁止标签完毕");
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "加载禁止标签失败");
-            }
-        }
-
-        public static void LoadBanMember()
-        {
-            try
-            {
-                BotConfig.BanMemberList = new BanWordBusiness().getBanMemberList();
-                LogHelper.Info("加载黑名单完毕");
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "加载黑名单失败");
-            }
+            BotConfig.GeneralConfig = botConfig.General.FormatConfig();
+            BotConfig.PixivConfig = botConfig.Pixiv.FormatConfig().FormatConfig();
+            BotConfig.PermissionsConfig = botConfig.Permissions.FormatConfig();
+            BotConfig.ManageConfig = botConfig.Manage.FormatConfig();
+            BotConfig.MenuConfig = botConfig.Menu.FormatConfig();
+            BotConfig.RepeaterConfig = botConfig.Repeater.FormatConfig();
+            BotConfig.WelcomeConfig = botConfig.Welcome.FormatConfig();
+            BotConfig.ReminderConfig = botConfig.Reminder.FormatConfig();
+            BotConfig.SetuConfig = botConfig.Setu.FormatConfig();
+            BotConfig.SaucenaoConfig = botConfig.Saucenao.FormatConfig();
+            BotConfig.SubscribeConfig = botConfig.Subscribe.FormatConfig();
+            BotConfig.TimingSetuConfig = botConfig.TimingSetu.FormatConfig();
+            BotConfig.PixivRankingConfig = botConfig.PixivRanking.FormatConfig();
+            BotConfig.WordCloudConfig = botConfig.WordCloud.FormatConfig();
         }
 
 

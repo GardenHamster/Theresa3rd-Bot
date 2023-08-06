@@ -1,29 +1,36 @@
 ﻿using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Result;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Session
 {
     public abstract class BaseSession
     {
-        public abstract Task<int> SendGroupMessageAsync(long groupId, string message);
+        public abstract PlatformType PlatformType { get; }
 
-        public abstract Task<int> SendGroupMessageAsync(long groupId, params BaseContent[] contents);
+        public abstract Task<BaseResult> SendGroupMessageAsync(long groupId, string message);
 
-        public abstract Task<int> SendGroupMessageAsync(long groupId, List<BaseContent> contents);
+        public abstract Task<BaseResult> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers = null, bool isAtAll = false);
 
-        public abstract Task<int> SendGroupMessageAsync(long groupId, List<BaseContent> contents, bool isAtAll = false);
+        public abstract Task<BaseResult> SendGroupMessageWithAtAsync(long groupId, long memberId, string message);
 
-        public abstract Task<int> SendGroupMessageAsync(long groupId, List<BaseContent> contents, List<long> atMembers, bool isAtAll = false);
+        public abstract Task<BaseResult> SendGroupMessageWithAtAsync(long groupId, long memberId, List<BaseContent> contents);
 
-        public abstract Task<int> SendGroupMergeAsync(long groupId, params List<BaseContent>[] contentLists);
+        public abstract Task<BaseResult> SendGroupMessageWithQuoteAsync(long groupId, long memberId, long quoteMsgId, string message);
 
-        public abstract Task<int> SendGroupMergeAsync(long groupId, List<SetuContent> setuContents);
+        public abstract Task<BaseResult> SendGroupMessageWithQuoteAsync(long groupId, long memberId, long quoteMsgId, List<BaseContent> contents);
 
-        public abstract Task<int[]> SendGroupMessageAsync(long groupId, SetuContent setuContent, bool sendImgBehind);
+        public abstract Task<BaseResult> SendGroupMergeAsync(long groupId, List<BaseContent[]> contentLists);
 
-        public abstract Task<int> SendFriendMessageAsync(long memberId, string message);
+        public abstract Task<BaseResult> SendFriendMessageAsync(long memberId, string message);
 
-        public abstract Task<int> SendFriendMessageAsync(long memberId, params BaseContent[] contents);
+        public abstract Task<BaseResult> SendFriendMessageAsync(long memberId, List<BaseContent> contents);
 
-        public abstract Task<int> SendFriendMessageAsync(long memberId, List<BaseContent> contents);
+        public abstract Task<BaseResult> SendTempMessageAsync(long groupId, long memberId, string message);
+
+        public abstract Task<BaseResult> SendTempMessageAsync(long groupId, long memberId, List<BaseContent> contents);
+
+        public abstract Task RevokeGroupMessageAsync(long groupId, long messageId);
+
     }
 }

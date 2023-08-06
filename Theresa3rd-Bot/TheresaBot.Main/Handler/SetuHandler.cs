@@ -2,13 +2,14 @@
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Base;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
-using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -16,89 +17,71 @@ namespace TheresaBot.Main.Handler
 {
     internal abstract class SetuHandler : BaseHandler
     {
+        protected RecordBusiness recordBusiness;
+
         public SetuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
+            recordBusiness = new RecordBusiness();
         }
 
-        public async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, List<SetuContent> headerContents, long groupId, int eachPage = 5)
+        protected async Task SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 10)
         {
-            int startIndex = 0;
-            if (eachPage <= 0) return new[] { 0 };
-            List<int> msgIds = new List<int>();
-            while (startIndex < setuContents.Count)
+            if (sendMerge && margeEachPage > 0)
             {
-                List<SetuContent> pageContents = new List<SetuContent>();
-                pageContents.AddRange(headerContents);
-                pageContents.AddRange(setuContents.Skip(startIndex).Take(eachPage).ToList());
-                msgIds.AddRange(await SendGroupMergeSetuAsync(pageContents, groupId));
-                startIndex += eachPage;
-            }
-            return msgIds.ToArray();
-        }
-
-        public async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 0)
-        {
-            if (sendMerge == false || margeEachPage <= 0)
-            {
-                return await SendGroupSetuAsync(setuContents, groupId, sendMerge);
-            }
-
-            int startIndex = 0;
-            List<int> msgIds = new List<int>();
-            while (startIndex < setuContents.Count)
-            {
-                List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(margeEachPage).ToList();
-                msgIds.AddRange(await SendGroupSetuAsync(pageContents, groupId, sendMerge));
-                startIndex += margeEachPage;
-            }
-            return msgIds.ToArray();
-        }
-
-        public async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge)
-        {
-            if (sendMerge)
-            {
-                return await SendGroupMergeSetuAsync(setuContents, groupId);
+                await SendGroupMergeSetuAsync(setuContents, new(), groupId, margeEachPage);
             }
             else
             {
-                return await SendGroupSetuAsync(setuContents, groupId);
+                await SendGroupSetuAsync(setuContents, groupId);
             }
         }
 
-        private async Task<int[]> SendGroupSetuAsync(List<SetuContent> setuContents, long groupId)
+        private async Task SendGroupSetuAsync(List<SetuContent> setuContents, long groupId)
         {
-            List<int> msgIdList = new List<int>();
-            foreach (var content in setuContents)
+            foreach (SetuContent setuContent in setuContents)
             {
-                msgIdList.AddRange(await SendGroupSetuAsync(content, groupId));
+                await SendGroupSetuAsync(setuContent, groupId);
                 await Task.Delay(1000);
             }
-            return msgIdList.ToArray();
         }
 
-        public async Task<int[]> SendGroupSetuAsync(SetuContent setuContent, long groupId)
+        protected async Task SendGroupSetuAsync(SetuContent setuContent, long groupId)
         {
-            int[] msgIdArr = await Session.SendGroupMessageAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
-            if (msgIdArr.Where(o => o < 0).Any() && BotConfig.PixivConfig.ImgResend != ResendType.None)
+            BaseResult[] results = await Session.SendGroupSetuAsync(groupId, setuContent, BotConfig.PixivConfig.SendImgBehind);
+            if (results.Any(o => o.IsFailed) && BotConfig.PixivConfig.ImgResend != ResendType.None)
             {
                 await Task.Delay(1000);
                 SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);
-                msgIdArr = await Session.SendGroupMessageAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
+                results = await Session.SendGroupSetuAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
             }
-            return msgIdArr;
+            long[] msgIds = results.Select(o => o.MessageId).ToArray();
+            Task recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, groupId);
         }
 
-        private async Task<int[]> SendGroupMergeSetuAsync(List<SetuContent> setuContents, long groupId)
+        protected async Task SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent[]> headerContents, long groupId, int eachPage = 10)
         {
-            int msgId = await Session.SendGroupMergeAsync(groupId, setuContents);
-            if (msgId < 0)
+            int startIndex = 0;
+            if (eachPage <= 0) eachPage = 10;
+            if (setuContents.Count == 0) return;
+            while (startIndex < setuContents.Count)
+            {
+                List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(eachPage).ToList();
+                BaseResult result = await SendGroupMergeSetuAsync(pageContents, headerContents, groupId);
+                Task recordTask = recordBusiness.AddPixivRecord(pageContents, Session.PlatformType, result.MessageId, groupId);
+                startIndex += eachPage;
+            }
+        }
+
+        private async Task<BaseResult> SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent[]> headerContents, long groupId)
+        {
+            BaseResult result = await Session.SendGroupMergeSetuAsync(setuContents, headerContents, groupId);
+            if (result.IsFailed)
             {
                 await Task.Delay(1000);
                 List<SetuContent> resendContents = GetResendContent(setuContents);
-                msgId = await Session.SendGroupMergeAsync(groupId, resendContents);
+                result = await Session.SendGroupMergeSetuAsync(resendContents, headerContents, groupId);
             }
-            return new[] { msgId };
+            return result;
         }
 
         private List<SetuContent> GetResendContent(List<SetuContent> setuContents)
@@ -119,15 +102,15 @@ namespace TheresaBot.Main.Handler
 
         public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, List<long> groupIds)
         {
-            bool isShowImg = groupIds.IsShowSetuImg(workInfo.IsR18);
+            bool isShowImg = groupIds.Any(o => o.IsShowSetuImg(workInfo.IsR18));
             if (isShowImg == false) return new List<FileInfo>();
             return await GetSetuFilesAsync(workInfo);
         }
 
         protected async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo)
         {
-            if (workInfo.IsGif) return new() { await downAndComposeGifAsync(workInfo) };
-            List<FileInfo> setuFiles = await downPixivImgsAsync(workInfo);
+            if (workInfo.IsGif) return new() { await DownAndComposeGifAsync(workInfo) };
+            List<FileInfo> setuFiles = await DownPixivImgsAsync(workInfo);
             if (workInfo.IsR18 == false) return setuFiles;
             float sigma = BotConfig.PixivConfig.R18ImgBlur;
             return setuFiles.ReduceAndBlur(sigma, 300);
@@ -142,7 +125,7 @@ namespace TheresaBot.Main.Handler
         public async Task<bool> CheckSetuCustomEnableAsync(GroupCommand command)
         {
             if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(command.GroupId)) return true;
-            await command.ReplyGroupTemplateWithAtAsync(BotConfig.GeneralConfig.SetuCustomDisableMsg, "自定义功能已关闭");
+            await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.SetuCustomDisableMsg, "自定义功能已关闭");
             return false;
         }
 
@@ -154,19 +137,15 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task<bool> CheckSetuTagEnableAsync(GroupCommand command, string tagName)
         {
-            tagName = tagName.ToLower().Trim();
-
             if (string.IsNullOrWhiteSpace(tagName)) return true;
             if (tagName.IsR18() && command.GroupId.IsShowR18Setu() == false)
             {
-                await command.ReplyGroupMessageWithAtAsync("本群未设置R18权限，禁止搜索R18相关标签");
+                await command.ReplyGroupMessageWithQuoteAsync("本群未设置R18权限，禁止搜索R18相关标签");
                 return false;
             }
-
-            List<BanWordPO> banSetuTagList = BotConfig.BanSetuTagList;
-            if (banSetuTagList.Where(o => tagName.Contains(o.KeyWord.ToLower().Trim())).Any())
+            if (tagName.SplitPixivTags().ToList().HavingBanTags().Count > 0)
             {
-                await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.DisableTagsMsg, "禁止查找这个类型的涩图");
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.DisableTagsMsg, "标签中包含被禁止搜索的关键词");
                 return false;
             }
             return true;
@@ -184,7 +163,7 @@ namespace TheresaBot.Main.Handler
         {
             string message = IsSetuSendable(command, setuInfo, isShowR18);
             if (string.IsNullOrWhiteSpace(message)) return true;
-            await command.ReplyGroupMessageWithAtAsync(message);
+            await command.ReplyGroupMessageWithQuoteAsync(message);
             return false;
         }
 
@@ -202,10 +181,10 @@ namespace TheresaBot.Main.Handler
                 return "该作品含有R18G等内容，不显示相关内容";
             }
 
-            string banTagStr = setuInfo.hasBanTag();
-            if (string.IsNullOrWhiteSpace(banTagStr) == false)
+            var banTags = setuInfo.HavingBanTags();
+            if (banTags.Count > 0)
             {
-                return $"该作品含有被屏蔽的标签【{banTagStr}】，不显示相关内容";
+                return $"该作品含有被屏蔽的标签【{banTags.JoinList()}】，不显示相关内容";
             }
 
             if (setuInfo.IsR18 && isShowR18 == false)
@@ -227,18 +206,12 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                List<BaseContent> chainList = new List<BaseContent>();
                 string template = timingSetuTimer.TimingMsg?.Trim()?.TrimLine();
-                if (string.IsNullOrWhiteSpace(template))
-                {
-                    if (chainList.Count == 0) return;
-                    await Session.SendGroupMessageAsync(groupId, chainList, timingSetuTimer.AtAll);
-                    return;
-                }
+                if (string.IsNullOrWhiteSpace(template)) return;
                 template = template.Replace("{Tags}", tags);
                 template = template.Replace("{SourceName}", timingSetuTimer.Source.GetTypeName());
-                chainList.AddRange(template.SplitToChainAsync());
-                await Session.SendGroupMessageAsync(groupId, chainList, timingSetuTimer.AtAll);
+                List<BaseContent> chainList = new List<BaseContent>(template.SplitToChainAsync());
+                await Session.SendGroupMessageAsync(groupId, chainList, new() { }, timingSetuTimer.AtAll);
             }
             catch (Exception ex)
             {
@@ -252,11 +225,10 @@ namespace TheresaBot.Main.Handler
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static long GetSetuLeftToday(long groupId, long memberId)
+        public long GetSetuLeftToday(long groupId, long memberId)
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
             if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(groupId)) return BotConfig.SetuConfig.MaxDaily;
-            RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
             int todayUseCount = requestRecordBusiness.getUsedCountToday(groupId, memberId, CommandType.Setu);
             long leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
@@ -268,10 +240,9 @@ namespace TheresaBot.Main.Handler
         /// <param name="groupId"></param>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public static int GetSaucenaoLeftToday(long groupId, long memberId)
+        public int GetSaucenaoLeftToday(long groupId, long memberId)
         {
             if (BotConfig.SaucenaoConfig.MaxDaily == 0) return 0;
-            RequestRecordBusiness requestRecordBusiness = new RequestRecordBusiness();
             int todayUseCount = requestRecordBusiness.getUsedCountToday(groupId, memberId, CommandType.Saucenao);
             int leftToday = BotConfig.SaucenaoConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
@@ -282,7 +253,7 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="tagStr"></param>
         /// <returns></returns>
-        public string[] toLoliconTagArr(string tagStr)
+        public string[] ToLoliconTagArr(string tagStr)
         {
             if (string.IsNullOrWhiteSpace(tagStr)) return new string[0];
             tagStr = tagStr.Trim().Replace(",", "|").Replace("，", "|");
@@ -295,24 +266,16 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="workInfo"></param>
         /// <returns></returns>
-        protected async Task<List<FileInfo>> downPixivImgsAsync(BaseWorkInfo workInfo)
+        protected async Task<List<FileInfo>> DownPixivImgsAsync(BaseWorkInfo workInfo)
         {
-            try
+            List<FileInfo> imgList = new List<FileInfo>();
+            List<string> originUrls = workInfo.GetOriginalUrls();
+            int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
+            for (int i = 0; i < maxCount && i < originUrls.Count; i++)
             {
-                List<FileInfo> imgList = new List<FileInfo>();
-                List<string> originUrls = workInfo.getOriginalUrls();
-                int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
-                for (int i = 0; i < maxCount && i < originUrls.Count; i++)
-                {
-                    imgList.Add(await PixivHelper.DownPixivImgBySizeAsync(workInfo.PixivId, originUrls[i]));
-                }
-                return imgList;
+                imgList.Add(await PixivHelper.DownPixivImgBySizeAsync(workInfo.PixivId.ToString(), originUrls[i]));
             }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "downPixivImgsAsync异常");
-                return null;
-            }
+            return imgList;
         }
 
 
@@ -321,24 +284,23 @@ namespace TheresaBot.Main.Handler
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
         /// <returns></returns>
-        protected async Task<FileInfo> downAndComposeGifAsync(BaseWorkInfo workInfo)
+        protected async Task<FileInfo> DownAndComposeGifAsync(BaseWorkInfo workInfo)
         {
             try
             {
                 int gifSigma = 15;
                 bool isR18 = workInfo.IsR18;
-                string pixivIdStr = workInfo.PixivId;
-                int pixivId = Convert.ToInt32(pixivIdStr);
-                string fullGifSavePath = Path.Combine(FilePath.GetPixivImgSavePath(pixivId), $"{pixivId}.gif");
+                int pixivId = workInfo.PixivId;
+                string fullGifSavePath = Path.Combine(FilePath.GetPixivImgDirectory(pixivId), $"{pixivId}.gif");
                 if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
-                PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivIdStr);
+                PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId.ToString());
                 string zipHttpUrl = pixivUgoiraMetaDto.src;
 
-                FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivIdStr, zipHttpUrl);
+                FileInfo zipFile = await PixivHelper.DownPixivFileAsync(pixivId.ToString(), zipHttpUrl);
                 if (zipFile == null) return null;
 
-                string unZipDirPath = Path.Combine(FilePath.GetTempSavePath(), pixivIdStr);
+                string unZipDirPath = FilePath.GetTempUnzipDirectory();
                 ZipHelper.ZipToFile(zipFile.FullName, unZipDirPath);
 
                 DirectoryInfo directoryInfo = new DirectoryInfo(unZipDirPath);
@@ -366,8 +328,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "gif合成失败");
-                Reporter.SendError(ex, "gif合成失败");
+                await LogAndReportError(ex, "Gif合成失败");
                 return null;
             }
         }

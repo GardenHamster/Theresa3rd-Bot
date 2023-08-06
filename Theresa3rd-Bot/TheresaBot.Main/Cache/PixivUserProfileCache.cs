@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheresaBot.Main.Mode;
-using TheresaBot.Main.Model.Cache;
+﻿using TheresaBot.Main.Model.Cache;
 
 namespace TheresaBot.Main.Cache
 {

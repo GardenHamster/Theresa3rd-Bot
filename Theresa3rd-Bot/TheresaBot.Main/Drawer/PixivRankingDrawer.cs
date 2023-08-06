@@ -7,7 +7,7 @@ using TheresaBot.Main.Model.Pixiv;
 
 namespace TheresaBot.Main.Drawer
 {
-    internal class PixivRankingDrawer: BasePreviewDrawer
+    internal class PixivRankingDrawer : BasePreviewDrawer
     {
         public async Task<FileInfo> DrawPreview(PixivRankingInfo rankingInfo, List<PixivRankingDetail> details, string fullSavePath)
         {
@@ -90,8 +90,8 @@ namespace TheresaBot.Main.Drawer
             int x = startX;
             int y = startY;
             PixivRankingContent content = detail.RankingContent;
-            string likeRate = detail.WorkInfo.likeRate.toPercent();
-            string bookRate = detail.WorkInfo.bookmarkRate.toPercent();
+            string likeRate = detail.WorkInfo.likeRate.ToPercent();
+            string bookRate = detail.WorkInfo.bookmarkRate.ToPercent();
             string drawText = $"#{content.rank} {content.illust_id} {likeRate}/{bookRate}";
             canvas.DrawText(drawText, new SKPoint(x, y), TitlePaint);
         }
@@ -121,7 +121,7 @@ namespace TheresaBot.Main.Drawer
         {
             int x = startX;
             int y = startY + WatermarkMargin;
-            string watermarkText = $"Create by Theresa-Bot {BotConfig.BotVersion} Doc {BotConfig.BotHomepage}";
+            string watermarkText = $"Create by Theresa-Bot v{BotConfig.BotVersion} Doc {BotConfig.BotHomepage}";
             canvas.DrawText(watermarkText, new SKPoint(x, y), WatermarkPaint);
         }
 

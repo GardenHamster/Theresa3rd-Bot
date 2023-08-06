@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Type;
-
-namespace TheresaBot.Main.Model.Config
+﻿namespace TheresaBot.Main.Model.Config
 {
     public class SaucenaoConfig : BasePluginConfig
     {
@@ -20,9 +18,14 @@ namespace TheresaBot.Main.Model.Config
         public bool SendPrivate { get; private set; } = true;
         public int RevokeInterval { get; private set; }
         public bool RevokeSearched { get; private set; }
-        public YNAType ContinueAscii2d { get; private set; } = YNAType.Yes;
+        public bool ContinueAscii2d { get; private set; } = true;
         public bool Ascii2dWithIp { get; set; }
         public int Ascii2dReadCount { get; private set; } = 3;
+
+        public override SaucenaoConfig FormatConfig()
+        {
+            return this;
+        }
 
 
     }

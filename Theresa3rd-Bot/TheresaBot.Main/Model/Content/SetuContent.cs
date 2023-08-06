@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TheresaBot.Main.Model.Content
+﻿namespace TheresaBot.Main.Model.Content
 {
     public record SetuContent
     {
         public List<BaseContent> SetuInfos { get; set; }
 
         public List<FileInfo> SetuImages { get; set; }
+
+        protected SetuContent() { }
 
         public SetuContent(string setuInfo)
         {

@@ -4,7 +4,6 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Drawer;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Mode;
 using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
@@ -23,25 +22,20 @@ namespace TheresaBot.Main.Handler
             pixivBusiness = new PixivBusiness();
         }
 
-        public async Task pixivSearchAsync(GroupCommand command)
+        public async Task PixivSearchAsync(GroupCommand command)
         {
             try
             {
-                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-
                 PixivWorkInfo pixivWorkInfo;
                 string keyword = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
                 bool isShowR18 = command.GroupId.IsShowR18Setu();
+
+                CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
                 if (await CheckSetuTagEnableAsync(command, keyword) == false) return;
+                await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.ProcessingMsg);
 
-                if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.ProcessingMsg) == false)
-                {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.ProcessingMsg);
-                    await Task.Delay(1000);
-                }
-
-                if (StringHelper.isPureNumber(keyword))
+                if (BusinessHelper.IsPixivId(keyword))
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
                     pixivWorkInfo = await pixivBusiness.getPixivWorkInfoAsync(keyword);//根据作品id获取作品
@@ -70,7 +64,7 @@ namespace TheresaBot.Main.Handler
 
                 if (pixivWorkInfo is null)
                 {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片或者收藏比过低，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片或者收藏比过低，换个标签试试吧~");
                     return;
                 }
 
@@ -87,14 +81,16 @@ namespace TheresaBot.Main.Handler
                     workMsgs.Add(new PlainContent(pixivBusiness.getSetuRemindMsg(remindTemplate, todayLeft)));
                 }
 
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo, pixivTemplate)));
+                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo)));
 
-                SetuContent setuContent = new SetuContent(workMsgs, setuFiles);
-                Task sendGroupTask = command.ReplyGroupSetuAndRevokeAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind, true);
+                PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
+                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
+                var msgIds = results.Select(o => o.MessageId).ToArray();
+                var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = command.ReplyTempMessageAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    Task sendTempTask = command.SendTempSetuAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
                 }
 
                 CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);//进入CD状态
@@ -105,7 +101,7 @@ namespace TheresaBot.Main.Handler
                 LogHelper.Error(ex, errMsg);
                 await command.ReplyError(ex);
                 await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await Reporter.SendError(ex, errMsg);
             }
             finally
             {
@@ -114,22 +110,19 @@ namespace TheresaBot.Main.Handler
         }
 
 
-        public async Task pixivUserProfileAsync(GroupCommand command)
+        public async Task PixivUserProfileAsync(GroupCommand command)
         {
             try
             {
                 string userId = command.KeyWord;
-                if (StringHelper.isPureNumber(userId) == false)
+                if (StringHelper.IsPureNumber(userId) == false)
                 {
-                    await command.ReplyGroupMessageWithAtAsync("请指定一个画师id~");
+                    await command.ReplyGroupMessageWithQuoteAsync("请指定一个画师id~");
                     return;
                 }
 
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);
-                if (string.IsNullOrWhiteSpace(BotConfig.SetuConfig.PixivUser.ProcessingMsg) == false)
-                {
-                    await command.ReplyGroupTemplateWithAtAsync(BotConfig.SetuConfig.PixivUser.ProcessingMsg);
-                }
+                await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.PixivUser.ProcessingMsg);
 
                 PixivUserProfileInfo profileInfo = PixivUserProfileCache.GetCache(userId);
                 if (profileInfo == null)
@@ -144,26 +137,23 @@ namespace TheresaBot.Main.Handler
                 List<string> PreviewFilePaths = profileInfo.PreviewFilePaths;
                 if (PreviewFilePaths is null || PreviewFilePaths.IsFilesExists() == false)
                 {
-                    PreviewFilePaths = await createPreviewImgAsync(profileInfo);
+                    PreviewFilePaths = await CreatePreviewImgAsync(profileInfo);
                     profileInfo.PreviewFilePaths = PreviewFilePaths;
                 }
 
+                BaseContent[] titleContents = new BaseContent[] { new PlainContent(templateMsg) };
+
                 List<SetuContent> setuContents = new List<SetuContent>();
-                setuContents.Add(new SetuContent(templateMsg));
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
                 setuContents.AddRange(pixivBusiness.getNumAndPids(profileInfo, 10));
 
-                await command.ReplyGroupMessageWithAtAsync(templateMsg);
+                await command.ReplyGroupMessageWithQuoteAsync(templateMsg);
                 await Task.Delay(1000);
-                await SendGroupSetuAsync(setuContents, command.GroupId, true);
+                await SendGroupMergeSetuAsync(setuContents, new() { titleContents }, command.GroupId);
             }
             catch (Exception ex)
             {
-                string errMsg = $"pixivUserProfileAsync异常";
-                LogHelper.Error(ex, errMsg);
-                await command.ReplyError(ex);
-                await Task.Delay(1000);
-                Reporter.SendError(ex, errMsg);
+                await LogAndReplyError(command, ex, "画师作品一览功能异常");
             }
             finally
             {
@@ -171,7 +161,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<List<string>> createPreviewImgAsync(PixivUserProfileInfo profileInfo)
+        private async Task<List<string>> CreatePreviewImgAsync(PixivUserProfileInfo profileInfo)
         {
             int startIndex = 0;
             int previewInPage = BotConfig.SetuConfig.PixivUser.PreviewInPage;
@@ -182,16 +172,16 @@ namespace TheresaBot.Main.Handler
             while (startIndex < profileDetails.Count)
             {
                 string fileName = $"pixiv_user_{profileInfo.UserId}_preview_{startIndex}_{startIndex + previewInPage}.jpg";
-                string fullSavePath = Path.Combine(FilePath.GetPixivPreviewSavePath(), fileName);
+                string fullSavePath = Path.Combine(FilePath.GetPixivPreviewDirectory(), fileName);
                 var partList = profileDetails.Skip(startIndex).Take(previewInPage).ToList();
-                var previewFile = await createPreviewImgAsync(profileInfo, partList, fullSavePath);
+                var previewFile = await CreatePreviewImgAsync(profileInfo, partList, fullSavePath);
                 if (previewFile is not null) fileInfos.Add(previewFile.FullName);
                 startIndex += previewInPage;
             }
             return fileInfos;
         }
 
-        private async Task<FileInfo> createPreviewImgAsync(PixivUserProfileInfo profileInfo, List<PixivProfileDetail> details, string fullSavePath)
+        private async Task<FileInfo> CreatePreviewImgAsync(PixivUserProfileInfo profileInfo, List<PixivProfileDetail> details, string fullSavePath)
         {
             try
             {
@@ -199,8 +189,7 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, "画师作品一览图合成失败");
-                Reporter.SendError(ex, "画师作品一览图合成失败");
+                await LogAndReportError(ex, "画师作品一览合成失败");
                 return null;
             }
         }

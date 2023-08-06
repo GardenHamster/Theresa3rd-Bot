@@ -1,17 +1,27 @@
-﻿namespace TheresaBot.Main.Helper
+﻿using System.Globalization;
+
+namespace TheresaBot.Main.Helper
 {
     public static class DateTimeHelper
     {
         /// <summary>
         /// 时间戳计时开始时间
         /// </summary>
-        private static DateTime TimeStampStartTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime TimeStampStartTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        /// <summary>
+        /// yyyy-MM-dd HH:mm:ss
+        /// </summary>
+        private static readonly DateTimeFormatInfo SimpleDateTimeFormat = new DateTimeFormatInfo()
+        {
+            ShortDatePattern = "yyyy-MM-dd HH:mm:ss"
+        };
 
         /// <summary>
         /// 获取今天开始时间
         /// </summary>
         /// <returns></returns>
-        public static DateTime GetTodayStart()
+        public static DateTime GetDayStart()
         {
             DateTime now = DateTime.Now;
             return new DateTime(now.Year, now.Month, now.Day);
@@ -21,11 +31,137 @@
         /// 获取今天结束时间
         /// </summary>
         /// <returns></returns>
-        public static DateTime GetTodayEnd()
+        public static DateTime GetDayEnd()
         {
             DateTime now = DateTime.Now;
             return new DateTime(now.Year, now.Month, now.Day, 23, 59, 59);
         }
+
+        /// <summary>
+        /// 获取本周开始时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetWeekStart()
+        {
+            DateTime now = DateTime.Now;
+            DateTime temp = new DateTime(now.Year, now.Month, now.Day);
+            int count = now.DayOfWeek - DayOfWeek.Monday;
+            if (count == -1) count = 6;
+            return temp.AddDays(-count);
+        }
+
+        /// <summary>
+        /// 获取本周结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetWeekEnd()
+        {
+            DateTime now = DateTime.Now;
+            DateTime temp = new DateTime(now.Year, now.Month, now.Day, 23, 59, 59);
+            int count = now.DayOfWeek - DayOfWeek.Sunday;
+            if (count != 0) count = 7 - count;
+            return temp.AddDays(count);
+        }
+
+        /// <summary>
+        /// 获取本周开始时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetMonthStart()
+        {
+            DateTime now = DateTime.Now;
+            return new DateTime(now.Year, now.Month, 1, 0, 0, 0);
+        }
+
+        /// <summary>
+        /// 获取本周结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetMonthEnd()
+        {
+            DateTime now = DateTime.Now;
+            DateTime temp = new DateTime(now.Year, now.Month, 1, 23, 59, 59);
+            return temp.AddMonths(1).AddDays(-1);
+        }
+
+        /// <summary>
+        /// 获取本年开始时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetYearStart()
+        {
+            DateTime now = DateTime.Now;
+            return new DateTime(now.Year, 1, 1, 0, 0, 0);
+        }
+
+        /// <summary>
+        /// 获取本年结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetYearEnd()
+        {
+            DateTime now = DateTime.Now;
+            return new DateTime(now.Year, 12, 31, 23, 59, 59);
+        }
+
+        /// <summary>
+        /// 获取昨天开始时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetYesterdayStart()
+        {
+            return GetDayStart().AddDays(-1);
+        }
+
+        /// <summary>
+        /// 获取昨天结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetYesterdayEnd()
+        {
+            return GetDayEnd().AddDays(-1);
+        }
+
+        // <summary>
+        /// 获取上周开始时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetLastWeekStart()
+        {
+            return GetWeekStart().AddDays(-7);
+        }
+
+        /// <summary>
+        /// 获取上周结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetLastWeekEnd()
+        {
+            return GetWeekEnd().AddDays(-7);
+        }
+
+        // <summary>
+        /// 获取上月开始时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetLastMonthStart()
+        {
+            DateTime now = DateTime.Now;
+            DateTime temp = new DateTime(now.Year, now.Month, 1, 0, 0, 0);
+            return temp.AddMonths(-1);
+        }
+
+        /// <summary>
+        /// 获取上月结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetLastMonthEnd()
+        {
+            DateTime now = DateTime.Now;
+            DateTime temp = new DateTime(now.Year, now.Month, 1, 23, 59, 59);
+            return temp.AddDays(-1);
+        }
+
 
         /// <summary>
         /// 根据一个总秒速,返回时:分:秒格式字符串
@@ -168,6 +304,31 @@
         public static string ToSimpleString(this DateTime datetime)
         {
             return datetime.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        /// <summary>
+        /// 将一个字符串转换为DateTime
+        /// </summary>
+        /// <param name="datetime"></param>
+        /// <returns></returns>
+        public static DateTime? ToDateTime(this string str, string formatStr = "")
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(formatStr))
+                {
+                    return Convert.ToDateTime(str, SimpleDateTimeFormat);
+                }
+                DateTimeFormatInfo formatInfo = new DateTimeFormatInfo()
+                {
+                    ShortDatePattern = formatStr
+                };
+                return Convert.ToDateTime(str, formatInfo);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
 

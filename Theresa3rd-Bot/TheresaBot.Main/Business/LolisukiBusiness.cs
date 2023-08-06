@@ -11,7 +11,7 @@ namespace TheresaBot.Main.Business
     {
         private const int eachPage = 5;
 
-        public string getWorkInfo(LolisukiData lolisukiData, DateTime startTime, long todayLeft, string template = "")
+        public string getWorkInfo(LolisukiData lolisukiData, long todayLeft, string template = "")
         {
             template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(lolisukiData);
@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Business
             template = template.Replace("{IllustTitle}", lolisukiData.title);
             template = template.Replace("{PixivId}", lolisukiData.pid.ToString());
             template = template.Replace("{UserName}", lolisukiData.author);
-            template = template.Replace("{UserId}", lolisukiData.uid);
+            template = template.Replace("{UserId}", lolisukiData.uid.ToString());
             template = template.Replace("{Level}", lolisukiData.level.ToString());
             template = template.Replace("{Taste}", lolisukiData.taste.ToString());
             template = template.Replace("{SizeMB}", "??");

@@ -2,10 +2,10 @@
 [![release](https://img.shields.io/github/v/release/GardenHamster/Theresa3rd-Bot)](https://github.com/GardenHamster/Theresa3rd-Bot/releases) [![download](https://img.shields.io/github/downloads/GardenHamster/Theresa3rd-Bot/total)](https://github.com/GardenHamster/Theresa3rd-Bot/releases)
 
 ## 简介
- - 某舰团长利用~~摸鱼时间~~业余时间写出来的自用的Bot，基于Mirai平台(通过[Mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)与之交互)
- - 基于 .net core 6.0 和 mirai-api-http，可以在Windows或Linux上运行
- - 开始白嫖前，请在右上角点一下:star:Star
+ - 某舰团长利用~~摸鱼时间~~业余时间写出来的自用的Bot，基于 .net core 6.0 和 mirai-api-http，可以在Windows或Linux上运行
+ - 实现了Mirai(使用[Mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)) 和 go-cqhttp(使用[EleCho.GoCqHttpSdk](https://github.com/OrgEleCho/EleCho.GoCqHttpSdk)) 双协议
  - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)，如果链接失效可以访问 [GitHub Pages](https://gardenhamster.github.io/TheresaBotDoc)
+ - 开始白嫖前，请在右上角点一下:star:Star
  
 ## 声明
  - **本项目为个人自娱自乐写出来的项目，并没有任何收益，并不对使用本项目产生的任何问题负责，不得将项目用于任何商业用途**
@@ -34,6 +34,7 @@
 - [x] saucenao搜图功能(如果图片来源于pixiv时，尝试下载并返回原图，并且优先返回来源于pixiv中的原图)
 - [x] ascii2d搜图功能(当saucenao中找不到来源时，继续使用ascii2d搜索)
 - [x] 定时色图功能，包括本地色图，lolicon，lolisuki
+- [x] 词云功能 - 每日/周/月/年词云
 - [x] Pixiv日榜/周榜/月榜/AI榜/男性向日榜
 - [x] pixiv画师作品预览
 
@@ -53,15 +54,17 @@
 ### 其他摆烂中的功能
 - [ ] 小游戏 - 狼人杀
 - [ ] 小游戏 - 谁是卧底
-- [ ] 词云功能 - 每日/周/月词云
 
 ## 致谢
 - [mamoe/mirai](https://github.com/mamoe/mirai)
 - [Executor-Cheng/mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)
+- [Mrs4s/go-cqhttp](https://github.com/Mrs4s/go-cqhttp)
+- [EleCho.GoCqHttpSdk](https://github.com/OrgEleCho/EleCho.GoCqHttpSdk)
 - [Lolicon Api](https://api.lolicon.app)
 - [Lolisuki Api](https://lolisuki.cc)
 - [saucenao.com](https://saucenao.com)
 - [ascii2d.net](https://ascii2d.net)
+- [WordCloud.NetCore](https://github.com/GardenHamster/WordCloud.NetCore)
 
 ## 一些效果图
 ![image](https://user-images.githubusercontent.com/89188316/153139063-7ec31cd9-debe-475f-8ec3-b4660f552d21.png)

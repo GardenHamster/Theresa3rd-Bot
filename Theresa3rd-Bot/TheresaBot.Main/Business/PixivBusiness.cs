@@ -526,7 +526,7 @@ namespace TheresaBot.Main.Business
                     if (illuts is null) continue;
                     if (string.IsNullOrWhiteSpace(illuts.id)) continue;
                     if (illuts.IsImproper) continue;
-                    if (illuts.HavingBanTag() is not null) continue;
+                    if (illuts.HavingBanTag().Count > 0) continue;
                     if (isShowAIs == false && illuts.IsAI) continue;
                     if (isShowR18s == false && illuts.IsR18) continue;
                     if (shelfLife > 0 && illuts.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;

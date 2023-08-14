@@ -2,49 +2,52 @@
 [![release](https://img.shields.io/github/v/release/GardenHamster/Theresa3rd-Bot)](https://github.com/GardenHamster/Theresa3rd-Bot/releases) [![download](https://img.shields.io/github/downloads/GardenHamster/Theresa3rd-Bot/total)](https://github.com/GardenHamster/Theresa3rd-Bot/releases)
 
 ## 简介
- - 某舰团长利用~~摸鱼时间~~业余时间写出来的自用的Bot，基于 .net core 6.0 和 mirai-api-http，可以在Windows或Linux上运行
- - 实现了Mirai(使用[Mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)) 和 go-cqhttp(使用[EleCho.GoCqHttpSdk](https://github.com/OrgEleCho/EleCho.GoCqHttpSdk)) 双协议
+ - 某舰团长利用 ~~摸鱼时间~~ 写出来的自用的Bot
+ - 基于 .net core 6.0，可以在 Windows 或 Linux 上运行
+ - 对接了 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) (使用SDK [Mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)) 
+ - 对接了 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) (使用SDK [EleCho.GoCqHttpSdk](https://github.com/OrgEleCho/EleCho.GoCqHttpSdk))
  - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)，如果链接失效可以访问 [GitHub Pages](https://gardenhamster.github.io/TheresaBotDoc)
  - 开始白嫖前，请在右上角点一下:star:Star
  
 ## 声明
  - **本项目为个人自娱自乐写出来的项目，并没有任何收益，并不对使用本项目产生的任何问题负责，不得将项目用于任何商业用途**
 
-## 提问
+## 关于提问
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
- - Issuse请贴出相关的报错信息，mirai-http-api和本插件版本，botsettings.yml相关配置，必要的聊天记录截图
+ - Issuse请贴出相关的报错信息，mirai-http-api或go-cqhttp版本，本插件版本，botsettings.yml相关内容，必要的聊天记录截图
  - 只发一句`没有反应`，`无法运行`之类的Issuse不予解答
 
 ## 功能和进度
-### 基本
+### 消息提醒
 - [x] 简易版复读机
 - [x] 自定义入群欢迎
 - [x] 自定义定时提醒功能
 
 ### 色图相关
-- [x] [Lolicon](https://api.lolicon.app)随机涩图
-- [x] [Lolisuki](https://lolisuki.cc)随机涩图
+- [x] [Lolicon](https://api.lolicon.app) 随机涩图
+- [x] [Lolisuki](https://lolisuki.cc) 随机涩图
+- [x] 本地随机涩图 
 - [x] pixiv免代理 
-- [x] pixivid搜索
+- [x] pixivid查询
+- [x] pixiv动图转gif
 - [x] pixiv标签搜索(根据标签获取随机的收藏度较高的色图，可多标签搜索)
-- [x] pixiv随机色图(随机标签/随机关注画师的作品/随机收藏中的作品/随机订阅中的作品)
-- [x] pixiv动图转gif功能
-- [x] saucenao搜图功能(如果图片来源于pixiv时，尝试下载并返回原图，并且优先返回来源于pixiv中的原图)
-- [x] ascii2d搜图功能(当saucenao中找不到来源时，继续使用ascii2d搜索)
-- [x] 定时色图功能，包括本地色图，lolicon，lolisuki
-- [x] 词云功能 - 每日/周/月/年词云
-- [x] Pixiv日榜/周榜/月榜/AI榜/男性向日榜
-- [x] pixiv画师作品预览
+- [x] pixiv随机搜索(随机标签/随机关注画师的作品/随机收藏中的作品/随机订阅中的作品)
+- [x] Pixiv日榜/周榜/月榜/AI榜/男性向日榜预览图
+- [x] pixiv画师作品预览图
+- [x] saucenao搜图(如果图片来源于pixiv时，尝试下载并返回原图，并且优先返回来源于pixiv中的原图)
+- [x] ascii2d搜图(当saucenao中找不到来源时，继续使用ascii2d搜索)
+- [x] 每日/周/月/年词云，昨日/上周/上月/去年词云，词云蒙版自定义
 
 ### 订阅推送功能
 - [x] pixiv画师最新作品推送功能
 - [x] pixiv标签最新作品推送功能(收藏数较高且每小时新增一定收藏数的最新作品)
 - [x] 米游社用户最新贴子推送功能
 - [x] Pixiv日榜/周榜/月榜/AI榜/男性向榜推送功能
+- [x] 定时涩图推送，包括本地色图，lolicon，lolisuki
 
-### 抽卡
+### 模拟抽卡
 - [x] ~~原神模拟抽卡，在[GenshinGacha](https://github.com/GardenHamster/GenshinGacha)中实现了~~
 
 ### TODO

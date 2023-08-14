@@ -184,7 +184,7 @@ namespace TheresaBot.Main.Handler
             var banTags = setuInfo.HavingBanTags();
             if (banTags.Count > 0)
             {
-                return $"该作品含有被屏蔽的标签【{banTags.JoinList()}】，不显示相关内容";
+                return $"该作品含有被屏蔽的标签【{banTags.JoinToString()}】，不显示相关内容";
             }
 
             if (setuInfo.IsR18 && isShowR18 == false)

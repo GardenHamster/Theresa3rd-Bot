@@ -70,17 +70,17 @@
 - [WordCloud.NetCore](https://github.com/GardenHamster/WordCloud.NetCore)
 
 ## 一些效果图
-![image](https://user-images.githubusercontent.com/89188316/153139063-7ec31cd9-debe-475f-8ec3-b4660f552d21.png)
 
-![image](https://user-images.githubusercontent.com/89188316/153144525-36b177f2-7ac8-4868-bb4f-223bb6978af9.png)
+![Screenshot_2023-08-14-20-08-40-270_com tencent mo](https://github.com/GardenHamster/Theresa3rd-Bot/assets/89188316/bbd6ccda-0b27-49de-9f73-aa8670fc7966)
 
-![image](https://user-images.githubusercontent.com/89188316/153144700-568fb0c8-92c7-4c6e-9868-d4361ab1eb16.png)
+![Screenshot_2023-08-15-00-05-58-765_com tencent mo](https://github.com/GardenHamster/Theresa3rd-Bot/assets/89188316/fbdecc9d-9267-4c12-9b1f-b7ec6544657c)
 
-![image](https://user-images.githubusercontent.com/89188316/177739246-0002d3e8-3554-4b65-adfc-54aaf440611f.png)
+![Screenshot_2023-08-17-14-51-05-588_com tencent mo](https://github.com/GardenHamster/Theresa3rd-Bot/assets/89188316/b61f320d-349e-46ee-acbc-d2d2f1fa03df)
 
-![image](https://user-images.githubusercontent.com/89188316/197740246-9850327e-3cd1-4dd5-9ade-402ce613bf7d.png)
+![Screenshot_2023-08-15-00-28-27-643_com tencent mo](https://github.com/GardenHamster/Theresa3rd-Bot/assets/89188316/e5e15984-bf82-4fb4-b826-2f1d3635505b)
 
-![image](https://user-images.githubusercontent.com/89188316/232713149-a98093c6-0c6c-4112-b9b6-e4aad91eab84.png)
+![Screenshot_2023-08-15-00-22-13-259_com tencent mo](https://github.com/GardenHamster/Theresa3rd-Bot/assets/89188316/d758dde8-9c69-4e3e-9ffa-8bd94de3bc5d)
 
-![image](https://user-images.githubusercontent.com/89188316/232714636-8d8da894-0f58-430b-bc09-1dc765af37c9.png)
+![Screenshot_2023-08-17-15-15-27-951_com tencent mo](https://github.com/GardenHamster/Theresa3rd-Bot/assets/89188316/68c4db47-08f1-4276-bdaf-f66b0640640c)
 
+![Screenshot_2023-08-17-15-22-14-318_com tencent mo](https://github.com/GardenHamster/Theresa3rd-Bot/assets/89188316/dbffb85b-e328-4237-8c35-c4af8f50d63b)

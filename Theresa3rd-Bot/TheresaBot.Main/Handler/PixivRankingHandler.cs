@@ -216,7 +216,11 @@ namespace TheresaBot.Main.Handler
                 dateStr = paramArr[0];
                 idStr = paramArr[1];
             }
-            else if (paramArr.Length > 0)
+            else if (paramArr.Length > 0 && paramArr[0].IsShortDateStr())
+            {
+                dateStr = paramArr[0];
+            }
+            else
             {
                 idStr = paramArr[0];
             }
@@ -297,6 +301,12 @@ namespace TheresaBot.Main.Handler
             if (idList.Count == 0)
             {
                 await command.ReplyGroupMessageWithQuoteAsync($"没有检测到序号，你可以使用【#日榜 20230601 11,45,14】的格式获取指定排名的作品详情");
+                return;
+            }
+
+            if (idList.Any(o => o < 1 || o > 500))
+            {
+                await command.ReplyGroupMessageWithQuoteAsync($"检测到错误的序号，序号只能在1~500之间");
                 return;
             }
 

@@ -1,5 +1,6 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
+using System.IO;
 using TheresaBot.GoCqHttp.Common;
 using TheresaBot.GoCqHttp.Plugin;
 using TheresaBot.Main.Common;
@@ -119,23 +120,34 @@ namespace TheresaBot.GoCqHttp.Helper
         /// <summary>
         /// 将通用消息转为CQ消息
         /// </summary>
-        /// <param name="chatContent"></param>
+        /// <param name="content"></param>
         /// <returns></returns>
-        public static CqMsg ToCQMessageAsync(this BaseContent chatContent)
+        public static CqMsg ToCQMessageAsync(this BaseContent content)
         {
-            if (chatContent is PlainContent plainContent)
+            if (content is PlainContent plainContent)
             {
                 return string.IsNullOrEmpty(plainContent.Content) ? null : new CqTextMsg(plainContent.Content);
             }
-            if (chatContent is LocalImageContent localImageContent)
+            if (content is LocalImageContent localImageContent)
             {
-                return localImageContent.FileInfo is null ? null : CqImageMsg.FromFile(localImageContent.FileInfo.FullName);
+                return localImageContent.FileInfo is null ? null : ToCQMessageAsync(localImageContent.FileInfo);
             }
-            if (chatContent is WebImageContent webImageContent)
+            if (content is WebImageContent webImageContent)
             {
                 return string.IsNullOrWhiteSpace(webImageContent.Url) ? null : new CqImageMsg(webImageContent.Url);
             }
             return null;
+        }
+
+        /// <summary>
+        /// 转为Base64 CQ图片消息
+        /// </summary>
+        /// <param name="fileInfo"></param>
+        /// <returns></returns>
+        public static CqMsg ToCQMessageAsync(FileInfo fileInfo)
+        {
+            using FileStream fileStream = File.OpenRead(fileInfo.FullName);
+            return CqImageMsg.FromStream(fileStream);
         }
 
 

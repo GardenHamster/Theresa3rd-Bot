@@ -225,7 +225,7 @@ namespace TheresaBot.Main.Handler
                     }
                     subscribeBusiness.cancleSubscribe(dbSubscribe.Id);
                 }
-                await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv用户[{userIds}]~");
+                await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv用户[{userIds.JoinToString()}]~");
                 SubscribeDatas.LoadSubscribeTask();
             }
             catch (ProcessException ex)

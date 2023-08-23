@@ -6,7 +6,7 @@
  - 基于 .net core 6.0，可以在 Windows 或 Linux 上运行
  - 对接了 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) (使用SDK [Mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)) 
  - 对接了 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) (使用SDK [EleCho.GoCqHttpSdk](https://github.com/OrgEleCho/EleCho.GoCqHttpSdk))
- - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)，如果链接失效可以访问 [GitHub Pages](https://gardenhamster.github.io/TheresaBotDoc)
+ - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)，如果链接失效可以访问 [github-pages](https://gardenhamster.github.io/Theresa3rd-Bot)
  - 开始白嫖前，请在右上角点一下:star:Star
  
 ## 声明

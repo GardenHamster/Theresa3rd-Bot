@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Theresa3rd-Bot 文档</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="css/vue.css">
+  <style>
+    .sidebar {
+      max-width: 50vw;
+    }
+
+    .blockfill {
+      min-width: 90%;
+      display: block;
+    }
+
+    .markdown-section {
+      min-width: 350px;
+      max-width: 70%;
+      padding: 40px 0px 10px 0px;
+    }
+
+    .markdown-section a {
+      color: #00BFFF;
+      color: var(--theme-color, #00BFFF);
+    }
+
+    .markdown-section h2 {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    .markdown-section p {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .markdown-section ol,
+    .markdown-section p,
+    .markdown-section ul {
+      line-height: 1.6rem;
+      word-spacing: .1rem;
+      font-size: 1.05rem;
+    }
+
+    .markdown-section h3 {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .anchor span {
+      font-weight: 500;
+    }
+
+    section.cover .cover-main>p:last-child a:last-child {
+      background-color: var(--theme-color, #00BFFF);
+    }
+
+    section.cover.has-mask .mask {
+      opacity: .7;
+    }
+
+    .github-corner svg {
+      fill: #00BFFF;
+    }
+
+    .sidebar ul li.active>a {
+      color: #00BFFF;
+      color: var(--theme-color, #00BFFF);
+    }
+
+    .markdown-section h2 span {
+      color: #00BFFF;
+    }
+
+    .markdown-section p.tip {
+      margin: 1em 0;
+    }
+
+    #vcomments {
+      padding-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: 'Theresa3rd-Bot',
+      repo: 'GardenHamster/Theresa3rd-Bot',
+      loadSidebar: true,
+      coverpage: true,
+      onlyCover: true,
+      subMaxLevel: 2,
+      auto2top: true,
+      nameLink: '/',
+      Valine: {
+        appId: 'lZHZpudobtveSt36Cyl0l0yH-9Nh9j0Va',
+        appKey: 'bYhuuMzNKUXp0YsaskrYjMLW'
+      },
+      pagination: {
+        previousText: '上一小节',
+        nextText: '下一小节',
+        crossChapter: true,
+        crossChapterText: true,
+      },
+      search: {
+        placeholder: '搜索',
+        noData: '找不到结果',
+        hideOtherSidebarContent: true,
+        depth: 6,
+      }
+    }
+  </script>
+  <script src="js/docsify@4.js"></script>
+  <script src="js/zoom-image.min.js"></script>
+  <script src="js/docsify-pagination.min.js"></script>
+  <script src="js/search.min.js"></script>
+  <script src='js/Valine.min.js'></script>
+  <script src="js/docsify-valine.min.js"></script>
+</body>
+
+</html>

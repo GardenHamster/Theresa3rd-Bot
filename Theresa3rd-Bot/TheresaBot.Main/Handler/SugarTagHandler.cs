@@ -1,5 +1,4 @@
-﻿using System.IO;
-using TheresaBot.Main.Business;
+﻿using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Datas;
@@ -8,7 +7,6 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {

@@ -1,6 +1,5 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
-using System.IO;
 using TheresaBot.GoCqHttp.Common;
 using TheresaBot.GoCqHttp.Plugin;
 using TheresaBot.Main.Common;

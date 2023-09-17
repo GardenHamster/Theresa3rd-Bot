@@ -32,6 +32,10 @@ namespace TheresaBot.MiraiHttpApi
                 ConfigHelper.LoadBotConfig();
                 LogHelper.Info($"配置文件加载完毕...");
 
+                services.AddControllers();
+                services.ConfigureJWT();
+                LogHelper.Info($"JWT初始化完毕...");
+
                 MiraiHelper.ConnectMirai().Wait();
                 LogHelper.Info($"尝试读取Bot名片...");
                 Task.Delay(1000).Wait();
@@ -74,54 +78,39 @@ namespace TheresaBot.MiraiHttpApi
             {
                 LogHelper.Error(ex);
                 new MiraiReporter().SendErrorForce(ex, "启动异常").Wait();
-            }
-
-            try
-            {
-                //services.AddControllers();
-                //services.AddSwaggerGen(c =>
-                //{
-                //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Theresa3rd_Bot", Version = "v1" });
-                //});
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex);
-                new MiraiReporter().SendErrorForce(ex, "启动异常").Wait();
+                Environment.Exit(0);
+                throw;
             }
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
         {
-            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //    app.UseSwagger();
-            //    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Theresa3rd_Bot v1"));
-            //}
-
-            //app.UseHttpsRedirection();
-
-            //app.UseRouting();
-
-            //app.UseAuthorization();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //});
-
-            appLifetime.ApplicationStarted.Register(OnStarted);
-            appLifetime.ApplicationStopping.Register(OnStopping);
-            appLifetime.ApplicationStopped.Register(OnStopped);
+            try
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+                app.UseHttpsRedirection();
+                app.UseRouting();
+                app.UseAuthentication();//开启认证
+                app.UseAuthorization();//开启授权
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
+                appLifetime.ApplicationStarted.Register(OnStarted);
+                appLifetime.ApplicationStopping.Register(OnStopping);
+                appLifetime.ApplicationStopped.Register(OnStopped);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.FATAL(ex, "启动异常");
+                Environment.Exit(0);
+                throw;
+            }
         }
 
         private void OnStarted()
         {
-            //"On-started" logic
         }
 
         private void OnStopping()
@@ -133,7 +122,6 @@ namespace TheresaBot.MiraiHttpApi
         {
             Environment.Exit(0);
         }
-
 
     }
 }

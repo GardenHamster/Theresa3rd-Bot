@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
-using TheresaBot.Main.Model.File;
+using TheresaBot.Main.Model.Infos;
 using TheresaBot.Main.Model.Pixiv;
 
 namespace TheresaBot.Main.Helper

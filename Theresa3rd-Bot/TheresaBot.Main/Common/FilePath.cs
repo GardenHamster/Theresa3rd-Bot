@@ -1,5 +1,5 @@
 ﻿using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.File;
+using TheresaBot.Main.Model.Infos;
 
 namespace TheresaBot.Main.Common
 {

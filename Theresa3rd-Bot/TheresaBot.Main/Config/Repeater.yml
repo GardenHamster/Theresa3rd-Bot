@@ -1,0 +1,3 @@
+Enable:                     false                                               #是否启用
+RepeatTime:                 3                                                   #重复收到N条消息后触发复读功能
+RepeatMode:                 0                                                   #复读模式，0：简单模式

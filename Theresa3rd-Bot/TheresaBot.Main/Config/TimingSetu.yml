@@ -1,0 +1,15 @@
+Enable:                     false                                               #是否启用
+LocalPath:                  'BotImg/localSetu'                                  #本地图片文件夹路径，图片需要分类放在子目录下，Source为0时可用
+FromOneDir:                 false                                               #true：从一个随机目录读取涩图，false：从不同的随机目录读取涩图，Source为0时可用
+LolisukiLevel:              '0-3'                                               #Lolisuki的Level，Source为2时可用
+Timers:                                                                         #定时列表
+    - Enable:               true                                                #是否启用
+      Cron:                 '0 0 15 * * ?'                                      #cron表达式(需要自行百度cron格式)
+      Name:                 '下午茶'                                            #定时器名称
+      Groups:               [284196392]                                         #发送到群
+      Source:               2                                                   #图源，0：本地，1：Lolicon，2：Lolisuki
+      SendMerge:            true                                                #合并消息发送
+      Tags:                 []                                                  #涩图标签，不填表示随机，Source为1和2时可用
+      Quantity:             5                                                   #发送涩图数量，Source为1和2时取值范围为1~20
+      AtAll:                false                                               #是否艾特全体
+      TimingMsg:            '下午茶时间，来点{Tags}涩图，图片来源：{SourceName}'

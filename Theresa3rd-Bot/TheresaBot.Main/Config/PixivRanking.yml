@@ -1,0 +1,59 @@
+Enable:                     true                                                #是否启用
+ProcessingMsg:              '正在获取榜单信息，需要亿点时间...'                 #开始执行前返回的消息
+Template:                   '{Date}{Ranking}精选，数据缓存{CacheSeconds}秒'     #消息模版
+MaxScan:                    500                                                 #每个排行榜最多扫描前N个作品
+PreviewInPage:              30                                                  #合成一览图中，每张一览图最多显示多少个作品
+SortType:                   2                                                   #排序方式，0榜单排名，1收藏数排序，2收藏率排序，3点赞数排序，4点赞率排序
+GroupCD:                    300                                                 #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
+CacheSeconds:               3600                                                #每个榜单数据缓存时间
+SendDetail:                 0                                                   #同时发送前N个作品的图片和详情
+Daily:                                                                          #日榜
+    Enable:                 true                                                #是否启用
+    Commands:               ['日榜']                                            #命令
+    R18Commands:            ['R18日榜']                                         #R18命令
+    MinRatingCount:         300                                                 #榜单信息中的最低点赞数，用于对作品进行初步过滤
+    MinRatingRate:          0.1                                                 #榜单信息中的最低点赞率，用于对作品进行初步过滤
+    MinBookCount:           500                                                 #作品最低实时收藏数，用于对作品进一步过滤
+    MinBookRate:            0.1                                                 #作品最低实时收藏率，用于对作品进一步过滤
+DailyAI:                                                                        #AI日榜
+    Enable:                 true                                                #是否启用
+    Commands:               ['ai榜','ai日榜']                                   #命令
+    R18Commands:            ['R18AI榜','R18AI日榜']                             #R18命令
+    MinRatingCount:         300                                                 #榜单信息中的最低点赞数，用于对作品进行初步过滤
+    MinRatingRate:          0.1                                                 #榜单信息中的最低点赞率，用于对作品进行初步过滤
+    MinBookCount:           500                                                 #作品最低实时收藏数，用于对作品进一步过滤
+    MinBookRate:            0.1                                                 #作品最低实时收藏率，用于对作品进一步过滤
+Male:                                                                           #男性向(受男性欢迎)日榜
+    Enable:                 true                                                #是否启用
+    Commands:               ['LSP日榜']                                         #命令
+    R18Commands:            ['R18LSP日榜']                                      #命令
+    MinRatingCount:         300                                                 #榜单信息中的最低点赞数，用于对作品进行初步过滤
+    MinRatingRate:          0.18                                                #榜单信息中的最低点赞率，用于对作品进行初步过滤
+    MinBookCount:           500                                                 #作品最低实时收藏数，用于对作品进一步过滤
+    MinBookRate:            0.24                                                #作品最低实时收藏率，用于对作品进一步过滤
+Weekly:                                                                         #周榜
+    Enable:                 true                                                #是否启用
+    Commands:               ['周榜']                                            #命令
+    R18Commands:            ['R18周榜']                                         #R18命令
+    MinRatingCount:         1000                                                #榜单信息中的最低点赞数，用于对作品进行初步过滤
+    MinRatingRate:          0.18                                                #榜单信息中的最低点赞率，用于对作品进行初步过滤
+    MinBookCount:           1500                                                #作品最低实时收藏数，用于对作品进一步过滤
+    MinBookRate:            0.25                                                #作品最低实时收藏率，用于对作品进一步过滤
+Monthly:                                                                        #月榜
+    Enable:                 true                                                #是否启用
+    Commands:               ['月榜']                                            #命令
+    MinRatingCount:         100                                                 #榜单信息中的最低点赞数，用于对作品进行初步过滤
+    MinRatingRate:          0.01                                                #榜单信息中的最低点赞率，用于对作品进行初步过滤
+    MinBookCount:           3000                                                #作品最低实时收藏数，用于对作品进一步过滤
+    MinBookRate:            0.155                                               #作品最低实时收藏率，用于对作品进一步过滤
+Subscribes:                                                                     #定时推送
+    - Enable:               false                                               #是否启用
+      Cron:                 '0 30 10 * * ?'                                     #cron表达式(需要自行百度cron格式)
+      Groups:               [284196392]                                         #推送到群
+      Contents:             ['Daily','DailyAI']                                 #推送内容，可选Daily/DailyAI/Male/Weekly/Monthly/DailyR18/DailyAIR18/MaleR18/WeeklyR18
+      SendDetail:           10                                                  #同时发送前N个作品的图片和详情
+    - Enable:               false                                               #是否启用
+      Cron:                 '0 40 10 ? * SUN'                                   #cron表达式(需要自行百度cron格式)
+      Groups:               [284196392]                                         #推送到群
+      Contents:             ['Weekly','Monthly']                                #推送内容，可选Daily/DailyAI/Male/Weekly/Monthly/DailyR18/DailyAIR18/MaleR18/WeeklyR18
+      SendDetail:           10                                                  #同时发送前N个作品的图片和详情

@@ -1,0 +1,8 @@
+Enable:                     false                                               #是否启用
+Template:                   '欢迎新人！'                                        #默认欢迎模版
+Special:                                                                        #为单独的群设定单独的模版
+    - GroupId:              284196392                                           #群id(群号)，这里只能填一个
+      Template:             |                                                   #入群欢迎模版
+                            欢迎萌新
+                            [image:BotImg/face/welcome.gif]
+                            请认真阅读群内的相关公告

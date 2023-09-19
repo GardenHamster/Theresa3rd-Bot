@@ -1,4 +1,4 @@
-﻿namespace TheresaBot.Main.Model.File
+﻿namespace TheresaBot.Main.Model.Infos
 {
     public class HttpFileInfo
     {

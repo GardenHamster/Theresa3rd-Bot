@@ -6,6 +6,7 @@ namespace TheresaBot.Main.Common
     {
         public const string BotVersion = "0.11.0";
         public const string BotHomepage = "https://www.theresa3rd.cn";
+        public static BackstageConfig BackstageConfig = new BackstageConfig();
         public static GeneralConfig GeneralConfig = new GeneralConfig();
         public static PixivConfig PixivConfig = new PixivConfig();
         public static PermissionsConfig PermissionsConfig = new PermissionsConfig();

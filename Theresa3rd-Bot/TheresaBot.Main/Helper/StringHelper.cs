@@ -47,6 +47,15 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 获取8长度的UUID
+        /// </summary>
+        /// <returns></returns>
+        public static string RandomUUID8()
+        {
+            return RandomUUID32().Substring(24, 8);
+        }
+
+        /// <summary>
         /// 截断字符串
         /// </summary>
         /// <param name="str"></param>

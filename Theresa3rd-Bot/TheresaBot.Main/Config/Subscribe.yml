@@ -1,0 +1,34 @@
+Miyoushe:                                                                       #订阅米游社版主
+    Enable:                 true                                                #是否启用
+    AddCommands:            ['订阅版主']                                        #订阅命令，需要管理员执行
+    RmCommands:             ['退订版主']                                        #退订命令，需要管理员执行
+    Template:               |                                                   #消息模版，值为空时将使用默认模版
+                            米游社[{UserName}]发布了新帖子，发布时间：{CreateTime}
+                            {Title}
+                            {Content}
+                            {Urls}
+    ScanInterval:           60                                                  #扫描间隔(秒)
+    ShelfLife:              43200                                               #保质期(秒)，超过保质期将不会推送，0表示永不过期
+PixivUser:                                                                      #订阅P站用户
+    Enable:                 true                                                #是否启用
+    ScanMode:               2                                                   #1：从pixiv账号获取已关注用户的最新作品并推送到拥有订阅权限的群（耗时短），2：逐个扫描订阅命令所订阅的画师（可自定义）
+    AddCommands:            ['订阅画师']                                        #订阅命令，需要管理员执行
+    RmCommands:             ['退订画师']                                        #退订命令，需要管理员执行
+    SyncCommands:           ['同步画师']                                        #同步命令，从p站账号中获取关注画师列表并添加到订阅中，需要管理员执行
+    Template:               'pixiv画师[{UserName}]发布了新作品：'               #消息模版，值为空时将使用默认模版
+    ScanInterval:           3600                                                #扫描间隔(秒)
+    ShelfLife:              43200                                               #保质期(秒)，超过保质期将不会推送，0表示永不过期
+    SendMerge:              false                                               #true：每10条消息合并发送，false：逐条发送
+
+PixivTag:                                                                       #订阅P站标签
+    Enable:                 true                                                #是否启用
+    AddCommands:            ['订阅标签']                                        #订阅命令，需要管理员执行
+    RmCommands:             ['退订标签']                                        #退订命令，需要管理员执行
+    Template:               'pixiv标签[{TagName}]出现了新作品：'                #消息模版，值为空时将使用默认模版
+    ScanInterval:           1800                                                #扫描间隔(秒)
+    ShelfLife:              86400                                               #保质期(秒)，距离发布时间超过该值的作品将不会推送，0表示永不过期
+    MaxScan:                300                                                 #最多扫描前N个作品
+    MinBookmark:            300                                                 #最低收藏数，用于判断涩图是否合格
+    MinBookPerHour:         50                                                  #距离作品发布每小时至少新增收藏数量，用于判断涩图是否合格
+    MinBookRate:            0.08                                                #最低收藏率，收藏数/浏览数(标签搜索时适用)
+    SendMerge:              false                                               #true：每10条消息合并发送，false：逐条发送

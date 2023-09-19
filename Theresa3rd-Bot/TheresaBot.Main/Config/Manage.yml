@@ -1,0 +1,10 @@
+PixivCookieCommands:        ['pixivcookie','pck']                               #更新pixiv cookie 指令，需要私聊使用
+SaucenaoCookieCommands:     ['saucenaocookie','sck']                            #更新saucenao cookie 指令，需要私聊使用
+DisableTagCommands:         ['禁止标签','屏蔽标签']                             #禁止一个涩图关键词，禁止后不允许被搜索
+EnableTagCommands:          ['解禁标签','解锁标签']                             #解禁一个涩图关键词
+DisableMemberCommands:      ['屏蔽成员','拉黑成员']                             #将一个群成员拉入黑名单，所有群生效
+EnableMemberCommands:       ['解禁成员']                                        #将一个群成员从黑名单移除，所有群生效
+ListSubCommands:            ['订阅列表','已订列表']                             #列出所有订阅列表
+RemoveSubCommands:          ['移除订阅','取消订阅']                             #通过订阅Id移除一个订阅
+BindTagCommands:            ['绑定标签','标签糖']                               #将一个或多个pixiv标签绑定到一个或多个关键词中
+UnBindTagCommands:          ['解绑标签']                                        #解除关键词绑定

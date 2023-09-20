@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TheresaBot.Main.Common;
+using TheresaBot.Main.Model.Result;
 
 namespace TheresaBot.Main.Controller
 {
@@ -9,11 +11,25 @@ namespace TheresaBot.Main.Controller
     {
         [HttpGet]
         [Authorize]
-        [Route("get")]
-        public string GetConfig()
+        [Route("get/general")]
+        public ApiResult GetGeneral()
         {
-            return "ok";
+            return ApiResult.Success(BotConfig.GeneralConfig);
         }
+
+        [HttpGet]
+        [Authorize]
+        [Route("get/pixiv")]
+        public ApiResult GetPixiv()
+        {
+            return ApiResult.Success(BotConfig.PixivConfig);
+        }
+
+
+
+
+
+
 
     }
 }

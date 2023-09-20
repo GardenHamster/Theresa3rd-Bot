@@ -310,7 +310,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str">加密字符</param>
         /// <returns></returns>
-        public static string MD532bit(this string str)
+        public static string ToMD5(this string str)
         {
             MD5 md5 = MD5.Create();
             byte[] byteOld = Encoding.UTF8.GetBytes(str);

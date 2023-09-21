@@ -2,8 +2,8 @@
 using System.Security.Claims;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Api;
 using TheresaBot.Main.Model.Jwt;
-using TheresaBot.Main.Model.Result;
 
 namespace TheresaBot.Main.Controller
 {
@@ -13,8 +13,9 @@ namespace TheresaBot.Main.Controller
     {
         [HttpPost]
         [Route("login")]
-        public ApiResult Login([FromBody] string password)
+        public ApiResult Login([FromBody] LoginDataDto loginData)
         {
+            string password = loginData?.Password;
             if (string.IsNullOrWhiteSpace(password))
             {
                 return ApiResult.Fail("密码错误");
@@ -29,8 +30,7 @@ namespace TheresaBot.Main.Controller
             var token = JWTHelper.GenerateToken(claims);
             var data = new JwtTokenVo
             {
-                Token = token.AccessToken,
-                Header = token.TokenType,
+                Token = token.Token,
                 CreateAt = token.CreateTime.ToTimeStamp(),
                 ExpiredAt = token.ExpiredTime.ToTimeStamp(),
                 ExpiredSeconds = token.ExpiredSeconds

@@ -42,8 +42,8 @@ namespace TheresaBot.Main.Helper
             var token = new JwtSecurityToken(issuer, audience, claims, createTime, expiredTime, credentials);
             return new JwtToken
             {
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
-                TokenType = JwtBearerDefaults.AuthenticationScheme,
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Header = JwtBearerDefaults.AuthenticationScheme,
                 CreateTime = createTime,
                 ExpiredTime = expiredTime,
                 ExpiredSeconds = JwtConfig.ExpiredSeconds

@@ -1,6 +1,6 @@
 ﻿using TheresaBot.Main.Common;
 
-namespace TheresaBot.Main.Model.Result
+namespace TheresaBot.Main.Model.Api
 {
     public class ApiResult
     {

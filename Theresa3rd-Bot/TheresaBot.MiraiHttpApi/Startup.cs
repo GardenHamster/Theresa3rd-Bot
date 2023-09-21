@@ -35,7 +35,8 @@ namespace TheresaBot.MiraiHttpApi
 
                 services.AddControllers();
                 services.ConfigureJWT();
-                LogHelper.Info($"JWT初始化完毕...");
+                services.AddCors(options => options.AddPolicy("cors", p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+                LogHelper.Info($"后台初始化完毕...");
 
                 MiraiHelper.ConnectMirai().Wait();
                 LogHelper.Info($"尝试读取Bot名片...");
@@ -55,7 +56,7 @@ namespace TheresaBot.MiraiHttpApi
             catch (Exception ex)
             {
                 LogHelper.FATAL(ex, "启动异常");
-                Environment.Exit(0);
+                Environment.Exit(-1);
                 throw;
             }
 
@@ -79,7 +80,7 @@ namespace TheresaBot.MiraiHttpApi
             {
                 LogHelper.Error(ex);
                 new MiraiReporter().SendErrorForce(ex, "启动异常").Wait();
-                Environment.Exit(0);
+                Environment.Exit(-1);
                 throw;
             }
         }
@@ -94,6 +95,7 @@ namespace TheresaBot.MiraiHttpApi
                 app.UseRouting();
                 app.UseAuthentication();//开启认证
                 app.UseAuthorization();//开启授权
+                app.UseCors("cors");//允许跨域
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
@@ -105,7 +107,7 @@ namespace TheresaBot.MiraiHttpApi
             catch (Exception ex)
             {
                 LogHelper.FATAL(ex, "启动异常");
-                Environment.Exit(0);
+                Environment.Exit(-1);
                 throw;
             }
         }

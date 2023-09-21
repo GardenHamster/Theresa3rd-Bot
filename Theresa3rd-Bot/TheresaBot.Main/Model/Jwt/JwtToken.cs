@@ -2,9 +2,9 @@
 {
     public class JwtToken
     {
-        public string AccessToken { get; set; }
+        public string Token { get; set; }
 
-        public string TokenType { get; set; }
+        public string Header { get; set; }
 
         public DateTime CreateTime { get; set; }
 

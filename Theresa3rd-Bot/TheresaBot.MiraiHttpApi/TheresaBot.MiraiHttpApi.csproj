@@ -51,7 +51,7 @@
 	</ItemGroup>
 
 	<ProjectExtensions>
-		<VisualStudio><UserProperties appsettings_1development_1json__JsonSchema="https://appsemble.app/api.json" appsettings_1json__JsonSchema="" /></VisualStudio>
+		<VisualStudio><UserProperties appsettings_1development_1json__JsonSchema="https://appsemble.app/api.json" appsettings_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio>
 	</ProjectExtensions>
 
 </Project>

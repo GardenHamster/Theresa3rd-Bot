@@ -39,9 +39,8 @@ namespace TheresaBot.MiraiHttpApi
                 LogHelper.Info($"后台初始化完毕...");
 
                 MiraiHelper.ConnectMirai().Wait();
-                LogHelper.Info($"尝试读取Bot名片...");
-                Task.Delay(1000).Wait();
                 MiraiHelper.LoadBotProfileAsync().Wait();
+                MiraiHelper.LoadGroupAsync().Wait();
 
                 LogHelper.Info($"开始初始化数据库...");
                 services.AddSqlSugar(new IocConfig()//注入Sqlsuger
@@ -91,7 +90,7 @@ namespace TheresaBot.MiraiHttpApi
             {
                 ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-                app.UseHttpsRedirection();
+                //app.UseHttpsRedirection();
                 app.UseRouting();
                 app.UseAuthentication();//开启认证
                 app.UseAuthorization();//开启授权

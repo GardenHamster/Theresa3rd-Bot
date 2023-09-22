@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Infos
 {
-    public class HttpFileInfo
+    public record HttpFileInfo
     {
         public string FullFileName { get; set; }
         public string FileName { get; set; }

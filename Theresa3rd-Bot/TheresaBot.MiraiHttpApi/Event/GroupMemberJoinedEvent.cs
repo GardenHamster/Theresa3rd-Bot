@@ -23,7 +23,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 long memberId = message.Member.Id;
                 long groupId = message.Member.Group.Id;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
-                if (memberId == MiraiConfig.BotQQ) return;
+                if (memberId == BotConfig.BotQQ) return;
                 WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
                 if (welcomeConfig is null || welcomeConfig.Enable == false) return;
                 string template = welcomeConfig.Template;

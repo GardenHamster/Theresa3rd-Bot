@@ -29,7 +29,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
-                if (memberId == MiraiConfig.BotQQ) return;
+                if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
 
                 List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
@@ -55,7 +55,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 {
                     MiraiGroupRelay relay = new MiraiGroupRelay(args, msgId, message, groupId, memberId);
                     if (ProcessCache.HandleStep(relay, groupId, memberId)) return; //分步处理
-                    if (RepeatCache.CheckCanRepeat(groupId, MiraiConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
+                    if (RepeatCache.CheckCanRepeat(groupId, BotConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.Mirai, msgId, groupId, memberId);
                     List<string> plainMessages = args.Chain.Where(o => o is PlainMessage).Select(o => o.ToString()).ToList();

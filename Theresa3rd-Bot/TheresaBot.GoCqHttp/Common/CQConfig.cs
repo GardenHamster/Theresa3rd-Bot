@@ -8,9 +8,5 @@
 
         public static int Port = 0;
 
-        public static long BotQQ = 0;
-
-        public static string BotName = "Bot";
-
     }
 }

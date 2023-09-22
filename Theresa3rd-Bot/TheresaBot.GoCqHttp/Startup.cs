@@ -39,9 +39,8 @@ namespace TheresaBot.GoCqHttp
                 LogHelper.Info($"后台初始化完毕...");
 
                 CQHelper.ConnectGoCqHttp().Wait();
-                LogHelper.Info($"尝试读取Bot名片...");
-                Task.Delay(1000).Wait();
                 CQHelper.LoadBotProfileAsync().Wait();
+                CQHelper.LoadGroupAsync().Wait();
 
                 LogHelper.Info($"开始初始化数据库...");
                 services.AddSqlSugar(new IocConfig()//注入Sqlsuger
@@ -92,7 +91,7 @@ namespace TheresaBot.GoCqHttp
             {
                 ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-                app.UseHttpsRedirection();
+                //app.UseHttpsRedirection();
                 app.UseRouting();
                 app.UseAuthentication();//开启认证
                 app.UseAuthorization();//开启授权

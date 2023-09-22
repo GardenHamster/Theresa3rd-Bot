@@ -32,7 +32,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 long groupId = args.GroupId;
                 if (args.Session is not ICqActionSession session) return;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
-                if (memberId == CQConfig.BotQQ) return;
+                if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
 
                 List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
@@ -41,7 +41,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 string message = args.Message.Text;
 
                 string prefix = prefix = instruction.MatchPrefix();
-                bool isAt = args.Message.Any(v => v is CqAtMsg atMsg && atMsg.Target == CQConfig.BotQQ);
+                bool isAt = args.Message.Any(v => v is CqAtMsg atMsg && atMsg.Target == BotConfig.BotQQ);
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
 
@@ -56,7 +56,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 {
                     CQGroupRelay relay = new CQGroupRelay(args, msgId, message, groupId, memberId);
                     if (ProcessCache.HandleStep(relay, groupId, memberId)) return; //分步处理
-                    if (RepeatCache.CheckCanRepeat(groupId, CQConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
+                    if (RepeatCache.CheckCanRepeat(groupId, BotConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Message.OfType<CqImageMsg>().Select(o => o.Url?.ToString()).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.GoCQHttp, msgId, groupId, memberId);
                     List<string> plainMessages = args.Message.OfType<CqTextMsg>().Select(o => o.Text).ToList();

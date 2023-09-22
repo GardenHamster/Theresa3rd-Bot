@@ -5,6 +5,7 @@ using TheresaBot.GoCqHttp.Plugin;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.Infos;
 
 namespace TheresaBot.GoCqHttp.Helper
 {
@@ -57,13 +58,36 @@ namespace TheresaBot.GoCqHttp.Helper
             {
                 var result = await Session.GetLoginInformationAsync();
                 if (result is null) throw new Exception("Bot名片获取失败");
-                CQConfig.BotQQ = result?.UserId ?? 0;
-                CQConfig.BotName = result?.Nickname ?? "Bot";
-                LogHelper.Info($"Bot名片获取完毕，QQNumber={CQConfig.BotQQ}，Nickname={result?.Nickname ?? ""}");
+                BotConfig.BotQQ = result?.UserId ?? 0;
+                BotConfig.BotName = result?.Nickname ?? "Bot";
+                LogHelper.Info($"Bot名片获取完毕，QQNumber={BotConfig.BotQQ}，Nickname={result?.Nickname ?? ""}");
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "Bot名片获取异常");
+            }
+        }
+
+        /// <summary>
+        /// 获取群列表
+        /// </summary>
+        /// <returns></returns>
+        public static async Task LoadGroupAsync()
+        {
+            try
+            {
+                var groupInfos = await Session.GetGroupListAsync();
+                if (groupInfos?.Groups is null) throw new Exception("群列表获取失败");
+                BotConfig.GroupInfos = groupInfos.Groups.Select(o => new GroupInfos(o.GroupId, o.GroupName)).ToList();
+                var availableIds = groupInfos.Groups.Select(o => o.GroupId).ToList();
+                var acceptIds = BotConfig.PermissionsConfig.AcceptGroups;
+                var groupCount = BotConfig.GroupInfos.Count;
+                int acceptCount = acceptIds.Where(o => availableIds.Contains(o)).Count();
+                LogHelper.Info($"群列表获取完毕，共获取群号 {groupCount} 个，其中已启用群号 {acceptCount} 个");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "群列表获取失败");
             }
         }
 

@@ -51,6 +51,28 @@ namespace TheresaBot.Main.Dao
         }
 
         /// <summary>
+        /// 查询某个订阅类型的列表
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="subscribeType"></param>
+        /// <returns></returns>
+        public List<SubscribeInfo> getSubscribes(SubscribeType subscribeType)
+        {
+            return Db.Queryable<SubscribeGroupPO>()
+            .InnerJoin<SubscribePO>((sg, s) => sg.SubscribeId == s.Id)
+            .Where((sg, s) => s.SubscribeType == subscribeType)
+            .Select((sg, s) => new SubscribeInfo
+            {
+                SubscribeId = sg.SubscribeId,
+                SubscribeCode = s.SubscribeCode,
+                SubscribeType = s.SubscribeType,
+                SubscribeSubType = s.SubscribeSubType,
+                SubscribeName = s.SubscribeName,
+                GroupId = sg.GroupId
+            }).ToList();
+        }
+
+        /// <summary>
         /// 删除订阅
         /// </summary>
         /// <param name="groupId"></param>

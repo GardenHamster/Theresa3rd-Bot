@@ -3,6 +3,7 @@ using EleCho.GoCqHttpSdk.Message;
 using TheresaBot.GoCqHttp.Common;
 using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.GoCqHttp.Result;
+using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
@@ -76,7 +77,7 @@ namespace TheresaBot.GoCqHttp.Session
         public override async Task<BaseResult> SendGroupMergeAsync(long groupId, List<BaseContent[]> contentLists)
         {
             if (contentLists.Count == 0) return BaseResult.Undo;
-            var nodeList = contentLists.Select(o => new CqForwardMessageNode(CQConfig.BotName, CQConfig.BotQQ, new CqMessage(o.ToList().ToCQMessageAsync()))).ToList();
+            var nodeList = contentLists.Select(o => new CqForwardMessageNode(BotConfig.BotName, BotConfig.BotQQ, new CqMessage(o.ToList().ToCQMessageAsync()))).ToList();
             var result = await CQHelper.Session.SendGroupForwardMessageAsync(groupId, new CqForwardMessage(nodeList));
             return new CQResult(result, result.MessageId);
         }

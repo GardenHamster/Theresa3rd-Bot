@@ -26,7 +26,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 long groupId = args.GroupId;
                 if (args.Session is not ICqActionSession session) return;
                 if (!BusinessHelper.IsHandleMessage(groupId)) return;
-                if (memberId == CQConfig.BotQQ) return;
+                if (memberId == BotConfig.BotQQ) return;
                 WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
                 if (welcomeConfig is null || welcomeConfig.Enable == false) return;
                 string template = welcomeConfig.Template;

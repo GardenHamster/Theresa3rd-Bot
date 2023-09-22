@@ -1,5 +1,6 @@
 ﻿using Mirai.CSharp.HttpApi.Models.ChatMessages;
 using Mirai.CSharp.Models;
+using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Result;
 using TheresaBot.Main.Session;
@@ -81,7 +82,7 @@ namespace TheresaBot.MiraiHttpApi.Session
             List<IForwardMessageNode> nodeList = new List<IForwardMessageNode>();
             foreach (var contentArr in contentLists)
             {
-                nodeList.Add(new ForwardMessageNode(MiraiConfig.BotName, MiraiConfig.BotQQ, DateTime.Now, await contentArr.ToList().ToMiraiMessageAsync(UploadTarget.Group)));
+                nodeList.Add(new ForwardMessageNode(BotConfig.BotName, BotConfig.BotQQ, DateTime.Now, await contentArr.ToList().ToMiraiMessageAsync(UploadTarget.Group)));
             }
             var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, new ForwardMessage(nodeList.ToArray()));
             return new MiraiResult(msgId);

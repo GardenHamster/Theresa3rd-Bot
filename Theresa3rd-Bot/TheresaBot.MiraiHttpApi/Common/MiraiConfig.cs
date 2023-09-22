@@ -10,10 +10,5 @@
 
         public static string AuthKey = string.Empty;
 
-        public static long BotQQ = 0;
-
-        public static string BotName = "Bot";
-
-
     }
 }

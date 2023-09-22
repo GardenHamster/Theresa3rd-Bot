@@ -74,6 +74,16 @@ namespace TheresaBot.Main.Business
             }
         }
 
+        /// <summary>
+        /// 获取用于前端展示的订阅列表,其中GroupId可能为0
+        /// </summary>
+        /// <param name="subscribeType"></param>
+        /// <returns></returns>
+        public List<SubscribeInfo> getSubscribeDatas(SubscribeType subscribeType)
+        {
+            return subscribeGroupDao.getSubscribes(subscribeType);
+        }
+
         public SubscribePO insertSurscribe(MysUserFullInfo userInfo, string userId)
         {
             SubscribePO dbSubscribe = new SubscribePO();

@@ -49,7 +49,7 @@ GoCQ正常启动结果如下
 
 ## 部署签名服务(可选)
 
-如果你在登录bot账号的过程中出现了 `code=45` 等无法无法登录的问题，可以考虑部署签名服务，但是由于使用签名服务可能会存在账号被 `冻结/封号`的风险，请在考虑清楚后再决定是否使用，**你在使用该服务过程中出现的任何风险和问题都和本人无关，**
+如果你在登录bot账号的过程中出现了 `code=45` 等无法登录的问题，可以考虑部署签名服务，但是由于使用签名服务可能会存在账号被 `冻结/封号`的风险，请在考虑清楚后再决定是否使用，**你在使用该服务过程中出现的任何风险和问题都和本人无关，**
 
 你可以参考 [unidbg-fetch-qsign/wiki](https://github.com/fuqiuluo/unidbg-fetch-qsign/wiki) 自行搭建签名服务
 
@@ -110,7 +110,7 @@ yum update ca-certificates -y
 cd TheresaBot.MiraiHttpApi.dll所在目录
 ```
 
-4. 后台运行dll，这里的端口可以随意填，但是不要填 mirai-http-api 的端口
+4. 后台运行dll，这里的端口可以随意填，但是不要填 mirai-http-api 或 go-cqhttp 的端口
 
 - 使用Mirai
 
@@ -130,7 +130,7 @@ nohup dotnet TheresaBot.GoCqHttp.dll --launch-profile Production --urls http://0
 
 2. 启动 powershell 并将路径切换到`TheresaBot.MiraiHttpApi.dll`所在目录下
 
-3. 运行dll，这里的端口可以随意填，但是不要填mirai-http-api或go-cqhttp的端口
+3. 运行dll，这里的端口可以随意填，但是不要填 mirai-http-api 或 go-cqhttp 的端口
 
 - 使用Mirai
 

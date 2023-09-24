@@ -93,9 +93,9 @@ namespace TheresaBot.GoCqHttp
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
                 //app.UseHttpsRedirection();
                 app.UseRouting();
+                app.UseCors("cors");//允许跨域
                 app.UseAuthentication();//开启认证
                 app.UseAuthorization();//开启授权
-                app.UseCors("cors");//允许跨域
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();

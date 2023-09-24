@@ -44,7 +44,7 @@ namespace TheresaBot.Main.Handler
                 {
                     ProcessInfo processInfo = ProcessCache.CreateProcess(command);
                     StepInfo uidStep = processInfo.CreateStep("请在60秒内发送要订阅用户的id", CheckUserIdAsync);
-                    StepInfo groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions()}", CheckPushTypeAsync);
+                    StepInfo groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
                     await processInfo.StartProcessing();
                     userId = uidStep.AnswerForLong();
                     groupType = groupStep.AnswerForEnum<GroupPushType>();

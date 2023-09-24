@@ -262,7 +262,20 @@ namespace TheresaBot.Main.Helper
         /// <param name="strList"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        public static string JoinToString<T>(this List<T> strList, string separator = ",")
+        public static string JoinToString<T1, T2>(this Dictionary<T1, T2> dic, string connector = "：", string separator = "\r\n")
+        {
+            if (dic.Count == 0) return string.Empty;
+            var strList = dic.Select(o => $"{o.Key}{connector}{o.Value}").ToList();
+            return string.Join(separator, strList);
+        }
+
+        /// <summary>
+        /// 使用分隔符连接一个集合
+        /// </summary>
+        /// <param name="strList"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string JoinToString<T>(this List<T> strList, string separator = "，")
         {
             if (strList.Count == 0) return string.Empty;
             return string.Join(separator, strList);
@@ -274,7 +287,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="strList"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        public static string JoinToString<T>(this T[] strList, string separator = ",")
+        public static string JoinToString<T>(this T[] strList, string separator = "，")
         {
             if (strList.Length == 0) return string.Empty;
             return string.Join(separator, strList);

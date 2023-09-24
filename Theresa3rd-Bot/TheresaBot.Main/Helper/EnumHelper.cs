@@ -6,30 +6,24 @@ namespace TheresaBot.Main.Helper
 {
     public static class EnumHelper
     {
-        public static string PixivSyncOptions()
+        public static Dictionary<int, string> PixivSyncOptions => new()
         {
-            StringBuilder optionBuilder = new StringBuilder();
-            optionBuilder.AppendLine($"{(int)PixivSyncType.Merge}：合并（只添加不存在的订阅，保留在不关注列表中的订阅）");
-            optionBuilder.AppendLine($"{(int)PixivSyncType.Overwrite}：覆盖（移除所有原有的订阅，并将关注列表重新添加到订阅中）");
-            return optionBuilder.ToString();
-        }
+            {(int)PixivSyncType.Merge, "合并（只添加不存在的订阅，保留在不关注列表中的订阅）"},
+            {(int)PixivSyncType.Overwrite, "覆盖（移除所有原有的订阅，并将关注列表重新添加到订阅中）"},
+        };
 
-        public static string GroupPushOptions()
+        public static Dictionary<int, string> GroupPushOptions => new()
         {
-            StringBuilder optionBuilder = new StringBuilder();
-            optionBuilder.AppendLine($"{(int)GroupPushType.AllGroup}：所有拥有订阅权限的群");
-            optionBuilder.AppendLine($"{(int)GroupPushType.CurrentGroup}：当前群");
-            return optionBuilder.ToString();
-        }
+            {(int)GroupPushType.AllGroup, "所有拥有订阅权限的群"},
+            {(int)GroupPushType.CurrentGroup, "当前群"},
+        };
 
-        public static string TagMatchOptions()
+        public static Dictionary<int, string> TagMatchOptions => new()
         {
-            StringBuilder optionBuilder = new StringBuilder();
-            optionBuilder.AppendLine($"{(int)TagMatchType.Contain}：部分一致");
-            optionBuilder.AppendLine($"{(int)TagMatchType.FullMatch}：全词匹配");
-            optionBuilder.AppendLine($"{(int)TagMatchType.Regular}：正则匹配");
-            return optionBuilder.ToString();
-        }
+            {(int)TagMatchType.Contain, "部分一致"},
+            {(int)TagMatchType.FullMatch, "全词匹配"},
+            {(int)TagMatchType.Regular, "正则匹配"}
+        };
 
         public static string GetTypeName(this TimingSetuSourceType sourceType)
         {

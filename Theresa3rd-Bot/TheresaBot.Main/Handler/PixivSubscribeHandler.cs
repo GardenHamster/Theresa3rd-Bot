@@ -48,7 +48,7 @@ namespace TheresaBot.Main.Handler
                 {
                     ProcessInfo processInfo = ProcessCache.CreateProcess(command);
                     StepInfo uidStep = processInfo.CreateStep("请在60秒内发送要订阅用户的id，多个id之间可以用逗号或者换行隔开", CheckUserIdsAsync);
-                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions()}", CheckPushTypeAsync);
+                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
                     await processInfo.StartProcessing();
                     userIds = uidStep.Answer.SplitParams();
                     pushType = typeStep.AnswerForEnum<GroupPushType>();
@@ -130,8 +130,8 @@ namespace TheresaBot.Main.Handler
             try
             {
                 ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                StepInfo modeStep = processInfo.CreateStep($"请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncOptions()}", CheckSyncModeAsync);
-                StepInfo groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions()}", CheckPushTypeAsync);
+                StepInfo modeStep = processInfo.CreateStep($"请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncOptions.JoinToString()}", CheckSyncModeAsync);
+                StepInfo groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
                 await processInfo.StartProcessing();
                 PixivSyncType syncMode = modeStep.AnswerForEnum<PixivSyncType>();
                 GroupPushType pushType = groupStep.AnswerForEnum<GroupPushType>();
@@ -260,7 +260,7 @@ namespace TheresaBot.Main.Handler
                 {
                     ProcessInfo processInfo = ProcessCache.CreateProcess(command);
                     StepInfo tagStep = processInfo.CreateStep($"请在60秒内发送要订阅的标签名");
-                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions()}", CheckPushTypeAsync);
+                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
                     await processInfo.StartProcessing();
                     pixivTag = tagStep.AnswerForString();
                     pushType = typeStep.AnswerForEnum<GroupPushType>();

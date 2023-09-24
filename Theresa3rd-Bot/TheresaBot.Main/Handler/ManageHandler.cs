@@ -39,7 +39,7 @@ namespace TheresaBot.Main.Handler
                 {
                     ProcessInfo processInfo = ProcessCache.CreateProcess(command);
                     StepInfo tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开", CheckTextAsync);
-                    StepInfo matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchOptions()}", CheckMatchTypeAsync);
+                    StepInfo matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchOptions.JoinToString()}", CheckMatchTypeAsync);
                     await processInfo.StartProcessing();
                     tagStr = tagStep.AnswerForString();
                     matchType = matchStep.AnswerForEnum<TagMatchType>();

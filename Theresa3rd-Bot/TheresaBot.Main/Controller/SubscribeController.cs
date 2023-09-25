@@ -42,6 +42,7 @@ namespace TheresaBot.Main.Controller
         }
 
         [HttpPost]
+        [Authorize]
         [Route("cancle")]
         public ApiResult Cancle([FromBody] CancleSubscribeDto cancleDto)
         {

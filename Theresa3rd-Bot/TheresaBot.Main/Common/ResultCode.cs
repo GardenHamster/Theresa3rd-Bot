@@ -23,7 +23,10 @@ namespace TheresaBot.Main.Common
         /// </summary>
         public static readonly int NoLogin = -100;
 
-
+        /// <summary>
+        /// 参数错误
+        /// </summary>
+        public static readonly int ParamError = -101;
 
     }
 }

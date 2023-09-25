@@ -1,4 +1,4 @@
-﻿namespace TheresaBot.Main.Result
+﻿namespace TheresaBot.Main.Model.Result
 {
     public abstract class BaseResult
     {

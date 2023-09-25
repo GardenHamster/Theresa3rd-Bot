@@ -1,5 +1,5 @@
 ﻿using EleCho.GoCqHttpSdk.Action;
-using TheresaBot.Main.Result;
+using TheresaBot.Main.Model.Result;
 
 namespace TheresaBot.GoCqHttp.Result
 {

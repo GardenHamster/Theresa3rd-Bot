@@ -1,5 +1,5 @@
 ﻿using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Result;
+using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Session

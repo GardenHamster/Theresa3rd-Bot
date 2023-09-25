@@ -1,4 +1,4 @@
-﻿namespace TheresaBot.Main.Result
+﻿namespace TheresaBot.Main.Model.Result
 {
     public sealed class UndoResult : BaseResult
     {
@@ -8,7 +8,7 @@
 
         public override bool IsSuccess => false;
 
-        public override string ErrorMsg => String.Empty;
+        public override string ErrorMsg => string.Empty;
     }
 
 }

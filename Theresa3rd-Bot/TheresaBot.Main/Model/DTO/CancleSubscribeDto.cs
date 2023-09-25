@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheresaBot.Main.Model.Api
+namespace TheresaBot.Main.Model.DTO
 {
-    public class LoginDataDto
+    public class CancleSubscribeDto
     {
-        public string Password { get; init; }
+        public List<int> SubscribeIds { get; set; }
     }
 }

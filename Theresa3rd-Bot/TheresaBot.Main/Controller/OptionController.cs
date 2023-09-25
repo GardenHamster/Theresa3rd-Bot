@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using TheresaBot.Main.Common;
-using TheresaBot.Main.Model.Api;
-using TheresaBot.Main.Model.Subscribe;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace TheresaBot.Main.Controller
 {

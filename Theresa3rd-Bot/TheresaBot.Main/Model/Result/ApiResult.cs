@@ -1,6 +1,6 @@
 ﻿using TheresaBot.Main.Common;
 
-namespace TheresaBot.Main.Model.Api
+namespace TheresaBot.Main.Model.Result
 {
     public class ApiResult
     {
@@ -47,7 +47,10 @@ namespace TheresaBot.Main.Model.Api
         /// </summary>
         public static ApiResult NoLogin => Fail(ResultCode.NoLogin, "身份验证过期，请重新登录");
 
-
+        /// <summary>
+        /// 参数错误
+        /// </summary>
+        public static ApiResult ParamError => Fail(ResultCode.ParamError, "参数错误");
 
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheresaBot.Main.Common;
-using TheresaBot.Main.Model.Api;
-using TheresaBot.Main.Model.Subscribe;
+using TheresaBot.Main.Model.Result;
+using TheresaBot.Main.Model.VO;
 
 namespace TheresaBot.Main.Controller
 {
@@ -22,8 +22,6 @@ namespace TheresaBot.Main.Controller
             });
             return ApiResult.Success(groupInfos);
         }
-
-
 
     }
 }

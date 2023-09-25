@@ -2,7 +2,7 @@
 using Mirai.CSharp.Models;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Result;
+using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.MiraiHttpApi.Common;

@@ -1,7 +1,7 @@
 ﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Model.Subscribe
+namespace TheresaBot.Main.Model.VO
 {
     public record GroupInfoVo
     {

@@ -5,7 +5,7 @@ using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.GoCqHttp.Result;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Result;
+using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 

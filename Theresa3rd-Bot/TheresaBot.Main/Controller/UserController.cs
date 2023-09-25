@@ -2,8 +2,9 @@
 using System.Security.Claims;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Api;
+using TheresaBot.Main.Model.DTO;
 using TheresaBot.Main.Model.Jwt;
+using TheresaBot.Main.Model.Result;
 
 namespace TheresaBot.Main.Controller
 {

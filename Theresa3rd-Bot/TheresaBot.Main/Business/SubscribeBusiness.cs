@@ -182,6 +182,14 @@ namespace TheresaBot.Main.Business
             return subscribeGroupDao.delSubscribeGroup(subscribeId);
         }
 
+        public void cancleSubscribe(List<int> subscribeIds)
+        {
+            foreach (int subscribeId in subscribeIds)
+            {
+                subscribeGroupDao.delSubscribeGroup(subscribeId);
+            }
+        }
+
         public int cancleSubscribe(long groupId, int subscribeId)
         {
             return subscribeGroupDao.delSubscribeGroup(groupId, subscribeId);

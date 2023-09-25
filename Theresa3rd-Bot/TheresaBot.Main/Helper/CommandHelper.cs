@@ -4,7 +4,7 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Invoker;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Invoker;
-using TheresaBot.Main.Result;
+using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Helper

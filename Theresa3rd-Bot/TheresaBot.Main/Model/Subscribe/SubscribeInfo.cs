@@ -9,6 +9,7 @@ namespace TheresaBot.Main.Model.Subscribe
         public SubscribeType SubscribeType { get; set; }
         public int SubscribeSubType { get; set; }
         public string SubscribeName { get; set; }
+        public DateTime SubscribeDate { get; set; }
         public long GroupId { get; set; }
     }
 

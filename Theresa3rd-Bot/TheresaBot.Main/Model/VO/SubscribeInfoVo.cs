@@ -10,6 +10,8 @@ namespace TheresaBot.Main.Model.VO
         public SubscribeType SubscribeType { get; set; }
         public string SubscribeName { get; set; }
         public long GroupId { get; set; }
+        public string SubscribeDate { get; set; }
+        public long SubscribeAt { get; set; }
         public string GroupName => BotConfig.GroupInfos.FirstOrDefault(o => o.GroupId == GroupId)?.GroupName ?? "群名称加载失败";
     }
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TheresaBot.Main.Business;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.DTO;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Model.Subscribe;
@@ -28,7 +29,7 @@ namespace TheresaBot.Main.Controller
         {
             var subscribeDatas = subscribeBusiness.getSubscribeDatas(SubscribeType.P站画师);
             var subscribeList = subscribeDatas.Select(o => ToSubscribeVo(o));
-            return ApiResult.Success(subscribeDatas);
+            return ApiResult.Success(subscribeList);
         }
 
         [HttpGet]
@@ -38,7 +39,17 @@ namespace TheresaBot.Main.Controller
         {
             var subscribeDatas = subscribeBusiness.getSubscribeDatas(SubscribeType.P站标签);
             var subscribeList = subscribeDatas.Select(o => ToSubscribeVo(o));
-            return ApiResult.Success(subscribeDatas);
+            return ApiResult.Success(subscribeList);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("list/miyoushe/user")]
+        public ApiResult GetMiyousheUserList()
+        {
+            var subscribeDatas = subscribeBusiness.getSubscribeDatas(SubscribeType.米游社用户);
+            var subscribeList = subscribeDatas.Select(o => ToSubscribeVo(o));
+            return ApiResult.Success(subscribeList);
         }
 
         [HttpPost]
@@ -60,7 +71,9 @@ namespace TheresaBot.Main.Controller
                 SubscribeId = subscribeInfo.SubscribeId,
                 SubscribeCode = subscribeInfo.SubscribeCode,
                 SubscribeType = subscribeInfo.SubscribeType,
-                SubscribeName = subscribeInfo.SubscribeName
+                SubscribeName = subscribeInfo.SubscribeName,
+                SubscribeAt = subscribeInfo.SubscribeDate.ToTimeStamp(),
+                SubscribeDate = subscribeInfo.SubscribeDate.ToSimpleString()
             };
         }
 

@@ -68,6 +68,7 @@ namespace TheresaBot.Main.Dao
                 SubscribeType = s.SubscribeType,
                 SubscribeSubType = s.SubscribeSubType,
                 SubscribeName = s.SubscribeName,
+                SubscribeDate = s.CreateDate,
                 GroupId = sg.GroupId
             }).ToList();
         }

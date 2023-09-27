@@ -107,7 +107,7 @@ namespace TheresaBot.Main.Handler
                 }
                 foreach (var item in subscribeList)
                 {
-                    subscribeBusiness.cancleSubscribe(item.Id);
+                    subscribeBusiness.deleteSubscribe(item.Id);
                 }
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了ID为{userId}的米游社用户~");
                 SubscribeDatas.LoadSubscribeTask();

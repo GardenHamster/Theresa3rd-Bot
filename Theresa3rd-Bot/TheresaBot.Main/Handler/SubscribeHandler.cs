@@ -74,7 +74,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                subscribeBusiness.cancleSubscribe(dbSubscribe.Id);
+                subscribeBusiness.deleteSubscribe(dbSubscribe.Id);
                 await command.ReplyGroupMessageWithQuoteAsync($"已为所有群退订了{dbSubscribe.SubscribeType}[{dbSubscribe.SubscribeName}]~");
                 SubscribeDatas.LoadSubscribeTask();
             }

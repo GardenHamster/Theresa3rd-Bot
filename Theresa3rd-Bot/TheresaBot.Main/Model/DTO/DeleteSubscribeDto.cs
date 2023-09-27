@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace TheresaBot.Main.Model.DTO
 {
-    public class CancleSubscribeDto
+    public class DeleteSubscribeDto
     {
-        public List<int> SubscribeIds { get; set; }
+        public List<int> Ids { get; set; }
     }
 }

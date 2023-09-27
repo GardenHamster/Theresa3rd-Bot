@@ -54,12 +54,12 @@ namespace TheresaBot.Main.Controller
 
         [HttpPost]
         [Authorize]
-        [Route("cancle")]
-        public ApiResult Cancle([FromBody] CancleSubscribeDto cancleDto)
+        [Route("delete")]
+        public ApiResult Delete([FromBody] DeleteSubscribeDto deleteDto)
         {
-            if (cancleDto.SubscribeIds is null) return ApiResult.ParamError;
-            if (cancleDto.SubscribeIds.Count == 0) return ApiResult.ParamError;
-            subscribeBusiness.cancleSubscribe(cancleDto.SubscribeIds);
+            if (deleteDto.Ids is null) return ApiResult.ParamError;
+            if (deleteDto.Ids.Count == 0) return ApiResult.ParamError;
+            subscribeBusiness.deleteSubscribeGroup(deleteDto.Ids);
             return ApiResult.Success("退订成功");
         }
 
@@ -67,6 +67,7 @@ namespace TheresaBot.Main.Controller
         {
             return new SubscribeInfoVo
             {
+                Id = subscribeInfo.Id,
                 GroupId = subscribeInfo.GroupId,
                 SubscribeId = subscribeInfo.SubscribeId,
                 SubscribeCode = subscribeInfo.SubscribeCode,

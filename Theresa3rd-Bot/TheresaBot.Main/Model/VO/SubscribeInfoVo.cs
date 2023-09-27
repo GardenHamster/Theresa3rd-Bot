@@ -5,6 +5,7 @@ namespace TheresaBot.Main.Model.VO
 {
     public record SubscribeInfoVo
     {
+        public int Id { get; set; }
         public int SubscribeId { get; set; }
         public string SubscribeCode { get; set; }
         public SubscribeType SubscribeType { get; set; }

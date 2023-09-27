@@ -161,7 +161,6 @@ namespace TheresaBot.Main.Business
             return subscribeDao.getSubscribeGroup(groupId, subscribeId);
         }
 
-
         public List<SubscribePO> getSubscribes(SubscribeType subscribeType)
         {
             return subscribeDao.getSubscribes(subscribeType);
@@ -177,23 +176,38 @@ namespace TheresaBot.Main.Business
             return subscribeGroupDao.isExistsSubscribeGroup(groupId, subscribeId);
         }
 
-        public int cancleSubscribe(int subscribeId)
+        public int deleteSubscribe(int subscribeId)
         {
-            return subscribeGroupDao.delSubscribeGroup(subscribeId);
+            return subscribeGroupDao.delBySubscribeId(subscribeId);
         }
 
-        public void cancleSubscribe(List<int> subscribeIds)
+        public void deleteSubscribe(List<int> subscribeIds)
         {
             foreach (int subscribeId in subscribeIds)
             {
-                subscribeGroupDao.delSubscribeGroup(subscribeId);
+                subscribeGroupDao.delBySubscribeId(subscribeId);
             }
         }
 
-        public int cancleSubscribe(long groupId, int subscribeId)
+        public int deleteSubscribe(long groupId, int subscribeId)
         {
-            return subscribeGroupDao.delSubscribeGroup(groupId, subscribeId);
+            return subscribeGroupDao.delBySubscribeId(groupId, subscribeId);
         }
+
+        public int deleteSubscribeGroup(int subscribeGroupId)
+        {
+            return subscribeGroupDao.delBySubscribeGroupId(subscribeGroupId);
+        }
+
+        public void deleteSubscribeGroup(List<int> subscribeGroupIds)
+        {
+            foreach (int subscribeGroupId in subscribeGroupIds)
+            {
+                subscribeGroupDao.delBySubscribeGroupId(subscribeGroupId);
+            }
+        }
+
+        
 
 
     }

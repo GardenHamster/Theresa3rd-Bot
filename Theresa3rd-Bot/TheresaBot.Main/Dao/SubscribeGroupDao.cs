@@ -41,11 +41,13 @@ namespace TheresaBot.Main.Dao
             .Where((sg, s) => s.SubscribeType == subscribeType && (sg.GroupId == 0 || sg.GroupId == groupId))
             .Select((sg, s) => new SubscribeInfo
             {
+                Id = sg.Id,
                 SubscribeId = sg.SubscribeId,
                 SubscribeCode = s.SubscribeCode,
                 SubscribeType = s.SubscribeType,
                 SubscribeSubType = s.SubscribeSubType,
                 SubscribeName = s.SubscribeName,
+                SubscribeDate = s.CreateDate,
                 GroupId = sg.GroupId
             }).ToList();
         }
@@ -63,6 +65,7 @@ namespace TheresaBot.Main.Dao
             .Where((sg, s) => s.SubscribeType == subscribeType)
             .Select((sg, s) => new SubscribeInfo
             {
+                Id = sg.Id,
                 SubscribeId = sg.SubscribeId,
                 SubscribeCode = s.SubscribeCode,
                 SubscribeType = s.SubscribeType,
@@ -76,9 +79,8 @@ namespace TheresaBot.Main.Dao
         /// <summary>
         /// 删除订阅
         /// </summary>
-        /// <param name="groupId"></param>
         /// <param name="subscribeId"></param>
-        public int delSubscribeGroup(int subscribeId)
+        public int delBySubscribeId(int subscribeId)
         {
             return Db.Deleteable<SubscribeGroupPO>().Where(o => o.SubscribeId == subscribeId).ExecuteCommand();
         }
@@ -88,9 +90,18 @@ namespace TheresaBot.Main.Dao
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="subscribeId"></param>
-        public int delSubscribeGroup(long groupId, int subscribeId)
+        public int delBySubscribeId(long groupId, int subscribeId)
         {
             return Db.Deleteable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).ExecuteCommand();
+        }
+
+        /// <summary>
+        /// 删除订阅
+        /// </summary>
+        /// <param name="subscribeGroupId"></param>
+        public int delBySubscribeGroupId(int subscribeGroupId)
+        {
+            return Db.Deleteable<SubscribeGroupPO>().Where(o => o.Id == subscribeGroupId).ExecuteCommand();
         }
 
 

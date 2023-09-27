@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Business
         public void delAllSubscribeGroup(long groupId, string subscribeCode)
         {
             List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
-            foreach (var item in dbSubscribes) subscribeGroupDao.delSubscribeGroup(groupId, item.Id);
+            foreach (var item in dbSubscribes) subscribeGroupDao.delBySubscribeId(groupId, item.Id);
         }
 
 

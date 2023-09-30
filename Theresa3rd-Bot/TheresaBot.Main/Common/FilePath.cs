@@ -14,17 +14,6 @@ namespace TheresaBot.Main.Common
         private const string DataDir = "Data";
 
         /// <summary>
-        /// 获取Data文件目录
-        /// </summary>
-        /// <returns></returns>
-        public static string GetDataDirectory()
-        {
-            string dirPath = Path.Combine(AppContext.BaseDirectory, DataDir);
-            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
-            return dirPath;
-        }
-
-        /// <summary>
         /// 获取下载图片的保存目录
         /// </summary>
         /// <returns></returns>
@@ -33,6 +22,39 @@ namespace TheresaBot.Main.Common
             string configPath = BotConfig.GeneralConfig.DownloadPath;
             if (string.IsNullOrWhiteSpace(configPath)) configPath = AppContext.BaseDirectory;
             string dirPath = Path.Combine(configPath, DownDir);
+            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+            return dirPath;
+        }
+
+        /// <summary>
+        /// 获取表情文件存放目录
+        /// </summary>
+        /// <returns></returns>
+        public static string GetFontDirectory()
+        {
+            string dirPath = Path.Combine(AppContext.BaseDirectory, "Font");
+            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+            return dirPath;
+        }
+
+        /// <summary>
+        /// 获取表情文件存放目录
+        /// </summary>
+        /// <returns></returns>
+        public static string GetBotImgDirectory()
+        {
+            string dirPath = Path.Combine(AppContext.BaseDirectory, "BotImg");
+            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+            return dirPath;
+        }
+
+        /// <summary>
+        /// 获取表情文件存放目录
+        /// </summary>
+        /// <returns></returns>
+        public static string GetFaceDirectory()
+        {
+            string dirPath = Path.Combine(GetBotImgDirectory(), "face");
             if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
             return dirPath;
         }

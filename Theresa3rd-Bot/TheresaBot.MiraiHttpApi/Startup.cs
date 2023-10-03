@@ -1,4 +1,6 @@
+using Microsoft.Extensions.FileProviders;
 using SqlSugar.IOC;
+using System.IO;
 using System.Net;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
@@ -98,6 +100,11 @@ namespace TheresaBot.MiraiHttpApi
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
+                });
+                app.UseStaticFiles(new StaticFileOptions()//静态文件访问配置
+                {
+                    RequestPath = new PathString(FilePath.ImgHttpPath),//对外的访问路径
+                    FileProvider = new PhysicalFileProvider(FilePath.GetBotImgDirectory())//指定实际物理路径
                 });
                 appLifetime.ApplicationStarted.Register(OnStarted);
                 appLifetime.ApplicationStopping.Register(OnStopping);

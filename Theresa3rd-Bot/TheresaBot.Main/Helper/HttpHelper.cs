@@ -252,20 +252,5 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        /// <summary>
-        /// 创建一个忽略https证书验证的HttpClientHandler
-        /// </summary>
-        /// <returns></returns>
-        private static HttpClientHandler GetHttpClientHandler()
-        {
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
-            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-            clientHandler.SslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13 | SslProtocols.None;
-            clientHandler.AllowAutoRedirect = false;
-            return clientHandler;
-        }
-
-
     }
 }

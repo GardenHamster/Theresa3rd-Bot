@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class ReminderConfig : BasePluginConfig
+    public record ReminderConfig : BasePluginConfig
     {
         public List<ReminderTimer> Timers { get; private set; }
 
@@ -10,7 +10,7 @@
         }
     }
 
-    public class ReminderTimer
+    public record ReminderTimer
     {
         public bool Enable { get; private set; }
 
@@ -27,7 +27,7 @@
         public List<RemindTemplate> Templates { get; private set; }
     }
 
-    public class RemindTemplate
+    public record RemindTemplate
     {
         public string Template { get; private set; }
     }

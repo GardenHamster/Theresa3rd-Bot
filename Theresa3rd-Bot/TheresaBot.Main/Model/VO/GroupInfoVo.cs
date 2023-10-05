@@ -1,7 +1,4 @@
-﻿using TheresaBot.Main.Common;
-using TheresaBot.Main.Type;
-
-namespace TheresaBot.Main.Model.VO
+﻿namespace TheresaBot.Main.Model.VO
 {
     public record GroupInfoVo
     {

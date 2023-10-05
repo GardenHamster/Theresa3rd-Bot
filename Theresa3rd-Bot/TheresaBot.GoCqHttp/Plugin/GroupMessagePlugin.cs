@@ -2,7 +2,6 @@
 using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
 using TheresaBot.GoCqHttp.Command;
-using TheresaBot.GoCqHttp.Common;
 using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.GoCqHttp.Relay;
 using TheresaBot.Main.Cache;

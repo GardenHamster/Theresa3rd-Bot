@@ -1,5 +1,5 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Helper;
+using TheresaBot.Main.Services;
 
 namespace TheresaBot.Main.Datas
 {
@@ -11,7 +11,7 @@ namespace TheresaBot.Main.Datas
         {
             try
             {
-                SugarTagDic = new SugarTagBusiness().GetSugarTags();
+                SugarTagDic = new SugarTagService().GetSugarTags();
             }
             catch (Exception ex)
             {

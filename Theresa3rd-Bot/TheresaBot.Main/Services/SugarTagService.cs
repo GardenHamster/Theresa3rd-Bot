@@ -1,15 +1,15 @@
 ﻿using TheresaBot.Main.Dao;
 using TheresaBot.Main.Model.PO;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    public class SugarTagBusiness
+    public class SugarTagService
     {
         private SugarTagDao sugarTagDao;
 
-        public SugarTagBusiness()
+        public SugarTagService()
         {
-            this.sugarTagDao = new SugarTagDao();
+            sugarTagDao = new SugarTagDao();
         }
 
         public Dictionary<string, string> GetSugarTags()

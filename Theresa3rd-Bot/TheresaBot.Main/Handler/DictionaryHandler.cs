@@ -1,8 +1,8 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Command;
+﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -10,11 +10,11 @@ namespace TheresaBot.Main.Handler
 {
     internal class DictionaryHandler : BaseHandler
     {
-        private DictionaryBusiness dictionaryBusiness;
+        private DictionaryService dictionaryService;
 
         public DictionaryHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            dictionaryBusiness = new DictionaryBusiness();
+            dictionaryService = new DictionaryService();
         }
 
         public async Task AddCloudWordAsync(GroupCommand command)
@@ -32,13 +32,13 @@ namespace TheresaBot.Main.Handler
                 List<DictionaryPO> existsList = new List<DictionaryPO>();
                 foreach (string word in wordArr)
                 {
-                    var dictionary = dictionaryBusiness.getDictionary(WordType.WordCloud, (int)WordCloudSubType.NewWord, word.Trim());
+                    var dictionary = dictionaryService.getDictionary(WordType.WordCloud, (int)WordCloudSubType.NewWord, word.Trim());
                     if (dictionary is not null && dictionary.Count > 0)
                     {
                         existsList.AddRange(dictionary);
                         continue;
                     }
-                    dictionaryBusiness.addDictionary(WordType.WordCloud, word, (int)WordCloudSubType.NewWord);
+                    dictionaryService.addDictionary(WordType.WordCloud, word, (int)WordCloudSubType.NewWord);
                 }
 
                 if (existsList.Count > 0)
@@ -73,13 +73,13 @@ namespace TheresaBot.Main.Handler
                 List<DictionaryPO> existsList = new List<DictionaryPO>();
                 foreach (string word in wordArr)
                 {
-                    var dictionary = dictionaryBusiness.getDictionary(WordType.WordCloud, (int)WordCloudSubType.HiddenWord, word.Trim());
+                    var dictionary = dictionaryService.getDictionary(WordType.WordCloud, (int)WordCloudSubType.HiddenWord, word.Trim());
                     if (dictionary is not null && dictionary.Count > 0)
                     {
                         existsList.AddRange(dictionary);
                         continue;
                     }
-                    dictionaryBusiness.addDictionary(WordType.WordCloud, word, (int)WordCloudSubType.HiddenWord);
+                    dictionaryService.addDictionary(WordType.WordCloud, word, (int)WordCloudSubType.HiddenWord);
                 }
 
                 if (existsList.Count > 0)

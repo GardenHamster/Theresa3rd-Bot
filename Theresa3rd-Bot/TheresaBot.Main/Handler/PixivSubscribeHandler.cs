@@ -1,5 +1,4 @@
 ﻿using SqlSugar.IOC;
-using TheresaBot.Main.Business;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Datas;
@@ -11,6 +10,7 @@ using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.Main.Type.StepOption;
@@ -19,13 +19,13 @@ namespace TheresaBot.Main.Handler
 {
     internal class PixivSubscribeHandler : SetuHandler
     {
-        private PixivBusiness pixivBusiness;
-        private SubscribeBusiness subscribeBusiness;
+        private PixivService pixivService;
+        private SubscribeService subscribeService;
 
         public PixivSubscribeHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            pixivBusiness = new PixivBusiness();
-            subscribeBusiness = new SubscribeBusiness();
+            pixivService = new PixivService();
+            subscribeService = new SubscribeService();
         }
 
         /// <summary>
@@ -88,23 +88,23 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(userId, SubscribeType.P站画师);
+                SubscribePO dbSubscribe = subscribeService.getSubscribe(userId, SubscribeType.P站画师);
                 if (dbSubscribe is null)
                 {
                     //添加订阅
                     PixivUserProfileTop pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(userId);
-                    dbSubscribe = subscribeBusiness.insertSurscribe(pixivUserInfo, userId);
+                    dbSubscribe = subscribeService.insertSurscribe(pixivUserInfo, userId);
                 }
 
                 long subscribeGroupId = pushType == GroupPushType.AllGroup ? 0 : command.GroupId;
-                if (subscribeBusiness.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
+                if (subscribeService.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
                 {
                     //关联订阅
                     await command.ReplyGroupMessageWithAtAsync($"画师id[{userId}]已经被订阅了~");
                     return;
                 }
 
-                SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
+                SubscribeGroupPO subscribeGroup = subscribeService.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~");
 
                 await Task.Delay(1000);
@@ -139,7 +139,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithAtAsync("正在获取pixiv账号中已关注的画师列表...");
                 await Task.Delay(1000);
 
-                List<PixivFollowUser> followUserList = await pixivBusiness.getFollowUserList();
+                List<PixivFollowUser> followUserList = await pixivService.getFollowUserList();
                 if (followUserList is null || followUserList.Count == 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync("pixiv账号还没有关注任何画师");
@@ -156,24 +156,24 @@ namespace TheresaBot.Main.Handler
 
                 foreach (var item in followUserList)
                 {
-                    SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(item.userId, SubscribeType.P站画师);
-                    if (dbSubscribe is null) dbSubscribe = subscribeBusiness.insertSurscribe(item, syncDate);
+                    SubscribePO dbSubscribe = subscribeService.getSubscribe(item.userId, SubscribeType.P站画师);
+                    if (dbSubscribe is null) dbSubscribe = subscribeService.insertSurscribe(item, syncDate);
                     dbSubscribeList.Add(dbSubscribe);
                 }
 
                 long subscribeGroupId = pushType == GroupPushType.AllGroup ? 0 : command.GroupId;
                 if (syncMode == PixivSyncType.Overwrite)
                 {
-                    List<SubscribePO> subscribeList = subscribeBusiness.getSubscribes(SubscribeType.P站画师);
-                    foreach (var item in subscribeList) subscribeBusiness.deleteSubscribe(item.Id);//覆盖情况下,删除所有这个订阅的数据
-                    foreach (var item in dbSubscribeList) subscribeBusiness.insertSubscribeGroup(subscribeGroupId, item.Id);
+                    List<SubscribePO> subscribeList = subscribeService.getSubscribes(SubscribeType.P站画师);
+                    foreach (var item in subscribeList) subscribeService.deleteSubscribe(item.Id);//覆盖情况下,删除所有这个订阅的数据
+                    foreach (var item in dbSubscribeList) subscribeService.insertSubscribeGroup(subscribeGroupId, item.Id);
                 }
                 else
                 {
                     foreach (var item in dbSubscribeList)
                     {
-                        SubscribeGroupPO subscribeGroup = subscribeBusiness.getSubscribeGroup(subscribeGroupId, item.Id);
-                        if (subscribeGroup is null) subscribeBusiness.insertSubscribeGroup(subscribeGroupId, item.Id);
+                        SubscribeGroupPO subscribeGroup = subscribeService.getSubscribeGroup(subscribeGroupId, item.Id);
+                        if (subscribeGroup is null) subscribeService.insertSubscribeGroup(subscribeGroupId, item.Id);
                     }
                 }
                 DbScoped.SugarScope.CommitTran();//提交事务
@@ -217,13 +217,13 @@ namespace TheresaBot.Main.Handler
                 }
                 foreach (string userId in userIds)
                 {
-                    SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(userId, SubscribeType.P站画师);
+                    SubscribePO dbSubscribe = subscribeService.getSubscribe(userId, SubscribeType.P站画师);
                     if (dbSubscribe is null)
                     {
                         await command.ReplyGroupMessageWithAtAsync($"退订失败，userId={userId}的订阅不存在");
                         return;
                     }
-                    subscribeBusiness.deleteSubscribe(dbSubscribe.Id);
+                    subscribeService.deleteSubscribe(dbSubscribe.Id);
                 }
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv用户[{userIds.JoinToString()}]~");
                 SubscribeDatas.LoadSubscribeTask();
@@ -266,7 +266,7 @@ namespace TheresaBot.Main.Handler
                     pushType = typeStep.AnswerForEnum<GroupPushType>();
                 }
 
-                string searchWord = pixivBusiness.toPixivSearchWords(pixivTag.ToActualPixivTags());
+                string searchWord = pixivService.toPixivSearchWords(pixivTag.ToActualPixivTags());
                 PixivSearch pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, command.GroupId.IsShowR18Setu());
                 if (pageOne is null || pageOne.getIllust().data.Count == 0)
                 {
@@ -274,16 +274,16 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivTag, SubscribeType.P站标签);
-                if (dbSubscribe is null) dbSubscribe = subscribeBusiness.insertSurscribe(pixivTag);
+                SubscribePO dbSubscribe = subscribeService.getSubscribe(pixivTag, SubscribeType.P站标签);
+                if (dbSubscribe is null) dbSubscribe = subscribeService.insertSurscribe(pixivTag);
 
                 long subscribeGroupId = pushType == GroupPushType.AllGroup ? 0 : command.GroupId;
-                if (subscribeBusiness.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
+                if (subscribeService.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
                 {
                     await command.ReplyGroupMessageWithAtAsync($"这个标签已经被订阅了~");
                     return;
                 }
-                SubscribeGroupPO subscribeGroup = subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
+                SubscribeGroupPO subscribeGroup = subscribeService.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($"标签[{pixivTag}]订阅成功,该标签总作品数为:{pageOne.illust.total}");
                 SubscribeDatas.LoadSubscribeTask();
             }
@@ -316,13 +316,13 @@ namespace TheresaBot.Main.Handler
                     await processInfo.StartProcessing();
                     pixivTag = tagStep.AnswerForString();
                 }
-                SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(pixivTag, SubscribeType.P站标签);
+                SubscribePO dbSubscribe = subscribeService.getSubscribe(pixivTag, SubscribeType.P站标签);
                 if (dbSubscribe is null)
                 {
                     await command.ReplyGroupMessageWithAtAsync($"退订失败，标签为[{pixivTag}]的订阅不存在");
                     return;
                 }
-                subscribeBusiness.deleteSubscribe(dbSubscribe.Id);
+                subscribeService.deleteSubscribe(dbSubscribe.Id);
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了pixiv标签[{pixivTag}]~");
                 SubscribeDatas.LoadSubscribeTask();
             }
@@ -348,7 +348,7 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                List<PixivSubscribe> pixivSubscribeList = await pixivBusiness.getUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, 1);
+                List<PixivSubscribe> pixivSubscribeList = await pixivService.getUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, 1);
                 if (pixivSubscribeList is null || pixivSubscribeList.Count == 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync($"画师[{dbSubscribe.SubscribeName}]还没有发布任何作品~");
@@ -362,7 +362,7 @@ namespace TheresaBot.Main.Handler
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
                 workMsgs.Add(new PlainContent($"pixiv画师[{pixivWorkInfo.userName}]的最新作品："));
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo)));
+                workMsgs.Add(new PlainContent(pixivService.getWorkInfo(pixivWorkInfo)));
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
                 await SendGroupSetuAsync(setuContent, command.GroupId);
             }

@@ -9,9 +9,9 @@ using TheresaBot.Main.Model.Ascii2d;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class Ascii2dBusiness
+    internal class Ascii2dService
     {
         public async Task<Ascii2dResult> getAscii2dResultAsync(string imgHttpUrl)
         {

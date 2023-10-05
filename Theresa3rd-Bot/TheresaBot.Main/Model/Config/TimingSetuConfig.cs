@@ -2,7 +2,7 @@
 
 namespace TheresaBot.Main.Model.Config
 {
-    public class TimingSetuConfig : BasePluginConfig
+    public record TimingSetuConfig : BasePluginConfig
     {
         public string LocalPath { get; private set; }
         public bool FromOneDir { get; private set; }
@@ -15,7 +15,7 @@ namespace TheresaBot.Main.Model.Config
         }
     }
 
-    public class TimingSetuTimer
+    public record TimingSetuTimer
     {
         public bool Enable { get; private set; }
         public string Cron { get; private set; }

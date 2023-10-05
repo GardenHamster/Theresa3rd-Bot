@@ -1,15 +1,15 @@
 ﻿using TheresaBot.Main.Dao;
 using TheresaBot.Main.Model.PO;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class BanMemberBusiness
+    internal class BanMemberService
     {
         private BanMemberDao banMemberDao;
 
-        public BanMemberBusiness()
+        public BanMemberService()
         {
-            this.banMemberDao = new BanMemberDao();
+            banMemberDao = new BanMemberDao();
         }
 
         public List<BanMemberPO> getBanMembers()

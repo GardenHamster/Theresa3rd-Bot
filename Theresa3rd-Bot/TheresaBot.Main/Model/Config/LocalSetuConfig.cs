@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class LocalSetuConfig : BasePluginConfig
+    public record LocalSetuConfig : BasePluginConfig
     {
         public List<string> Commands { get; private set; }
 

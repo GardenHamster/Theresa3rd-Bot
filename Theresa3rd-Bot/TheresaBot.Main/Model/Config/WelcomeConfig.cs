@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class WelcomeConfig : BasePluginConfig
+    public record WelcomeConfig : BasePluginConfig
     {
         public string Template { get; private set; }
 
@@ -12,7 +12,7 @@
         }
     }
 
-    public class WelcomeSpecial
+    public record WelcomeSpecial
     {
         public long GroupId { get; private set; }
 

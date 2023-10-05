@@ -3,7 +3,6 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Session;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
-using TheresaBot.MiraiHttpApi.Common;
 
 namespace TheresaBot.MiraiHttpApi.Event
 {

@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class PixivUserConfig : BasePluginConfig
+    public record PixivUserConfig : BasePluginConfig
     {
         public List<string> Commands { get; private set; }
         public string ProcessingMsg { get; private set; }

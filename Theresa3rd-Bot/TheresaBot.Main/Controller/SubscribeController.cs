@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TheresaBot.Main.Business;
-using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.DTO;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Model.VO;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Controller
@@ -15,11 +14,11 @@ namespace TheresaBot.Main.Controller
     [Route("api/[controller]")]
     public class SubscribeController : BaseController
     {
-        private SubscribeBusiness subscribeBusiness;
+        private SubscribeService subscribeService;
 
         public SubscribeController()
         {
-            this.subscribeBusiness = new SubscribeBusiness();
+            this.subscribeService = new SubscribeService();
         }
 
         [HttpGet]
@@ -27,7 +26,7 @@ namespace TheresaBot.Main.Controller
         [Route("list/pixiv/user")]
         public ApiResult GetPixivUserList()
         {
-            var subscribeDatas = subscribeBusiness.getSubscribeDatas(SubscribeType.P站画师);
+            var subscribeDatas = subscribeService.getSubscribeDatas(SubscribeType.P站画师);
             var subscribeList = subscribeDatas.Select(o => ToSubscribeVo(o));
             return ApiResult.Success(subscribeList);
         }
@@ -37,7 +36,7 @@ namespace TheresaBot.Main.Controller
         [Route("list/pixiv/tag")]
         public ApiResult GetPixivTagList()
         {
-            var subscribeDatas = subscribeBusiness.getSubscribeDatas(SubscribeType.P站标签);
+            var subscribeDatas = subscribeService.getSubscribeDatas(SubscribeType.P站标签);
             var subscribeList = subscribeDatas.Select(o => ToSubscribeVo(o));
             return ApiResult.Success(subscribeList);
         }
@@ -47,7 +46,7 @@ namespace TheresaBot.Main.Controller
         [Route("list/miyoushe/user")]
         public ApiResult GetMiyousheUserList()
         {
-            var subscribeDatas = subscribeBusiness.getSubscribeDatas(SubscribeType.米游社用户);
+            var subscribeDatas = subscribeService.getSubscribeDatas(SubscribeType.米游社用户);
             var subscribeList = subscribeDatas.Select(o => ToSubscribeVo(o));
             return ApiResult.Success(subscribeList);
         }
@@ -59,7 +58,7 @@ namespace TheresaBot.Main.Controller
         {
             if (deleteDto.Ids is null) return ApiResult.ParamError;
             if (deleteDto.Ids.Count == 0) return ApiResult.ParamError;
-            subscribeBusiness.deleteSubscribeGroup(deleteDto.Ids);
+            subscribeService.deleteSubscribeGroup(deleteDto.Ids);
             return ApiResult.Success("退订成功");
         }
 

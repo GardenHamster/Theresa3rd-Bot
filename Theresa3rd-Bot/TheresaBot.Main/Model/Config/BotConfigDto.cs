@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class BotConfigDto
+    public record BotConfigDto
     {
         public GeneralConfig General { get; private set; }
         public PixivConfig Pixiv { get; private set; }

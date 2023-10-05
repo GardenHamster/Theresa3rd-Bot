@@ -3,15 +3,15 @@ using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class BanTagBusiness
+    internal class BanTagService
     {
         private BanTagDao banTagDao;
 
-        public BanTagBusiness()
+        public BanTagService()
         {
-            this.banTagDao = new BanTagDao();
+            banTagDao = new BanTagDao();
         }
 
         public List<BanTagPO> GetBanTags()

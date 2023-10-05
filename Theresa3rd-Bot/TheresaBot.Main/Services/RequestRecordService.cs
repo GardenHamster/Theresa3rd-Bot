@@ -2,15 +2,15 @@
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class RequestRecordBusiness
+    internal class RequestRecordService
     {
         private RequestRecordDao requestRecordDao;
 
-        public RequestRecordBusiness()
+        public RequestRecordService()
         {
-            this.requestRecordDao = new RequestRecordDao();
+            requestRecordDao = new RequestRecordDao();
         }
 
         public int getUsedCountToday(long groupId, long memberId, params CommandType[] commandTypeArr)

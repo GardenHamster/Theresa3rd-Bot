@@ -1,6 +1,6 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Services;
 
 namespace TheresaBot.Main.Datas
 {
@@ -12,7 +12,7 @@ namespace TheresaBot.Main.Datas
         {
             try
             {
-                BanMemberList = new BanMemberBusiness().getBanMembers();
+                BanMemberList = new BanMemberService().getBanMembers();
                 LogHelper.Info("加载屏蔽用户列表完毕...");
             }
             catch (Exception ex)

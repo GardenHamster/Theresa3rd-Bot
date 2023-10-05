@@ -10,9 +10,9 @@ using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class PixivBusiness : SetuBusiness
+    internal class PixivService : SetuService
     {
         private SubscribeDao subscribeDao;
         private SubscribeRecordDao subscribeRecordDao;
@@ -32,7 +32,7 @@ namespace TheresaBot.Main.Business
         /// </summary>
         private List<PixivWorkInfo> bookUpList;
 
-        public PixivBusiness()
+        public PixivService()
         {
             bookUpList = new List<PixivWorkInfo>();
             subscribeDao = new SubscribeDao();
@@ -681,7 +681,7 @@ namespace TheresaBot.Main.Business
         private SubscribePO getOrInsertUserSubscribe(PixivWorkInfo pixivWorkInfo)
         {
             string userId = pixivWorkInfo.userId.ToString();
-            string userName = StringHelper.FilterEmoji(pixivWorkInfo.userName)?.FilterEmoji().CutString(50);
+            string userName = pixivWorkInfo.userName.FilterEmoji()?.FilterEmoji().CutString(50);
             SubscribePO dbSubscribe = subscribeDao.getSubscribe(userId, SubscribeType.P站画师);
             if (dbSubscribe != null) return dbSubscribe;
             dbSubscribe = new SubscribePO();
@@ -696,7 +696,7 @@ namespace TheresaBot.Main.Business
         private SubscribeRecordPO toSubscribeRecord(PixivWorkInfo workInfo, int subscribeId)
         {
             SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-            subscribeRecord.Title = StringHelper.FilterEmoji(workInfo.illustTitle);
+            subscribeRecord.Title = workInfo.illustTitle.FilterEmoji();
             subscribeRecord.Content = subscribeRecord.Title;
             subscribeRecord.CoverUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId.ToString());
             subscribeRecord.LinkUrl = HttpUrl.getPixivWorkInfoUrl(workInfo.illustId.ToString());
@@ -830,7 +830,7 @@ namespace TheresaBot.Main.Business
             while (startIndex < pidList.Count)
             {
                 var pageList = pidList.Skip(startIndex).Take(eachPage).ToList();
-                rankContents.Add(new(String.Join("\r\n", pageList)));
+                rankContents.Add(new(string.Join("\r\n", pageList)));
                 startIndex += eachPage;
             }
             return rankContents;

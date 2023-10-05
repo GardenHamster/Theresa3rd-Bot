@@ -1,6 +1,5 @@
 using Microsoft.Extensions.FileProviders;
 using SqlSugar.IOC;
-using System.IO;
 using System.Net;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;

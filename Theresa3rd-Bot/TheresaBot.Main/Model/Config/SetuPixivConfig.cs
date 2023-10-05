@@ -2,7 +2,7 @@
 
 namespace TheresaBot.Main.Model.Config
 {
-    public class SetuPixivConfig : BasePluginConfig
+    public record SetuPixivConfig : BasePluginConfig
     {
         public List<string> Commands { get; private set; }
         public PixivRandomType RandomMode { get; private set; }

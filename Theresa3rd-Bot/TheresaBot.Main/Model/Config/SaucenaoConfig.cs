@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class SaucenaoConfig : BasePluginConfig
+    public record SaucenaoConfig : BasePluginConfig
     {
         public List<string> Commands { get; private set; }
         public string NotFoundMsg { get; private set; }

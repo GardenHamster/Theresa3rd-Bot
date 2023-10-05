@@ -2,9 +2,9 @@
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.LocalSetu;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class LocalSetuBusiness : SetuBusiness
+    internal class LocalSetuService : SetuService
     {
         public List<LocalSetuInfo> loadRandomDir(string localPath, int count, bool fromOneDir = false)
         {

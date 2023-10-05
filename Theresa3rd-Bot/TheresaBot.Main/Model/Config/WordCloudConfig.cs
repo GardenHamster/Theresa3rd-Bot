@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class WordCloudConfig : BasePluginConfig
+    public record WordCloudConfig : BasePluginConfig
     {
         public int GroupCD { get; private set; }
         public int MaxWords { get; private set; }
@@ -30,7 +30,7 @@
         }
     }
 
-    public class WordCloudMask
+    public record WordCloudMask
     {
         public string Name { get; private set; }
         public string Path { get; private set; }
@@ -38,7 +38,7 @@
         public int Height { get; private set; }
     }
 
-    public class WordCloudTimer
+    public record WordCloudTimer
     {
         public bool Enable { get; private set; }
         public string Name { get; private set; }

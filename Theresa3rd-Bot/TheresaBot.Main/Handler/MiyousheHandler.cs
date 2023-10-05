@@ -1,5 +1,4 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Cache;
+﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
@@ -11,6 +10,7 @@ using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 using TheresaBot.Main.Type.StepOption;
@@ -20,13 +20,13 @@ namespace TheresaBot.Main.Handler
 {
     internal class MiyousheHandler : BaseHandler
     {
-        private MiyousheBusiness miyousheBusiness;
-        private SubscribeBusiness subscribeBusiness;
+        private MiyousheService miyousheService;
+        private SubscribeService subscribeService;
 
         public MiyousheHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            miyousheBusiness = new MiyousheBusiness();
-            subscribeBusiness = new SubscribeBusiness();
+            miyousheService = new MiyousheService();
+            subscribeService = new SubscribeService();
         }
 
         public async Task SubscribeUserAsync(GroupCommand command)
@@ -50,7 +50,7 @@ namespace TheresaBot.Main.Handler
                     groupType = groupStep.AnswerForEnum<GroupPushType>();
                 }
 
-                MysResult<MysUserFullInfoDto> userInfoDto = await miyousheBusiness.geMysUserFullInfoDtoAsync(userId.ToString());
+                MysResult<MysUserFullInfoDto> userInfoDto = await miyousheService.geMysUserFullInfoDtoAsync(userId.ToString());
                 if (userInfoDto is null || userInfoDto.retcode != 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync("订阅失败，目标用户不存在");
@@ -58,14 +58,14 @@ namespace TheresaBot.Main.Handler
                 }
 
                 long subscribeGroupId = groupType == GroupPushType.AllGroup ? 0 : command.GroupId;
-                SubscribePO dbSubscribe = subscribeBusiness.getSubscribe(userId.ToString(), SubscribeType.米游社用户);
-                if (dbSubscribe is null) dbSubscribe = subscribeBusiness.insertSurscribe(userInfoDto.data.user_info, userId.ToString());
-                if (subscribeBusiness.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
+                SubscribePO dbSubscribe = subscribeService.getSubscribe(userId.ToString(), SubscribeType.米游社用户);
+                if (dbSubscribe is null) dbSubscribe = subscribeService.insertSurscribe(userInfoDto.data.user_info, userId.ToString());
+                if (subscribeService.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
                 {
                     await command.ReplyGroupMessageWithAtAsync($"已订阅了该用户~");
                     return;
                 }
-                subscribeBusiness.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
+                subscribeService.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
 
                 List<BaseContent> chailList = new List<BaseContent>();
                 chailList.Add(new PlainContent($"米游社用户[{dbSubscribe.SubscribeName}]订阅成功!"));
@@ -99,7 +99,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 long userId = await CheckUserIdAsync(command.KeyWord);
-                List<SubscribePO> subscribeList = miyousheBusiness.getSubscribeList(userId.ToString());
+                List<SubscribePO> subscribeList = miyousheService.getSubscribeList(userId.ToString());
                 if (subscribeList.Count == 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync("并没有订阅这个用户哦~");
@@ -107,7 +107,7 @@ namespace TheresaBot.Main.Handler
                 }
                 foreach (var item in subscribeList)
                 {
-                    subscribeBusiness.deleteSubscribe(item.Id);
+                    subscribeService.deleteSubscribe(item.Id);
                 }
                 await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了ID为{userId}的米游社用户~");
                 SubscribeDatas.LoadSubscribeTask();
@@ -131,7 +131,7 @@ namespace TheresaBot.Main.Handler
                 try
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
-                    List<MysSubscribe> mysSubscribeList = await miyousheBusiness.getMysUserSubscribeAsync(subscribeTask);
+                    List<MysSubscribe> mysSubscribeList = await miyousheService.getMysUserSubscribeAsync(subscribeTask);
                     if (mysSubscribeList is null || mysSubscribeList.Count == 0) continue;
                     await PushSubscribeAsync(subscribeTask, mysSubscribeList);
                 }
@@ -154,7 +154,7 @@ namespace TheresaBot.Main.Handler
                 if (subscribeTask.GroupIdList.Count == 0) continue;
 
                 List<BaseContent> msgList = new List<BaseContent>();
-                msgList.Add(new PlainContent(miyousheBusiness.getPostInfoAsync(mysSubscribe)));
+                msgList.Add(new PlainContent(miyousheService.getPostInfoAsync(mysSubscribe)));
 
                 if (string.IsNullOrWhiteSpace(coverUrl) == false)
                 {

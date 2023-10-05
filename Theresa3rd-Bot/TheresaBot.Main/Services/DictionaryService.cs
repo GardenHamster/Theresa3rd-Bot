@@ -2,13 +2,13 @@
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    public class DictionaryBusiness
+    public class DictionaryService
     {
         private DictionaryDao dictionaryDao;
 
-        public DictionaryBusiness()
+        public DictionaryService()
         {
             dictionaryDao = new DictionaryDao();
         }

@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class ManageConfig : BaseConfig
+    public record ManageConfig : BaseConfig
     {
         public List<string> PixivCookieCommands { get; private set; }
 

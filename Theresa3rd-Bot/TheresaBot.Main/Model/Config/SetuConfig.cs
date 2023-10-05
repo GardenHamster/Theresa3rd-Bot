@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class SetuConfig : BaseConfig
+    public record SetuConfig : BaseConfig
     {
         public int GroupCD { get; private set; }
 

@@ -1,5 +1,4 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Cache;
+﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
@@ -9,6 +8,7 @@ using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -18,13 +18,13 @@ namespace TheresaBot.Main.Handler
     {
         protected BaseSession Session;
         protected BaseReporter Reporter;
-        protected RequestRecordBusiness requestRecordBusiness;
+        protected RequestRecordService requestRecordService;
 
         public BaseHandler(BaseSession session, BaseReporter reporter)
         {
             this.Session = session;
             this.Reporter = reporter;
-            this.requestRecordBusiness = new RequestRecordBusiness();
+            this.requestRecordService = new RequestRecordService();
         }
 
         public async Task LogAndReplyError(GroupCommand command, Exception ex, string message = "")
@@ -43,17 +43,17 @@ namespace TheresaBot.Main.Handler
 
         public async Task<int> GetUsedCountToday(long groupId, long memberId, params CommandType[] commandTypeArr)
         {
-            return await Task.FromResult(requestRecordBusiness.getUsedCountToday(groupId, memberId, commandTypeArr));
+            return await Task.FromResult(requestRecordService.getUsedCountToday(groupId, memberId, commandTypeArr));
         }
 
         public async Task<RequestRecordPO> InsertRecord(GroupCommand command)
         {
-            return await Task.FromResult(requestRecordBusiness.addRecord(command.GroupId, command.MemberId, command.CommandType, command.Instruction));
+            return await Task.FromResult(requestRecordService.addRecord(command.GroupId, command.MemberId, command.CommandType, command.Instruction));
         }
 
         public async Task<RequestRecordPO> InsertRecord(FriendCommand command)
         {
-            return await Task.FromResult(requestRecordBusiness.addRecord(0, command.MemberId, command.CommandType, command.Instruction));
+            return await Task.FromResult(requestRecordService.addRecord(0, command.MemberId, command.CommandType, command.Instruction));
         }
 
         public async Task<bool> CheckPixivCookieAvailableAsync(GroupCommand command)
@@ -229,7 +229,7 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(command.GroupId)) return false;
             if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(command.MemberId)) return false;
             if (BotConfig.SetuConfig.MaxDaily == 0) return false;
-            int useCount = new RequestRecordBusiness().getUsedCountToday(command.GroupId, command.MemberId, CommandType.Setu);
+            int useCount = new RequestRecordService().getUsedCountToday(command.GroupId, command.MemberId, CommandType.Setu);
             if (useCount < BotConfig.SetuConfig.MaxDaily) return false;
             await command.ReplyGroupMessageWithQuoteAsync("你今天的使用次数已经达到上限了，明天再来吧");
             return true;
@@ -239,7 +239,7 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.SaucenaoConfig.MaxDaily == 0) return false;
             if (BotConfig.PermissionsConfig.LimitlessMembers.Contains(command.MemberId)) return false;
-            int useCount = new RequestRecordBusiness().getUsedCountToday(command.GroupId, command.MemberId, CommandType.Saucenao);
+            int useCount = new RequestRecordService().getUsedCountToday(command.GroupId, command.MemberId, CommandType.Saucenao);
             if (useCount < BotConfig.SaucenaoConfig.MaxDaily) return false;
             await command.ReplyGroupMessageWithQuoteAsync("你今天的使用次数已经达到上限了，明天再来吧");
             return true;

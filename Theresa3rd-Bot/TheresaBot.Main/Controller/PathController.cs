@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TheresaBot.Main.Business;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Result;
-using TheresaBot.Main.Model.VO;
+using TheresaBot.Main.Services;
 
 namespace TheresaBot.Main.Controller
 {
@@ -12,11 +11,11 @@ namespace TheresaBot.Main.Controller
     [Route("api/[controller]")]
     public class PathController : BaseController
     {
-        private PathBusiness pathBusiness;
+        private PathService pathService;
 
         public PathController()
         {
-            this.pathBusiness = new PathBusiness();
+            this.pathService = new PathService();
         }
 
         [HttpGet]
@@ -45,7 +44,7 @@ namespace TheresaBot.Main.Controller
         {
             try
             {
-                var pathList = pathBusiness.LoadFacePath();
+                var pathList = pathService.LoadFacePath();
                 return ApiResult.Success(pathList);
             }
             catch (Exception ex)

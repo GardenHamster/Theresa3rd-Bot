@@ -3,7 +3,7 @@ using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Config
 {
-    public class PixivConfig : BaseConfig
+    public record PixivConfig : BaseConfig
     {
         public bool FreeProxy { get; private set; }
         public string HttpProxy { get; private set; }

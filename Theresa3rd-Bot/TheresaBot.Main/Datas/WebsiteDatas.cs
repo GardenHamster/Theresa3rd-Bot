@@ -1,6 +1,6 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Datas
@@ -17,10 +17,10 @@ namespace TheresaBot.Main.Datas
         {
             try
             {
-                var websiteBusiness = new WebsiteBusiness();
-                Pixiv = websiteBusiness.getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv));
-                Bili = websiteBusiness.getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Bili));
-                Saucenao = websiteBusiness.getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao));
+                var websiteService = new WebsiteService();
+                Pixiv = websiteService.getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv));
+                Bili = websiteService.getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Bili));
+                Saucenao = websiteService.getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao));
                 LogHelper.Info("网站cookie加载完成...");
             }
             catch (Exception ex)

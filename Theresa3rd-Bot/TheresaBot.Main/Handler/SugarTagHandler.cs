@@ -1,22 +1,22 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Cache;
+﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
 {
     internal class SugarTagHandler : BaseHandler
     {
-        private SugarTagBusiness sugarTagBusiness;
+        private SugarTagService sugarTagService;
 
         public SugarTagHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            sugarTagBusiness = new SugarTagBusiness();
+            sugarTagService = new SugarTagService();
         }
 
         public async Task BindPixivTagAsync(GroupCommand command)
@@ -40,7 +40,7 @@ namespace TheresaBot.Main.Handler
                     bindTags = bindTagsStep.AnswerForString();
                 }
                 var keyWordArr = keyWords.Split(new char[] { ',', '，' }).Where(o => !string.IsNullOrWhiteSpace(o)).ToArray();
-                sugarTagBusiness.SetSugarTags(keyWordArr, bindTags);
+                sugarTagService.SetSugarTags(keyWordArr, bindTags);
                 SugarTagDatas.LoadDatas();
                 await command.ReplyGroupMessageWithQuoteAsync("标签绑定完毕！");
             }
@@ -65,7 +65,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
                 var keyWordArr = keyWords.Split(new char[] { ',', '，' }).Where(o => !string.IsNullOrWhiteSpace(o)).ToArray();
-                sugarTagBusiness.DelSugarTags(keyWordArr);
+                sugarTagService.DelSugarTags(keyWordArr);
                 SugarTagDatas.LoadDatas();
                 await command.ReplyGroupMessageWithQuoteAsync("已解绑相关标签");
             }

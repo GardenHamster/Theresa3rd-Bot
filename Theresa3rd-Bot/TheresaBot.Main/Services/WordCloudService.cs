@@ -3,17 +3,17 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    public class WordCloudBusiness
+    public class WordCloudService
     {
         private DictionaryDao dictionaryDao;
         private MessageRecordDao messageRecordDao;
 
-        public WordCloudBusiness()
+        public WordCloudService()
         {
             dictionaryDao = new DictionaryDao();
-            this.messageRecordDao = new MessageRecordDao();
+            messageRecordDao = new MessageRecordDao();
         }
 
         public List<string> getCloudWords(long groupId, DateTime startTime, DateTime endTime)

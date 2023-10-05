@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class PermissionsConfig : BaseConfig
+    public record PermissionsConfig : BaseConfig
     {
         public List<long> AcceptGroups { get; private set; }
 

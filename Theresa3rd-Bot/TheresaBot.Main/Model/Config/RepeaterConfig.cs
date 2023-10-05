@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class RepeaterConfig : BasePluginConfig
+    public record RepeaterConfig : BasePluginConfig
     {
         public int RepeatTime { get; private set; }
 

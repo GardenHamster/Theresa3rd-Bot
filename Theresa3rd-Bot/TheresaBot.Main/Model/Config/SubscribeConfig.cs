@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class SubscribeConfig : BaseConfig
+    public record SubscribeConfig : BaseConfig
     {
         public PixivUserSubscribeConfig PixivUser { get; private set; }
 

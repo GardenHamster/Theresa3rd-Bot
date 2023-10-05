@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class MysUserSubscribeConfig : BaseSubscribeConfig
+    public record MysUserSubscribeConfig : BaseSubscribeConfig
     {
         public int ShelfLife { get; private set; }
 

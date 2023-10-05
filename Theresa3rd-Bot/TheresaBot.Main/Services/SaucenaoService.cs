@@ -11,9 +11,9 @@ using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class SaucenaoBusiness
+    internal class SaucenaoService
     {
         public async Task<SaucenaoResult> getSaucenaoResultAsync(string imgHttpUrl)
         {
@@ -61,7 +61,7 @@ namespace TheresaBot.Main.Business
 
             href = href.Trim();
             string hrefLower = href.ToLower();
-            Dictionary<string, string> paramDic = StringHelper.SplitHttpParams(href);
+            Dictionary<string, string> paramDic = href.SplitHttpParams();
 
             //https://www.pixiv.net/member_illust.php?mode=medium&illust_id=73572009
             if (hrefLower.Contains("www.pixiv.net/member_illust"))

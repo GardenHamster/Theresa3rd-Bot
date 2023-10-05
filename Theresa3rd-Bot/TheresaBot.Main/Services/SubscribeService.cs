@@ -7,14 +7,14 @@ using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class SubscribeBusiness
+    internal class SubscribeService
     {
         private SubscribeDao subscribeDao;
         private SubscribeGroupDao subscribeGroupDao;
 
-        public SubscribeBusiness()
+        public SubscribeService()
         {
             subscribeDao = new SubscribeDao();
             subscribeGroupDao = new SubscribeGroupDao();
@@ -207,7 +207,7 @@ namespace TheresaBot.Main.Business
             }
         }
 
-        
+
 
 
     }

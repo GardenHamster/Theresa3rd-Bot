@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using TheresaBot.Main.Business;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Services;
 
 namespace TheresaBot.Main.Datas
 {
@@ -13,7 +13,7 @@ namespace TheresaBot.Main.Datas
         {
             try
             {
-                BanTagList = new BanTagBusiness().GetBanTags();
+                BanTagList = new BanTagService().GetBanTags();
                 LogHelper.Info("加载屏蔽标签列表完毕...");
             }
             catch (Exception ex)

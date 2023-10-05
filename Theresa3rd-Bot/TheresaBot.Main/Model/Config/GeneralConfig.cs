@@ -2,7 +2,7 @@
 
 namespace TheresaBot.Main.Model.Config
 {
-    public class GeneralConfig : BaseConfig
+    public record GeneralConfig : BaseConfig
     {
         public List<string> Prefixs { get; private set; }
 
@@ -14,7 +14,7 @@ namespace TheresaBot.Main.Model.Config
 
         public string ErrorMsg { get; private set; }
 
-        public string ClearCron { get; set; }
+        public string ClearCron { get; private set; }
 
         public string ErrorImgPath { get; private set; }
 

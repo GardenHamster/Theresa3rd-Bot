@@ -5,9 +5,9 @@ using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Lolicon;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class LoliconBusiness : SetuBusiness
+    internal class LoliconService : SetuService
     {
         private const int eachPage = 5;
 

@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
+		<NoWarn>$(NoWarn);NETSDK1206</NoWarn>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<BaseOutputPath></BaseOutputPath>
 		<Nullable>disable</Nullable>

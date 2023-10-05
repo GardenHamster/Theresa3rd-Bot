@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class LolisukiConfig : BasePluginConfig
+    public record LolisukiConfig : BasePluginConfig
     {
         public List<string> Commands { get; private set; }
 

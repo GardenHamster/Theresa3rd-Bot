@@ -1,13 +1,13 @@
 ﻿using TheresaBot.Main.Dao;
 using TheresaBot.Main.Model.PO;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class WebsiteBusiness
+    internal class WebsiteService
     {
         private WebsiteDao websiteDao;
 
-        public WebsiteBusiness()
+        public WebsiteService()
         {
             websiteDao = new WebsiteDao();
         }

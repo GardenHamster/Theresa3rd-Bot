@@ -1,11 +1,11 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Common;
+﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -13,11 +13,11 @@ namespace TheresaBot.Main.Handler
 {
     internal class PixivPushHandler : SetuHandler
     {
-        private PixivBusiness pixivBusiness;
+        private PixivService pixivService;
 
         public PixivPushHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            pixivBusiness = new PixivBusiness();
+            pixivService = new PixivService();
         }
 
         public async Task<PixivTagScanReport> HandleTagPushAsync()
@@ -35,7 +35,7 @@ namespace TheresaBot.Main.Handler
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
                     scanReport.ScanTag++;
-                    var workList = await pixivBusiness.scanTagWorkAsync(subscribeTask, scanReport, pushAsync);
+                    var workList = await pixivService.scanTagWorkAsync(subscribeTask, scanReport, pushAsync);
                     pushList.AddRange(workList);
                 }
                 catch (Exception ex)
@@ -46,8 +46,8 @@ namespace TheresaBot.Main.Handler
             }
             if (pushList.Count > 0)
             {
-                Task pushTask = PushPixivWorkMergeAsync(pushList, o => pixivBusiness.getTagPushRemindMsg(o));
-                Task insertTask = pixivBusiness.insertSubscribeRecord(pushList);
+                Task pushTask = PushPixivWorkMergeAsync(pushList, o => pixivService.getTagPushRemindMsg(o));
+                Task insertTask = pixivService.insertSubscribeRecord(pushList);
             }
             return scanReport;
         }
@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Handler
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
                     scanReport.ScanUser++;
-                    var workList = await pixivBusiness.scanUserWorkAsync(subscribeTask, scanReport, pushAsync);
+                    var workList = await pixivService.scanUserWorkAsync(subscribeTask, scanReport, pushAsync);
                     pushList.AddRange(workList);
                 }
                 catch (Exception ex)
@@ -78,8 +78,8 @@ namespace TheresaBot.Main.Handler
             }
             if (pushList.Count > 0)
             {
-                Task pushTask = PushPixivWorkMergeAsync(pushList, o => pixivBusiness.getUserPushRemindMsg(o));
-                Task insertTask = pixivBusiness.insertSubscribeRecord(pushList);
+                Task pushTask = PushPixivWorkMergeAsync(pushList, o => pixivService.getUserPushRemindMsg(o));
+                Task insertTask = pixivService.insertSubscribeRecord(pushList);
             }
             return scanReport;
         }
@@ -91,11 +91,11 @@ namespace TheresaBot.Main.Handler
             {
                 bool sendMerge = BotConfig.SubscribeConfig.PixivTag.SendMerge;
                 Func<PixivSubscribe, Task> pushAsync = sendMerge ? null : PushUserWorkAsync;
-                var pushList = await pixivBusiness.scanFollowWorkAsync(scanReport, pushAsync);
+                var pushList = await pixivService.scanFollowWorkAsync(scanReport, pushAsync);
                 if (pushList.Count > 0)
                 {
-                    Task pushTask = PushPixivWorkMergeAsync(pushList, o => pixivBusiness.getUserPushRemindMsg(o));
-                    Task insertTask = pixivBusiness.insertSubscribeRecord(pushList);
+                    Task pushTask = PushPixivWorkMergeAsync(pushList, o => pixivService.getUserPushRemindMsg(o));
+                    Task insertTask = pixivService.insertSubscribeRecord(pushList);
                 }
             }
             catch (Exception ex)
@@ -114,7 +114,7 @@ namespace TheresaBot.Main.Handler
         {
             foreach (long groupId in pixivSubscribe.SubscribeTask.GroupIdList)
             {
-                await PushPixivWorkAsync(pixivSubscribe, o => pixivBusiness.getTagPushRemindMsg(pixivSubscribe), groupId);
+                await PushPixivWorkAsync(pixivSubscribe, o => pixivService.getTagPushRemindMsg(pixivSubscribe), groupId);
                 await Task.Delay(1000);
             }
         }
@@ -128,7 +128,7 @@ namespace TheresaBot.Main.Handler
         {
             foreach (long groupId in pixivSubscribe.SubscribeTask.GroupIdList)
             {
-                await PushPixivWorkAsync(pixivSubscribe, o => pixivBusiness.getUserPushRemindMsg(pixivSubscribe), groupId);
+                await PushPixivWorkAsync(pixivSubscribe, o => pixivService.getUserPushRemindMsg(pixivSubscribe), groupId);
                 await Task.Delay(1000);
             }
         }
@@ -180,7 +180,7 @@ namespace TheresaBot.Main.Handler
 
                 var workMsgs = new List<BaseContent>();
                 workMsgs.Add(new PlainContent(remindMsg(pixivSubscribe)));
-                workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(workInfo)));
+                workMsgs.Add(new PlainContent(pixivService.getWorkInfo(workInfo)));
 
                 bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                 List<FileInfo> imgList = isShowImg ? await GetSetuFilesAsync(workInfo, groupId) : new();
@@ -220,7 +220,7 @@ namespace TheresaBot.Main.Handler
 
                     var workMsgs = new List<BaseContent>();
                     workMsgs.Add(new PlainContent(remindMsg(pixivSubscribe)));
-                    workMsgs.Add(new PlainContent(pixivBusiness.getWorkInfo(workInfo)));
+                    workMsgs.Add(new PlainContent(pixivService.getWorkInfo(workInfo)));
 
                     bool isShowImg = groupId.IsShowSetuImg(isR18Img);
                     List<FileInfo> imgList = isShowImg ? setuFiles : new();

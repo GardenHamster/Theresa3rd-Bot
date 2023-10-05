@@ -8,15 +8,15 @@ using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class MiyousheBusiness
+    internal class MiyousheService
     {
         private SubscribeDao subscribeDao;
         private SubscribeGroupDao subscribeGroupDao;
         private SubscribeRecordDao subscribeRecordDao;
 
-        public MiyousheBusiness()
+        public MiyousheService()
         {
             subscribeDao = new SubscribeDao();
             subscribeGroupDao = new SubscribeGroupDao();

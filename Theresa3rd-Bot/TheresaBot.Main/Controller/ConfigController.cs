@@ -37,11 +37,5 @@ namespace TheresaBot.Main.Controller
             return ApiResult.Success(BotConfig.PixivConfig);
         }
 
-
-
-
-
-
-
     }
 }

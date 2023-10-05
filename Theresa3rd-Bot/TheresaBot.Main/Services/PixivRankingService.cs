@@ -8,9 +8,9 @@ using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class PixivRankingBusiness : SetuBusiness
+    internal class PixivRankingService : SetuService
     {
         private const int eachPage = 50;
 
@@ -145,7 +145,7 @@ namespace TheresaBot.Main.Business
             while (startIndex < rankInfos.Count)
             {
                 var pageList = rankInfos.Skip(startIndex).Take(eachPage).ToList();
-                rankContents.Add(new(String.Join("\r\n", pageList)));
+                rankContents.Add(new(string.Join("\r\n", pageList)));
                 startIndex += eachPage;
             }
             return rankContents;
@@ -201,7 +201,7 @@ namespace TheresaBot.Main.Business
                 isBookmarkCountOk = workInfo.bookmarkCount >= rankingItem.MinBookCount * BotConfig.PixivConfig.GeneralTarget;
                 isBookmarkRateOk = workInfo.bookmarkRate >= rankingItem.MinBookRate * BotConfig.PixivConfig.GeneralTarget;
             }
-            return (isRatingCountOk && isRatingRateOk) && (isBookmarkCountOk && isBookmarkRateOk);
+            return isRatingCountOk && isRatingRateOk && isBookmarkCountOk && isBookmarkRateOk;
         }
 
     }

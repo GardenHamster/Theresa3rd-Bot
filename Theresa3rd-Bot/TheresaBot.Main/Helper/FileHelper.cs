@@ -80,7 +80,7 @@
         {
             Uri uri1 = new Uri(path);
             Uri uri2 = new Uri(file.FullName);
-            return uri1.MakeRelativeUri(uri2).ToString().Replace(@"\","/");
+            return uri1.MakeRelativeUri(uri2).ToString().Replace(@"\", "/");
         }
 
         /// <summary>

@@ -2,9 +2,9 @@
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.VO;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    internal class PathBusiness
+    internal class PathService
     {
 
         public List<ImagePathVo> LoadFacePath()

@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class MenuConfig : BasePluginConfig
+    public record MenuConfig : BasePluginConfig
     {
         public List<string> Commands { get; private set; }
 

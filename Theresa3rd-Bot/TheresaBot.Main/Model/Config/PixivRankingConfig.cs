@@ -2,7 +2,7 @@
 
 namespace TheresaBot.Main.Model.Config
 {
-    public class PixivRankingConfig : BasePluginConfig
+    public record PixivRankingConfig : BasePluginConfig
     {
         public string ProcessingMsg { get; private set; }
         public string Template { get; private set; }
@@ -25,7 +25,7 @@ namespace TheresaBot.Main.Model.Config
         }
     }
 
-    public class PixivRankingItem
+    public record PixivRankingItem
     {
         public bool Enable { get; private set; }
         public List<string> Commands { get; private set; }
@@ -36,7 +36,7 @@ namespace TheresaBot.Main.Model.Config
         public double MinBookRate { get; private set; }
     }
 
-    public class PixivRankingTimer
+    public record PixivRankingTimer
     {
         public bool Enable { get; private set; }
         public string Name { get; private set; }

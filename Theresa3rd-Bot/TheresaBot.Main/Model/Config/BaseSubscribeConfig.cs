@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class BaseSubscribeConfig : BasePluginConfig
+    public record BaseSubscribeConfig : BasePluginConfig
     {
         public List<string> AddCommands { get; protected set; }
 

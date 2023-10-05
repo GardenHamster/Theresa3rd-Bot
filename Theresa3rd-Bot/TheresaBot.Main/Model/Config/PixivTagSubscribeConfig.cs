@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class PixivTagSubscribeConfig : BaseSubscribeConfig
+    public record PixivTagSubscribeConfig : BaseSubscribeConfig
     {
         public int ShelfLife { get; private set; } = 24 * 60 * 60;
 

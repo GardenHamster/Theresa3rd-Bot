@@ -4,19 +4,19 @@ using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Type;
 
-namespace TheresaBot.Main.Business
+namespace TheresaBot.Main.Services
 {
-    public class RecordBusiness
+    public class RecordService
     {
         private MessageRecordDao messageRecordDao;
         private PixivRecordDao pixivRecordDao;
         private ImageRecordDao imageRecordDao;
 
-        public RecordBusiness()
+        public RecordService()
         {
-            this.messageRecordDao = new MessageRecordDao();
-            this.pixivRecordDao = new PixivRecordDao();
-            this.imageRecordDao = new ImageRecordDao();
+            messageRecordDao = new MessageRecordDao();
+            pixivRecordDao = new PixivRecordDao();
+            imageRecordDao = new ImageRecordDao();
         }
 
         public List<ImageRecordPO> GetImageRecord(PlatformType platformType, long msgId, long groupId)

@@ -26,56 +26,34 @@ namespace TheresaBot.Main.Helper
         public static void LoadBotConfig()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            BotConfig.BackstageConfig = BackstageOperater.LoadConfig().FormatConfig();
-            BotConfig.GeneralConfig = GeneralOperater.LoadConfig().FormatConfig();
-            BotConfig.PixivConfig = PixivOperater.LoadConfig().FormatConfig();
-            BotConfig.PermissionsConfig = PermissionsOperater.LoadConfig().FormatConfig();
-            BotConfig.ManageConfig = ManageOperater.LoadConfig().FormatConfig();
-            BotConfig.MenuConfig = MenuOperater.LoadConfig().FormatConfig();
-            BotConfig.RepeaterConfig = RepeaterOperater.LoadConfig().FormatConfig();
-            BotConfig.WelcomeConfig = WelcomeOperater.LoadConfig().FormatConfig();
-            BotConfig.ReminderConfig = ReminderOperater.LoadConfig().FormatConfig();
-            BotConfig.SetuConfig = SetuOperater.LoadConfig().FormatConfig();
-            BotConfig.SaucenaoConfig = SaucenaoOperater.LoadConfig().FormatConfig();
-            BotConfig.SubscribeConfig = SubscribeOperater.LoadConfig().FormatConfig();
-            BotConfig.TimingSetuConfig = TimingSetuOperater.LoadConfig().FormatConfig();
-            BotConfig.PixivRankingConfig = PixivRankingOperater.LoadConfig().FormatConfig();
-            BotConfig.WordCloudConfig = WordCloudOperater.LoadConfig().FormatConfig();
+            BotConfig.BackstageConfig = BackstageOperater.LoadConfig();
+            BotConfig.GeneralConfig = GeneralOperater.LoadConfig();
+            BotConfig.PixivConfig = PixivOperater.LoadConfig();
+            BotConfig.PermissionsConfig = PermissionsOperater.LoadConfig();
+            BotConfig.ManageConfig = ManageOperater.LoadConfig();
+            BotConfig.MenuConfig = MenuOperater.LoadConfig();
+            BotConfig.RepeaterConfig = RepeaterOperater.LoadConfig();
+            BotConfig.WelcomeConfig = WelcomeOperater.LoadConfig();
+            BotConfig.ReminderConfig = ReminderOperater.LoadConfig();
+            BotConfig.SetuConfig = SetuOperater.LoadConfig();
+            BotConfig.SaucenaoConfig = SaucenaoOperater.LoadConfig();
+            BotConfig.SubscribeConfig = SubscribeOperater.LoadConfig();
+            BotConfig.TimingSetuConfig = TimingSetuOperater.LoadConfig();
+            BotConfig.PixivRankingConfig = PixivRankingOperater.LoadConfig();
+            BotConfig.WordCloudConfig = WordCloudOperater.LoadConfig();
+
+            if (BotConfig.BackstageConfig is null) BotConfig.BackstageConfig = new();
+            if (BotConfig.GeneralConfig is null) BotConfig.GeneralConfig = new();
+            if (BotConfig.PermissionsConfig is null) BotConfig.PermissionsConfig = new();
+
+            BotConfig.BackstageConfig.FormatConfig();
+            BotConfig.GeneralConfig.FormatConfig();
+            BotConfig.PermissionsConfig.FormatConfig();
+
+            BackstageOperater.SaveConfig(BotConfig.BackstageConfig);
+            GeneralOperater.SaveConfig(BotConfig.GeneralConfig);
+            PermissionsOperater.SaveConfig(BotConfig.PermissionsConfig);
         }
-
-        public static void InitBotConfig()
-        {
-            InitBackstageConfig();
-        }
-
-        private static void InitBackstageConfig()
-        {
-            if (BotConfig.BackstageConfig is null)
-            {
-                BotConfig.BackstageConfig = new BackstageConfig();
-            }
-            var config = BotConfig.BackstageConfig;
-            if (string.IsNullOrWhiteSpace(config.SecretKey))
-            {
-                config.SecretKey = StringHelper.RandomUUID32();
-            }
-            if (string.IsNullOrWhiteSpace(config.Password))
-            {
-                config.Password = StringHelper.RandomUUID8();
-            }
-            BackstageOperater.SaveConfig(config);
-        }
-
-
-
-
-
-
-
-
-
-
-
 
 
     }

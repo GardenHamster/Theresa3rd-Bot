@@ -12,8 +12,8 @@
         public override BasePluginConfig FormatConfig()
         {
             base.FormatConfig();
-            ShelfLife = ShelfLife < 300 ? 300 : ShelfLife;
-            ScanInterval = ScanInterval < 30 ? 30 : ScanInterval;
+            if (ShelfLife < 300) ShelfLife = 300;
+            if (ScanInterval < 30) ScanInterval = 30;
             return this;
         }
 

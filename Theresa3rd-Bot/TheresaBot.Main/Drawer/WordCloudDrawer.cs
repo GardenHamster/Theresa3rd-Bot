@@ -15,7 +15,7 @@ namespace TheresaBot.Main.Drawer
             if (maskItem is null || maskFile is null)
             {
                 var width = BotConfig.WordCloudConfig.DefaultWidth;
-                var height = BotConfig.WordCloudConfig.DefaultHeitht;
+                var height = BotConfig.WordCloudConfig.DefaultHeigth;
                 return await wordCloud.Draw(words, width, height, fullImageSavePath);
             }
             else

@@ -4,24 +4,18 @@ namespace TheresaBot.Main.Model.Config
 {
     public record SetuPixivConfig : BasePluginConfig
     {
-        public List<string> Commands { get; set; }
-        public PixivRandomType RandomMode { get; set; }
-        public List<string> RandomTags { get; set; }
+        public List<string> Commands { get; set; } = new();
+        public PixivRandomType RandomMode { get; set; } = PixivRandomType.RandomTag;
+        public List<string> RandomTags { get; set; } = new();
         public string Template { get; set; }
-        public int MaxScreen { get; set; }
-        public double MinBookmark { get; set; }
-        public double MinBookRate { get; set; }
-
-        public SetuPixivConfig()
-        {
-            this.RandomMode = PixivRandomType.RandomTag;
-            this.MaxScreen = 60;
-            this.MinBookmark = 1500;
-            this.MinBookRate = 0.05;
-        }
+        public int MaxScreen { get; set; } = 60;
+        public double MinBookmark { get; set; } = 1000;
+        public double MinBookRate { get; set; } = 0.05;
 
         public override BasePluginConfig FormatConfig()
         {
+            if (Commands is null) Commands = new();
+            if (RandomTags is null) RandomTags = new();
             return this;
         }
 

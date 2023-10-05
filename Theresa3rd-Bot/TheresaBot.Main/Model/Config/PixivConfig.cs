@@ -30,8 +30,8 @@ namespace TheresaBot.Main.Model.Config
             HttpProxy = StringHelper.FormatHttpUrl(HttpProxy, defaultHttps: false);
             ImgProxy = StringHelper.FormatHttpUrl(ImgProxy, defaultHttps: true);
             OriginUrlProxy = StringHelper.FormatHttpUrl(OriginUrlProxy, defaultHttps: true);
-            R18ImgBlur = R18ImgBlur < 5 ? 5 : R18ImgBlur;
-            R18ImgBlur = R18ImgBlur > 100 ? 100 : R18ImgBlur;
+            if (R18ImgBlur < 5) R18ImgBlur = 5;
+            if (R18ImgBlur > 100) R18ImgBlur = 100;
             return this;
         }
 

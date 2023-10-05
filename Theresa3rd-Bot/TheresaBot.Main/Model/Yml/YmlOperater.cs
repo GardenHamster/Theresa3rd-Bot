@@ -19,11 +19,14 @@ namespace TheresaBot.Main.Model.Yml
             using FileStream fileStream = new FileStream(YmlPath, FileMode.Open, FileAccess.Read);
             using TextReader reader = new StreamReader(fileStream, Encoding.GetEncoding("gb2312"));
             Deserializer deserializer = new Deserializer();
-            return deserializer.Deserialize<T>(reader);
+            var config = deserializer.Deserialize<T>(reader);
+            config.FormatConfig();
+            return config;
         }
 
         public void SaveConfig(T data)
         {
+            data.FormatConfig();
             var serializer = new SerializerBuilder().Build();
             var yamlContent = serializer.Serialize(data);
             using StreamWriter stream = new StreamWriter(YmlPath, false, Encoding.GetEncoding("gb2312"));

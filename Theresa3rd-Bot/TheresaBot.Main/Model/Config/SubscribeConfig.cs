@@ -10,12 +10,11 @@
 
         public override SubscribeConfig FormatConfig()
         {
-            PixivUser.FormatConfig();
-            PixivTag.FormatConfig();
-            Miyoushe.FormatConfig();
+            if (PixivUser is not null) PixivUser.FormatConfig();
+            if (PixivTag is not null) PixivTag.FormatConfig();
+            if (Miyoushe is not null) Miyoushe.FormatConfig();
             return this;
         }
 
     }
-
 }

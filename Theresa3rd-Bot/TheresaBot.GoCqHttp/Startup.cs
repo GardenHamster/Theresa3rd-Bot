@@ -31,7 +31,6 @@ namespace TheresaBot.GoCqHttp
 
                 CQHelper.LoadAppSettings(Configuration);
                 ConfigHelper.LoadBotConfig();
-                ConfigHelper.InitBotConfig();
                 LogHelper.Info($"配置文件加载完毕...");
 
                 services.AddControllers();

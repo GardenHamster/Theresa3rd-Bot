@@ -2,25 +2,25 @@
 {
     public record ManageConfig : BaseConfig
     {
-        public List<string> PixivCookieCommands { get; set; }
+        public List<string> PixivCookieCommands { get; set; } = new();
 
-        public List<string> SaucenaoCookieCommands { get; set; }
+        public List<string> SaucenaoCookieCommands { get; set; } = new();
 
-        public List<string> DisableTagCommands { get; set; }
+        public List<string> DisableTagCommands { get; set; } = new();
 
-        public List<string> EnableTagCommands { get; set; }
+        public List<string> EnableTagCommands { get; set; } = new();
 
-        public List<string> DisableMemberCommands { get; set; }
+        public List<string> DisableMemberCommands { get; set; } = new();
 
-        public List<string> EnableMemberCommands { get; set; }
+        public List<string> EnableMemberCommands { get; set; } = new();
 
-        public List<string> ListSubCommands { get; set; }
+        public List<string> ListSubCommands { get; set; } = new();
 
-        public List<string> RemoveSubCommands { get; set; }
+        public List<string> RemoveSubCommands { get; set; } = new();
 
-        public List<string> BindTagCommands { get; set; }
+        public List<string> BindTagCommands { get; set; } = new();
 
-        public List<string> UnBindTagCommands { get; set; }
+        public List<string> UnBindTagCommands { get; set; } = new();
 
         public override ManageConfig FormatConfig()
         {

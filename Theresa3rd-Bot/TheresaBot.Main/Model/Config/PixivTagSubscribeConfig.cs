@@ -12,12 +12,13 @@
 
         public double MinBookRate { get; set; } = 0.05;
 
-        public bool SendMerge { get; set; } = false;
+        public bool SendMerge { get; set; }
 
         public PixivTagSubscribeConfig()
         {
             this.ScanInterval = 30 * 60;
         }
+
 
     }
 }

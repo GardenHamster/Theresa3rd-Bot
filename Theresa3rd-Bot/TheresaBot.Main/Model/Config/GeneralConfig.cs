@@ -4,13 +4,13 @@ namespace TheresaBot.Main.Model.Config
 {
     public record GeneralConfig : BaseConfig
     {
-        public List<string> Prefixs { get; set; }
+        public List<string> Prefixs { get; set; } = new();
 
         public string TempPath { get; set; }
 
         public string FontPath { get; set; }
 
-        public List<long> ErrorGroups { get; set; }
+        public List<long> ErrorGroups { get; set; } = new();
 
         public string ErrorMsg { get; set; }
 
@@ -32,9 +32,10 @@ namespace TheresaBot.Main.Model.Config
 
         public override GeneralConfig FormatConfig()
         {
-            Prefixs = Prefixs?.Trim() ?? new();
-            ErrorGroups = ErrorGroups ?? new();
-            ClearCron = string.IsNullOrWhiteSpace(ClearCron) ? "0 0 4 * * ?" : ClearCron;
+            if (Prefixs is null) Prefixs = new();
+            if (ErrorGroups is null) ErrorGroups = new();
+            if (string.IsNullOrWhiteSpace(ClearCron)) ClearCron = "0 0 4 * * ?";
+            Prefixs = Prefixs.Trim();
             return this;
         }
 

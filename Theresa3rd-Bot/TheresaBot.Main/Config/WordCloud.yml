@@ -2,7 +2,7 @@ Enable:                     true                                                
 GroupCD:                    300                                                 #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
 MaxWords:                   500                                                 #出现在词云中的最大词汇数量
 DefaultWidth:               1000                                                #矩形词云默认的宽度(像素)
-DefaultHeitht:              1000                                                #矩形词云默认的高度(像素)
+DefaultHeigth:              1000                                                #矩形词云默认的高度(像素)
 FontPath:                   'Font/hywenhei85w.ttf'                              #绘制词云的字体文件路径
 ProcessingMsg:              '正在生成词云，需要亿点时间...'                     #开始执行前返回的消息
 BasicCommands:              ['词云']                                            #自定义范围词云命令

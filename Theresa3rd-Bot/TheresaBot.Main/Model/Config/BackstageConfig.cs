@@ -1,4 +1,6 @@
-﻿namespace TheresaBot.Main.Model.Config
+﻿using TheresaBot.Main.Helper;
+
+namespace TheresaBot.Main.Model.Config
 {
     public record BackstageConfig : BaseConfig
     {
@@ -8,6 +10,14 @@
 
         public override BackstageConfig FormatConfig()
         {
+            if (string.IsNullOrWhiteSpace(SecretKey))
+            {
+                SecretKey = StringHelper.RandomUUID32();
+            }
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                Password = StringHelper.RandomUUID8();
+            }
             return this;
         }
 

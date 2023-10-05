@@ -2,18 +2,13 @@
 {
     public record RepeaterConfig : BasePluginConfig
     {
-        public int RepeatTime { get; set; }
+        public int RepeatTime { get; set; } = 3;
 
         public int RepeatMode { get; set; }
 
-        public RepeaterConfig()
-        {
-            this.RepeatTime = 3;
-        }
-
         public override RepeaterConfig FormatConfig()
         {
-            if (RepeatTime <= 1) RepeatTime = 1;
+            if (RepeatTime < 1) RepeatTime = 1;
             return this;
         }
 

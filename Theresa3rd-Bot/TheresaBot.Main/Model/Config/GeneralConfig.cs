@@ -4,35 +4,37 @@ namespace TheresaBot.Main.Model.Config
 {
     public record GeneralConfig : BaseConfig
     {
-        public List<string> Prefixs { get; private set; }
+        public List<string> Prefixs { get; set; }
 
-        public string TempPath { get; private set; }
+        public string TempPath { get; set; }
 
-        public string FontPath { get; private set; }
+        public string FontPath { get; set; }
 
-        public List<long> ErrorGroups { get; private set; }
+        public List<long> ErrorGroups { get; set; }
 
-        public string ErrorMsg { get; private set; }
+        public string ErrorMsg { get; set; }
 
-        public string ClearCron { get; private set; }
+        public string ClearCron { get; set; }
 
-        public string ErrorImgPath { get; private set; }
+        public string ErrorImgPath { get; set; }
 
-        public string DisableMsg { get; private set; }
+        public string DisableMsg { get; set; }
 
-        public string NoPermissionsMsg { get; private set; }
+        public string NoPermissionsMsg { get; set; }
 
-        public string ManagersRequiredMsg { get; private set; }
+        public string ManagersRequiredMsg { get; set; }
 
-        public string SetuCustomDisableMsg { get; private set; }
+        public string SetuCustomDisableMsg { get; set; }
 
-        public bool SendRelevantCommands { get; private set; }
+        public bool SendRelevantCommands { get; set; }
 
         public string DefaultPrefix => Prefixs.FirstOrDefault() ?? string.Empty;
 
         public override GeneralConfig FormatConfig()
         {
-            this.Prefixs = this.Prefixs?.Trim() ?? new();
+            Prefixs = Prefixs?.Trim() ?? new();
+            ErrorGroups = ErrorGroups ?? new();
+            ClearCron = string.IsNullOrWhiteSpace(ClearCron) ? "0 0 4 * * ?" : ClearCron;
             return this;
         }
 

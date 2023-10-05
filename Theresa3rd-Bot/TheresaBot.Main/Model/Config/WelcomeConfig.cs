@@ -2,9 +2,9 @@
 {
     public record WelcomeConfig : BasePluginConfig
     {
-        public string Template { get; private set; }
+        public string Template { get; set; }
 
-        public List<WelcomeSpecial> Special { get; private set; }
+        public List<WelcomeSpecial> Special { get; set; }
 
         public override WelcomeConfig FormatConfig()
         {
@@ -14,9 +14,9 @@
 
     public record WelcomeSpecial
     {
-        public long GroupId { get; private set; }
+        public long GroupId { get; set; }
 
-        public string Template { get; private set; }
+        public string Template { get; set; }
     }
 
 

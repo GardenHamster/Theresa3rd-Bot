@@ -2,6 +2,6 @@
 {
     public abstract record BasePluginConfig : BaseConfig
     {
-        public bool Enable { get; protected set; }
+        public bool Enable { get; set; }
     }
 }

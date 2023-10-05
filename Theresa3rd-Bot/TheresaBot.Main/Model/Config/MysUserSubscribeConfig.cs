@@ -2,12 +2,19 @@
 {
     public record MysUserSubscribeConfig : BaseSubscribeConfig
     {
-        public int ShelfLife { get; private set; }
+        public int ShelfLife { get; set; }
 
-        public MysUserSubscribeConfig()
+        public MysUserSubscribeConfig() : base()
         {
-            this.ShelfLife = 12 * 60 * 60;
-            this.ScanInterval = 60;
+            ShelfLife = 12 * 60 * 60;
+        }
+
+        public override BasePluginConfig FormatConfig()
+        {
+            base.FormatConfig();
+            ShelfLife = ShelfLife < 300 ? 300 : ShelfLife;
+            ScanInterval = ScanInterval < 30 ? 30 : ScanInterval;
+            return this;
         }
 
     }

@@ -2,12 +2,12 @@
 {
     public record PixivUserConfig : BasePluginConfig
     {
-        public List<string> Commands { get; private set; }
-        public string ProcessingMsg { get; private set; }
-        public string Template { get; private set; }
-        public int MaxScan { get; private set; }
-        public int PreviewInPage { get; private set; }
-        public int CacheSeconds { get; private set; }
+        public List<string> Commands { get; set; }
+        public string ProcessingMsg { get; set; }
+        public string Template { get; set; }
+        public int MaxScan { get; set; }
+        public int PreviewInPage { get; set; }
+        public int CacheSeconds { get; set; }
 
         public PixivUserConfig()
         {

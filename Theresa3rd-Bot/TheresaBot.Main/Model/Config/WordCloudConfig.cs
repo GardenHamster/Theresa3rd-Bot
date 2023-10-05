@@ -2,25 +2,25 @@
 {
     public record WordCloudConfig : BasePluginConfig
     {
-        public int GroupCD { get; private set; }
-        public int MaxWords { get; private set; }
-        public int DefaultWidth { get; private set; }
-        public int DefaultHeitht { get; private set; }
-        public string FontPath { get; private set; }
-        public string ProcessingMsg { get; private set; }
-        public List<string> BasicCommands { get; private set; }
-        public List<string> DailyCommands { get; private set; }
-        public List<string> WeeklyCommands { get; private set; }
-        public List<string> MonthlyCommands { get; private set; }
-        public List<string> YearlyCommands { get; private set; }
-        public List<string> YesterdayCommands { get; private set; }
-        public List<string> LastWeekCommands { get; private set; }
-        public List<string> LastMonthCommands { get; private set; }
-        public List<string> AddWordCommands { get; private set; }
-        public List<string> HideWordCommands { get; private set; }
-        public List<string> DefaultMasks { get; private set; }
-        public List<WordCloudMask> Masks { get; private set; }
-        public List<WordCloudTimer> Subscribes { get; private set; }
+        public int GroupCD { get; set; }
+        public int MaxWords { get; set; }
+        public int DefaultWidth { get; set; }
+        public int DefaultHeitht { get; set; }
+        public string FontPath { get; set; }
+        public string ProcessingMsg { get; set; }
+        public List<string> BasicCommands { get; set; }
+        public List<string> DailyCommands { get; set; }
+        public List<string> WeeklyCommands { get; set; }
+        public List<string> MonthlyCommands { get; set; }
+        public List<string> YearlyCommands { get; set; }
+        public List<string> YesterdayCommands { get; set; }
+        public List<string> LastWeekCommands { get; set; }
+        public List<string> LastMonthCommands { get; set; }
+        public List<string> AddWordCommands { get; set; }
+        public List<string> HideWordCommands { get; set; }
+        public List<string> DefaultMasks { get; set; }
+        public List<WordCloudMask> Masks { get; set; }
+        public List<WordCloudTimer> Subscribes { get; set; }
 
         public override WordCloudConfig FormatConfig()
         {
@@ -32,21 +32,21 @@
 
     public record WordCloudMask
     {
-        public string Name { get; private set; }
-        public string Path { get; private set; }
-        public int Width { get; private set; }
-        public int Height { get; private set; }
+        public string Name { get; set; }
+        public string Path { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
     }
 
     public record WordCloudTimer
     {
-        public bool Enable { get; private set; }
-        public string Name { get; private set; }
-        public string Cron { get; private set; }
-        public List<string> Masks { get; private set; }
-        public List<long> Groups { get; private set; }
-        public double HourRange { get; private set; }
-        public string Template { get; private set; }
+        public bool Enable { get; set; }
+        public string Name { get; set; }
+        public string Cron { get; set; }
+        public List<string> Masks { get; set; }
+        public List<long> Groups { get; set; }
+        public double HourRange { get; set; }
+        public string Template { get; set; }
     }
 
 

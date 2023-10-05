@@ -4,10 +4,10 @@ namespace TheresaBot.Main.Model.Config
 {
     public record TimingSetuConfig : BasePluginConfig
     {
-        public string LocalPath { get; private set; }
-        public bool FromOneDir { get; private set; }
-        public string LolisukiLevel { get; private set; }
-        public List<TimingSetuTimer> Timers { get; private set; }
+        public string LocalPath { get; set; }
+        public bool FromOneDir { get; set; }
+        public string LolisukiLevel { get; set; }
+        public List<TimingSetuTimer> Timers { get; set; }
 
         public override TimingSetuConfig FormatConfig()
         {
@@ -17,16 +17,16 @@ namespace TheresaBot.Main.Model.Config
 
     public record TimingSetuTimer
     {
-        public bool Enable { get; private set; }
-        public string Cron { get; private set; }
-        public string Name { get; private set; }
-        public List<long> Groups { get; private set; }
-        public TimingSetuSourceType Source { get; private set; }
-        public bool SendMerge { get; private set; }
-        public List<string> Tags { get; private set; }
-        public int Quantity { get; private set; }
-        public bool AtAll { get; private set; }
-        public string TimingMsg { get; private set; }
+        public bool Enable { get; set; }
+        public string Cron { get; set; }
+        public string Name { get; set; }
+        public List<long> Groups { get; set; }
+        public TimingSetuSourceType Source { get; set; }
+        public bool SendMerge { get; set; }
+        public List<string> Tags { get; set; }
+        public int Quantity { get; set; }
+        public bool AtAll { get; set; }
+        public string TimingMsg { get; set; }
 
     }
 

@@ -4,20 +4,20 @@ namespace TheresaBot.Main.Model.Config
 {
     public record PixivRankingConfig : BasePluginConfig
     {
-        public string ProcessingMsg { get; private set; }
-        public string Template { get; private set; }
-        public int MaxScan { get; private set; }
-        public int PreviewInPage { get; private set; }
-        public PixivRankingSortType SortType { get; private set; }
-        public int GroupCD { get; private set; }
-        public int CacheSeconds { get; private set; }
-        public int SendDetail { get; private set; }
-        public PixivRankingItem Daily { get; private set; }
-        public PixivRankingItem DailyAI { get; private set; }
-        public PixivRankingItem Male { get; private set; }
-        public PixivRankingItem Weekly { get; private set; }
-        public PixivRankingItem Monthly { get; private set; }
-        public List<PixivRankingTimer> Subscribes { get; private set; }
+        public string ProcessingMsg { get; set; }
+        public string Template { get; set; }
+        public int MaxScan { get; set; }
+        public int PreviewInPage { get; set; }
+        public PixivRankingSortType SortType { get; set; } = PixivRankingSortType.RankingRate;
+        public int GroupCD { get; set; }
+        public int CacheSeconds { get; set; }
+        public int SendDetail { get; set; }
+        public PixivRankingItem Daily { get; set; }
+        public PixivRankingItem DailyAI { get; set; }
+        public PixivRankingItem Male { get; set; }
+        public PixivRankingItem Weekly { get; set; }
+        public PixivRankingItem Monthly { get; set; }
+        public List<PixivRankingTimer> Subscribes { get; set; }
 
         public override PixivRankingConfig FormatConfig()
         {

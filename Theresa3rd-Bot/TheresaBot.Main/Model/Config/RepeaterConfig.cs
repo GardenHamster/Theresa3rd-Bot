@@ -2,9 +2,9 @@
 {
     public record RepeaterConfig : BasePluginConfig
     {
-        public int RepeatTime { get; private set; }
+        public int RepeatTime { get; set; }
 
-        public int RepeatMode { get; private set; }
+        public int RepeatMode { get; set; }
 
         public RepeaterConfig()
         {

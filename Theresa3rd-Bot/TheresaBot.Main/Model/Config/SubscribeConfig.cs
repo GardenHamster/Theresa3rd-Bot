@@ -2,11 +2,11 @@
 {
     public record SubscribeConfig : BaseConfig
     {
-        public PixivUserSubscribeConfig PixivUser { get; private set; }
+        public PixivUserSubscribeConfig PixivUser { get; set; }
 
-        public PixivTagSubscribeConfig PixivTag { get; private set; }
+        public PixivTagSubscribeConfig PixivTag { get; set; }
 
-        public MysUserSubscribeConfig Miyoushe { get; private set; }
+        public MysUserSubscribeConfig Miyoushe { get; set; }
 
         public override SubscribeConfig FormatConfig()
         {

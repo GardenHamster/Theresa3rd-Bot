@@ -1,8 +1,8 @@
 Prefixs:                    ['#','＃']                                          #指令前缀
-DownloadPath:               'BotImg/download'                                   #下载文件的存放目录
-DefaultFontPath:            'Font/simsun.ttc'                                   #默认字体文件路径
-DownPathCleanCron:          '0 0 4 * * ?'                                       #下载目录清理定时器，Cron表达式，空值表示不清理，格式：0 0 4 * * ?
-DownErrorImgPath:           'BotImg/face/error.jpg'                             #图片下载失败时的替代图片
+TempPath:                   'BotImg/download'                                   #下载文件的临时存放目录
+FontPath:                   'Font/simsun.ttc'                                   #默认字体文件路径
+ClearCron:                  '0 0 4 * * ?'                                       #下载目录清理定时器，Cron表达式，空值表示不清理，格式：0 0 4 * * ?
+ErrorImgPath:               'BotImg/face/error.jpg'                             #图片下载失败时的替代图片
 ErrorGroups:                []                                                  #错误日志群，发生错误时会将日志发送到这些群
 ErrorMsg:                   |                                                   #处理异常时返回的消息
                             出了点小问题，稍后再试吧

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Result;
 
 namespace TheresaBot.Main.Controller
@@ -15,6 +17,16 @@ namespace TheresaBot.Main.Controller
         public ApiResult GetGeneral()
         {
             return ApiResult.Success(BotConfig.GeneralConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/general")]
+        public ApiResult SetGeneral([FromBody] GeneralConfig config)
+        {
+            BotConfig.GeneralConfig = config.FormatConfig();
+            ConfigHelper.GeneralOperater.SaveConfig(config);
+            return ApiResult.Success();
         }
 
         [HttpGet]

@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Common
         /// <returns></returns>
         public static string GetDownloadDirectory()
         {
-            string configPath = BotConfig.GeneralConfig.DownloadPath;
+            string configPath = BotConfig.GeneralConfig.TempPath;
             if (string.IsNullOrWhiteSpace(configPath)) configPath = AppContext.BaseDirectory;
             string dirPath = Path.Combine(configPath, DownDirName);
             if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
@@ -142,7 +142,7 @@ namespace TheresaBot.Main.Common
         /// <returns></returns>
         public static FileInfo GetErrorImgPath()
         {
-            string fullImgPath = BotConfig.GeneralConfig.DownErrorImgPath;
+            string fullImgPath = BotConfig.GeneralConfig.ErrorImgPath;
             if (File.Exists(fullImgPath) == false) return null;
             return new FileInfo(fullImgPath);
         }

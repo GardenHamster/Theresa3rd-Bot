@@ -140,7 +140,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                string downloadClearCron = BotConfig.GeneralConfig.DownPathCleanCron;
+                string downloadClearCron = BotConfig.GeneralConfig.ClearCron;
                 if (string.IsNullOrWhiteSpace(downloadClearCron)) return;
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(downloadClearCron).Build();
                 IJobDetail jobDetail = JobBuilder.Create<DownloadClearJob>().WithIdentity("DownloadClearJob", "DownloadClearJob").Build();

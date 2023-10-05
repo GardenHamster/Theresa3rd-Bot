@@ -6,8 +6,6 @@ namespace TheresaBot.Main.Model.Yml
 {
     public class YmlOperater<T> where T : BaseConfig
     {
-        public T Data { get; set; }
-
         public string YmlPath { get; init; }
 
         public YmlOperater(string ymlPath)
@@ -21,25 +19,19 @@ namespace TheresaBot.Main.Model.Yml
             using FileStream fileStream = new FileStream(YmlPath, FileMode.Open, FileAccess.Read);
             using TextReader reader = new StreamReader(fileStream, Encoding.GetEncoding("gb2312"));
             Deserializer deserializer = new Deserializer();
-            Data = deserializer.Deserialize<T>(reader);
-            return Data;
+            return deserializer.Deserialize<T>(reader);
         }
 
-        public void SaveConfig()
+        public void SaveConfig(T data)
         {
             var serializer = new SerializerBuilder().Build();
-            var yamlContent = serializer.Serialize(Data);
+            var yamlContent = serializer.Serialize(data);
             using StreamWriter stream = new StreamWriter(YmlPath, false, Encoding.GetEncoding("gb2312"));
             stream.Write(yamlContent);
             stream.Flush();
             stream.Close();
         }
 
-        public void SaveData(T data)
-        {
-            Data = data;
-            SaveConfig();
-        }
 
     }
 }

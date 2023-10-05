@@ -17,6 +17,11 @@ namespace TheresaBot.Main.Model.Result
             Data = data;
         }
 
+        public static ApiResult Success()
+        {
+            return new ApiResult(true, ResultCode.Success, "ok", null);
+        }
+
         public static ApiResult Success(string message)
         {
             return new ApiResult(true, ResultCode.Success, message, null);

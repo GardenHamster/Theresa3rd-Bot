@@ -61,7 +61,7 @@ namespace TheresaBot.Main.Drawer
         {
             try
             {
-                String fontPath = BotConfig.GeneralConfig.DefaultFontPath;
+                String fontPath = BotConfig.GeneralConfig.FontPath;
                 if (File.Exists(fontPath) == false) return null;
                 return new FileInfo(fontPath);
             }

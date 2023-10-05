@@ -6,17 +6,17 @@ namespace TheresaBot.Main.Model.Config
     {
         public List<string> Prefixs { get; private set; }
 
-        public string DownloadPath { get; private set; }
+        public string TempPath { get; private set; }
 
-        public string DefaultFontPath { get; private set; }
+        public string FontPath { get; private set; }
 
         public List<long> ErrorGroups { get; private set; }
 
         public string ErrorMsg { get; private set; }
 
-        public string DownPathCleanCron { get; set; }
+        public string ClearCron { get; set; }
 
-        public string DownErrorImgPath { get; private set; }
+        public string ErrorImgPath { get; private set; }
 
         public string DisableMsg { get; private set; }
 

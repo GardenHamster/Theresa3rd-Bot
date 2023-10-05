@@ -63,7 +63,7 @@ namespace TheresaBot.Main.Helper
             {
                 config.Password = StringHelper.RandomUUID8();
             }
-            BackstageOperater.SaveConfig();
+            BackstageOperater.SaveConfig(config);
         }
 
 

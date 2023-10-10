@@ -47,5 +47,41 @@ namespace TheresaBot.Main.Controller
             return ApiResult.Success(config);
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("get/permissions")]
+        public ApiResult GetPermissions()
+        {
+            return ApiResult.Success(BotConfig.PermissionsConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/permissions")]
+        public ApiResult SetPermissions([FromBody] PermissionsConfig config)
+        {
+            BotConfig.PermissionsConfig = config.FormatConfig();
+            ConfigHelper.PermissionsOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("get/manage")]
+        public ApiResult GetManage()
+        {
+            return ApiResult.Success(BotConfig.ManageConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/manage")]
+        public ApiResult SetManage([FromBody] ManageConfig config)
+        {
+            BotConfig.ManageConfig = config.FormatConfig();
+            ConfigHelper.ManageOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
     }
 }

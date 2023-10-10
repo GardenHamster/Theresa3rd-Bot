@@ -26,7 +26,7 @@ namespace TheresaBot.Main.Controller
         {
             BotConfig.GeneralConfig = config.FormatConfig();
             ConfigHelper.GeneralOperater.SaveConfig(config);
-            return ApiResult.Success();
+            return ApiResult.Success(config);
         }
 
         [HttpGet]
@@ -35,6 +35,16 @@ namespace TheresaBot.Main.Controller
         public ApiResult GetPixiv()
         {
             return ApiResult.Success(BotConfig.PixivConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/pixiv")]
+        public ApiResult SetPixiv([FromBody] PixivConfig config)
+        {
+            BotConfig.PixivConfig = config.FormatConfig();
+            ConfigHelper.PixivOperater.SaveConfig(config);
+            return ApiResult.Success(config);
         }
 
     }

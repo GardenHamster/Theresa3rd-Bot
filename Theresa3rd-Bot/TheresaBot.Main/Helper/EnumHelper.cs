@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Type;
+﻿using TheresaBot.Main.Model.VO;
+using TheresaBot.Main.Type;
 using TheresaBot.Main.Type.StepOption;
 
 namespace TheresaBot.Main.Helper
@@ -24,6 +25,14 @@ namespace TheresaBot.Main.Helper
             {(int)TagMatchType.Regular, "正则匹配"}
         };
 
+        public static Dictionary<int, string> ResendOptions => new()
+        {
+            {(int)ResendType.None, "不重发"},
+            {(int)ResendType.WithoutImg, "不带图片重发"},
+            {(int)ResendType.Rotate180, "旋转180度重发"},
+            {(int)ResendType.Blur, "高斯模糊后重发"}
+        };
+
         public static string GetTypeName(this TimingSetuSourceType sourceType)
         {
             return sourceType switch
@@ -33,6 +42,11 @@ namespace TheresaBot.Main.Helper
                 TimingSetuSourceType.Lolisuki => "Lolisuki Api",
                 _ => string.Empty
             };
+        }
+
+        public static List<OptionVo> ToOptionList(this Dictionary<int, string> dic)
+        {
+            return dic.Select(o => new OptionVo(o.Key, o.Value)).ToList();
         }
 
     }

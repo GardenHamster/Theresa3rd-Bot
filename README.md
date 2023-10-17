@@ -51,10 +51,10 @@
 - [x] ~~原神模拟抽卡，在[GenshinGacha](https://github.com/GardenHamster/GenshinGacha)中实现了~~
 
 ### TODO
-- [ ] 写一个可在外网访问的Web UI，用于查询和管理订阅列表和黑名单数据等
+- [ ] 写一个可在外网访问的 [Web UI](https://github.com/GardenHamster/Theresa3rd-Bot-Web)，用于查询和管理订阅列表和黑名单数据等
 - [ ] 做一个涩图收藏功能(包括添加到Pixiv收藏，记录到数据库，保存到本地文件夹)
 
-### 其他摆烂中的功能
+### 其他画饼中的功能
 - [ ] 小游戏 - 狼人杀
 - [ ] 小游戏 - 谁是卧底
 

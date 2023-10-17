@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
-using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 
@@ -34,20 +33,6 @@ namespace TheresaBot.Main.Helper
             message = message?.Trim() ?? string.Empty;
             var prefix = prefixs.Where(o => message.StartsWith(o)).FirstOrDefault();
             return string.IsNullOrWhiteSpace(prefix) ? string.Empty : prefix;
-        }
-
-        /// <summary>
-        /// 判断是否可以处理一个群的消息
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <returns></returns>
-        public static bool IsHandleMessage(long groupId)
-        {
-            PermissionsConfig permissionsConfig = BotConfig.PermissionsConfig;
-            if (permissionsConfig is null) return false;
-            List<long> acceptGroups = permissionsConfig.AcceptGroups;
-            if (acceptGroups is null) return false;
-            return acceptGroups.Contains(groupId);
         }
 
         /// <summary>

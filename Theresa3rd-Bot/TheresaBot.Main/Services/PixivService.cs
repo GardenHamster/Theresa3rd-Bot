@@ -448,7 +448,7 @@ namespace TheresaBot.Main.Services
             int getCount = 5;
             string userId = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
-            List<long> groupIds = subscribeTask.GroupIdList;
+            List<long> groupIds = subscribeTask.SubscribeGroups;
             bool isShowAIs = groupIds.IsShowAISetu();
             bool isShowR18s = groupIds.IsShowR18Setu();
             PixivUserProfileTop pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(userId);
@@ -511,7 +511,7 @@ namespace TheresaBot.Main.Services
         {
             string tagNames = subscribeTask.SubscribeCode;
             int subscribeId = subscribeTask.SubscribeId;
-            List<long> groupIds = subscribeTask.GroupIdList;
+            List<long> groupIds = subscribeTask.SubscribeGroups;
             bool isShowAIs = groupIds.IsShowAISetu();
             bool isShowR18s = groupIds.IsShowR18Setu();
             string searchWord = toPixivSearchWords(tagNames.ToActualPixivTags());

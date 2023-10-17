@@ -30,7 +30,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 long memberId = args.Sender.UserId;
                 long groupId = args.GroupId;
                 if (args.Session is not ICqActionSession session) return;
-                if (!BusinessHelper.IsHandleMessage(groupId)) return;
+                if (groupId.IsAuthorized() == false) return;
                 if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
 

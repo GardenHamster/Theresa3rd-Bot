@@ -124,7 +124,7 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task<bool> CheckSetuCustomEnableAsync(GroupCommand command)
         {
-            if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(command.GroupId)) return true;
+            if (command.GroupId.IsSetuCustomAuthorized()) return true;
             await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.SetuCustomDisableMsg, "自定义功能已关闭");
             return false;
         }
@@ -228,7 +228,7 @@ namespace TheresaBot.Main.Handler
         public long GetSetuLeftToday(long groupId, long memberId)
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
-            if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(groupId)) return BotConfig.SetuConfig.MaxDaily;
+            if (groupId.IsSetuLimitless()) return BotConfig.SetuConfig.MaxDaily;
             int todayUseCount = requestRecordService.getUsedCountToday(groupId, memberId, CommandType.Setu);
             long leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;

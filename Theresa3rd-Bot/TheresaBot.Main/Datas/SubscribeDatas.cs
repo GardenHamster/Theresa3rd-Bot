@@ -31,7 +31,7 @@ namespace TheresaBot.Main.Datas
         public static List<SubscribeTask> GetSubscribeTasks(SubscribeType subscribeType, long groupId)
         {
             if (SubscribeTaskMap.ContainsKey(subscribeType) == false) return new List<SubscribeTask>();
-            return SubscribeTaskMap[subscribeType].Where(m => m.GroupIdList.Contains(groupId)).ToList();
+            return SubscribeTaskMap[subscribeType].Where(m => m.SubscribeGroups.Contains(groupId)).ToList();
         }
 
 

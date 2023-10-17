@@ -151,7 +151,7 @@ namespace TheresaBot.Main.Handler
             foreach (MysSubscribe mysSubscribe in mysSubscribeList)
             {
                 string coverUrl = mysSubscribe.SubscribeRecord.CoverUrl;
-                if (subscribeTask.GroupIdList.Count == 0) continue;
+                if (subscribeTask.SubscribeGroups.Count == 0) continue;
 
                 List<BaseContent> msgList = new List<BaseContent>();
                 msgList.Add(new PlainContent(miyousheService.getPostInfoAsync(mysSubscribe)));
@@ -163,7 +163,7 @@ namespace TheresaBot.Main.Handler
                     msgList.Add(new LocalImageContent(fileInfo));
                 }
 
-                foreach (long groupId in subscribeTask.GroupIdList)
+                foreach (long groupId in subscribeTask.SubscribeGroups)
                 {
                     await Session.SendGroupMessageAsync(groupId, msgList);
                     await Task.Delay(1000);

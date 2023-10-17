@@ -46,16 +46,11 @@ namespace TheresaBot.Main.Services
                 }
                 if (subscribeInfo.GroupId == 0)
                 {
-                    foreach (long groupId in BotConfig.PermissionsConfig.SubscribeGroups)
-                    {
-                        if (subscribeTask.GroupIdList.Contains(groupId) == false) subscribeTask.GroupIdList.Add(groupId);
-                    }
-                    continue;
+                    subscribeTask.AddGroups(BotConfig.PermissionsConfig?.SubscribeGroups);
                 }
-                if (subscribeTask.GroupIdList.Contains(subscribeInfo.GroupId) == false)
+                else
                 {
-                    subscribeTask.GroupIdList.Add(subscribeInfo.GroupId);
-                    continue;
+                    subscribeTask.AddGroup(subscribeInfo.GroupId);
                 }
             }
             return subscribeTaskMap;
@@ -63,15 +58,17 @@ namespace TheresaBot.Main.Services
 
         public List<SubscribeInfo> getSubscribes(long groupId, SubscribeType subscribeType)
         {
+            var returnList = new List<SubscribeInfo>();
             var subscribeList = subscribeGroupDao.getSubscribes(groupId, subscribeType);
             if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(groupId))
             {
-                return subscribeList;
+                returnList.AddRange(subscribeList.Where(o => o.GroupId == 0));
             }
             else
             {
-                return subscribeList.Where(o => o.GroupId > 0 && o.GroupId == groupId).ToList();
+                returnList.AddRange(subscribeList.Where(o => o.GroupId == groupId));
             }
+            return returnList;
         }
 
         /// <summary>

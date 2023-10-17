@@ -27,7 +27,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 long msgId = args.GetMessageId();
                 long memberId = args.Sender.Id;
                 long groupId = args.Sender.Group.Id;
-                if (!BusinessHelper.IsHandleMessage(groupId)) return;
+                if (groupId.IsAuthorized() == false) return;
                 if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
 

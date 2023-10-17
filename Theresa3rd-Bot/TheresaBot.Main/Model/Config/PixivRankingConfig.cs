@@ -1,5 +1,4 @@
-﻿using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Type;
+﻿using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Config
 {
@@ -38,7 +37,7 @@ namespace TheresaBot.Main.Model.Config
         }
     }
 
-    public record PixivRankingItem: BaseConfig
+    public record PixivRankingItem : BaseConfig
     {
         public bool Enable { get; private set; }
         public List<string> Commands { get; private set; } = new();
@@ -60,7 +59,7 @@ namespace TheresaBot.Main.Model.Config
         }
     }
 
-    public record PixivRankingTimer: BaseConfig
+    public record PixivRankingTimer : BaseConfig
     {
         public bool Enable { get; private set; }
         public string Name { get; private set; }

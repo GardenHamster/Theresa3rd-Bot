@@ -22,7 +22,7 @@
         public override PermissionsConfig FormatConfig()
         {
             if (AcceptGroups is null) AcceptGroups = new();
-            if (SuperManagers is null) SuperManagers=new();
+            if (SuperManagers is null) SuperManagers = new();
             if (LimitlessMembers is null) LimitlessMembers = new();
             if (SetuGroups is null) SetuGroups = new();
             if (SetuShowImgGroups is null) SetuShowImgGroups = new();

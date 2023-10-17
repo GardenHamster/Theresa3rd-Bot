@@ -17,7 +17,7 @@ namespace TheresaBot.Main.Model.Config
         }
     }
 
-    public record TimingSetuTimer:BaseConfig
+    public record TimingSetuTimer : BaseConfig
     {
         public bool Enable { get; set; }
         public string Cron { get; set; }

@@ -21,7 +21,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             {
                 long memberId = message.Member.Id;
                 long groupId = message.Member.Group.Id;
-                if (!BusinessHelper.IsHandleMessage(groupId)) return;
+                if (groupId.IsAuthorized() == false) return;
                 if (memberId == BotConfig.BotQQ) return;
                 WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
                 if (welcomeConfig is null || welcomeConfig.Enable == false) return;

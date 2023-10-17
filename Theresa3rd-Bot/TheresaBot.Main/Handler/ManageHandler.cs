@@ -1,6 +1,5 @@
 ﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
-using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
@@ -101,7 +100,7 @@ namespace TheresaBot.Main.Handler
                     await command.ReplyGroupMessageWithAtAsync("QQ号格式不正确");
                     return;
                 }
-                if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId))
+                if (memberId.IsSuperManager())
                 {
                     await command.ReplyGroupMessageWithAtAsync("无法拉黑超级管理员");
                     return;

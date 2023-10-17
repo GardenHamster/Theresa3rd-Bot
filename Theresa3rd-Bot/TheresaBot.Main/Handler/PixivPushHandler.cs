@@ -112,7 +112,7 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         private async Task PushTagWorkAsync(PixivSubscribe pixivSubscribe)
         {
-            foreach (long groupId in pixivSubscribe.SubscribeTask.GroupIdList)
+            foreach (long groupId in pixivSubscribe.SubscribeTask.SubscribeGroups)
             {
                 await PushPixivWorkAsync(pixivSubscribe, o => pixivService.getTagPushRemindMsg(pixivSubscribe), groupId);
                 await Task.Delay(1000);
@@ -126,7 +126,7 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         private async Task PushUserWorkAsync(PixivSubscribe pixivSubscribe)
         {
-            foreach (long groupId in pixivSubscribe.SubscribeTask.GroupIdList)
+            foreach (long groupId in pixivSubscribe.SubscribeTask.SubscribeGroups)
             {
                 await PushPixivWorkAsync(pixivSubscribe, o => pixivService.getUserPushRemindMsg(pixivSubscribe), groupId);
                 await Task.Delay(1000);
@@ -144,7 +144,7 @@ namespace TheresaBot.Main.Handler
             foreach (var item in pixivSubscribes)
             {
                 if (item.SubscribeTask is null) continue;
-                List<long> groupIds = item.SubscribeTask.GroupIdList;
+                List<long> groupIds = item.SubscribeTask.SubscribeGroups;
                 if (groupIds is null || groupIds.Count == 0) continue;
                 foreach (var groupId in groupIds)
                 {

@@ -79,6 +79,11 @@ namespace TheresaBot.Main.Services
             return banTagDao.delBanTag(keyword.Trim().ToUpper());
         }
 
+        public int DelById(int id)
+        {
+            return banTagDao.DeleteById(id);
+        }
+
 
     }
 }

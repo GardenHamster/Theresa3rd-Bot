@@ -6,7 +6,7 @@ namespace TheresaBot.Main.Datas
 {
     internal static class BanMemberDatas
     {
-        private static List<BanMemberPO> BanMemberList = new List<BanMemberPO>();
+        public static List<BanMemberPO> BanMemberList = new List<BanMemberPO>();
 
         public static void LoadDatas()
         {
@@ -26,7 +26,6 @@ namespace TheresaBot.Main.Datas
             if (MemberId <= 0) return false;
             return BanMemberList.Any(o => o.MemberId == MemberId);
         }
-
 
     }
 }

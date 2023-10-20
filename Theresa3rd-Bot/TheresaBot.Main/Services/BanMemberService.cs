@@ -35,7 +35,10 @@ namespace TheresaBot.Main.Services
             return banMemberDao.delBanMember(memberId);
         }
 
-
+        public int DelById(int id)
+        {
+            return banMemberDao.DeleteById(id);
+        }
 
     }
 }

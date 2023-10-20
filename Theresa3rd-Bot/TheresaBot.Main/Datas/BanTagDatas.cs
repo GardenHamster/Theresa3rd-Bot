@@ -7,7 +7,7 @@ namespace TheresaBot.Main.Datas
 {
     internal static class BanTagDatas
     {
-        private static List<BanTagPO> BanTagList = new List<BanTagPO>();
+        public static List<BanTagPO> BanTagList = new List<BanTagPO>();
 
         public static void LoadDatas()
         {

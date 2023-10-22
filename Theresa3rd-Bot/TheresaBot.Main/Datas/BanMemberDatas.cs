@@ -13,7 +13,6 @@ namespace TheresaBot.Main.Datas
             try
             {
                 BanMemberList = new BanMemberService().getBanMembers();
-                LogHelper.Info("加载屏蔽用户列表完毕...");
             }
             catch (Exception ex)
             {

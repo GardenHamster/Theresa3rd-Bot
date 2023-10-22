@@ -2,7 +2,7 @@
 
 namespace TheresaBot.Main.Model.DTO
 {
-    public class AddBanTagDto
+    public record AddBanTagDto
     {
         public string Keyword { get; set; }
 

@@ -14,7 +14,6 @@ namespace TheresaBot.Main.Datas
             try
             {
                 BanTagList = new BanTagService().GetBanTags();
-                LogHelper.Info("加载屏蔽标签列表完毕...");
             }
             catch (Exception ex)
             {

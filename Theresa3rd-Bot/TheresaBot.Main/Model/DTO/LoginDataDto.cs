@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.DTO
 {
-    public class LoginDataDto
+    public record LoginDataDto
     {
         public string Password { get; init; }
     }

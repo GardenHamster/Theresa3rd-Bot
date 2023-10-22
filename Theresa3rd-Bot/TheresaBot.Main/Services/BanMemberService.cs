@@ -40,5 +40,10 @@ namespace TheresaBot.Main.Services
             return banMemberDao.DeleteById(id);
         }
 
+        public int DelByIds(int[] ids)
+        {
+            return banMemberDao.DeleteByIds(ids);
+        }
+
     }
 }

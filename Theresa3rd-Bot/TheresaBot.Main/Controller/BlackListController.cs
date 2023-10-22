@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using TheresaBot.Main.Datas;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.DTO;
 using TheresaBot.Main.Model.Result;
+using TheresaBot.Main.Model.VO;
 using TheresaBot.Main.Services;
 
 namespace TheresaBot.Main.Controller
@@ -25,15 +28,24 @@ namespace TheresaBot.Main.Controller
         [Route("list/member")]
         public ApiResult GetMembers()
         {
-            return ApiResult.Success(BanMemberDatas.BanMemberList);
+            BanMemberDatas.LoadDatas();
+            var banList = BanMemberDatas.BanMemberList;
+            var banInfos = banList.Select(o => new BanMemberVo
+            {
+                Id = o.Id,
+                MemberId = o.MemberId,
+                CreateAt = o.CreateDate.ToTimeStamp(),
+                CreateDate = o.CreateDate.ToSimpleString()
+            }).ToList();
+            return ApiResult.Success(banInfos);
         }
 
         [HttpPost]
         [Authorize]
         [Route("add/member")]
-        public ApiResult AddMember(long memberId)
+        public ApiResult AddMember([FromBody] AddBanMemberDto member)
         {
-            banMemberService.insertBanMembers(memberId);
+            banMemberService.insertBanMembers(member.MemberId);
             BanMemberDatas.LoadDatas();
             return ApiResult.Success();
         }
@@ -41,9 +53,9 @@ namespace TheresaBot.Main.Controller
         [HttpPost]
         [Authorize]
         [Route("del/member")]
-        public ApiResult DelMember(int id)
+        public ApiResult DelMember(int[] ids)
         {
-            banMemberService.DelById(id);
+            banMemberService.DelByIds(ids);
             BanMemberDatas.LoadDatas();
             return ApiResult.Success();
         }
@@ -53,7 +65,18 @@ namespace TheresaBot.Main.Controller
         [Route("list/tag")]
         public ApiResult GetTags()
         {
-            return ApiResult.Success(BanTagDatas.BanTagList);
+            BanTagDatas.LoadDatas();
+            var banList = BanTagDatas.BanTagList;
+            var banInfos = banList.Select(o => new BanTagVo
+            {
+                Id = o.Id,
+                KeyWord = o.KeyWord,
+                FullMatch = o.FullMatch,
+                IsRegular = o.IsRegular,
+                CreateAt = o.CreateDate.ToTimeStamp(),
+                CreateDate = o.CreateDate.ToSimpleString()
+            }).ToList();
+            return ApiResult.Success(banInfos);
         }
 
         [HttpPost]

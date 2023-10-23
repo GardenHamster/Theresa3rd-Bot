@@ -43,6 +43,22 @@ namespace TheresaBot.Main.Controller
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("list/tag/match")]
+        public ApiResult ListTagMatch()
+        {
+            try
+            {
+                var optionList = EnumHelper.TagMatchOptions.ToOptionList();
+                return ApiResult.Success(optionList);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                throw;
+            }
+        }
 
     }
 }

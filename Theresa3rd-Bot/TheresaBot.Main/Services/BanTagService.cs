@@ -50,7 +50,7 @@ namespace TheresaBot.Main.Services
         public BanTagPO InsertBanTag(string keyword, TagMatchType tagMatchType)
         {
             BanTagPO banTag = new BanTagPO();
-            banTag.KeyWord = keyword.Trim().ToUpper();
+            banTag.Keyword = keyword.Trim().ToUpper();
             banTag.IsRegular = tagMatchType == TagMatchType.Regular;
             banTag.FullMatch = tagMatchType == TagMatchType.FullMatch;
             banTag.CreateDate = DateTime.Now;
@@ -82,6 +82,11 @@ namespace TheresaBot.Main.Services
         public int DelById(int id)
         {
             return banTagDao.DeleteById(id);
+        }
+
+        public int DelByIds(int[] ids)
+        {
+            return banTagDao.DeleteByIds(ids);
         }
 
 

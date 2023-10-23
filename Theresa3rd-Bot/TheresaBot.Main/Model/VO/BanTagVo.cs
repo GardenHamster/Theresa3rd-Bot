@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-        public string KeyWord { get; set; }
+        public string Keyword { get; set; }
 
         public bool FullMatch { get; set; }
 

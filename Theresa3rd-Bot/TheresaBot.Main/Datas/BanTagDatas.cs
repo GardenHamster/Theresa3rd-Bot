@@ -58,15 +58,15 @@ namespace TheresaBot.Main.Datas
             }
             if (banTag.IsRegular)
             {
-                return Regex.Match(tag, banTag.KeyWord).Success;
+                return Regex.Match(tag, banTag.Keyword).Success;
             }
             if (banTag.FullMatch)
             {
-                return tag.EqualsIgnoreCase(banTag.KeyWord);
+                return tag.EqualsIgnoreCase(banTag.Keyword);
             }
             else
             {
-                return tag.ContainsIgnoreCase(banTag.KeyWord);
+                return tag.ContainsIgnoreCase(banTag.Keyword);
             }
         }
 

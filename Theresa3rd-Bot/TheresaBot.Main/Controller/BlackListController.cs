@@ -70,7 +70,7 @@ namespace TheresaBot.Main.Controller
             var banInfos = banList.Select(o => new BanTagVo
             {
                 Id = o.Id,
-                KeyWord = o.KeyWord,
+                Keyword = o.Keyword,
                 FullMatch = o.FullMatch,
                 IsRegular = o.IsRegular,
                 CreateAt = o.CreateDate.ToTimeStamp(),
@@ -92,9 +92,9 @@ namespace TheresaBot.Main.Controller
         [HttpPost]
         [Authorize]
         [Route("del/tag")]
-        public ApiResult DelTag(int id)
+        public ApiResult DelTag(int[] ids)
         {
-            banTagService.DelById(id);
+            banTagService.DelByIds(ids);
             BanTagDatas.LoadDatas();
             return ApiResult.Success();
         }

@@ -26,7 +26,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
                 if (welcomeConfig is null || welcomeConfig.Enable == false) return;
                 string template = welcomeConfig.Template;
-                WelcomeSpecial welcomeSpecial = welcomeConfig.Special?.Where(m => m.GroupId == groupId).FirstOrDefault();
+                WelcomeSpecial welcomeSpecial = welcomeConfig.Specials?.Where(m => m.GroupIds.Contains(groupId)).FirstOrDefault();
                 if (welcomeSpecial != null) template = welcomeSpecial.Template;
                 if (string.IsNullOrEmpty(template)) return;
                 List<IChatMessage> welcomeMsgs = new List<IChatMessage>();

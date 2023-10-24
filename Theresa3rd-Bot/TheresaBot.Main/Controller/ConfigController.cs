@@ -83,5 +83,59 @@ namespace TheresaBot.Main.Controller
             return ApiResult.Success(config);
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("get/menu")]
+        public ApiResult GetMenu()
+        {
+            return ApiResult.Success(BotConfig.MenuConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/menu")]
+        public ApiResult SetMenu([FromBody] MenuConfig config)
+        {
+            BotConfig.MenuConfig = config.FormatConfig();
+            ConfigHelper.MenuOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("get/repeater")]
+        public ApiResult GetRepeater()
+        {
+            return ApiResult.Success(BotConfig.RepeaterConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/repeater")]
+        public ApiResult SetRepeater([FromBody] RepeaterConfig config)
+        {
+            BotConfig.RepeaterConfig = config.FormatConfig();
+            ConfigHelper.RepeaterOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("get/welcome")]
+        public ApiResult GetWelcome()
+        {
+            return ApiResult.Success(BotConfig.WelcomeConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/welcome")]
+        public ApiResult SetWelcome([FromBody] WelcomeConfig config)
+        {
+            BotConfig.WelcomeConfig = config.FormatConfig();
+            ConfigHelper.WelcomeOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
     }
 }

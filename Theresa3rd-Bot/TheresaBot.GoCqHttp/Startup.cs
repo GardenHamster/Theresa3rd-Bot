@@ -64,14 +64,8 @@ namespace TheresaBot.GoCqHttp
                 DataManager.LoadInitDatas();
                 CQSession session = new CQSession();
                 CQReporter reporter = new CQReporter();
-                TimerManager.initReminderJob(session, reporter);
-                TimerManager.initTimingSetuJob(session, reporter);
-                TimerManager.initSubscribeTimers(session, reporter);
-                TimerManager.initTimingRankingJobAsync(session, reporter);
-                TimerManager.initWordCloudTimers(session, reporter);
-                TimerManager.initCookieJobAsync(session, reporter);
-                TimerManager.initTempClearJobAsync(session, reporter);
-                TimerManager.initDownloadClearJobAsync(session, reporter);
+                TimerManager.InitTimers(session, reporter);
+                SchedulerManager.InitSchedulers(session, reporter);
                 LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£ºv{BotConfig.BotVersion}");
                 Task welcomeTask = CQHelper.SendStartUpMessageAsync();
             }

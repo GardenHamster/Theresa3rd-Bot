@@ -8,14 +8,15 @@ using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Timers
 {
-    internal static class PixivTagTimer
+    internal static class PixivTagScanTimer
     {
         private static BaseSession Session;
         private static BaseReporter Reporter;
         private static System.Timers.Timer SystemTimer;
 
-        public static void init(BaseSession session, BaseReporter reporter)
+        public static void Init(BaseSession session, BaseReporter reporter)
         {
+            Destroy();
             Session = session;
             Reporter = reporter;
             SystemTimer = new System.Timers.Timer();
@@ -23,6 +24,16 @@ namespace TheresaBot.Main.Timers
             SystemTimer.AutoReset = true;
             SystemTimer.Elapsed += new ElapsedEventHandler(HandlerMethod);
             SystemTimer.Enabled = true;
+        }
+
+        public static void Destroy()
+        {
+            if (SystemTimer is null) return;
+            SystemTimer.Enabled = false;
+            SystemTimer.Stop();
+            SystemTimer.Close();
+            SystemTimer.Dispose();
+            SystemTimer = null;
         }
 
         private static void HandlerMethod(object source, ElapsedEventArgs e)

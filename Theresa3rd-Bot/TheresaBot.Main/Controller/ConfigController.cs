@@ -137,5 +137,131 @@ namespace TheresaBot.Main.Controller
             return ApiResult.Success(config);
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("get/reminder")]
+        public ApiResult GetReminder()
+        {
+            return ApiResult.Success(BotConfig.ReminderConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/reminder")]
+        public ApiResult SetReminder([FromBody] ReminderConfig config)
+        {
+            BotConfig.ReminderConfig = config.FormatConfig();
+            ConfigHelper.ReminderOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("get/setu")]
+        public ApiResult GetSetu()
+        {
+            return ApiResult.Success(BotConfig.SetuConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/setu")]
+        public ApiResult SetSetu([FromBody] SetuConfig config)
+        {
+            BotConfig.SetuConfig = config.FormatConfig();
+            ConfigHelper.SetuOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("get/saucenao")]
+        public ApiResult GetSaucenao()
+        {
+            return ApiResult.Success(BotConfig.SaucenaoConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/saucenao")]
+        public ApiResult SetSaucenao([FromBody] SaucenaoConfig config)
+        {
+            BotConfig.SaucenaoConfig = config.FormatConfig();
+            ConfigHelper.SaucenaoOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("get/subscribe")]
+        public ApiResult GetSubscribe()
+        {
+            return ApiResult.Success(BotConfig.SubscribeConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/subscribe")]
+        public ApiResult SetSubscribe([FromBody] SubscribeConfig config)
+        {
+            BotConfig.SubscribeConfig = config.FormatConfig();
+            ConfigHelper.SubscribeOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("get/timing/setu")]
+        public ApiResult GetTimingSetu()
+        {
+            return ApiResult.Success(BotConfig.TimingSetuConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/timing/setu")]
+        public ApiResult SetTimingSetu([FromBody] TimingSetuConfig config)
+        {
+            BotConfig.TimingSetuConfig = config.FormatConfig();
+            ConfigHelper.TimingSetuOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("get/pixiv/ranking")]
+        public ApiResult GetPixivRanking()
+        {
+            return ApiResult.Success(BotConfig.PixivRankingConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/pixiv/ranking")]
+        public ApiResult SetPixivRanking([FromBody] PixivRankingConfig config)
+        {
+            BotConfig.PixivRankingConfig = config.FormatConfig();
+            ConfigHelper.PixivRankingOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("get/wordcloud")]
+        public ApiResult GetWordCloud()
+        {
+            return ApiResult.Success(BotConfig.WordCloudConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/wordcloud")]
+        public ApiResult SetWordCloud([FromBody] WordCloudConfig config)
+        {
+            BotConfig.WordCloudConfig = config.FormatConfig();
+            ConfigHelper.WordCloudOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
     }
 }

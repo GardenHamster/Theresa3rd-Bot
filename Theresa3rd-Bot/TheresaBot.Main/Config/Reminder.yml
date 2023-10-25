@@ -7,6 +7,6 @@ Timers:                                                                         
       AtAll:                false                                               #是否艾特全体
       AtMembers:            []                                                  #艾特群员QQ号列表
       Templates:                                                                #消息模版
-        - Template:         |                                                   
+          -                 |                                                   
                             今天是深渊结算的日子，旅行者打穿红莲了没？
                             [image:BotImg/face/shenyuanjiesuan.png]

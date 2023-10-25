@@ -64,14 +64,8 @@ namespace TheresaBot.MiraiHttpApi
                 DataManager.LoadInitDatas();
                 MiraiSession session = new MiraiSession();
                 MiraiReporter reporter = new MiraiReporter();
-                TimerManager.initReminderJob(session, reporter);
-                TimerManager.initTimingSetuJob(session, reporter);
-                TimerManager.initSubscribeTimers(session, reporter);
-                TimerManager.initTimingRankingJobAsync(session, reporter);
-                TimerManager.initWordCloudTimers(session, reporter);
-                TimerManager.initCookieJobAsync(session, reporter);
-                TimerManager.initTempClearJobAsync(session, reporter);
-                TimerManager.initDownloadClearJobAsync(session, reporter);
+                TimerManager.InitTimers(session, reporter);
+                SchedulerManager.InitSchedulers(session, reporter);
                 LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£ºv{BotConfig.BotVersion}");
                 Task welcomeTask = MiraiHelper.SendStartUpMessageAsync();
             }

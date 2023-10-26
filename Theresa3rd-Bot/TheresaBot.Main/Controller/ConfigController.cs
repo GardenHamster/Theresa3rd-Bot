@@ -4,6 +4,9 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Result;
+using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Session;
+using TheresaBot.Main.Timers;
 
 namespace TheresaBot.Main.Controller
 {
@@ -11,6 +14,15 @@ namespace TheresaBot.Main.Controller
     [Route("api/[controller]")]
     public class ConfigController : BaseController
     {
+        private BaseSession Session;
+        private BaseReporter Reporter;
+
+        public ConfigController(BaseSession session, BaseReporter reporter)
+        {
+            this.Session = session;
+            this.Reporter = reporter;
+        }
+
         [HttpGet]
         [Authorize]
         [Route("get/general")]
@@ -26,6 +38,7 @@ namespace TheresaBot.Main.Controller
         {
             BotConfig.GeneralConfig = config.FormatConfig();
             ConfigHelper.GeneralOperater.SaveConfig(config);
+            Task task = SchedulerManager.InitDownClearJobAsync(Session, Reporter);
             return ApiResult.Success(config);
         }
 

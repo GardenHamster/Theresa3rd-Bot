@@ -5,6 +5,8 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Session;
 using TheresaBot.Main.Timers;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
@@ -33,6 +35,8 @@ namespace TheresaBot.MiraiHttpApi
                 ConfigHelper.LoadBotConfig();
                 LogHelper.Info($"配置文件加载完毕...");
 
+                services.AddScoped<BaseSession, MiraiSession>();
+                services.AddScoped<BaseReporter, MiraiReporter>();
                 services.AddControllers();
                 services.ConfigureJWT();
                 services.AddCors(options => options.AddPolicy("cors", p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));

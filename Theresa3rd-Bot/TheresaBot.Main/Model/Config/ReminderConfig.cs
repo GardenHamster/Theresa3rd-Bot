@@ -26,13 +26,24 @@
 
         public List<long> AtMembers { get; set; } = new();
 
-        public List<string> Templates { get; set; } = new();
+        public List<RemindTemplate> Templates { get; set; } = new();
 
         public override BaseConfig FormatConfig()
         {
             if (Groups is null) Groups = new();
             if (AtMembers is null) AtMembers = new();
             if (Templates is null) Templates = new();
+            foreach (var item in Templates) item?.FormatConfig();
+            return this;
+        }
+    }
+
+    public record RemindTemplate : BaseConfig
+    {
+        public string Template { get; set; }
+
+        public override BaseConfig FormatConfig()
+        {
             return this;
         }
     }

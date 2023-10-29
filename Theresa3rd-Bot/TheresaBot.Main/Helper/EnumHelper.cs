@@ -33,6 +33,14 @@ namespace TheresaBot.Main.Helper
             {(int)ResendType.Blur, "高斯模糊后重发"}
         };
 
+        public static Dictionary<int, string> PixivRandomOptions => new()
+        {
+            {(int)PixivRandomType.RandomTag, "随机指定标签中的作品"},
+            {(int)PixivRandomType.RandomSubscribe, "随机订阅中的作品"},
+            {(int)PixivRandomType.RandomFollow, "随机关注画师的作品"},
+            {(int)PixivRandomType.RandomBookmark, "随机收藏中的作品"},
+        };
+
         public static string GetTypeName(this TimingSetuSourceType sourceType)
         {
             return sourceType switch

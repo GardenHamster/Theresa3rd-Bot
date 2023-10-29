@@ -60,5 +60,22 @@ namespace TheresaBot.Main.Controller
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("list/pixiv/random")]
+        public ApiResult ListPixivRandom()
+        {
+            try
+            {
+                var optionList = EnumHelper.PixivRandomOptions.ToOptionList();
+                return ApiResult.Success(optionList);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                throw;
+            }
+        }
+
     }
 }

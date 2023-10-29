@@ -195,7 +195,7 @@ namespace TheresaBot.Main.Services
         /// <returns></returns>
         public async Task<PixivWorkInfo> getRandomWorkAsync(string tagStrs, bool includeR18, bool includeAI)
         {
-            int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScreen) / PageSize);
+            int pageCount = (int)Math.Ceiling(Convert.ToDouble(BotConfig.SetuConfig.Pixiv.MaxScan) / PageSize);
             if (pageCount < 3) pageCount = 3;
 
             string searchWord = toPixivSearchWords(tagStrs.ToActualPixivTags());
@@ -227,7 +227,7 @@ namespace TheresaBot.Main.Services
             }
 
             //提取前N个作品
-            pixivIllustList = pixivIllustList.Take(BotConfig.SetuConfig.Pixiv.MaxScreen).ToList();
+            pixivIllustList = pixivIllustList.Take(BotConfig.SetuConfig.Pixiv.MaxScan).ToList();
 
             //创建线程池
             List<PixivIllust>[] taskList = new List<PixivIllust>[threadCount];

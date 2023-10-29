@@ -8,7 +8,7 @@ namespace TheresaBot.Main.Model.Config
         public PixivRandomType RandomMode { get; set; } = PixivRandomType.RandomTag;
         public List<string> RandomTags { get; set; } = new();
         public string Template { get; set; }
-        public int MaxScreen { get; set; } = 60;
+        public int MaxScan { get; set; } = 60;
         public double MinBookmark { get; set; } = 1000;
         public double MinBookRate { get; set; } = 0.05;
 

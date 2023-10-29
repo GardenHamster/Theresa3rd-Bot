@@ -13,7 +13,7 @@ Pixiv:                                                                          
     RandomMode:             1                                                   #没有指定标签时获取图片的模式，1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品，3：随机获取一个关注中画师的作品，4：随机获取一个收藏中的作品
     RandomTags:             ['德丽莎','テレサ・アポカリプス']                    #RandomMode=1时查找的标签
     Template:               '本条数据来源于Pixiv，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回'
-    MaxScreen:              60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
+    MaxScan:                60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
     MinBookmark:            900                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时适用)
     MinBookRate:            0.08                                                #最低收藏率，收藏数/浏览数(标签搜索时适用)
 

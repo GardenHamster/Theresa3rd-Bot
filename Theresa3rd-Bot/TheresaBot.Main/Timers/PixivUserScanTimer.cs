@@ -49,7 +49,7 @@ namespace TheresaBot.Main.Timers
                 }
                 PixivUserScanReport report;
                 LogHelper.Info($"开始扫描pixiv画师最新作品...");
-                if (BotConfig.SubscribeConfig.PixivUser.ScanMode == PixivScanType.ScanFollow)
+                if (BotConfig.SubscribeConfig.PixivUser.ScanMode == PixivUserScanType.ScanFollow)
                 {
                     report = new PixivPushHandler(Session, Reporter).HandleFollowPushAsync().Result;
                 }

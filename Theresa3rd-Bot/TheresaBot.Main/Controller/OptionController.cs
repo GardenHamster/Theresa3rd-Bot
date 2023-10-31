@@ -77,5 +77,22 @@ namespace TheresaBot.Main.Controller
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("list/pixiv/user/scan")]
+        public ApiResult ListPixivUserScan()
+        {
+            try
+            {
+                var optionList = EnumHelper.PixivUserScanOptions.ToOptionList();
+                return ApiResult.Success(optionList);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                throw;
+            }
+        }
+
     }
 }

@@ -41,6 +41,12 @@ namespace TheresaBot.Main.Helper
             {(int)PixivRandomType.RandomBookmark, "随机收藏中的作品"},
         };
 
+        public static Dictionary<int, string> PixivUserScanOptions => new()
+        {
+            {(int)PixivUserScanType.ScanFollow, "扫描Pixiv中关注用户的最新作品"},
+            {(int)PixivUserScanType.ScanSubscribe, "扫描订阅命令中订阅用户的最新作品"},
+        };
+
         public static string GetTypeName(this TimingSetuSourceType sourceType)
         {
             return sourceType switch

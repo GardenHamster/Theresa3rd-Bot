@@ -94,5 +94,22 @@ namespace TheresaBot.Main.Controller
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("list/timing/setu/source")]
+        public ApiResult ListTimingSetuSource()
+        {
+            try
+            {
+                var optionList = EnumHelper.TimingSetuSourceOptions.ToOptionList();
+                return ApiResult.Success(optionList);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                throw;
+            }
+        }
+
     }
 }

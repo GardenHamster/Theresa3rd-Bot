@@ -47,6 +47,13 @@ namespace TheresaBot.Main.Helper
             {(int)PixivUserScanType.ScanSubscribe, "扫描订阅命令中订阅用户的最新作品"},
         };
 
+        public static Dictionary<int, string> TimingSetuSourceOptions => new()
+        {
+            {(int)TimingSetuSourceType.Local, "本地涩图"},
+            {(int)TimingSetuSourceType.Lolicon, "Lolicon Api"},
+            {(int)TimingSetuSourceType.Lolisuki, "Lolisuki Api"},
+        };
+
         public static string GetTypeName(this TimingSetuSourceType sourceType)
         {
             return sourceType switch

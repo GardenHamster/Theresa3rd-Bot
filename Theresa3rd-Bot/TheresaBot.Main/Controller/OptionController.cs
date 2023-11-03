@@ -111,5 +111,22 @@ namespace TheresaBot.Main.Controller
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("list/pixiv/ranking/sort")]
+        public ApiResult ListPixivRankingSort()
+        {
+            try
+            {
+                var optionList = EnumHelper.PixivRankingSortOptions.ToOptionList();
+                return ApiResult.Success(optionList);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                throw;
+            }
+        }
+
     }
 }

@@ -54,6 +54,14 @@ namespace TheresaBot.Main.Helper
             {(int)TimingSetuSourceType.Lolisuki, "Lolisuki Api"},
         };
 
+        public static Dictionary<int, string> PixivRankingSortOptions => new()
+        {
+            {(int)PixivRankingSortType.BookMark, "收藏数倒序排序"},
+            {(int)PixivRankingSortType.BookMarkRate, "收藏率倒序排序"},
+            {(int)PixivRankingSortType.Ranking, "点赞数倒序排序"},
+            {(int)PixivRankingSortType.RankingRate, "点赞率倒序排序"},
+        };
+
         public static string GetTypeName(this TimingSetuSourceType sourceType)
         {
             return sourceType switch

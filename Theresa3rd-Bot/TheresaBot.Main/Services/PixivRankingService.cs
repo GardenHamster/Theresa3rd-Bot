@@ -14,7 +14,7 @@ namespace TheresaBot.Main.Services
     {
         private const int eachPage = 50;
 
-        public async Task<PixivRankingInfo> getRankingInfo(PixivRankingItem rankingItem, PixivRankingMode rankingMode, string search_date, int retryTimes = 2)
+        public async Task<PixivRankingInfo> getRankingInfo(PixivRankingSafeItem rankingItem, PixivRankingMode rankingMode, string search_date, int retryTimes = 2)
         {
             if (retryTimes < 0) retryTimes = 0;
             while (retryTimes >= 0)
@@ -59,7 +59,7 @@ namespace TheresaBot.Main.Services
             return (rankingContents, ranking_date);
         }
 
-        public async Task<List<PixivRankingDetail>> filterContents(PixivRankingItem rankingItem, List<PixivRankingContent> rankingContents, PixivRankingMode rankingMode)
+        public async Task<List<PixivRankingDetail>> filterContents(PixivRankingSafeItem rankingItem, List<PixivRankingContent> rankingContents, PixivRankingMode rankingMode)
         {
             List<PixivRankingDetail> rankingDetails = new List<PixivRankingDetail>();
             foreach (var rankingContent in rankingContents)
@@ -157,7 +157,7 @@ namespace TheresaBot.Main.Services
         /// <param name="rankingItem"></param>
         /// <param name="rankingContent"></param>
         /// <returns></returns>
-        private bool checkContentIsOk(PixivRankingItem rankingItem, PixivRankingContent rankingContent, PixivRankingMode rankingMode)
+        private bool checkContentIsOk(PixivRankingSafeItem rankingItem, PixivRankingContent rankingContent, PixivRankingMode rankingMode)
         {
             if (rankingContent.IsImproper()) return false;
             if (rankingContent.HavingBanTags().Count() > 0) return false;
@@ -173,7 +173,7 @@ namespace TheresaBot.Main.Services
         /// <param name="rankingItem"></param>
         /// <param name="rankingContent"></param>
         /// <returns></returns>
-        private bool checkWorkIsOk(PixivRankingItem rankingItem, PixivWorkInfo workInfo)
+        private bool checkWorkIsOk(PixivRankingSafeItem rankingItem, PixivWorkInfo workInfo)
         {
             if (workInfo.IsImproper) return false;
             if (workInfo.HavingBanTags().Count > 0) return false;

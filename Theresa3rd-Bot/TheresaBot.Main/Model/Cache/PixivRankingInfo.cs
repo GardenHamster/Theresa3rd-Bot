@@ -16,7 +16,7 @@ namespace TheresaBot.Main.Model.Cache
 
         public PixivRankingMode RankingMode { get; set; }
 
-        public PixivRankingItem RankingItem { get; set; }
+        public PixivRankingSafeItem RankingItem { get; set; }
 
         public int CacheSecond { get; set; }
 
@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Model.Cache
 
         public List<string> PreviewFilePaths { get; set; }
 
-        public PixivRankingInfo(List<PixivRankingDetail> rankingDetails, PixivRankingItem rankingItem, PixivRankingMode rankingMode, string rankingDate, int cacheSecond)
+        public PixivRankingInfo(List<PixivRankingDetail> rankingDetails, PixivRankingSafeItem rankingItem, PixivRankingMode rankingMode, string rankingDate, int cacheSecond)
         {
             this.RankingDate = rankingDate;
             this.RankingItem = rankingItem;

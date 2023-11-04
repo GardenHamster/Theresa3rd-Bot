@@ -12,11 +12,11 @@ namespace TheresaBot.Main.Model.Config
         public int GroupCD { get; set; }
         public int CacheSeconds { get; set; }
         public int SendDetail { get; set; }
-        public PixivRankingItem Daily { get; set; }
-        public PixivRankingItem DailyAI { get; set; }
-        public PixivRankingItem Male { get; set; }
-        public PixivRankingItem Weekly { get; set; }
-        public PixivRankingItem Monthly { get; set; }
+        public PixivRankingR18Item Daily { get; set; }
+        public PixivRankingR18Item DailyAI { get; set; }
+        public PixivRankingR18Item Male { get; set; }
+        public PixivRankingR18Item Weekly { get; set; }
+        public PixivRankingSafeItem Monthly { get; set; }
         public List<PixivRankingTimer> Subscribes { get; set; } = new();
 
         public override PixivRankingConfig FormatConfig()
@@ -37,15 +37,14 @@ namespace TheresaBot.Main.Model.Config
         }
     }
 
-    public record PixivRankingItem : BaseConfig
+    public record PixivRankingSafeItem : BaseConfig
     {
-        public bool Enable { get; private set; }
-        public List<string> Commands { get; private set; } = new();
-        public List<string> R18Commands { get; private set; } = new();
-        public int MinRatingCount { get; private set; }
-        public double MinRatingRate { get; private set; }
-        public int MinBookCount { get; private set; }
-        public double MinBookRate { get; private set; }
+        public bool Enable { get; set; }
+        public List<string> Commands { get; set; } = new();
+        public int MinRatingCount { get; set; }
+        public double MinRatingRate { get; set; }
+        public int MinBookCount { get; set; }
+        public double MinBookRate { get; set; }
 
         public override BaseConfig FormatConfig()
         {
@@ -54,6 +53,17 @@ namespace TheresaBot.Main.Model.Config
             if (MinBookCount < 0) MinBookCount = 0;
             if (MinBookRate < 0) MinBookRate = 0;
             if (Commands is null) Commands = new();
+            return this;
+        }
+    }
+
+    public record PixivRankingR18Item : PixivRankingSafeItem
+    {
+        public List<string> R18Commands { get; set; } = new();
+
+        public override BaseConfig FormatConfig()
+        {
+            base.FormatConfig();
             if (R18Commands is null) R18Commands = new();
             return this;
         }
@@ -61,12 +71,12 @@ namespace TheresaBot.Main.Model.Config
 
     public record PixivRankingTimer : BaseConfig
     {
-        public bool Enable { get; private set; }
-        public string Name { get; private set; }
-        public List<long> Groups { get; private set; } = new();
-        public List<string> Contents { get; private set; } = new();
-        public string Cron { get; private set; }
-        public int SendDetail { get; private set; }
+        public bool Enable { get; set; }
+        public string Name { get; set; }
+        public List<long> Groups { get; set; } = new();
+        public List<string> Contents { get; set; } = new();
+        public string Cron { get; set; }
+        public int SendDetail { get; set; }
 
         public override BaseConfig FormatConfig()
         {

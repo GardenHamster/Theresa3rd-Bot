@@ -1,5 +1,4 @@
-﻿using SkiaSharp;
-using TheresaBot.Main.Common;
+﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.VO;
 

@@ -34,7 +34,7 @@ namespace TheresaBot.Main.Timers
             await InitCookieJobAsync(session, reporter);
             await InitReminderJobAsync(session, reporter);
             await InitTimingSetuJobAsync(session, reporter);
-            await InitTimingRankingJobAsync(session, reporter);
+            await InitPixivRankingJobAsync(session, reporter);
             await InitWordCloudJobAsync(session, reporter);
         }
 
@@ -165,7 +165,7 @@ namespace TheresaBot.Main.Timers
             }
         }
 
-        public static async Task InitTimingRankingJobAsync(BaseSession session, BaseReporter reporter)
+        public static async Task InitPixivRankingJobAsync(BaseSession session, BaseReporter reporter)
         {
             try
             {

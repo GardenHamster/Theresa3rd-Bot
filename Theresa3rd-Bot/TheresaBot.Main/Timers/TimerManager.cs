@@ -1,6 +1,5 @@
 ﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 
@@ -13,7 +12,8 @@ namespace TheresaBot.Main.Timers
         /// </summary>
         public static void InitTimers(BaseSession session, BaseReporter reporter)
         {
-            SubscribeConfig subscribeConfig = BotConfig.SubscribeConfig;
+            DestroyTimers();
+            var subscribeConfig = BotConfig.SubscribeConfig;
             if (subscribeConfig is null) return;
             if (subscribeConfig.PixivUser != null && subscribeConfig.PixivUser.Enable)
             {
@@ -29,6 +29,22 @@ namespace TheresaBot.Main.Timers
             {
                 MysUserScanTimer.Init(session, reporter);
                 LogHelper.Info($"米游社订阅任务启动完毕...");
+            }
+        }
+
+        public static void DestroyTimers()
+        {
+            if (PixivUserScanTimer.Destroy())
+            {
+                LogHelper.Info($"pixiv用户订阅任务已停止运行...");
+            }
+            if (PixivTagScanTimer.Destroy())
+            {
+                LogHelper.Info($"pixiv标签订阅任务已停止运行...");
+            }
+            if (MysUserScanTimer.Destroy())
+            {
+                LogHelper.Info($"米游社订阅任务已停止运行...");
             }
         }
 

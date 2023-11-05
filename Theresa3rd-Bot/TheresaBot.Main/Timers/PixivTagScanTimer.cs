@@ -26,14 +26,16 @@ namespace TheresaBot.Main.Timers
             SystemTimer.Enabled = true;
         }
 
-        public static void Destroy()
+        public static bool Destroy()
         {
-            if (SystemTimer is null) return;
+            if (SystemTimer is null) return false;
+            if (SystemTimer.Enabled == false) return false;
             SystemTimer.Enabled = false;
             SystemTimer.Stop();
             SystemTimer.Close();
             SystemTimer.Dispose();
             SystemTimer = null;
+            return true;
         }
 
         private static void HandlerMethod(object source, ElapsedEventArgs e)

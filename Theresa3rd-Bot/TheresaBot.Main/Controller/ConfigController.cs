@@ -165,6 +165,7 @@ namespace TheresaBot.Main.Controller
         {
             BotConfig.ReminderConfig = config.FormatConfig();
             ConfigHelper.ReminderOperater.SaveConfig(config);
+            Task task = SchedulerManager.InitReminderJobAsync(Session, Reporter);
             return ApiResult.Success(config);
         }
 
@@ -219,6 +220,7 @@ namespace TheresaBot.Main.Controller
         {
             BotConfig.SubscribeConfig = config.FormatConfig();
             ConfigHelper.SubscribeOperater.SaveConfig(config);
+            TimerManager.InitTimers(Session, Reporter);
             return ApiResult.Success(config);
         }
 
@@ -237,6 +239,7 @@ namespace TheresaBot.Main.Controller
         {
             BotConfig.TimingSetuConfig = config.FormatConfig();
             ConfigHelper.TimingSetuOperater.SaveConfig(config);
+            Task task = SchedulerManager.InitTimingSetuJobAsync(Session, Reporter);
             return ApiResult.Success(config);
         }
 
@@ -255,6 +258,7 @@ namespace TheresaBot.Main.Controller
         {
             BotConfig.PixivRankingConfig = config.FormatConfig();
             ConfigHelper.PixivRankingOperater.SaveConfig(config);
+            Task task = SchedulerManager.InitPixivRankingJobAsync(Session, Reporter);
             return ApiResult.Success(config);
         }
 
@@ -273,6 +277,7 @@ namespace TheresaBot.Main.Controller
         {
             BotConfig.WordCloudConfig = config.FormatConfig();
             ConfigHelper.WordCloudOperater.SaveConfig(config);
+            Task task = SchedulerManager.InitWordCloudJobAsync(Session, Reporter);
             return ApiResult.Success(config);
         }
 

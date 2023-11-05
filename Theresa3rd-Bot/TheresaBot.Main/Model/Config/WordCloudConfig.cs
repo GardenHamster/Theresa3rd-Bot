@@ -5,7 +5,7 @@
         public int GroupCD { get; set; }
         public int MaxWords { get; set; }
         public int DefaultWidth { get; set; }
-        public int DefaultHeigth { get; set; }
+        public int DefaultHeight { get; set; }
         public string FontPath { get; set; }
         public string ProcessingMsg { get; set; }
         public List<string> BasicCommands { get; set; } = new();
@@ -29,8 +29,8 @@
             if (MaxWords > 1000) MaxWords = 1000;
             if (DefaultWidth < 200) DefaultWidth = 200;
             if (DefaultWidth > 2000) DefaultWidth = 2000;
-            if (DefaultHeigth < 200) DefaultHeigth = 200;
-            if (DefaultHeigth > 2000) DefaultHeigth = 2000;
+            if (DefaultHeight < 200) DefaultHeight = 200;
+            if (DefaultHeight > 2000) DefaultHeight = 2000;
             if (BasicCommands is null) BasicCommands = new();
             if (DailyCommands is null) DailyCommands = new();
             if (WeeklyCommands is null) WeeklyCommands = new();

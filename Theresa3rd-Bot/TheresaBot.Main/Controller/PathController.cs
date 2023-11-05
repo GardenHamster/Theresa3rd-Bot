@@ -54,6 +54,23 @@ namespace TheresaBot.Main.Controller
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("list/mask")]
+        public ApiResult ListMask()
+        {
+            try
+            {
+                var pathList = pathService.LoadMaskPath();
+                return ApiResult.Success(pathList);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                throw;
+            }
+        }
+
 
     }
 }

@@ -62,6 +62,17 @@ namespace TheresaBot.Main.Common
         }
 
         /// <summary>
+        /// 获取词云蒙版图片存放目录
+        /// </summary>
+        /// <returns></returns>
+        public static string GetMaskDirectory()
+        {
+            string dirPath = Path.Combine(GetBotImgDirectory(), "mask");
+            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+            return dirPath;
+        }
+
+        /// <summary>
         /// 获取临时文件存放目录
         /// </summary>
         /// <returns></returns>

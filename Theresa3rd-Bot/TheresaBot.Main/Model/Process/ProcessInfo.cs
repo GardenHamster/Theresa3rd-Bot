@@ -69,7 +69,7 @@ namespace TheresaBot.Main.Model.Process
             while (true)
             {
                 if (stepInfo.IsFinish) break;
-                int secondDiff = DateTimeHelper.GetSecondDiff(stepInfo.StartTime.Value, DateTime.Now);
+                int secondDiff = DateTime.Now.SecondDiff(stepInfo.StartTime.Value);
                 if (secondDiff < 0 || secondDiff >= stepInfo.WaitSecond)
                 {
                     throw new StepTimeoutException("操作超时了，请重新发送指令开始操作");

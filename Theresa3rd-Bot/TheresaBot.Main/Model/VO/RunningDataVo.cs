@@ -16,7 +16,7 @@ namespace TheresaBot.Main.Model.VO
 
         public int TotalPixivScan { get; set; }
 
-        public int TotalPixivError { get; set; }
+        public int TotalPixivScanError { get; set; }
 
     }
 }

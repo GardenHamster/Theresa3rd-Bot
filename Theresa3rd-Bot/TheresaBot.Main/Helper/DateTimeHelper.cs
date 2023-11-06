@@ -182,7 +182,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="timeStart"></param>
         /// <param name="timeEnd"></param>
         /// <returns></returns>
-        public static int GetSecondDiff(DateTime timeStart, DateTime timeEnd)
+        public static int SecondDiff(this DateTime timeEnd, DateTime timeStart)
         {
             TimeSpan timeSpanStart = new TimeSpan(timeStart.Ticks);
             TimeSpan timeSpanEnd = new TimeSpan(timeEnd.Ticks);

@@ -49,6 +49,7 @@ namespace TheresaBot.Main.Handler
                 Task pushTask = PushPixivWorkMergeAsync(pushList, o => pixivService.getTagPushRemindMsg(o));
                 Task insertTask = pixivService.insertSubscribeRecord(pushList);
             }
+            RunningDatas.AddTotalPixivScan(scanReport);
             return scanReport;
         }
 
@@ -81,12 +82,13 @@ namespace TheresaBot.Main.Handler
                 Task pushTask = PushPixivWorkMergeAsync(pushList, o => pixivService.getUserPushRemindMsg(o));
                 Task insertTask = pixivService.insertSubscribeRecord(pushList);
             }
+            RunningDatas.AddTotalPixivScan(scanReport);
             return scanReport;
         }
 
-        public async Task<PixivUserScanReport> HandleFollowPushAsync()
+        public async Task<PixivScanReport> HandleFollowPushAsync()
         {
-            PixivUserScanReport scanReport = new PixivUserScanReport();
+            var scanReport = new PixivScanReport();
             try
             {
                 bool sendMerge = BotConfig.SubscribeConfig.PixivTag.SendMerge;
@@ -102,6 +104,7 @@ namespace TheresaBot.Main.Handler
             {
                 await LogAndReportError(ex, $"扫描pixiv关注用户最新作品失败");
             }
+            RunningDatas.AddTotalPixivScan(scanReport);
             return scanReport;
         }
 
@@ -112,6 +115,7 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         private async Task PushTagWorkAsync(PixivSubscribe pixivSubscribe)
         {
+            RunningDatas.AddTotalPixivPush();
             foreach (long groupId in pixivSubscribe.SubscribeTask.SubscribeGroups)
             {
                 await PushPixivWorkAsync(pixivSubscribe, o => pixivService.getTagPushRemindMsg(pixivSubscribe), groupId);
@@ -126,6 +130,7 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         private async Task PushUserWorkAsync(PixivSubscribe pixivSubscribe)
         {
+            RunningDatas.AddTotalPixivPush();
             foreach (long groupId in pixivSubscribe.SubscribeTask.SubscribeGroups)
             {
                 await PushPixivWorkAsync(pixivSubscribe, o => pixivService.getUserPushRemindMsg(pixivSubscribe), groupId);
@@ -140,6 +145,7 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         private async Task PushPixivWorkMergeAsync(List<PixivSubscribe> pixivSubscribes, Func<PixivSubscribe, string> remindMsg)
         {
+            RunningDatas.AddTotalPixivPush(pixivSubscribes.Count);
             var sendDic = new Dictionary<long, List<PixivSubscribe>>();
             foreach (var item in pixivSubscribes)
             {
@@ -227,7 +233,6 @@ namespace TheresaBot.Main.Handler
                     PixivSetuContent setuContent = new PixivSetuContent(workMsgs, imgList, workInfo);
                     pixivContents.Add(setuContent);
                 }
-
                 var setuContents = pixivContents.Cast<SetuContent>().ToList();
                 var results = SendGroupMergeSetuAsync(setuContents, new(), groupId, eachPage);
             }

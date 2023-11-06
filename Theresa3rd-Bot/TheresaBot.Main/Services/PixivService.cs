@@ -569,7 +569,7 @@ namespace TheresaBot.Main.Services
         /// <param name="subscribeId"></param>
         /// <param name="getCount"></param>
         /// <returns></returns>
-        public async Task<List<PixivSubscribe>> scanFollowWorkAsync(PixivUserScanReport scanReport, Func<PixivSubscribe, Task> pushAsync = null)
+        public async Task<List<PixivSubscribe>> scanFollowWorkAsync(PixivScanReport scanReport, Func<PixivSubscribe, Task> pushAsync = null)
         {
             int pageIndex = 1;
             List<long> groupIds = BotConfig.PermissionsConfig.SubscribeGroups;

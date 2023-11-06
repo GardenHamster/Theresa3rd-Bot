@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Model.Invoker;
+﻿using TheresaBot.Main.Datas;
+using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
@@ -30,6 +31,7 @@ namespace TheresaBot.Main.Command
 
         public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
         {
+            RunningDatas.AddHandleTimes();
             return await HandlerInvoker.HandleMethod.Invoke(this, session, reporter);
         }
 

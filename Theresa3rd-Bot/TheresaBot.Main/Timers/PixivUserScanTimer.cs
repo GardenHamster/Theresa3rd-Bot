@@ -49,17 +49,17 @@ namespace TheresaBot.Main.Timers
                     LogHelper.Info("Pixiv Cookie过期或不可用，已停止扫描pixiv画师最新作品，请更新Cookie...");
                     return;
                 }
-                PixivUserScanReport report;
                 LogHelper.Info($"开始扫描pixiv画师最新作品...");
                 if (BotConfig.SubscribeConfig.PixivUser.ScanMode == PixivUserScanType.ScanFollow)
                 {
-                    report = new PixivPushHandler(Session, Reporter).HandleFollowPushAsync().Result;
+                    var report = new PixivPushHandler(Session, Reporter).HandleFollowPushAsync().Result;
+                    LogHelper.Info($"pixiv画师扫描完毕，扫描作品/失败作品={report.ScanWork}/{report.ErrorWork}");
                 }
                 else
                 {
-                    report = new PixivPushHandler(Session, Reporter).HandleUserPushAsync().Result;
+                    var report = new PixivPushHandler(Session, Reporter).HandleUserPushAsync().Result;
+                    LogHelper.Info($"pixiv画师扫描完毕，扫描画师/扫描作品/失败画师/失败作品={report.ScanUser}/{report.ScanWork}/{report.ErrorUser}/{report.ErrorWork}");
                 }
-                LogHelper.Info($"pixiv画师扫描完毕，扫描画师/扫描作品/失败画师/失败作品={report.ScanUser}/{report.ScanWork}/{report.ErrorUser}/{report.ErrorWork}");
             }
             catch (Exception ex)
             {

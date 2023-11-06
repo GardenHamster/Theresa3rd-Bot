@@ -64,8 +64,5 @@ namespace TheresaBot.Main.Timers
         }
 
 
-
-
-
     }
 }

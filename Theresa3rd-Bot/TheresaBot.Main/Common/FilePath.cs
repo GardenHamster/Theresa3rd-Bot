@@ -14,7 +14,7 @@ namespace TheresaBot.Main.Common
         public const string WordCloudDirName = "WordCloud";
         public const string BotImgDirName = "BotImg";
         public const string FontDirName = "Font";
-
+        
         /// <summary>
         /// 获取下载图片的保存目录
         /// </summary>

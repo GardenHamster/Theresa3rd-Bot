@@ -10,13 +10,13 @@ namespace TheresaBot.Main.Model.VO
     {
         public int RunningSeconds { get; set; }
 
-        public int TotalHandle { get; set; }
+        public int HandleTimes { get; set; }
 
-        public int TotalPixivPush { get; set; }
+        public int PixivPushTimes { get; set; }
 
-        public int TotalPixivScan { get; set; }
+        public int PixivScanTimes { get; set; }
 
-        public int TotalPixivScanError { get; set; }
+        public int PixivScanError { get; set; }
 
     }
 }

@@ -29,6 +29,19 @@ namespace TheresaBot.Main.Dao
         }
 
         /// <summary>
+        /// 统计某个订阅的数量
+        /// </summary>
+        /// <param name="subscribeType"></param>
+        /// <returns></returns>
+        public int countSubscribes(SubscribeType subscribeType)
+        {
+            return Db.Queryable<SubscribeGroupPO>()
+            .InnerJoin<SubscribePO>((sg, s) => sg.SubscribeId == s.Id)
+            .Where((sg, s) => s.SubscribeType == subscribeType)
+            .Select(sg => sg.SubscribeId).Distinct().Count();
+        }
+
+        /// <summary>
         /// 查询某个群的某个订阅类型的列表
         /// </summary>
         /// <param name="groupId"></param>

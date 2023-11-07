@@ -12,7 +12,8 @@ namespace TheresaBot.Main.Timers
         /// </summary>
         public static void InitTimers(BaseSession session, BaseReporter reporter)
         {
-            DestroyTimers();
+            DestroyScanTimers();
+            HeartbeatTimer.Init();
             var subscribeConfig = BotConfig.SubscribeConfig;
             if (subscribeConfig is null) return;
             if (subscribeConfig.PixivUser != null && subscribeConfig.PixivUser.Enable)
@@ -32,7 +33,7 @@ namespace TheresaBot.Main.Timers
             }
         }
 
-        public static void DestroyTimers()
+        public static void DestroyScanTimers()
         {
             if (PixivUserScanTimer.Destroy())
             {

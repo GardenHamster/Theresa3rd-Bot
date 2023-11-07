@@ -56,6 +56,17 @@ namespace TheresaBot.Main.Services
             return subscribeTaskMap;
         }
 
+        /// <summary>
+        /// 统计某个订阅的数量
+        /// </summary>
+        /// <param name="subscribeType"></param>
+        /// <returns></returns>
+        public int countSubscribes(SubscribeType subscribeType)
+        {
+            return subscribeGroupDao.countSubscribes(subscribeType);
+        }
+
+
         public List<SubscribeInfo> getSubscribes(long groupId, SubscribeType subscribeType)
         {
             var returnList = new List<SubscribeInfo>();

@@ -9,6 +9,7 @@ namespace TheresaBot.Main.Common
         public static string BotName = "Bot";
         public const string BotVersion = "0.11.0";
         public const string BotHomepage = "https://www.theresa3rd.cn";
+        public static List<string> ServerAddress = new();
         public static List<GroupInfos> GroupInfos = new();
         public static BackstageConfig BackstageConfig = new BackstageConfig();
         public static GeneralConfig GeneralConfig = new GeneralConfig();

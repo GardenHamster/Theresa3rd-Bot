@@ -86,6 +86,7 @@ namespace TheresaBot.MiraiHttpApi
         {
             try
             {
+                ConfigHelper.SetAppConfig(app);
                 ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
                 app.UseRouting();
@@ -106,6 +107,7 @@ namespace TheresaBot.MiraiHttpApi
                 appLifetime.ApplicationStarted.Register(OnStarted);
                 appLifetime.ApplicationStopping.Register(OnStopping);
                 appLifetime.ApplicationStopped.Register(OnStopped);
+                BusinessHelper.ShowBackstageInfos();
             }
             catch (Exception ex)
             {

@@ -198,6 +198,21 @@ namespace TheresaBot.Main.Helper
             return chatContents;
         }
 
+        public static void ShowBackstageInfos()
+        {
+            Console.WriteLine("------------------------------------------------------------------------------------------------------");
+            Console.WriteLine();
+            Console.WriteLine($"后台密码：{BotConfig.BackstageConfig.Password}");
+            Console.WriteLine($"你可以在配置文件【Config/Backstage.yml】中修改后台密码(Password)");
+            Console.WriteLine($"使用后台密码访问下列地址，开始配置Bot相关功能");
+            foreach (var address in IPAddressHelper.GetLocalBackstageUrls())
+            {
+                Console.WriteLine($"{address}");
+            }
+            Console.WriteLine();
+            Console.WriteLine("------------------------------------------------------------------------------------------------------");
+        }
+
         /// <summary>
         /// 获取欢迎消息
         /// </summary>
@@ -206,7 +221,12 @@ namespace TheresaBot.Main.Helper
         {
             StringBuilder msgBuilder = new StringBuilder();
             msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot v{BotConfig.BotVersion}】");
-            msgBuilder.AppendLine($"群聊发送【#菜单】可以查看指令");
+            msgBuilder.AppendLine($"群聊发送【#菜单】可以查看所有指令");
+            msgBuilder.AppendLine($"局域网下访问下列地址进行Bot相关配置");
+            foreach (var item in IPAddressHelper.GetLocalBackstageUrls())
+            {
+                msgBuilder.AppendLine(item);
+            }
             msgBuilder.AppendLine($"部署或者使用教程请访问");
             msgBuilder.Append($"{BotConfig.BotHomepage}");
             return msgBuilder.ToString();

@@ -1,4 +1,5 @@
 ﻿using TheresaBot.Main.Helper;
+using YamlDotNet.Serialization;
 
 namespace TheresaBot.Main.Model.Config
 {
@@ -28,6 +29,7 @@ namespace TheresaBot.Main.Model.Config
 
         public bool SendRelevantCommands { get; set; }
 
+        [YamlIgnore]
         public string DefaultPrefix => Prefixs.FirstOrDefault() ?? string.Empty;
 
         public override GeneralConfig FormatConfig()

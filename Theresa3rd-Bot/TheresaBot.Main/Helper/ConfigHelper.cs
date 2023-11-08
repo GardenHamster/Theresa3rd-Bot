@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using System.Text;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Yml;
@@ -54,6 +56,12 @@ namespace TheresaBot.Main.Helper
             GeneralOperater.SaveConfig(BotConfig.GeneralConfig);
             PermissionsOperater.SaveConfig(BotConfig.PermissionsConfig);
         }
+
+        public static void SetAppConfig(IApplicationBuilder app)
+        {
+            BotConfig.ServerAddress = app.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses?.ToList() ?? new();
+        }
+
 
 
     }

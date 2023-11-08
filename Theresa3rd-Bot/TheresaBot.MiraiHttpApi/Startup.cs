@@ -88,19 +88,20 @@ namespace TheresaBot.MiraiHttpApi
             {
                 ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-                //app.UseHttpsRedirection();
                 app.UseRouting();
                 app.UseCors("cors");//允许跨域
                 app.UseAuthentication();//开启认证
                 app.UseAuthorization();//开启授权
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapControllers();
-                });
+                app.UseDefaultFiles();
+                app.UseStaticFiles();
                 app.UseStaticFiles(new StaticFileOptions()//静态文件访问配置
                 {
                     RequestPath = new PathString(FilePath.ImgHttpPath),//对外的访问路径
                     FileProvider = new PhysicalFileProvider(FilePath.GetBotImgDirectory())//指定实际物理路径
+                });
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
                 });
                 appLifetime.ApplicationStarted.Register(OnStarted);
                 appLifetime.ApplicationStopping.Register(OnStopping);

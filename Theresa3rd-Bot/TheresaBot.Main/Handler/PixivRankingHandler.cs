@@ -141,14 +141,14 @@ namespace TheresaBot.Main.Handler
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
                 setuContents.AddRange(rankingService.getRankAndPids(pixivRankingInfo, 10));
 
-                foreach (var groupId in rankingTimer.Groups)
+                foreach (var groupId in rankingTimer.Groups.ToSendableGroups())
                 {
                     if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
                     await Session.SendGroupMessageAsync(groupId, templateMsg);
                     await Task.Delay(1000);
                 }
 
-                foreach (var groupId in rankingTimer.Groups)
+                foreach (var groupId in rankingTimer.Groups.ToSendableGroups())
                 {
                     if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
                     await SendGroupMergeSetuAsync(setuContents, new() { titleContents, tipContents }, groupId);
@@ -188,7 +188,7 @@ namespace TheresaBot.Main.Handler
                     msgContent.Add(new PlainContent(workMsg));
                     setuContents.Add(new SetuContent(msgContent, setuFiles));
                 }
-                foreach (var groupId in groupIds)
+                foreach (var groupId in groupIds.ToSendableGroups())
                 {
                     if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
                     bool isShowImg = groupId.IsShowSetuImg(false);

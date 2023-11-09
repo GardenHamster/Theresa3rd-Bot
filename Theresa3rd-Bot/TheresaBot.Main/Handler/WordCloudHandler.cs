@@ -233,12 +233,13 @@ namespace TheresaBot.Main.Handler
         }
 
         /// <summary>
-        /// 推送每月词云
+        /// 推送词云
         /// </summary>
         /// <returns></returns>
         public async Task PushWordCloudAsync(WordCloudTimer timer)
         {
-            foreach (var groupId in timer.Groups)
+            var groupList = timer.Groups.ToSendableGroups();
+            foreach (var groupId in groupList)
             {
                 Task task = PushWordCloudAsync(timer, groupId);
                 await Task.Delay(1000);

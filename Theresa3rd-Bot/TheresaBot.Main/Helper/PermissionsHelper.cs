@@ -1,5 +1,6 @@
 ﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Model.Infos;
 
 namespace TheresaBot.Main.Helper
 {
@@ -215,6 +216,18 @@ namespace TheresaBot.Main.Helper
         {
             var groups = BotConfig.PermissionsConfig.WordCloudGroups;
             return groups.Contains(0) || groups.Contains(groupId);
+        }
+
+        /// <summary>
+        /// 根据配置文件中的一组群号，返回一组可发送消息的群号
+        /// </summary>
+        /// <param name="groupIds"></param>
+        /// <returns></returns>
+        public static List<long> ToSendableGroups(this List<long> groupIds)
+        {
+            var fullGroups = BotConfig.GroupInfos.Select(o => o.GroupId).ToList();
+            var sendableGroups = groupIds.Where(o => groupIds.Contains(o)).ToList();
+            return groupIds.Contains(0) ? fullGroups : sendableGroups;
         }
 
     }

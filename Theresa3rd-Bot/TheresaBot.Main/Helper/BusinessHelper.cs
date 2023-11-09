@@ -200,17 +200,16 @@ namespace TheresaBot.Main.Helper
 
         public static void ShowBackstageInfos()
         {
-            Console.WriteLine("------------------------------------------------------------------------------------------------------");
-            Console.WriteLine();
+            Console.WriteLine("----------------------------------------------------------------------------------------");
             Console.WriteLine($"后台密码：{BotConfig.BackstageConfig.Password}");
-            Console.WriteLine($"你可以在配置文件【Config/Backstage.yml】中修改后台密码(Password)");
-            Console.WriteLine($"使用后台密码访问下列地址，开始配置Bot相关功能");
+            Console.WriteLine($"你可以在配置文件【Config/Backstage.yml】中修改后台密码：Password");
+            Console.WriteLine("----------------------------------------------------------------------------------------");
+            Console.WriteLine($"访问下列地址配置Bot相关功能：");
             foreach (var address in IPAddressHelper.GetLocalBackstageUrls())
             {
                 Console.WriteLine($"{address}");
             }
-            Console.WriteLine();
-            Console.WriteLine("------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("----------------------------------------------------------------------------------------");
         }
 
         /// <summary>

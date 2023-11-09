@@ -462,6 +462,7 @@ namespace TheresaBot.Main.Services
             {
                 try
                 {
+                    scanReport.ScanWork++;
                     if (++index > getCount) break;
                     if (userWork is null) continue;
                     if (string.IsNullOrWhiteSpace(userWork.id)) continue;
@@ -471,7 +472,6 @@ namespace TheresaBot.Main.Services
                     if (isShowR18s == false && userWork.IsR18) continue;
                     if (shelfLife > 0 && userWork.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, userWork.id)) continue;
-                    scanReport.ScanWork++;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(userWork.id, 0);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;
@@ -523,6 +523,7 @@ namespace TheresaBot.Main.Services
             {
                 try
                 {
+                    scanReport.ScanWork++;
                     if (illuts is null) continue;
                     if (string.IsNullOrWhiteSpace(illuts.id)) continue;
                     if (illuts.IsImproper) continue;
@@ -531,7 +532,6 @@ namespace TheresaBot.Main.Services
                     if (isShowR18s == false && illuts.IsR18) continue;
                     if (shelfLife > 0 && illuts.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, illuts.id)) continue;
-                    scanReport.ScanWork++;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(illuts.id, 0);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;
@@ -584,9 +584,9 @@ namespace TheresaBot.Main.Services
             {
                 try
                 {
+                    scanReport.ScanWork++;
                     if (workId <= 0) continue;
                     if (subscribeRecordDao.checkExists(SubscribeType.P站画师, workId.ToString())) continue;
-                    scanReport.ScanWork++;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString(), 0);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;

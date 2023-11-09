@@ -31,7 +31,7 @@ Subscribes:                                                                     
       Name:                 '每日词云'                                          #定时器名称(仅用于控制台显示)
       Cron:                 '0 0 8 * * ?'                                       #cron表达式(需要自行百度cron格式)
       Masks:                ['theresa']                                         #蒙版名称，对应上面配置的蒙版的Name
-      Groups:               [284196392]                                         #推送群
+      Groups:               [0]                                                 #推送群
       HourRange:            24                                                  #读取触发时间至触发时间前N个小时内的聊天记录
       Template:             '早上好，昨天的群词云如下'                          #模版消息
                                 
@@ -39,7 +39,7 @@ Subscribes:                                                                     
       Name:                 '每周词云'                                          #定时器名称(仅用于控制台显示)
       Cron:                 '0 30 22 ? * SUN'                                   #cron表达式(需要自行百度cron格式)
       Masks:                ['theresa']                                         #蒙版名称，对应上面配置的蒙版的Name
-      Groups:               [284196392]                                         #推送群
+      Groups:               [0]                                                 #推送群
       HourRange:            168                                                 #读取触发时间至触发时间前N个小时内的聊天记录
       Template:             '晚安，本周的群词云如下'                            #模版消息
                                 
@@ -47,6 +47,6 @@ Subscribes:                                                                     
       Name:                 '每月词云'                                          #定时器名称(仅用于控制台显示)
       Cron:                 '0 0 12 L * ?'                                      #cron表达式(需要自行百度cron格式)
       Masks:                ['theresa']                                         #蒙版名称，对应上面配置的蒙版的Name
-      Groups:               [284196392]                                         #推送群
+      Groups:               [0]                                                 #推送群
       HourRange:            720                                                 #读取触发时间至触发时间前N个小时内的聊天记录
       Template:             '中午好，本月的群词云如下'                          #模版消息

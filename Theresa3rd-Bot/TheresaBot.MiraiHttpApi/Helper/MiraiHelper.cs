@@ -106,7 +106,8 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 var acceptIds = BotConfig.PermissionsConfig.AcceptGroups;
                 var groupCount = BotConfig.GroupInfos.Count;
                 int acceptCount = acceptIds.Where(o => availableIds.Contains(o)).Count();
-                LogHelper.Info($"群列表获取完毕，共获取群号 {groupCount} 个，其中已启用群号 {acceptCount} 个");
+                var availablCount = acceptIds.Contains(0) ? groupCount : acceptCount;
+                LogHelper.Info($"群列表获取完毕，共获取群号 {groupCount} 个，其中已启用群号 {availablCount} 个");
             }
             catch (Exception ex)
             {

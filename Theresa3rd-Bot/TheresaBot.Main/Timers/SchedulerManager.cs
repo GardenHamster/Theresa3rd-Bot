@@ -45,7 +45,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                TempClearSchedulers.DestroyAndClear();
+                await TempClearSchedulers.DestroyAndClearAsync();
                 string tempClearCron = "0 0 4 * * ?";
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(tempClearCron).Build();
                 IJobDetail jobDetail = JobBuilder.Create<TempClearJob>().WithIdentity("TempClearJob", "TempClearJob").Build();
@@ -69,7 +69,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                DownClearSchedulers.DestroyAndClear();
+                await DownClearSchedulers.DestroyAndClearAsync();
                 string downloadClearCron = BotConfig.GeneralConfig.ClearCron;
                 if (string.IsNullOrWhiteSpace(downloadClearCron)) return;
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(downloadClearCron).Build();
@@ -97,7 +97,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                CookieJobSchedulers.DestroyAndClear();
+                await CookieJobSchedulers.DestroyAndClearAsync();
                 string cookieCron = "0 0 9 * * ?";
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(cookieCron).Build();
                 IJobDetail jobDetail = JobBuilder.Create<CookieJob>().WithIdentity("CookieJob", "CookieJob").Build();
@@ -122,7 +122,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                ReminderSchedulers.DestroyAndClear();
+                await ReminderSchedulers.DestroyAndClearAsync();
                 var reminderConfig = BotConfig.ReminderConfig;
                 if (reminderConfig is null) return;
                 if (reminderConfig.Enable == false) return;
@@ -146,7 +146,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                TimingSetuSchedulers.DestroyAndClear();
+                await TimingSetuSchedulers.DestroyAndClearAsync();
                 var timingSetuConfig = BotConfig.TimingSetuConfig;
                 if (timingSetuConfig is null) return;
                 if (timingSetuConfig.Enable == false) return;
@@ -169,7 +169,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                TimingRankingSchedulers.DestroyAndClear();
+                await TimingRankingSchedulers.DestroyAndClearAsync();
                 var rankingConfig = BotConfig.PixivRankingConfig;
                 if (rankingConfig is null) return;
                 if (rankingConfig.Enable == false) return;
@@ -193,7 +193,7 @@ namespace TheresaBot.Main.Timers
         /// </summary>
         public static async Task InitWordCloudJobAsync(BaseSession session, BaseReporter reporter)
         {
-            WordCloudSchedulers.DestroyAndClear();
+            await WordCloudSchedulers.DestroyAndClearAsync();
             var wordCloudConfig = BotConfig.WordCloudConfig;
             var subscribes = wordCloudConfig?.Subscribes;
             if (subscribes is null || subscribes.Count == 0) return;
@@ -302,28 +302,29 @@ namespace TheresaBot.Main.Timers
             }
         }
 
-        private static void DestroyAndClear(this List<IScheduler> schedulers)
+        private static async Task DestroyAndClearAsync(this List<IScheduler> schedulers)
         {
-            schedulers.Destroy();
+            await schedulers.DestroyAsync();
             schedulers.Clear();
         }
 
-        private static void Destroy(this List<IScheduler> schedulers)
+        private static async Task DestroyAsync(this List<IScheduler> schedulers)
         {
             if (schedulers is null) return;
             foreach (IScheduler scheduler in schedulers)
             {
-                scheduler.Destroy();
+                await scheduler.Destroy();
             }
         }
 
-        private static void Destroy(this IScheduler scheduler)
+        private static async Task Destroy(this IScheduler scheduler)
         {
             try
             {
                 if (scheduler is null) return;
                 if (scheduler.IsShutdown) return;
-                scheduler.Shutdown(false);
+                await scheduler.Shutdown(false);
+                await scheduler.Destroy();
             }
             catch (Exception ex)
             {

@@ -1,5 +1,5 @@
-SuperManagers:              [123456789]                             #超级管理员列表,可以使用管理指令
-LimitlessMembers:           [123456789]                             #功能冷却时间和每日次数无限制的成员
+SuperManagers:              []										#超级管理员列表,可以使用管理指令
+LimitlessMembers:           []										#功能冷却时间和每日次数无限制的成员
 AcceptGroups:               [0]										#白名单，只处理这些群的消息
 SetuGroups:                 [0]                                     #拥有涩图权限的群
 SetuShowImgGroups:          [0]                                     #允许发送图片的群，否则只发送图片链接

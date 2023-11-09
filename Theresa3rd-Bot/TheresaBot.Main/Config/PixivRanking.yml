@@ -49,11 +49,11 @@ Monthly:                                                                        
 Subscribes:                                                                     #定时推送
     - Enable:               false                                               #是否启用
       Cron:                 '0 30 10 * * ?'                                     #cron表达式(需要自行百度cron格式)
-      Groups:               [284196392]                                         #推送到群
+      Groups:               [0]                                                 #推送到群
       Contents:             ['Daily','DailyAI']                                 #推送内容，可选Daily/DailyAI/Male/Weekly/Monthly/DailyR18/DailyAIR18/MaleR18/WeeklyR18
       SendDetail:           10                                                  #同时发送前N个作品的图片和详情
     - Enable:               false                                               #是否启用
       Cron:                 '0 40 10 ? * SUN'                                   #cron表达式(需要自行百度cron格式)
-      Groups:               [284196392]                                         #推送到群
+      Groups:               [0]                                                 #推送到群
       Contents:             ['Weekly','Monthly']                                #推送内容，可选Daily/DailyAI/Male/Weekly/Monthly/DailyR18/DailyAIR18/MaleR18/WeeklyR18
       SendDetail:           10                                                  #同时发送前N个作品的图片和详情

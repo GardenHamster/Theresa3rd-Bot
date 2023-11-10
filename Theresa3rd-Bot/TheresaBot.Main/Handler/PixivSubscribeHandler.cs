@@ -108,7 +108,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithAtAsync($"画师id[{dbSubscribe.SubscribeCode}]订阅成功，正在读取最新作品~");
 
                 await Task.Delay(1000);
-                await SendUserNewestAsync(command, dbSubscribe, command.GroupId.IsShowR18Setu(), command.GroupId.IsShowAISetu());
+                await SendUserNewestAsync(command, dbSubscribe, command.GroupId.IsShowR18(), command.GroupId.IsShowAISetu());
             }
             catch (Exception ex)
             {
@@ -267,7 +267,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 string searchWord = pixivService.toPixivSearchWords(pixivTag.ToActualPixivTags());
-                PixivSearch pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, command.GroupId.IsShowR18Setu());
+                PixivSearch pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, command.GroupId.IsShowR18());
                 if (pageOne is null || pageOne.getIllust().data.Count == 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync("该标签中没有任何作品，订阅失败");

@@ -94,7 +94,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 CoolingCache.SetPixivRankingHanding();
-                if (rankingMode.IsR18 && rankingTimer.Groups.IsShowR18SetuImg() == false) return;
+                if (rankingMode.IsR18 && rankingTimer.Groups.IsShowR18Img() == false) return;
                 PixivRankingInfo rankingInfo = await rankingService.getRankingInfo(rankingItem, rankingMode, String.Empty);
                 PixivRankingCache.AddCache(rankingMode, rankingInfo, String.Empty);
                 if (rankingInfo.RankingDetails.Count == 0) return;
@@ -143,14 +143,14 @@ namespace TheresaBot.Main.Handler
 
                 foreach (var groupId in rankingTimer.PushGroups)
                 {
-                    if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
+                    if (rankingMode.IsR18 && groupId.IsShowR18Img() == false) continue;
                     await Session.SendGroupMessageAsync(groupId, templateMsg);
                     await Task.Delay(1000);
                 }
 
                 foreach (var groupId in rankingTimer.PushGroups)
                 {
-                    if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
+                    if (rankingMode.IsR18 && groupId.IsShowR18Img() == false) continue;
                     await SendGroupMergeSetuAsync(setuContents, new() { titleContents, tipContents }, groupId);
                     await Task.Delay(1000);
                 }
@@ -190,7 +190,7 @@ namespace TheresaBot.Main.Handler
                 }
                 foreach (var groupId in groupIds)
                 {
-                    if (rankingMode.IsR18 && groupId.IsShowR18SetuImg() == false) continue;
+                    if (rankingMode.IsR18 && groupId.IsShowR18Img() == false) continue;
                     bool isShowImg = groupId.IsShowSetuImg(false);
                     var sendContents = setuContents.Select(o => isShowImg ? o with { } : o with { SetuImages = new() }).ToList();
                     await SendGroupMergeSetuAsync(sendContents, new() { titleContents }, groupId, DetailEachPage);

@@ -29,7 +29,7 @@ namespace TheresaBot.Main.Handler
                 PixivWorkInfo pixivWorkInfo;
                 string keyword = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
-                bool isShowR18 = command.GroupId.IsShowR18Setu();
+                bool isShowR18 = command.GroupId.IsShowR18();
 
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
                 if (await CheckSetuTagEnableAsync(command, keyword) == false) return;

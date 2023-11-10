@@ -181,7 +181,7 @@ namespace TheresaBot.Main.Handler
                 PixivWorkInfo workInfo = pixivSubscribe.PixivWorkInfo;
                 bool isAISetu = workInfo.IsAI;
                 bool isR18Img = workInfo.IsR18;
-                if (isR18Img && groupId.IsShowR18Setu() == false) return;
+                if (isR18Img && groupId.IsShowR18() == false) return;
                 if (isAISetu && groupId.IsShowAISetu() == false) return;
 
                 var workMsgs = new List<BaseContent>();
@@ -218,7 +218,7 @@ namespace TheresaBot.Main.Handler
                     PixivWorkInfo workInfo = pixivSubscribe.PixivWorkInfo;
                     bool isAISetu = workInfo.IsAI;
                     bool isR18Img = workInfo.IsR18;
-                    if (isR18Img && groupId.IsShowR18Setu() == false) continue;
+                    if (isR18Img && groupId.IsShowR18() == false) continue;
                     if (isAISetu && groupId.IsShowAISetu() == false) continue;
                     string remindTemplate = BotConfig.SubscribeConfig.PixivUser.Template;
                     string pixivTemplate = BotConfig.PixivConfig.Template;

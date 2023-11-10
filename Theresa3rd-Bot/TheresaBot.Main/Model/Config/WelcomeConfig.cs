@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Helper;
 using YamlDotNet.Serialization;
 
 namespace TheresaBot.Main.Model.Config

@@ -36,16 +36,6 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 判断一个成员是否黑名单成员
-        /// </summary>
-        /// <param name="MemberId"></param>
-        /// <returns></returns>
-        public static bool IsBanMember(this long MemberId)
-        {
-            return BanMemberDatas.IsBanMember(MemberId);
-        }
-
-        /// <summary>
         /// 判断字符串是否为pixivId
         /// </summary>
         /// <param name="str"></param>

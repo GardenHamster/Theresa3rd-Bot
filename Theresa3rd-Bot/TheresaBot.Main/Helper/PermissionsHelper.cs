@@ -1,6 +1,6 @@
 ﻿using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Model.Config;
-using TheresaBot.Main.Model.Infos;
 
 namespace TheresaBot.Main.Helper
 {
@@ -50,31 +50,7 @@ namespace TheresaBot.Main.Helper
         {
             var groups = BotConfig.PermissionsConfig.SetuShowImgGroups;
             if (groups.Contains(0) == false && groups.Contains(groupId) == false) return false;
-            if (isR18Img && groupId.IsShowR18SetuImg() == false) return false;
-            return true;
-        }
-
-        /// <summary>
-        /// 判断是否存在其中一个群可以显示R18图片
-        /// </summary>
-        /// <param name="groupIds"></param>
-        /// <returns></returns>
-        public static bool IsShowR18SetuImg(this List<long> groupIds)
-        {
-            return groupIds.Any(o => o.IsShowR18SetuImg());
-        }
-
-        /// <summary>
-        /// 判断某一个群是否可以显示R18图片
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <returns></returns>
-        public static bool IsShowR18SetuImg(this long groupId)
-        {
-            var ShowR18Groups = BotConfig.PermissionsConfig.SetuShowR18Groups;
-            var ShowR18ImgGroups = BotConfig.PermissionsConfig.SetuShowR18ImgGroups;
-            if (ShowR18Groups.Contains(0) == false && ShowR18Groups.Contains(groupId) == false) return false;
-            if (ShowR18ImgGroups.Contains(0) == false && ShowR18ImgGroups.Contains(groupId) == false) return false;
+            if (isR18Img && groupId.IsShowR18Img() == false) return false;
             return true;
         }
 
@@ -83,9 +59,9 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="groupIds"></param>
         /// <returns></returns>
-        public static bool IsShowR18Setu(this List<long> groupIds)
+        public static bool IsShowR18(this List<long> groupIds)
         {
-            return groupIds.Any(o => o.IsShowR18Setu());
+            return groupIds.Any(o => o.IsShowR18());
         }
 
         /// <summary>
@@ -93,10 +69,34 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        public static bool IsShowR18Setu(this long groupId)
+        public static bool IsShowR18(this long groupId)
         {
             var groups = BotConfig.PermissionsConfig.SetuShowR18Groups;
             return groups.Contains(0) || groups.Contains(groupId);
+        }
+
+        /// <summary>
+        /// 判断是否存在其中一个群可以显示R18图片
+        /// </summary>
+        /// <param name="groupIds"></param>
+        /// <returns></returns>
+        public static bool IsShowR18Img(this List<long> groupIds)
+        {
+            return groupIds.Any(o => o.IsShowR18Img());
+        }
+
+        /// <summary>
+        /// 判断某一个群是否可以显示R18图片
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static bool IsShowR18Img(this long groupId)
+        {
+            var ShowR18Groups = BotConfig.PermissionsConfig.SetuShowR18Groups;
+            var ShowR18ImgGroups = BotConfig.PermissionsConfig.SetuShowR18ImgGroups;
+            var IsShowR18 = ShowR18Groups.Contains(0) || ShowR18Groups.Contains(groupId);
+            var IsShowR18Img = ShowR18ImgGroups.Contains(0) || ShowR18ImgGroups.Contains(groupId);
+            return IsShowR18 && IsShowR18Img;
         }
 
         /// <summary>
@@ -118,6 +118,16 @@ namespace TheresaBot.Main.Helper
         public static bool IsSuperManager(this long memberId)
         {
             return BotConfig.PermissionsConfig.SuperManagers.Contains(memberId);
+        }
+
+        /// <summary>
+        /// 判断一个成员是否黑名单成员
+        /// </summary>
+        /// <param name="MemberId"></param>
+        /// <returns></returns>
+        public static bool IsBanMember(this long MemberId)
+        {
+            return BanMemberDatas.IsBanMember(MemberId);
         }
 
         /// <summary>

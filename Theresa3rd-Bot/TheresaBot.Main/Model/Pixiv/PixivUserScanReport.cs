@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Model.Pixiv
 {
-    public record PixivUserScanReport: PixivScanReport
+    public record PixivUserScanReport : PixivScanReport
     {
         public int ScanUser { get; set; }
 

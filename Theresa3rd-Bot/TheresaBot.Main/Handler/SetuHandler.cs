@@ -138,7 +138,7 @@ namespace TheresaBot.Main.Handler
         public async Task<bool> CheckSetuTagEnableAsync(GroupCommand command, string tagName)
         {
             if (string.IsNullOrWhiteSpace(tagName)) return true;
-            if (tagName.IsR18() && command.GroupId.IsShowR18Setu() == false)
+            if (tagName.IsR18() && command.GroupId.IsShowR18() == false)
             {
                 await command.ReplyGroupMessageWithQuoteAsync("本群未设置R18权限，禁止搜索R18相关标签");
                 return false;

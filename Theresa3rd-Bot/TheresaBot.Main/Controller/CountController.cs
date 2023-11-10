@@ -17,7 +17,7 @@ namespace TheresaBot.Main.Controller
 
         public CountController()
         {
-            subscribeService=new SubscribeService();
+            subscribeService = new SubscribeService();
         }
 
         [HttpGet]

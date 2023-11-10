@@ -83,7 +83,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
                 return false;
             }
-            if (pluginConfig.Enable == false)
+            if (pluginConfig is null || pluginConfig.Enable == false)
             {
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;
@@ -98,7 +98,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
                 return false;
             }
-            if (subscribeConfig.Enable == false)
+            if (subscribeConfig is null || subscribeConfig.Enable == false)
             {
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;
@@ -108,12 +108,12 @@ namespace TheresaBot.Main.Handler
 
         public async Task<bool> CheckR18ImgEnableAsync(GroupCommand command)
         {
-            if (command.GroupId.IsShowR18Setu() == false)
+            if (command.GroupId.IsShowR18() == false)
             {
                 await command.ReplyGroupTemplateWithQuoteAsync("当前群未配置R18权限");
                 return false;
             }
-            if (command.GroupId.IsShowR18SetuImg() == false)
+            if (command.GroupId.IsShowR18Img() == false)
             {
                 await command.ReplyGroupTemplateWithQuoteAsync("当前群未配置R18图片权限");
                 return false;
@@ -128,7 +128,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
                 return false;
             }
-            if (BotConfig.SaucenaoConfig.Enable == false)
+            if (BotConfig.SaucenaoConfig is null || BotConfig.SaucenaoConfig.Enable == false)
             {
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;
@@ -158,7 +158,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
                 return false;
             }
-            if (BotConfig.WordCloudConfig.Enable == false)
+            if (BotConfig.WordCloudConfig is null || BotConfig.WordCloudConfig.Enable == false)
             {
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
                 return false;

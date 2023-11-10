@@ -28,7 +28,7 @@ namespace TheresaBot.Main.Handler
                 List<LoliconDataV2> dataList;
                 string tagStr = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
-                bool isShowR18 = command.GroupId.IsShowR18Setu();
+                bool isShowR18 = command.GroupId.IsShowR18();
                 int r18Mode = isShowR18 ? 2 : 0;
                 bool excludeAI = isShowAI == false;
 
@@ -91,7 +91,7 @@ namespace TheresaBot.Main.Handler
             {
                 int margeEachPage = 5;
                 bool sendMerge = timingSetuTimer.SendMerge;
-                int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
+                int r18Mode = groupId.IsShowR18() ? 2 : 0;
                 bool excludeAI = groupId.IsShowAISetu() == false;
                 string tagStr = RandomHelper.RandomItem(timingSetuTimer.Tags);
                 string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : ToLoliconTagArr(tagStr);

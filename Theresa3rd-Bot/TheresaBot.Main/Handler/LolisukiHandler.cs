@@ -29,7 +29,7 @@ namespace TheresaBot.Main.Handler
                 List<LolisukiData> dataList;
                 string tagStr = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
-                bool isShowR18 = command.GroupId.IsShowR18Setu();
+                bool isShowR18 = command.GroupId.IsShowR18();
                 int r18Mode = isShowR18 ? 2 : 0;
                 int aiMode = isShowAI ? 2 : 0;
 
@@ -93,7 +93,7 @@ namespace TheresaBot.Main.Handler
             {
                 int margeEachPage = 5;
                 bool isShowAI = groupId.IsShowAISetu();
-                bool isShowR18 = groupId.IsShowR18Setu();
+                bool isShowR18 = groupId.IsShowR18();
                 string levelStr = GetLevelStr(isShowR18, BotConfig.TimingSetuConfig?.LolisukiLevel);
                 bool sendMerge = timingSetuTimer.SendMerge;
                 int aiMode = isShowAI ? 2 : 0;

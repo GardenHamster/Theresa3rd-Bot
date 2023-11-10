@@ -411,7 +411,7 @@ namespace TheresaBot.Main.Services
             int eachPage = 40;
             int cacheSeconds = BotConfig.SetuConfig.PixivUser.CacheSeconds;
             int maxScan = BotConfig.SetuConfig.PixivUser.MaxScan;
-            bool isShowR18 = groupId.IsShowR18Setu();
+            bool isShowR18 = groupId.IsShowR18();
             List<PixivUserWorkInfo> workList = new List<PixivUserWorkInfo>();
             PixivUserProfileTop profileTop = await PixivHelper.GetPixivUserProfileTopAsync(userId);
             PixivUserProfileAll profileAll = await PixivHelper.GetPixivUserProfileAllAsync(userId);
@@ -450,7 +450,7 @@ namespace TheresaBot.Main.Services
             int subscribeId = subscribeTask.SubscribeId;
             List<long> groupIds = subscribeTask.SubscribeGroups;
             bool isShowAIs = groupIds.IsShowAISetu();
-            bool isShowR18s = groupIds.IsShowR18Setu();
+            bool isShowR18s = groupIds.IsShowR18();
             PixivUserProfileTop pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(userId);
             if (pixivUserInfo is null) return new();
             Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo?.illusts;
@@ -513,7 +513,7 @@ namespace TheresaBot.Main.Services
             int subscribeId = subscribeTask.SubscribeId;
             List<long> groupIds = subscribeTask.SubscribeGroups;
             bool isShowAIs = groupIds.IsShowAISetu();
-            bool isShowR18s = groupIds.IsShowR18Setu();
+            bool isShowR18s = groupIds.IsShowR18();
             string searchWord = toPixivSearchWords(tagNames.ToActualPixivTags());
             int maxScan = BotConfig.SubscribeConfig.PixivTag.MaxScan;
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
@@ -574,7 +574,7 @@ namespace TheresaBot.Main.Services
             int pageIndex = 1;
             List<long> groupIds = BotConfig.PermissionsConfig.SubscribeGroups;
             bool isShowAIs = groupIds.IsShowAISetu();
-            bool isShowR18s = groupIds.IsShowR18Setu();
+            bool isShowR18s = groupIds.IsShowR18();
             PixivFollowLatest pageOne = await PixivHelper.GetPixivFollowLatestAsync(pageIndex);
             if (pageOne?.page?.ids is null) return new();
             int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;

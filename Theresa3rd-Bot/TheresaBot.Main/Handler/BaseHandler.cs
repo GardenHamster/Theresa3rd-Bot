@@ -278,7 +278,7 @@ namespace TheresaBot.Main.Handler
 
         protected async Task CheckTextAsync(GroupRelay relay)
         {
-            if (string.IsNullOrWhiteSpace(relay.Answer)) throw new NoAnswerException();
+            if (string.IsNullOrWhiteSpace(relay.Message)) throw new NoAnswerException();
             await Task.CompletedTask;
         }
 

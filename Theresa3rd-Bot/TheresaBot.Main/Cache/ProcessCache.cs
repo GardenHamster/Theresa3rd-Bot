@@ -45,14 +45,14 @@ namespace TheresaBot.Main.Cache
         /// 处理一个步骤
         /// </summary>
         /// <param name="relay"></param>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
         /// <returns></returns>
-        public static bool HandleStep(GroupRelay relay, long groupId, long memberId)
+        public static bool HandleStep(GroupRelay relay)
         {
             ProcessInfo processInfo;
             lock (ProcessDic)
             {
+                long groupId = relay.GroupId;
+                long memberId = relay.MemberId;
                 if (ProcessDic.ContainsKey(groupId) == false) return false;
                 List<ProcessInfo> stepInfos = ProcessDic[groupId];
                 if (stepInfos is null) return false;

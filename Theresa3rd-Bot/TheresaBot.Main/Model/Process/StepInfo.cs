@@ -71,7 +71,7 @@ namespace TheresaBot.Main.Model.Process
         public void FinishStep(GroupRelay relay)
         {
             Relay = relay;
-            Answer = relay.Answer;
+            Answer = relay.Message;
             IsFinish = true;
         }
 
@@ -80,7 +80,7 @@ namespace TheresaBot.Main.Model.Process
             try
             {
                 await CheckReplyFunc(relay);
-                await CheckInputFunc(relay.Answer);
+                await CheckInputFunc(relay.Message);
                 return true;
             }
             catch (NoAnswerException)

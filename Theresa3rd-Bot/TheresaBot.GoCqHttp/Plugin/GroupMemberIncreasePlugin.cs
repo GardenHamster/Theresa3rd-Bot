@@ -29,7 +29,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
                 if (welcomeConfig is null || welcomeConfig.Enable == false) return;
                 string template = welcomeConfig.Template;
-                WelcomeSpecial welcomeSpecial = welcomeConfig.Specials?.Where(m => m.GroupIds.Contains(groupId)).FirstOrDefault();
+                WelcomeSpecial welcomeSpecial = welcomeConfig.Specials?.Where(m => m.Groups.Contains(groupId)).FirstOrDefault();
                 if (welcomeSpecial != null) template = welcomeSpecial.Template;
                 if (string.IsNullOrEmpty(template)) return;
                 List<CqMsg> welcomeMsgs = new List<CqMsg>();

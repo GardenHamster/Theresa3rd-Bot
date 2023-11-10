@@ -1,4 +1,7 @@
-﻿namespace TheresaBot.Main.Model.Config
+﻿using TheresaBot.Main.Helper;
+using YamlDotNet.Serialization;
+
+namespace TheresaBot.Main.Model.Config
 {
     public record ReminderConfig : BasePluginConfig
     {
@@ -27,6 +30,9 @@
         public List<long> AtMembers { get; set; } = new();
 
         public List<RemindTemplate> Templates { get; set; } = new();
+
+        [YamlIgnore]
+        public List<long> PushGroups => Groups?.ToSendableGroups() ?? new();
 
         public override BaseConfig FormatConfig()
         {

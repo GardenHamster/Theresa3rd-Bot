@@ -226,7 +226,7 @@ namespace TheresaBot.Main.Helper
         public static List<long> ToSendableGroups(this List<long> groupIds)
         {
             var fullGroups = BotConfig.GroupInfos.Select(o => o.GroupId).ToList();
-            var sendableGroups = groupIds.Where(o => groupIds.Contains(o)).ToList();
+            var sendableGroups = groupIds.Where(o => fullGroups.Contains(o)).ToList();
             return groupIds.Contains(0) ? fullGroups : sendableGroups;
         }
 

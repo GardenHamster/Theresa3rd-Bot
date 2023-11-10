@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Helper;
+﻿using System.Text.RegularExpressions;
+using TheresaBot.Main.Helper;
 using YamlDotNet.Serialization;
 
 namespace TheresaBot.Main.Model.Config
@@ -31,6 +32,9 @@ namespace TheresaBot.Main.Model.Config
 
         [YamlIgnore]
         public string DefaultPrefix => Prefixs.FirstOrDefault() ?? string.Empty;
+
+        [YamlIgnore]
+        public List<long> ErrorPushGroups => ErrorGroups?.ToSendableGroups() ?? new();
 
         public override GeneralConfig FormatConfig()
         {

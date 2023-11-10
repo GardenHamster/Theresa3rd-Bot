@@ -1,4 +1,6 @@
-﻿using TheresaBot.Main.Type;
+﻿using TheresaBot.Main.Helper;
+using TheresaBot.Main.Type;
+using YamlDotNet.Serialization;
 
 namespace TheresaBot.Main.Model.Config
 {
@@ -29,6 +31,9 @@ namespace TheresaBot.Main.Model.Config
         public int Quantity { get; set; } = 5;
         public bool AtAll { get; set; }
         public string TimingMsg { get; set; }
+
+        [YamlIgnore]
+        public List<long> PushGroups => Groups?.ToSendableGroups() ?? new();
 
         public override BaseConfig FormatConfig()
         {

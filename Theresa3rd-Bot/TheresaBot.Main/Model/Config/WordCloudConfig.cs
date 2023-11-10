@@ -1,4 +1,7 @@
-﻿namespace TheresaBot.Main.Model.Config
+﻿using TheresaBot.Main.Helper;
+using YamlDotNet.Serialization;
+
+namespace TheresaBot.Main.Model.Config
 {
     public record WordCloudConfig : BasePluginConfig
     {
@@ -73,6 +76,8 @@
         public List<long> Groups { get; set; } = new();
         public double HourRange { get; set; }
         public string Template { get; set; }
+        [YamlIgnore]
+        public List<long> PushGroups => Groups?.ToSendableGroups() ?? new();
 
         public override BaseConfig FormatConfig()
         {

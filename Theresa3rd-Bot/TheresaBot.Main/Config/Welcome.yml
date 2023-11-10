@@ -1,7 +1,7 @@
 Enable:                     false                                               #是否启用
 Template:                   '欢迎新人！'                                        #默认欢迎模版
 Specials:                                                                        #为单独的群设定单独的模版
-    - GroupIds:             [284196392]                                         #群id(群号)，这里只能填一个
+    - Groups:               [284196392]                                         #群id(群号)，这里只能填一个
       Template:             |                                                   #入群欢迎模版
                             欢迎萌新
                             [image:BotImg/face/welcome.gif]

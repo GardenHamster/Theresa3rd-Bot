@@ -79,6 +79,7 @@ namespace TheresaBot.Main.Handler
             {
                 await Task.Delay(1000);
                 List<SetuContent> resendContents = GetResendContent(setuContents);
+                if (resendContents.Count == 0) return result;
                 result = await Session.SendGroupMergeSetuAsync(resendContents, headerContents, groupId);
             }
             return result;
@@ -157,7 +158,6 @@ namespace TheresaBot.Main.Handler
         /// <param name="command"></param>
         /// <param name="setuInfo"></param>
         /// <param name="isShowR18"></param>
-        /// <param name="isShowAI"></param>
         /// <returns></returns>
         public async Task<bool> CheckSetuSendable(GroupCommand command, BaseWorkInfo setuInfo, bool isShowR18)
         {

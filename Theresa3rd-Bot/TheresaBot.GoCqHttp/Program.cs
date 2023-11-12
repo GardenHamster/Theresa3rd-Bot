@@ -1,3 +1,5 @@
+using TheresaBot.Main.Helper;
+
 namespace TheresaBot.GoCqHttp
 {
     public class Program
@@ -11,7 +13,9 @@ namespace TheresaBot.GoCqHttp
         {
             return Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseWebRoot(Path.Combine(AppContext.BaseDirectory, "wwwroot")).UseStartup<Startup>();
+                var webRootPath = AppHelper.GetWebRootPath();
+                if (!string.IsNullOrEmpty(webRootPath)) webBuilder.UseWebRoot(webRootPath);
+                webBuilder.UseStartup<Startup>();
             });
         }
 

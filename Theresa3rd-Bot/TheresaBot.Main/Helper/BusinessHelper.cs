@@ -272,7 +272,6 @@ namespace TheresaBot.Main.Helper
         /// 拼接pixiv作品路径
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
-        /// <param name="maxShowCount"></param>
         /// <returns></returns>
         public static string JoinPixivImgOriginUrls(PixivWorkInfo pixivWorkInfo)
         {
@@ -280,7 +279,7 @@ namespace TheresaBot.Main.Helper
             int maxCount = BotConfig.PixivConfig.UrlShowMaximum > 0 ? BotConfig.PixivConfig.UrlShowMaximum : pixivWorkInfo.pageCount;
             for (int i = 0; i < maxCount && i < pixivWorkInfo.pageCount; i++)
             {
-                string imgUrl = pixivWorkInfo.urls.original.ToOriginProxyUrl();
+                string imgUrl = pixivWorkInfo.urls.original.ToOpenProxyLink();
                 if (i > 0) imgUrl = imgUrl.Replace("_p0.", $"_p{i}.");
                 if (LinkBuilder.Length > 0) LinkBuilder.AppendLine();
                 LinkBuilder.Append(imgUrl);

@@ -26,7 +26,7 @@ namespace TheresaBot.Main.Services
             template = template.Replace("{Taste}", lolisukiData.taste.ToString());
             template = template.Replace("{SizeMB}", "??");
             template = template.Replace("{Tags}", lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum));
-            template = template.Replace("{Urls}", lolisukiData.urls.original.ToOriginProxyUrl());
+            template = template.Replace("{Urls}", lolisukiData.urls.original.ToOpenProxyLink());
             return template;
         }
 
@@ -36,7 +36,7 @@ namespace TheresaBot.Main.Services
             workInfoStr.AppendLine($"本条数据来源于Lolisuki Api~");
             workInfoStr.AppendLine($"标题：{lolisukiData.title}，画师：{lolisukiData.author}，画师id：{lolisukiData.uid}，Level：{lolisukiData.level}，分类：{lolisukiData.taste}");
             workInfoStr.AppendLine($"标签：{lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum)}");
-            workInfoStr.Append(lolisukiData.urls.original.ToOriginProxyUrl());
+            workInfoStr.Append(lolisukiData.urls.original.ToOpenProxyLink());
             return workInfoStr.ToString();
         }
 
@@ -56,6 +56,7 @@ namespace TheresaBot.Main.Services
             }
             return setuList;
         }
+
         private async Task<LolisukiResult> getLolisukiResultAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
         {
             string[] postTags = tags is null || tags.Length == 0 ? new string[0] : tags;

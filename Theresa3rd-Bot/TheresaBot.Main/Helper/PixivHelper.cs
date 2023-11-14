@@ -275,19 +275,19 @@ namespace TheresaBot.Main.Helper
         {
             if (BotConfig.PixivConfig.FreeProxy)
             {
-                return await HttpHelper.DownFileAsync(url.ToProxyUrl(), fullISavePath, null, timeout);
+                return await HttpHelper.DownFileAsync(url.ToDownloadProxyUrl(), fullISavePath, null, timeout);
             }
             else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
             {
-                return await HttpHelper.DownFileAsync(url.ToProxyUrl(), fullISavePath, null, timeout);
+                return await HttpHelper.DownFileAsync(url.ToDownloadProxyUrl(), fullISavePath, null, timeout);
             }
             else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
             {
-                return await HttpHelper.DownFileWithProxyAsync(url.ToPximgUrl(), fullISavePath, headerDic);
+                return await HttpHelper.DownFileWithProxyAsync(url.ToPixivOriginUrl(), fullISavePath, headerDic);
             }
             else
             {
-                return await HttpHelper.DownFileAsync(url.ToPximgUrl(), fullISavePath, headerDic);
+                return await HttpHelper.DownFileAsync(url.ToPixivOriginUrl(), fullISavePath, headerDic);
             }
         }
 
@@ -319,19 +319,19 @@ namespace TheresaBot.Main.Helper
         {
             if (BotConfig.PixivConfig.FreeProxy)
             {
-                return await HttpHelper.DownFileAsync(url.ToProxyUrl(), fullImgSavePath);
+                return await HttpHelper.DownFileAsync(url.ToDownloadProxyUrl(), fullImgSavePath);
             }
             else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
             {
-                return await HttpHelper.DownFileAsync(url.ToProxyUrl(), fullImgSavePath);
+                return await HttpHelper.DownFileAsync(url.ToDownloadProxyUrl(), fullImgSavePath);
             }
             else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
             {
-                return await HttpHelper.DownFileWithProxyAsync(url.ToPximgUrl(), fullImgSavePath, headerDic);
+                return await HttpHelper.DownFileWithProxyAsync(url.ToPixivOriginUrl(), fullImgSavePath, headerDic);
             }
             else
             {
-                return await HttpHelper.DownFileAsync(url.ToPximgUrl(), fullImgSavePath, headerDic);
+                return await HttpHelper.DownFileAsync(url.ToPixivOriginUrl(), fullImgSavePath, headerDic);
             }
         }
 
@@ -389,11 +389,11 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 转换为代理地址
+        /// 转换为Pixiv原图地址
         /// </summary>
         /// <param name="imgUrl"></param>
         /// <returns></returns>
-        public static string ToPximgUrl(this string imgUrl)
+        public static string ToPixivOriginUrl(this string imgUrl)
         {
             imgUrl = imgUrl.Replace(HttpUrl.DefaultPixivImgProxy, "https://i.pximg.net");
             imgUrl = imgUrl.Replace("https://i.pixiv.cat", "https://i.pximg.net");
@@ -403,11 +403,11 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 转换为pixiv原地址
+        /// 转换为图片代理下载地址
         /// </summary>
         /// <param name="imgUrl"></param>
         /// <returns></returns>
-        public static string ToProxyUrl(this string imgUrl)
+        public static string ToDownloadProxyUrl(this string imgUrl)
         {
             string proxyUrl = BotConfig.PixivConfig.ImgProxy;
             if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.DefaultPixivImgProxy;
@@ -419,14 +419,14 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 转换为pixiv原地址
+        /// 转换为代理图片链接地址
         /// </summary>
         /// <param name="imgUrl"></param>
         /// <returns></returns>
-        public static string ToOriginProxyUrl(this string imgUrl)
+        public static string ToOpenProxyLink(this string imgUrl)
         {
             string proxyUrl = BotConfig.PixivConfig.OriginUrlProxy;
-            if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = HttpUrl.DefaultPixivImgProxy;
+            if (string.IsNullOrWhiteSpace(proxyUrl)) proxyUrl = "https://原图代理链接未配置";
             imgUrl = imgUrl.Replace("https://i.pximg.net", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.cat", proxyUrl);
             imgUrl = imgUrl.Replace("https://i.pixiv.re", proxyUrl);

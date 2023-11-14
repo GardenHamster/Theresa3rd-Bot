@@ -262,7 +262,7 @@ namespace TheresaBot.Main.Helper
                 {
                     if (--retryTimes < 0)
                     {
-                        LogHelper.Error(ex, "DownPixivImgAsync异常");
+                        LogHelper.Error(ex, $"DownPixivImgAsync异常，url={url}");
                         return null;
                     }
                     await Task.Delay(3000);
@@ -306,7 +306,7 @@ namespace TheresaBot.Main.Helper
                 {
                     if (--retryTimes < 0)
                     {
-                        LogHelper.Error(ex, "DownPixivFileAsync异常");
+                        LogHelper.Error(ex, $"DownPixivFileAsync异常，url={url}");
                         return null;
                     }
                     await Task.Delay(3000);

@@ -229,6 +229,17 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 判断某个群是否拥有游戏权限
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static bool IsGameAuthorized(this long groupId)
+        {
+            var groups = BotConfig.PermissionsConfig.GameGroups;
+            return groups.Contains(0) || groups.Contains(groupId);
+        }
+
+        /// <summary>
         /// 根据配置文件中的一组群号，返回一组可发送消息的群号
         /// </summary>
         /// <param name="groupIds"></param>

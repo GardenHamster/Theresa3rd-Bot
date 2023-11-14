@@ -1,4 +1,4 @@
-﻿namespace TheresaBot.Main.Type.StepOption
+﻿namespace TheresaBot.Main.Type.StepOptions
 {
     public enum GroupPushType
     {

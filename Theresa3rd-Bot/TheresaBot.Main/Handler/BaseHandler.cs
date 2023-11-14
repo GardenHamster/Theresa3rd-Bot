@@ -3,6 +3,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
+using TheresaBot.Main.Game;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.PO;
@@ -110,12 +111,12 @@ namespace TheresaBot.Main.Handler
         {
             if (command.GroupId.IsShowR18() == false)
             {
-                await command.ReplyGroupTemplateWithQuoteAsync("当前群未配置R18权限");
+                await command.ReplyGroupMessageWithQuoteAsync("当前群未配置R18权限");
                 return false;
             }
             if (command.GroupId.IsShowR18Img() == false)
             {
-                await command.ReplyGroupTemplateWithQuoteAsync("当前群未配置R18图片权限");
+                await command.ReplyGroupMessageWithQuoteAsync("当前群未配置R18图片权限");
                 return false;
             }
             return true;
@@ -161,6 +162,41 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.WordCloudConfig is null || BotConfig.WordCloudConfig.Enable == false)
             {
                 await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> CheckGameEnableAsync(GroupCommand command)
+        {
+            if (command.GroupId.IsGameAuthorized() == false)
+            {
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.NoPermissionsMsg, "该功能未授权");
+                return false;
+            }
+            if (BotConfig.GameConfig is null || BotConfig.GameConfig.Enable == false)
+            {
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> CheckGameEnableAsync(GroupCommand command, BaseGameConfig gameConfig)
+        {
+            if (gameConfig is null || gameConfig.Enable == false)
+            {
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> CheckGamingAsync(GroupCommand command)
+        {
+            if (GameCahce.IsGaming(command.GroupId))
+            {
+                await command.ReplyGroupMessageWithQuoteAsync("群内的另一个游戏正在进行中，结束后再来吧~");
                 return false;
             }
             return true;

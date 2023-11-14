@@ -13,7 +13,7 @@ using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
-using TheresaBot.Main.Type.StepOption;
+using TheresaBot.Main.Type.StepOptions;
 
 namespace TheresaBot.Main.Handler
 {

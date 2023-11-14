@@ -24,6 +24,7 @@ namespace TheresaBot.Main.Helper
         public static readonly YmlOperater<TimingSetuConfig> TimingSetuOperater = new(Path.Combine(AppContext.BaseDirectory, "Config", "TimingSetu.yml"));
         public static readonly YmlOperater<PixivRankingConfig> PixivRankingOperater = new(Path.Combine(AppContext.BaseDirectory, "Config", "PixivRanking.yml"));
         public static readonly YmlOperater<WordCloudConfig> WordCloudOperater = new(Path.Combine(AppContext.BaseDirectory, "Config", "WordCloud.yml"));
+        public static readonly YmlOperater<GameConfig> GameOperater = new(Path.Combine(AppContext.BaseDirectory, "Config", "Game.yml"));
 
         public static void LoadBotConfig()
         {
@@ -43,18 +44,17 @@ namespace TheresaBot.Main.Helper
             BotConfig.TimingSetuConfig = TimingSetuOperater.LoadConfig();
             BotConfig.PixivRankingConfig = PixivRankingOperater.LoadConfig();
             BotConfig.WordCloudConfig = WordCloudOperater.LoadConfig();
+            BotConfig.GameConfig = GameOperater.LoadConfig();
 
             if (BotConfig.BackstageConfig is null) BotConfig.BackstageConfig = new();
             if (BotConfig.GeneralConfig is null) BotConfig.GeneralConfig = new();
             if (BotConfig.PermissionsConfig is null) BotConfig.PermissionsConfig = new();
+            if (BotConfig.ManageConfig is null) BotConfig.ManageConfig = new();
 
-            BotConfig.BackstageConfig.FormatConfig();
-            BotConfig.GeneralConfig.FormatConfig();
-            BotConfig.PermissionsConfig.FormatConfig();
-
-            BackstageOperater.SaveConfig(BotConfig.BackstageConfig);
-            GeneralOperater.SaveConfig(BotConfig.GeneralConfig);
-            PermissionsOperater.SaveConfig(BotConfig.PermissionsConfig);
+            BackstageOperater.SaveConfig(BotConfig.BackstageConfig.FormatConfig());
+            GeneralOperater.SaveConfig(BotConfig.GeneralConfig.FormatConfig());
+            PermissionsOperater.SaveConfig(BotConfig.PermissionsConfig.FormatConfig());
+            ManageOperater.SaveConfig(BotConfig.ManageConfig.FormatConfig());
         }
 
         public static void SetAppConfig(IApplicationBuilder app)

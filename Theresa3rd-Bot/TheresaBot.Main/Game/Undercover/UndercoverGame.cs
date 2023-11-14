@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Relay;
+using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Game.Undercover
 {
     public class UndercoverGame : BaseGroupGame
     {
+        /// <summary>
+        /// 游戏名称
+        /// </summary>
+        public override string GameName { get; } = "谁是卧底";
         /// <summary>
         /// 发言时长(秒)
         /// </summary>
@@ -38,7 +45,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 创建一个标准游戏
         /// </summary>
-        public UndercoverGame()
+        public UndercoverGame(GroupCommand command, BaseSession session, BaseReporter reporter) : base(command, session, reporter)
         {
             CivilianAmount = 2;
             UndercoverAmount = 1;
@@ -52,21 +59,12 @@ namespace TheresaBot.Main.Game.Undercover
         /// <param name="civNum"></param>
         /// <param name="ucNum"></param>
         /// <param name="wbNum"></param>
-        public UndercoverGame(int civNum, int ucNum, int wbNum)
+        public UndercoverGame(GroupCommand command, BaseSession session, BaseReporter reporter, int civNum, int ucNum, int wbNum) : base(command, session, reporter)
         {
             CivilianAmount = civNum;
             UndercoverAmount = ucNum;
             WhiteboardAmount = wbNum;
             MinMember = CivilianAmount + UndercoverAmount + WhiteboardAmount;
-        }
-
-        /// <summary>
-        /// 启动游戏线程并等待处理完成
-        /// </summary>
-        /// <returns></returns>
-        public override async Task StartProcessing()
-        {
-            await Task.CompletedTask;
         }
 
         /// <summary>

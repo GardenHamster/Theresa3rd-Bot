@@ -18,6 +18,7 @@
         public List<long> SubscribeGroups { get; set; } = new();
         public List<long> PixivRankingGroups { get; set; } = new();
         public List<long> WordCloudGroups { get; set; } = new();
+        public List<long> GameGroups { get; set; } = new();
 
         public override PermissionsConfig FormatConfig()
         {
@@ -37,6 +38,7 @@
             if (SubscribeGroups is null) SubscribeGroups = new();
             if (PixivRankingGroups is null) PixivRankingGroups = new();
             if (WordCloudGroups is null) WordCloudGroups = new();
+            if (GameGroups is null) GameGroups = new();
             return this;
         }
 

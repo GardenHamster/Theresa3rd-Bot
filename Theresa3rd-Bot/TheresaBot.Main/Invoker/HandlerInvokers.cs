@@ -1,6 +1,7 @@
 ﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Game;
 using TheresaBot.Main.Handler;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Invoker;
@@ -480,6 +481,19 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckWordCloudHandingAsync(botCommand)) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
                 await handler.ReplyLastMonthWordCloudAsync(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //创建游戏谁是卧底
+            new(BotConfig.GameConfig?.Undercover?.CreateCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                var gameConfig = BotConfig.GameConfig?.Undercover;
+                GameHandler handler = new GameHandler(session, reporter);
+                if (await handler.CheckGameEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGameEnableAsync(botCommand, gameConfig) == false) return false;
+                if (await handler.CheckGamingAsync(botCommand) == false) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.CreateUndercover(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),

@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 	  <None Remove="Controller\SubscribeController.cs~RF199a2582.TMP" />
+	  <None Remove="Model\Config\GameConfig.cs~RF207d7921.TMP" />
 	  <None Remove="Timers\SchedulerManager.cs~RF6b4b5c8.TMP" />
 	</ItemGroup>
 

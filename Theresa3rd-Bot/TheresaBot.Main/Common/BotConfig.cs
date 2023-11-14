@@ -26,5 +26,6 @@ namespace TheresaBot.Main.Common
         public static TimingSetuConfig TimingSetuConfig = new TimingSetuConfig();
         public static PixivRankingConfig PixivRankingConfig = new PixivRankingConfig();
         public static WordCloudConfig WordCloudConfig = new WordCloudConfig();
+        public static GameConfig GameConfig = new GameConfig();
     }
 }

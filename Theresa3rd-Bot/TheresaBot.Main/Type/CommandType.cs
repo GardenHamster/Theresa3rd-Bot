@@ -12,6 +12,7 @@
         Menu = 7,
         Version = 8,
         PixivRanking = 9,
-        WordCloud = 10
+        WordCloud = 10,
+        Game = 11,
     }
 }

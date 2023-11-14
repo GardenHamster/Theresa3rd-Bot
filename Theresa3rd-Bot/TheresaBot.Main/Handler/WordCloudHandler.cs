@@ -13,14 +13,10 @@ namespace TheresaBot.Main.Handler
 {
     internal class WordCloudHandler : BaseHandler
     {
-        private RecordService recordService;
-        private DictionaryService dictionaryService;
         private WordCloudService wordCloudService;
 
         public WordCloudHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            recordService = new RecordService();
-            dictionaryService = new DictionaryService();
             wordCloudService = new WordCloudService();
         }
 

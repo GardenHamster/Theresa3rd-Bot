@@ -50,7 +50,7 @@ namespace TheresaBot.Main.Cache
         /// <param name="command"></param>
         /// <returns></returns>
         /// <exception cref="ProcessException"></exception>
-        public static BaseGame CreateGame(GroupCommand command, BaseGame newGame)
+        public static void CreateGame(GroupCommand command, BaseGame newGame)
         {
             lock (GameDic)
             {
@@ -59,7 +59,6 @@ namespace TheresaBot.Main.Cache
                 if (baseGame is null || baseGame.IsEnded)
                 {
                     GameDic[groupId] = newGame;
-                    return newGame;
                 }
                 throw new GameException("群内的另一个游戏正在进行中");
             }

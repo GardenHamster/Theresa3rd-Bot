@@ -1,5 +1,7 @@
-﻿using TheresaBot.Main.Model.Config;
+﻿using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Infos;
+using YamlDotNet.Serialization;
 
 namespace TheresaBot.Main.Common
 {
@@ -27,5 +29,10 @@ namespace TheresaBot.Main.Common
         public static PixivRankingConfig PixivRankingConfig = new PixivRankingConfig();
         public static WordCloudConfig WordCloudConfig = new WordCloudConfig();
         public static GameConfig GameConfig = new GameConfig();
+
+        public static string DefaultPrefix => GeneralConfig.Prefixs?.FirstOrDefault() ?? string.Empty;
+
+        public static List<long> ErrorPushGroups => GeneralConfig.ErrorGroups?.ToSendableGroups() ?? new();
+
     }
 }

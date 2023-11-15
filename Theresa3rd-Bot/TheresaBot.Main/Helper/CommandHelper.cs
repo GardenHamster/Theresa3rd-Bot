@@ -405,7 +405,7 @@ namespace TheresaBot.Main.Helper
             foreach (string command in groupCommands)
             {
                 if (builder.Length > 0) builder.Append('/');
-                builder.Append($"{BotConfig.GeneralConfig.DefaultPrefix}{command}");
+                builder.Append($"{BotConfig.DefaultPrefix}{command}");
             }
             return builder.ToString();
         }

@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using TheresaBot.Main.Common;
 
 namespace TheresaBot.Main.Helper
 {
@@ -291,6 +292,18 @@ namespace TheresaBot.Main.Helper
         {
             if (strList.Length == 0) return string.Empty;
             return string.Join(separator, strList);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="commands"></param>
+        /// <param name="prefix"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string JoinCommands(this List<string> commands, string prefix, string separator = "/")
+        {
+            return commands?.Select(o => $"{prefix}{o}")?.ToList()?.JoinToString(separator) ?? string.Empty;
         }
 
         /// <summary>

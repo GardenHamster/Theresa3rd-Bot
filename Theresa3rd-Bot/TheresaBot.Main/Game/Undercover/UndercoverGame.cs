@@ -11,7 +11,7 @@ using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Game.Undercover
 {
-    public class UndercoverGame : BaseGroupGame
+    public class UndercoverGame : BaseGroupGame<UndercoverPlayer>
     {
         /// <summary>
         /// 游戏名称
@@ -34,10 +34,6 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         public int WhiteboardAmount { get; set; } = 0;
         /// <summary>
-        /// 玩家
-        /// </summary>
-        public List<UndercoverPlayer> Players { get; private set; } = new();
-        /// <summary>
         /// 游戏轮
         /// </summary>
         public List<UndercoverRound> Rounds { get; private set; } = new();
@@ -50,7 +46,7 @@ namespace TheresaBot.Main.Game.Undercover
             CivilianAmount = 2;
             UndercoverAmount = 1;
             WhiteboardAmount = 0;
-            MinMember = CivilianAmount + UndercoverAmount + WhiteboardAmount;
+            MinPlayer = CivilianAmount + UndercoverAmount + WhiteboardAmount;
         }
 
         /// <summary>
@@ -64,7 +60,7 @@ namespace TheresaBot.Main.Game.Undercover
             CivilianAmount = civNum;
             UndercoverAmount = ucNum;
             WhiteboardAmount = wbNum;
-            MinMember = CivilianAmount + UndercoverAmount + WhiteboardAmount;
+            MinPlayer = CivilianAmount + UndercoverAmount + WhiteboardAmount;
         }
 
         /// <summary>

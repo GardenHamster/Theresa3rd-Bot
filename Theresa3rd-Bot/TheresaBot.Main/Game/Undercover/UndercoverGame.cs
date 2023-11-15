@@ -62,14 +62,14 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        public override bool HandleProcessing(GroupRelay relay)
+        public override bool HandleGameMessage(GroupRelay relay)
         {
             return false;
         }
 
-        public override Task HandleGameAsync()
+        public override async Task GameProcessingAsync()
         {
-
+            await Task.CompletedTask;
         }
 
         /// <summary>

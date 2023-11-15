@@ -4,14 +4,14 @@
     {
         public List<string> JoinCommands { get; set; } = new();
 
-        public List<string> EndCommands { get; set; } = new();
+        public List<string> StopCommands { get; set; } = new();
 
         public UndercoverConfig Undercover { get; set; }
 
         public override BaseConfig FormatConfig()
         {
             if (JoinCommands is null) JoinCommands = new();
-            if (EndCommands is null) EndCommands = new();
+            if (StopCommands is null) StopCommands = new();
             Undercover?.FormatConfig();
             return this;
         }

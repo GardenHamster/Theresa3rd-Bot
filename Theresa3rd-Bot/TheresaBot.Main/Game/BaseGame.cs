@@ -22,7 +22,7 @@ namespace TheresaBot.Main.Game
         /// <summary>
         /// 是否已经结束
         /// </summary>
-        public bool IsEnded { get; private set; }
+        public bool IsEnded { get; protected set; }
         /// <summary>
         /// 开始游戏线程
         /// </summary>
@@ -33,7 +33,7 @@ namespace TheresaBot.Main.Game
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        public abstract bool HandleProcessing(GroupRelay relay);
+        public abstract bool HandleGameMessage(GroupRelay relay);
 
         protected GroupCommand Command { get; set; }
 
@@ -47,6 +47,11 @@ namespace TheresaBot.Main.Game
             Session = session;
             Reporter = reporter;
             GroupId = command.GroupId;
+        }
+
+        public void Stop()
+        {
+            IsEnded = true;
         }
 
     }

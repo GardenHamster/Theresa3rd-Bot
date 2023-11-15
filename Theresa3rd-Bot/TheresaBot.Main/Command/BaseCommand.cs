@@ -9,6 +9,7 @@ namespace TheresaBot.Main.Command
     {
         public abstract long MessageId { get; }
         public abstract long MemberId { get; }
+        public abstract string MemberName { get; }
         public string Instruction { get; init; }
         public string Command { get; set; }
         public string Prefix { get; set; }

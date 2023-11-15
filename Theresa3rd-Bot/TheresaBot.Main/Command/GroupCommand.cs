@@ -10,6 +10,8 @@ namespace TheresaBot.Main.Command
     {
         public abstract long GroupId { get; }
 
+        public abstract string MemberNick { get; }
+
         private CommandHandler<GroupCommand> HandlerInvoker { get; init; }
 
         public GroupCommand(BaseSession baseSession, CommandType commandType, string instruction, string command, string prefix)

@@ -483,11 +483,28 @@ namespace TheresaBot.Main.Invoker
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
+            //加入游戏
+            new(BotConfig.GameConfig?.JoinCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                GameHandler handler = new GameHandler(session, reporter);
+                if (await handler.CheckGameEnableAsync(botCommand) == false) return false;
+                await handler.JoinGame(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //结束游戏
+            new(BotConfig.GameConfig?.StopCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                GameHandler handler = new GameHandler(session, reporter);
+                await handler.StopGame(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
             //创建游戏谁是卧底
             new(BotConfig.GameConfig?.Undercover?.CreateCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
             {
                 var gameConfig = BotConfig.GameConfig?.Undercover;
-                GameHandler handler = new GameHandler(session, reporter);
+                UndercoverHandler handler = new UndercoverHandler(session, reporter);
                 if (await handler.CheckGameEnableAsync(botCommand) == false) return false;
                 if (await handler.CheckGameEnableAsync(botCommand, gameConfig) == false) return false;
                 if (await handler.CheckGamingAsync(botCommand) == false) return false;

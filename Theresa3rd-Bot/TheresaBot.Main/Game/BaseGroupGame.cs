@@ -29,7 +29,7 @@ namespace TheresaBot.Main.Game
         /// 游戏线程
         /// </summary>
         /// <returns></returns>
-        public abstract Task HandleGameAsync();
+        public abstract Task GameProcessingAsync();
 
         /// <summary>
         /// 构造函数
@@ -49,11 +49,12 @@ namespace TheresaBot.Main.Game
         {
             Task task = Task.Run(async () =>
             {
-                Console.WriteLine("谁是卧底游戏已创建...");
+                Console.WriteLine($"{GameName}游戏已创建...");
                 await WaitPlayerAsync();
-                Console.WriteLine("谁是卧底游戏已开始...");
-                await HandleGameAsync();
-                Console.WriteLine("谁是卧底游戏已结束...");
+                Console.WriteLine($"{GameName}游戏已开始...");
+                await GameProcessingAsync();
+                Console.WriteLine($"{GameName}游戏已结束...");
+                IsEnded = true;
             });
             GameTask = task;
             await GameTask;
@@ -65,6 +66,7 @@ namespace TheresaBot.Main.Game
         /// <returns></returns>
         public virtual async Task WaitPlayerAsync()
         {
+            if (IsEnded) return;
             int waitSeconds = MatchSecond;
             string prefix = BotConfig.DefaultPrefix;
             string commandStr = BotConfig.GameConfig.Undercover.CreateCommands.JoinCommands(prefix);
@@ -76,6 +78,7 @@ namespace TheresaBot.Main.Game
             await Session.SendGroupMessageAsync(GroupId, remindContents);
             while (Players.Count < MinPlayer)
             {
+                if (IsEnded) return;
                 if (waitSeconds < 0) throw new GameException("匹配超时，游戏已停止");
                 waitSeconds = waitSeconds - 1;
                 await Task.Delay(1000);
@@ -86,6 +89,10 @@ namespace TheresaBot.Main.Game
         {
             lock (Players)
             {
+                if (IsEnded)
+                {
+                    throw new GameException("游戏已经结束了");
+                }
                 if (Players.Count >= MinPlayer)
                 {
                     throw new GameException("游戏已经满员了");

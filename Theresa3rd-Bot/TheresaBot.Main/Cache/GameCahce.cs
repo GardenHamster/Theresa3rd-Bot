@@ -39,12 +39,12 @@ namespace TheresaBot.Main.Cache
                 BaseGame game = GameDic[groupId];
                 if (game is null) return false;
                 if (game.IsEnded) return false;
-                return game.HandleProcessing(relay);
+                return game.HandleGameMessage(relay);
             }
         }
 
         /// <summary>
-        /// 创建一个谁是卧底游戏
+        /// 创建一个游戏
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
@@ -63,7 +63,12 @@ namespace TheresaBot.Main.Cache
             }
         }
 
-        private static BaseGame GetGameByGroup(long groupId)
+        /// <summary>
+        /// 获取群内的游戏
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static BaseGame GetGameByGroup(long groupId)
         {
             lock (GameDic)
             {

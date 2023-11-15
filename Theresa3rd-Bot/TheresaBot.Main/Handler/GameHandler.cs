@@ -5,7 +5,6 @@ using TheresaBot.Main.Game.Undercover;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type.GameOptions;
 
 namespace TheresaBot.Main.Handler
 {
@@ -15,23 +14,24 @@ namespace TheresaBot.Main.Handler
         {
         }
 
-        public async Task CreateUndercover(GroupCommand command)
+        public async Task JoinGame(GroupCommand command)
         {
             try
             {
-                UndercoverGame ucGame = new UndercoverGame(command, Session, Reporter);
-                UCGameMode gameMode = await AskGameModeAsync(command);
-                if (gameMode == UCGameMode.Customize)
+                var game = GameCahce.GetGameByGroup(command.GroupId);
+                if (game is null || game.IsEnded)
                 {
-                    int[] nums = await AskCharacterNums(command);
-                    ucGame = new UndercoverGame(command, Session, Reporter, nums[0], nums[1], nums[2]);
+                    await command.ReplyGroupMessageWithQuoteAsync("加入失败，目前没有可以加入的游戏");
+                    return;
                 }
-                GameCahce.CreateGame(command, ucGame);
-                await ucGame.StartProcessing();
-            }
-            catch (ProcessException ex)
-            {
-                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+                if (game is UndercoverGame ucGame)
+                {
+                    UndercoverPlayer player = new UndercoverPlayer(command.MemberId, command.MemberNick);
+                    ucGame.PlayerJoinAsync(player);
+                    await command.ReplyGroupMessageWithQuoteAsync("加入成功！请耐心等待游戏开始");
+                    return;
+                }
+                throw new Exception("加入失败，未定义该类型游戏的加入方法");
             }
             catch (GameException ex)
             {
@@ -39,67 +39,34 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReplyError(command, ex, "Undercover游戏异常");
+                await LogAndReplyError(command, ex, "加入Undercover游戏异常");
             }
         }
 
-        private async Task<UCGameMode> AskGameModeAsync(GroupCommand command)
+        public async Task StopGame(GroupCommand command)
         {
-            var processInfo = ProcessCache.CreateProcess(command);
-            var modeStep = processInfo.CreateStep("请在60秒内发送数字选择游戏模式", CheckUCModeAsync);
-            await processInfo.StartProcessing();
-            return modeStep.Answer;
+            try
+            {
+                var game = GameCahce.GetGameByGroup(command.GroupId);
+                if (game is null || game.IsEnded)
+                {
+                    await command.ReplyGroupMessageWithQuoteAsync("当前群目前没有可以正在进行中的游戏");
+                }
+                else
+                {
+                    game.Stop();
+                    await command.ReplyGroupMessageWithQuoteAsync("游戏已停止~");
+                }
+            }
+            catch (GameException ex)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync(ex.RemindMessage);
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, "加入Undercover游戏异常");
+            }
         }
-
-        private async Task<int[]> AskCharacterNums(GroupCommand command)
-        {
-            var processInfo = ProcessCache.CreateProcess(command);
-            var modeStep = processInfo.CreateStep("请在60秒内发送 平民 卧底 白板 的数量，每个数字之间用空格隔开", CheckCharacterNumsAsync);
-            await processInfo.StartProcessing();
-            return modeStep.Answer;
-        }
-
-        private async Task<UCGameMode> CheckUCModeAsync(string value)
-        {
-            int modeId;
-            if (int.TryParse(value, out modeId) == false)
-            {
-                throw new ProcessException("模式不在范围内");
-            }
-            if (Enum.IsDefined(typeof(UCGameMode), modeId) == false)
-            {
-                throw new ProcessException("模式不在范围内");
-            }
-            return await Task.FromResult((UCGameMode)modeId);
-        }
-
-        private async Task<int[]> CheckCharacterNumsAsync(string value)
-        {
-            int civNum = 0, ucNum = 0, wbNum = 0;
-            var splitArr = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (splitArr.Length < 1)
-            {
-                throw new ProcessException("至少指定平民的数量");
-            }
-            if (splitArr.Length > 0 && !int.TryParse(splitArr[0], out civNum))
-            {
-                throw new ProcessException("平民数量必须为数字");
-            }
-            if (splitArr.Length > 1 && !int.TryParse(splitArr[1], out ucNum))
-            {
-                throw new ProcessException("卧底数量必须为数字");
-            }
-            if (splitArr.Length > 2 && !int.TryParse(splitArr[2], out wbNum))
-            {
-                throw new ProcessException("白板数量必须为数字");
-            }
-            if (civNum + ucNum + wbNum < 3)
-            {
-                throw new ProcessException("平民+卧底+白板数量必须在3人及以上");
-            }
-            return await Task.FromResult(new int[] { civNum, ucNum, wbNum });
-        }
-
 
     }
 }

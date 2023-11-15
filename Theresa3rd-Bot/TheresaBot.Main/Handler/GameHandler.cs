@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheresaBot.Main.Cache;
+﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Exceptions;
-using TheresaBot.Main.Game;
 using TheresaBot.Main.Game.Undercover;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Reporter;
-using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type.GameOptions;
 
@@ -29,14 +20,14 @@ namespace TheresaBot.Main.Handler
             try
             {
                 UndercoverGame ucGame = new UndercoverGame(command, Session, Reporter);
-                UCGameMode gameMode = await GetGameModeAsync(command);
+                UCGameMode gameMode = await AskGameModeAsync(command);
                 if (gameMode == UCGameMode.Customize)
                 {
-                    int[] nums = await GetCharacterNums(command);
+                    int[] nums = await AskCharacterNums(command);
                     ucGame = new UndercoverGame(command, Session, Reporter, nums[0], nums[1], nums[2]);
                 }
                 GameCahce.CreateGame(command, ucGame);
-                Task gameTask = ucGame.StartProcessing();
+                await ucGame.StartProcessing();
             }
             catch (ProcessException ex)
             {
@@ -52,20 +43,20 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task<UCGameMode> GetGameModeAsync(GroupCommand command)
+        private async Task<UCGameMode> AskGameModeAsync(GroupCommand command)
         {
-            ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-            StepInfo modeStep = processInfo.CreateStep("请在60秒内发送数字选择游戏模式", CheckUCModeAsync);
+            var processInfo = ProcessCache.CreateProcess(command);
+            var modeStep = processInfo.CreateStep("请在60秒内发送数字选择游戏模式", CheckUCModeAsync);
             await processInfo.StartProcessing();
-            return modeStep.AnswerForEnum<UCGameMode>();
+            return modeStep.Answer;
         }
 
-        private async Task<int[]> GetCharacterNums(GroupCommand command)
+        private async Task<int[]> AskCharacterNums(GroupCommand command)
         {
-            ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-            StepInfo modeStep = processInfo.CreateStep("请在60秒内发送 平民 卧底 白板 的数量，每个数字之间用空格隔开", CheckCharacterNumsAsync);
+            var processInfo = ProcessCache.CreateProcess(command);
+            var modeStep = processInfo.CreateStep("请在60秒内发送 平民 卧底 白板 的数量，每个数字之间用空格隔开", CheckCharacterNumsAsync);
             await processInfo.StartProcessing();
-            return modeStep.AnswerForEnum<UCGameMode>();
+            return modeStep.Answer;
         }
 
         private async Task<UCGameMode> CheckUCModeAsync(string value)

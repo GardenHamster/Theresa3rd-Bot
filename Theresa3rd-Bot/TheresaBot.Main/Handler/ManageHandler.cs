@@ -3,7 +3,6 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
@@ -36,12 +35,12 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开", CheckTextAsync);
-                    StepInfo matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchOptions.JoinToString()}", CheckMatchTypeAsync);
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开", CheckTextAsync);
+                    var matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchOptions.JoinToString()}", CheckMatchTypeAsync);
                     await processInfo.StartProcessing();
-                    tagStr = tagStep.AnswerForString();
-                    matchType = matchStep.AnswerForEnum<TagMatchType>();
+                    tagStr = tagStep.Answer;
+                    matchType = matchStep.Answer;
                 }
                 var result = new ModifyResult();
                 var banTags = tagStr.SplitParams();

@@ -75,7 +75,7 @@ namespace TheresaBot.Main.Handler
         private string JoinCommands(List<string> commands)
         {
             if (commands is null || commands.Count == 0) return string.Empty;
-            return $"{BotConfig.GeneralConfig.DefaultPrefix}{string.Join('/', commands)}";
+            return $"{BotConfig.DefaultPrefix}{string.Join('/', commands)}";
         }
 
     }

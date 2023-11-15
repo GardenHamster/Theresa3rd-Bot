@@ -130,7 +130,7 @@ namespace TheresaBot.Main.Handler
             if (DateTime.Now.AddDays(diffDay) < expireDate) return;
             if (expireDate.AddDays(diffDay) < DateTime.Now) return;
             string warnMessage = $"{cookieName}将在{expireDate.ToString("yyyy-MM-dd HH:mm:ss")}过期，请尽快更新cookie";
-            foreach (long groupId in BotConfig.GeneralConfig.ErrorPushGroups)
+            foreach (long groupId in BotConfig.ErrorPushGroups)
             {
                 await Session.SendGroupMessageAsync(groupId, warnMessage);
             }

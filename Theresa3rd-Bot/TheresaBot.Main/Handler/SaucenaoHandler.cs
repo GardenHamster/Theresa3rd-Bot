@@ -8,7 +8,6 @@ using TheresaBot.Main.Model.Ascii2d;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
@@ -40,8 +39,8 @@ namespace TheresaBot.Main.Handler
 
                 if (imgList.Count == 0)
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo imgStep = processInfo.CreateStep("请在60秒内发送需要查找的图片", CheckImageAsync);
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var imgStep = processInfo.CreateStep("请在60秒内发送需要查找的图片", CheckImageAsync);
                     await processInfo.StartProcessing();
                     imgList = imgStep.Relay.GetImageUrls();
                     revokeMsgId = imgStep.Relay.MsgId;

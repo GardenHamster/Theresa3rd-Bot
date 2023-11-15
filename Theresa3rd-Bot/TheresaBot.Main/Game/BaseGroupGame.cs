@@ -39,7 +39,6 @@ namespace TheresaBot.Main.Game
         /// <param name="reporter"></param>
         public BaseGroupGame(GroupCommand command, BaseSession session, BaseReporter reporter) : base(command, session, reporter)
         {
-            
         }
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace TheresaBot.Main.Game
             int waitSeconds = MatchSecond;
             string prefix = BotConfig.DefaultPrefix;
             string commandStr = BotConfig.GameConfig.Undercover.CreateCommands.JoinCommands(prefix);
-            List<BaseContent> remindContents=new List<BaseContent>();
+            List<BaseContent> remindContents = new List<BaseContent>();
             remindContents.Add(new PlainContent($"{GameName}游戏创建完毕"));
             remindContents.Add(new PlainContent($"距离游戏开始所需人数为：{MinPlayer}个"));
             remindContents.Add(new PlainContent($"游戏匹配时长为{MatchSecond}秒，指定时间内未达到该人数游戏将会终止"));

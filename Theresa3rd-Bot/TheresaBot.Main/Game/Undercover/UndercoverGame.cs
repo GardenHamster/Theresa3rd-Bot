@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheresaBot.Main.Command;
-using TheresaBot.Main.Exceptions;
+﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
@@ -71,6 +65,11 @@ namespace TheresaBot.Main.Game.Undercover
         public override bool HandleProcessing(GroupRelay relay)
         {
             return false;
+        }
+
+        public override Task HandleGameAsync()
+        {
+
         }
 
         /// <summary>

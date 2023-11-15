@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Reporter
         {
             try
             {
-                if (BotConfig.GeneralConfig.ErrorPushGroups.Count == 0) return;
+                if (BotConfig.ErrorPushGroups.Count == 0) return;
                 if (IsSendError(exception) == false) return;
                 StringBuilder messageBuilder = new StringBuilder();
                 if (string.IsNullOrWhiteSpace(message) == false)
@@ -40,7 +40,7 @@ namespace TheresaBot.Main.Reporter
                     messageBuilder.AppendLine(exception.InnerException.Message);
                 }
                 messageBuilder.Append("详细请查看Log日志");
-                foreach (var groupId in BotConfig.GeneralConfig.ErrorPushGroups)
+                foreach (var groupId in BotConfig.ErrorPushGroups)
                 {
                     await SendReport(groupId, messageBuilder.ToString());
                     Task.Delay(1000).Wait();
@@ -62,9 +62,10 @@ namespace TheresaBot.Main.Reporter
         {
             try
             {
-                if (BotConfig.GeneralConfig.ErrorPushGroups.Count == 0) return;
+                var pushGroups = BotConfig.ErrorPushGroups;
+                if (pushGroups.Count == 0) return;
                 string sendMessage = $"{message}\r\n{exception.Message}\r\n{exception.StackTrace}";
-                foreach (var groupId in BotConfig.GeneralConfig.ErrorPushGroups) await SendReport(groupId, sendMessage);
+                foreach (var groupId in pushGroups) await SendReport(groupId, sendMessage);
             }
             catch (Exception ex)
             {

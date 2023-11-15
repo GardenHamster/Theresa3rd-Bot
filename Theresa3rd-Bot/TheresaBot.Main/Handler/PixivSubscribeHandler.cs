@@ -7,7 +7,6 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
@@ -46,12 +45,12 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo uidStep = processInfo.CreateStep("请在60秒内发送要订阅用户的id，多个id之间可以用逗号或者换行隔开", CheckUserIdsAsync);
-                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var uidStep = processInfo.CreateStep("请在60秒内发送要订阅用户的id，多个id之间可以用逗号或者换行隔开", CheckUserIdsAsync);
+                    var typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
                     await processInfo.StartProcessing();
-                    userIds = uidStep.Answer.SplitParams();
-                    pushType = typeStep.AnswerForEnum<GroupPushType>();
+                    userIds = uidStep.Answer;
+                    pushType = typeStep.Answer;
                 }
 
                 if (userIds.Length > 1)
@@ -129,12 +128,12 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                StepInfo modeStep = processInfo.CreateStep($"请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncOptions.JoinToString()}", CheckSyncModeAsync);
-                StepInfo groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
+                var processInfo = ProcessCache.CreateProcess(command);
+                var modeStep = processInfo.CreateStep($"请在60秒内发送数字选择模式：\r\n{EnumHelper.PixivSyncOptions.JoinToString()}", CheckSyncModeAsync);
+                var groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
                 await processInfo.StartProcessing();
-                PixivSyncType syncMode = modeStep.AnswerForEnum<PixivSyncType>();
-                GroupPushType pushType = groupStep.AnswerForEnum<GroupPushType>();
+                PixivSyncType syncMode = modeStep.Answer;
+                GroupPushType pushType = groupStep.Answer;
 
                 await command.ReplyGroupMessageWithAtAsync("正在获取pixiv账号中已关注的画师列表...");
                 await Task.Delay(1000);
@@ -210,10 +209,10 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo uidStep = processInfo.CreateStep("请在60秒内发送要退订用户的id，多个id之间可以用逗号或者换行隔开", CheckUserIdsAsync);
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var uidStep = processInfo.CreateStep("请在60秒内发送要退订用户的id，多个id之间可以用逗号或者换行隔开", CheckUserIdsAsync);
                     await processInfo.StartProcessing();
-                    userIds = uidStep.Answer.SplitParams();
+                    userIds = uidStep.Answer;
                 }
                 foreach (string userId in userIds)
                 {
@@ -258,12 +257,12 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo tagStep = processInfo.CreateStep($"请在60秒内发送要订阅的标签名");
-                    StepInfo typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var tagStep = processInfo.CreateStep($"请在60秒内发送要订阅的标签名");
+                    var typeStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
                     await processInfo.StartProcessing();
-                    pixivTag = tagStep.AnswerForString();
-                    pushType = typeStep.AnswerForEnum<GroupPushType>();
+                    pixivTag = tagStep.Answer;
+                    pushType = typeStep.Answer;
                 }
 
                 string searchWord = pixivService.toPixivSearchWords(pixivTag.ToActualPixivTags());
@@ -311,10 +310,10 @@ namespace TheresaBot.Main.Handler
                 var pixivTag = command.KeyWord;
                 if (pixivTag.Length == 0)
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送要退订的标签", CheckTextAsync);
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var tagStep = processInfo.CreateStep("请在60秒内发送要退订的标签", CheckTextAsync);
                     await processInfo.StartProcessing();
-                    pixivTag = tagStep.AnswerForString();
+                    pixivTag = tagStep.Answer;
                 }
                 SubscribePO dbSubscribe = subscribeService.getSubscribe(pixivTag, SubscribeType.P站标签);
                 if (dbSubscribe is null)

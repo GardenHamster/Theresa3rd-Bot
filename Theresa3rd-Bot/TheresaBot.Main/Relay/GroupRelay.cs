@@ -9,7 +9,5 @@
             this.GroupId = groupId;
         }
 
-        public abstract List<string> GetImageUrls();
-
     }
 }

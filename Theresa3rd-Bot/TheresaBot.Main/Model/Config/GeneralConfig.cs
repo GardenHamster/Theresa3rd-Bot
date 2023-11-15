@@ -29,6 +29,12 @@ namespace TheresaBot.Main.Model.Config
 
         public bool SendRelevantCommands { get; set; }
 
+        [YamlIgnore]
+        public string DefaultPrefix => Prefixs?.FirstOrDefault() ?? string.Empty;
+
+        [YamlIgnore]
+        public List<long> ErrorPushGroups => ErrorGroups?.ToSendableGroups() ?? new();
+
         public override GeneralConfig FormatConfig()
         {
             if (Prefixs is null) Prefixs = new();

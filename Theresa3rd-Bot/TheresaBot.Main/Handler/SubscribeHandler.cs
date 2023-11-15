@@ -7,7 +7,6 @@ using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
@@ -61,10 +60,10 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送要退订的Id", CheckSubscribeIdAsync);
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var tagStep = processInfo.CreateStep("请在60秒内发送要退订的Id", CheckSubscribeIdAsync);
                     await processInfo.StartProcessing();
-                    subscribeId = tagStep.AnswerForInt();
+                    subscribeId = tagStep.Answer;
                 }
 
                 SubscribePO dbSubscribe = subscribeService.getSubscribe(subscribeId);

@@ -1,6 +1,6 @@
 ﻿using TheresaBot.Main.Model.VO;
 using TheresaBot.Main.Type;
-using TheresaBot.Main.Type.StepOption;
+using TheresaBot.Main.Type.StepOptions;
 
 namespace TheresaBot.Main.Helper
 {

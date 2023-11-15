@@ -1,7 +1,6 @@
 ﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Game;
-using TheresaBot.Main.Game.Undercover;
 using TheresaBot.Main.Relay;
 
 namespace TheresaBot.Main.Cache

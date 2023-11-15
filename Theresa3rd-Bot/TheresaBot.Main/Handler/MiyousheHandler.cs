@@ -7,14 +7,12 @@ using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Mys;
 using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
-using TheresaBot.Main.Type.StepOption;
-
+using TheresaBot.Main.Type.StepOptions;
 
 namespace TheresaBot.Main.Handler
 {
@@ -42,12 +40,12 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo uidStep = processInfo.CreateStep("请在60秒内发送要订阅用户的id", CheckUserIdAsync);
-                    StepInfo groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var uidStep = processInfo.CreateStep("请在60秒内发送要订阅用户的id", CheckUserIdAsync);
+                    var groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
                     await processInfo.StartProcessing();
-                    userId = uidStep.AnswerForLong();
-                    groupType = groupStep.AnswerForEnum<GroupPushType>();
+                    userId = uidStep.Answer;
+                    groupType = groupStep.Answer;
                 }
 
                 MysResult<MysUserFullInfoDto> userInfoDto = await miyousheService.geMysUserFullInfoDtoAsync(userId.ToString());

@@ -7,7 +7,7 @@ namespace TheresaBot.Main.Cache
 {
     public static class ProcessCache
     {
-        private static Dictionary<long, List<ProcessInfo>> ProcessDic = new Dictionary<long, List<ProcessInfo>>();
+        private static Dictionary<long, List<GroupProcess>> GroupProcessDic = new Dictionary<long, List<GroupProcess>>();
 
         /// <summary>
         /// 创建一个流程
@@ -15,25 +15,25 @@ namespace TheresaBot.Main.Cache
         /// <param name="command"></param>
         /// <returns></returns>
         /// <exception cref="ProcessException"></exception>
-        public static ProcessInfo CreateProcess(GroupCommand command)
+        public static GroupProcess CreateProcess(GroupCommand command)
         {
-            lock (ProcessDic)
+            lock (GroupProcessDic)
             {
                 long memberId = command.MemberId;
                 long groupId = command.GroupId;
-                if (!ProcessDic.ContainsKey(groupId)) ProcessDic[groupId] = new List<ProcessInfo>();
-                ProcessInfo processInfo = ProcessDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
+                if (!GroupProcessDic.ContainsKey(groupId)) GroupProcessDic[groupId] = new List<GroupProcess>();
+                GroupProcess processInfo = GroupProcessDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
                 if (processInfo is null)
                 {
-                    processInfo = new ProcessInfo(command);
-                    ProcessDic[groupId].Add(processInfo);
+                    processInfo = new GroupProcess(command);
+                    GroupProcessDic[groupId].Add(processInfo);
                     return processInfo;
                 }
                 if (processInfo.IsFinish)
                 {
-                    ProcessDic[groupId].Remove(processInfo);
-                    processInfo = new ProcessInfo(command);
-                    ProcessDic[groupId].Add(processInfo);
+                    GroupProcessDic[groupId].Remove(processInfo);
+                    processInfo = new GroupProcess(command);
+                    GroupProcessDic[groupId].Add(processInfo);
                     return processInfo;
                 }
                 throw new ProcessException("你的另一个指令正在执行中");
@@ -48,26 +48,26 @@ namespace TheresaBot.Main.Cache
         /// <returns></returns>
         public static bool HandleStep(GroupRelay relay)
         {
-            ProcessInfo processInfo;
-            lock (ProcessDic)
+            GroupProcess processInfo;
+            lock (GroupProcessDic)
             {
                 long groupId = relay.GroupId;
                 long memberId = relay.MemberId;
-                if (ProcessDic.ContainsKey(groupId) == false) return false;
-                List<ProcessInfo> stepInfos = ProcessDic[groupId];
+                if (GroupProcessDic.ContainsKey(groupId) == false) return false;
+                List<GroupProcess> stepInfos = GroupProcessDic[groupId];
                 if (stepInfos is null) return false;
-                processInfo = ProcessDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
+                processInfo = GroupProcessDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
                 if (processInfo is null) return false;
                 if (processInfo.IsFinish) return false;
             }
             lock (processInfo)
             {
-                List<StepInfo> stepInfos = processInfo.StepInfos;
+                List<BaseStep> stepInfos = processInfo.StepInfos;
                 if (stepInfos.Count == 0) return false;
-                StepInfo stepInfo = stepInfos.Where(x => x.IsFinish == false).FirstOrDefault();
+                BaseStep stepInfo = stepInfos.Where(x => x.IsFinish == false).FirstOrDefault();
                 if (stepInfo is null) return false;
                 if (stepInfo.CheckInputAsync(relay).Result == false) return true;
-                stepInfo.FinishStep(relay);
+                stepInfo.Finish(relay);
                 return true;
             }
         }

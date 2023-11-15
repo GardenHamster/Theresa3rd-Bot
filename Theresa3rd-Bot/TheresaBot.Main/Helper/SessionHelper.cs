@@ -6,6 +6,12 @@ namespace TheresaBot.Main.Helper
 {
     public static class SessionHelper
     {
+        public static async Task<BaseResult> SendGroupMessageWithAtAsync(this BaseSession session, long groupId, List<long> atMembers, string message)
+        {
+            List<BaseContent> contents = new List<BaseContent> { new PlainContent(message) };
+            return await session.SendGroupMessageAsync(groupId, contents, atMembers);
+        }
+
         public static async Task<BaseResult[]> SendGroupSetuAsync(this BaseSession session, long groupId, SetuContent setuContent, bool sendImgBehind)
         {
             List<BaseContent> msgContents = setuContent.SetuInfos ?? new();

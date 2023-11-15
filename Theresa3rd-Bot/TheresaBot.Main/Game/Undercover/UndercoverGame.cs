@@ -2,6 +2,8 @@
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
+using TheresaBot.Main.Helper;
+using TheresaBot.Main.Exceptions;
 
 namespace TheresaBot.Main.Game.Undercover
 {
@@ -58,7 +60,7 @@ namespace TheresaBot.Main.Game.Undercover
         }
 
         /// <summary>
-        /// 处理游戏进程
+        /// 处理游戏消息
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
@@ -67,9 +69,14 @@ namespace TheresaBot.Main.Game.Undercover
             return false;
         }
 
+        /// <summary>
+        /// 处理游戏流程
+        /// </summary>
+        /// <returns></returns>
         public override async Task GameProcessingAsync()
         {
-            await Task.CompletedTask;
+            if (IsEnded) throw new GameStopException();
+            await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, "开始派发身份牌...");
         }
 
         /// <summary>

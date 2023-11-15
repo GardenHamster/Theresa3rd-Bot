@@ -26,6 +26,10 @@ namespace TheresaBot.Main.Game
         /// </summary>
         public List<T> Players { get; protected set; } = new();
         /// <summary>
+        /// 获取所有玩家成员QQ号
+        /// </summary>
+        public List<long> MemberIds => Players.Select(o => o.MemberId).Distinct().ToList();
+        /// <summary>
         /// 游戏线程
         /// </summary>
         /// <returns></returns>
@@ -49,12 +53,36 @@ namespace TheresaBot.Main.Game
         {
             Task task = Task.Run(async () =>
             {
-                Console.WriteLine($"{GameName}游戏已创建...");
-                await WaitPlayerAsync();
-                Console.WriteLine($"{GameName}游戏已开始...");
-                await GameProcessingAsync();
-                Console.WriteLine($"{GameName}游戏已结束...");
-                IsEnded = true;
+                try
+                {
+                    Console.WriteLine($"{GameName}游戏已创建...");
+                    await WaitPlayerAsync();
+                    if (IsEnded) throw new GameStopException();
+                    await Session.SendGroupMessageAsync(GroupId, $"玩家集结完毕，游戏将在5秒后开始...");
+                    await Task.Delay(5000);
+                    if (IsEnded) throw new GameStopException();
+                    Console.WriteLine($"{GameName}游戏已开始...");
+                    await GameProcessingAsync();
+                    Console.WriteLine($"{GameName}游戏已结束...");
+                }
+                catch(GameStopException)
+                {
+                    await Session.SendGroupMessageAsync(GroupId, $"游戏已停止...");
+                }
+                catch (GameException ex)
+                {
+                    await Session.SendGroupMessageAsync(GroupId, ex.RemindMessage);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex, $"{GameName}游戏异常");
+                    await Session.SendGroupMessageAsync(GroupId, $"{GameName}游戏异常");
+                    await Reporter.SendError(ex, $"{GameName}游戏异常");
+                }
+                finally
+                {
+                    IsEnded = true;
+                }
             });
             GameTask = task;
             await GameTask;
@@ -66,7 +94,6 @@ namespace TheresaBot.Main.Game
         /// <returns></returns>
         public virtual async Task WaitPlayerAsync()
         {
-            if (IsEnded) return;
             int waitSeconds = MatchSecond;
             string prefix = BotConfig.DefaultPrefix;
             string commandStr = BotConfig.GameConfig.Undercover.CreateCommands.JoinCommands(prefix);
@@ -78,7 +105,7 @@ namespace TheresaBot.Main.Game
             await Session.SendGroupMessageAsync(GroupId, remindContents);
             while (Players.Count < MinPlayer)
             {
-                if (IsEnded) return;
+                if (IsEnded) throw new GameStopException();
                 if (waitSeconds < 0) throw new GameException("匹配超时，游戏已停止");
                 waitSeconds = waitSeconds - 1;
                 await Task.Delay(1000);
@@ -91,7 +118,7 @@ namespace TheresaBot.Main.Game
             {
                 if (IsEnded)
                 {
-                    throw new GameException("游戏已经结束了");
+                    throw new GameStopException();
                 }
                 if (Players.Count >= MinPlayer)
                 {

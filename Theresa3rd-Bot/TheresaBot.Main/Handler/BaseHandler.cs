@@ -181,6 +181,16 @@ namespace TheresaBot.Main.Handler
             return true;
         }
 
+        public async Task<bool> CheckGamingAsync(GroupCommand command)
+        {
+            if (GameCahce.IsGaming(command.GroupId))
+            {
+                await command.ReplyGroupMessageWithQuoteAsync("群内的另一个游戏正在进行中，结束后再来吧~");
+                return false;
+            }
+            return true;
+        }
+
         public async Task<bool> CheckGameEnableAsync(GroupCommand command, BaseGameConfig gameConfig)
         {
             if (gameConfig is null || gameConfig.Enable == false)
@@ -191,11 +201,12 @@ namespace TheresaBot.Main.Handler
             return true;
         }
 
-        public async Task<bool> CheckGamingAsync(GroupCommand command)
+        public async Task<bool> CheckUCWordEnableAsync(GroupCommand command)
         {
-            if (GameCahce.IsGaming(command.GroupId))
+            int count = new UCWordService().GetAvailableWordCount();
+            if (count == 0)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("群内的另一个游戏正在进行中，结束后再来吧~");
+                await command.ReplyGroupMessageWithQuoteAsync("缺少管理员添加的词条，请艾特管理员添加和审批更多词条");
                 return false;
             }
             return true;

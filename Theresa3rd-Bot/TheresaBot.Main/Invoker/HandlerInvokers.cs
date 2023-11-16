@@ -507,9 +507,18 @@ namespace TheresaBot.Main.Invoker
                 UndercoverHandler handler = new UndercoverHandler(session, reporter);
                 if (await handler.CheckGameEnableAsync(botCommand) == false) return false;
                 if (await handler.CheckGameEnableAsync(botCommand, gameConfig) == false) return false;
+                if (await handler.CheckUCWordEnableAsync(botCommand) == false) return false;
                 if (await handler.CheckGamingAsync(botCommand) == false) return false;
                 if (await handler.CheckHandingAsync(botCommand)) return false;
                 await handler.CreateUndercover(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //谁是卧底重新获取词条
+            new(BotConfig.GameConfig?.Undercover?.WordCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                UndercoverHandler handler = new UndercoverHandler(session, reporter);
+                await handler.SendPrivateWords(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -546,7 +555,7 @@ namespace TheresaBot.Main.Invoker
                 await handler.UpdateSaucenaoCookieAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
-            }))
+            })),
         };
 
         public readonly static List<CommandHandler<GroupQuoteCommand>> GroupQuoteCommands = new()

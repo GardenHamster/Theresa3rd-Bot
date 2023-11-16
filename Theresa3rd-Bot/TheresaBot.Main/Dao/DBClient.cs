@@ -26,6 +26,7 @@ namespace TheresaBot.Main.Dao
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(SubscribeRecordPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(SugarTagPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(WebsitePO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(UCWordPO));
             }
             catch (Exception ex)
             {

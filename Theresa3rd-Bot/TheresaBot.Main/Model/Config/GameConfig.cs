@@ -21,9 +21,18 @@
     {
         public List<string> CreateCommands { get; set; } = new();
 
+        public List<string> WordCommands { get; set; } = new();
+
+        public int PrepareSeconds { get; set; } = 1;
+
+        public int SpeakingSeconds { get; set; } = 120;
+
         public override BaseConfig FormatConfig()
         {
             if (CreateCommands is null) CreateCommands = new();
+            if (WordCommands is null) WordCommands = new();
+            if (PrepareSeconds < 1) PrepareSeconds = 1;
+            if (PrepareSeconds < 10) PrepareSeconds = 10;
             return this;
         }
     }

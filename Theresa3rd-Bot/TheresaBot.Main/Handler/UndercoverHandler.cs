@@ -3,6 +3,7 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Game.Undercover;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type.GameOptions;
@@ -13,6 +14,33 @@ namespace TheresaBot.Main.Handler
     {
         public UndercoverHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
+        }
+
+        public async Task SendPrivateWords(GroupCommand command)
+        {
+            var game = GameCahce.GetGameByGroup(command.GroupId);
+            if (game is null || game.IsEnded || game is not UndercoverGame ucGame)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync("游戏未开始，无法获取词条");
+                return;
+            }
+            var player = ucGame.Players?.FirstOrDefault(o => o.MemberId == command.MemberId);
+            if (player is null)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync("你还未加入游戏，无法获取词条");
+                return;
+            }
+            if (player.PlayerType == UndercoverPlayerType.None)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync("词条还未派发，请耐心等待...");
+                return;
+            }
+            var contents = new List<BaseContent> {
+                new PlainContent(player.GetWordMessage())
+            };
+            await command.SendTempMessageAsync(contents);
+            await Task.Delay(1000);
+            await command.ReplyGroupMessageWithQuoteAsync("词条已私发，请查看私聊消息");
         }
 
         public async Task CreateUndercover(GroupCommand command)

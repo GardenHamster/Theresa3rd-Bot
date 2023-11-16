@@ -9,6 +9,8 @@
             TypeName = typeName;
         }
 
+        public static readonly UndercoverPlayerType None = new("未分配");
+
         public static readonly UndercoverPlayerType Civilian = new("平民");
 
         public static readonly UndercoverPlayerType Undercover = new("卧底");

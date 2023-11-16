@@ -65,9 +65,13 @@ namespace TheresaBot.Main.Game
                     await GameProcessingAsync();
                     Console.WriteLine($"{GameName}游戏已结束...");
                 }
-                catch(GameStopException)
+                catch (GameStopException)
                 {
                     await Session.SendGroupMessageAsync(GroupId, $"游戏已停止...");
+                }
+                catch (GameEndException ex)
+                {
+                    await Session.SendGroupMessageAsync(GroupId, ex.RemindMessage);
                 }
                 catch (GameException ex)
                 {
@@ -95,8 +99,7 @@ namespace TheresaBot.Main.Game
         public virtual async Task WaitPlayerAsync()
         {
             int waitSeconds = MatchSecond;
-            string prefix = BotConfig.DefaultPrefix;
-            string commandStr = BotConfig.GameConfig.Undercover.CreateCommands.JoinCommands(prefix);
+            string commandStr = BotConfig.GameConfig.Undercover.CreateCommands.JoinCommands();
             List<BaseContent> remindContents = new List<BaseContent>();
             remindContents.Add(new PlainContent($"{GameName}游戏创建完毕"));
             remindContents.Add(new PlainContent($"距离游戏开始所需人数为：{MinPlayer}个"));

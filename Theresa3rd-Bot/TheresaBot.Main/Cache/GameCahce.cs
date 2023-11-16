@@ -30,7 +30,7 @@ namespace TheresaBot.Main.Cache
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        public static bool HandleGame(GroupRelay relay)
+        public static bool HandleGameMessage(GroupRelay relay)
         {
             lock (GameDic)
             {

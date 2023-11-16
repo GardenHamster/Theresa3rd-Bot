@@ -27,12 +27,15 @@
 
         public int SpeakingSeconds { get; set; } = 120;
 
+        public int VotingSeconds { get; set; } = 60;
+        
         public override BaseConfig FormatConfig()
         {
             if (CreateCommands is null) CreateCommands = new();
             if (WordCommands is null) WordCommands = new();
             if (PrepareSeconds < 1) PrepareSeconds = 1;
-            if (PrepareSeconds < 10) PrepareSeconds = 10;
+            if (SpeakingSeconds < 10) SpeakingSeconds = 10;
+            if (VotingSeconds < 10) VotingSeconds = 10;
             return this;
         }
     }

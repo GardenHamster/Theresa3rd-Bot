@@ -8,6 +8,8 @@ using TheresaBot.Main.Services;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Config;
+using System.Text;
+using TheresaBot.Main.Model.Content;
 
 namespace TheresaBot.Main.Game.Undercover
 {
@@ -49,6 +51,10 @@ namespace TheresaBot.Main.Game.Undercover
         /// 是否正在投票环节中
         /// </summary>
         public bool IsVoting { get; private set; }
+        /// <summary>
+        /// 存活的玩家
+        /// </summary>
+        public List<UndercoverPlayer> LivePlayers => Players.Where(o => o.IsOut == false).ToList();
         /// <summary>
         /// 游戏词条
         /// </summary>
@@ -114,7 +120,16 @@ namespace TheresaBot.Main.Game.Undercover
                 }
                 if (IsVoting)
                 {
-                    var vote = CurrentRound.AddPlayerVote(relay);
+                    var voter = GetPlayer(relay.MemberId);
+                    if (voter is null) return false;
+                    var target = GetPlayer(relay.Message);
+                    if (target is null) return false;
+                    if (voter.MemberId == target.MemberId)
+                    {
+                        Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, "不能对自己进行投票");
+                        return true;
+                    }
+                    var vote = CurrentRound.AddPlayerVote(voter, target);
                     return vote is not null;
                 }
                 return false;
@@ -137,11 +152,11 @@ namespace TheresaBot.Main.Game.Undercover
             if (IsEnded) throw new GameStopException();
             await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"词条派发完毕，请各位查看私聊，如未收到私聊，请尝试添加本Bot为好友，然后在群内发送 {UCConfig.WordCommands.JoinCommands()} 重新私发词条。请各位组织语言，发言环节将在{UCConfig.PrepareSeconds}秒后开始...");
             await Task.Delay(UCConfig.PrepareSeconds * 1000);
-            while (!IsSomeoneWin)
+            while (IsSomeoneWin == false)
             {
                 CurrentRound = new UndercoverRound();
                 GameRounds.Add(CurrentRound);
-                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"现在开始第{GameRounds.Count+1}轮发言，请各位在收到艾特消息后再进行发言...");
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"现在开始第{GameRounds.Count + 1}轮发言，请各位在收到艾特消息后再进行发言...");
                 await PlayersSpeech();//发言环节
                 await Task.Delay(1000);
                 await PlayersVote();//投票环节
@@ -151,7 +166,11 @@ namespace TheresaBot.Main.Game.Undercover
 
         private async Task PlayersVote()
         {
-            await CurrentRound.WaitForVote();
+            List<BaseContent> contents=new List<BaseContent>();
+            contents.Add(new PlainContent($"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内发送数字选择投票对象"));
+
+            await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, );
+            await CurrentRound.WaitForVote(LivePlayers,UCConfig.VotingSeconds);
         }
 
         private async Task PlayersSpeech()

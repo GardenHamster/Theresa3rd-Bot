@@ -31,17 +31,18 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
 
-                List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
-                List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
-                if (chainList is null || chainList.Count == 0) return;
+                var chainList = args.Chain.Select(m => m.ToString()).ToList();
+                var plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
+                var instruction = plainList.FirstOrDefault()?.Trim() ?? "";
+                var message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray())?.Trim() : string.Empty;
+                var prefix = instruction.MatchPrefix();
+                var isAt = args.Chain.Any(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber);
+                var isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
+                var relay = new MiraiGroupRelay(args, msgId, message, groupId, memberId);
 
-                string instruction = plainList.FirstOrDefault()?.Trim() ?? "";
-                string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray())?.Trim() : string.Empty;
-
-                string prefix = prefix = instruction.MatchPrefix();
-                bool isAt = args.Chain.Any(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber);
-                bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
+                if (GameCahce.HandleGameMessage(relay)) return; //处理游戏
+                if (ProcessCache.HandleStep(relay)) return; //分步处理
 
                 if (args.Chain.Any(v => v is QuoteMessage))//引用指令
                 {
@@ -52,9 +53,6 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 if (isAt == false && isInstruct == false)//复读,分步操作,保存消息记录
                 {
-                    var relay = new MiraiGroupRelay(args, msgId, message, groupId, memberId);
-                    if (GameCahce.HandleGame(relay)) return; //处理游戏
-                    if (ProcessCache.HandleStep(relay)) return; //分步处理
                     if (RepeatCache.CheckCanRepeat(groupId, BotConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.Mirai, msgId, groupId, memberId);

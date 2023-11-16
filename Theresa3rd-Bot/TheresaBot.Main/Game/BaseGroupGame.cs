@@ -1,6 +1,7 @@
 ﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
+using TheresaBot.Main.Game.Undercover;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Reporter;
@@ -131,8 +132,32 @@ namespace TheresaBot.Main.Game
                 {
                     throw new GameException("你已经加入游戏了，请耐心等待游戏开始");
                 }
+                player.PlayerId = Players.Count + 1;
                 Players.Add(player);
             }
+        }
+
+        /// <summary>
+        /// 根据Id获取玩家
+        /// </summary>
+        /// <param name="playerId"></param>
+        /// <returns></returns>
+        protected T GetPlayer(string playerIdStr)
+        {
+            if (string.IsNullOrWhiteSpace(playerIdStr)) return null;
+            int playerId = playerIdStr.Trim().ToInt();
+            if (playerId <= 0) return null;
+            return Players.FirstOrDefault(o => o.PlayerId == playerId);
+        }
+
+        /// <summary>
+        /// 根据QQ获取玩家
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        protected T GetPlayer(long memberId)
+        {
+            return Players.FirstOrDefault(o => o.MemberId == memberId);
         }
 
 

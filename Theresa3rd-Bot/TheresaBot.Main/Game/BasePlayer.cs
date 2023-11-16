@@ -2,6 +2,8 @@
 {
     public abstract class BasePlayer
     {
+        public int PlayerId { get; set; }
+
         public long MemberId { get; private set; }
 
         public string MemberName { get; private set; }

@@ -34,15 +34,17 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
 
-                List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
+                var message = args.Message.Text;
+                var plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
+                var instruction = plainList.FirstOrDefault()?.Trim() ?? "";
+                var prefix = instruction.MatchPrefix();
+                var isAt = args.Message.Any(v => v is CqAtMsg atMsg && atMsg.Target == BotConfig.BotQQ);
+                var isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
+                var relay = new CQGroupRelay(args, msgId, message, groupId, memberId);
 
-                string instruction = plainList.FirstOrDefault()?.Trim() ?? "";
-                string message = args.Message.Text;
-
-                string prefix = prefix = instruction.MatchPrefix();
-                bool isAt = args.Message.Any(v => v is CqAtMsg atMsg && atMsg.Target == BotConfig.BotQQ);
-                bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
+                if (GameCahce.HandleGameMessage(relay)) return; //处理游戏消息
+                if (ProcessCache.HandleStep(relay)) return; //分步处理
 
                 if (args.Message.Any(v => v is CqReplyMsg))//引用指令
                 {
@@ -53,9 +55,6 @@ namespace TheresaBot.GoCqHttp.Plugin
 
                 if (isAt == false && isInstruct == false)//复读,分步操作,保存消息记录
                 {
-                    var relay = new CQGroupRelay(args, msgId, message, groupId, memberId);
-                    if (GameCahce.HandleGame(relay)) return; //处理游戏
-                    if (ProcessCache.HandleStep(relay)) return; //分步处理
                     if (RepeatCache.CheckCanRepeat(groupId, BotConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Message.OfType<CqImageMsg>().Select(o => o.Url?.ToString()).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.GoCQHttp, msgId, groupId, memberId);

@@ -66,14 +66,14 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public async Task WaitForSpeech(UCPlayer player, int waitSeconds)
+        public async Task WaitForSpeech(UCGame game, UCPlayer player, int waitSeconds)
         {
             int lastSeconds = waitSeconds;
             while (lastSeconds > 0)
             {
                 var record = GetPlayerSpeech(player);
                 if (record is not null) return;
-                await Task.Delay(1000);
+                await game.CheckEndedAndDelay(1000);
                 lastSeconds--;
             }
             throw new GameEndException($"玩家{player.MemberName}未能在指定时间内发言，游戏结束");
@@ -83,13 +83,13 @@ namespace TheresaBot.Main.Game.Undercover
         /// 等待所有玩家投票完毕
         /// </summary>
         /// <returns></returns>
-        public async Task WaitForVote(List<UCPlayer> votePlayers, int waitSeconds)
+        public async Task WaitForVote(UCGame game, List<UCPlayer> votePlayers, int waitSeconds)
         {
             int lastSeconds = waitSeconds;
             while (lastSeconds > 0)
             {
                 if (Votes.Count >= votePlayers.Count) return;
-                await Task.Delay(1000);
+                await game.CheckEndedAndDelay(1000);
                 lastSeconds--;
             }
             throw new GameEndException($"部分玩家在指定时间内未进行投票，游戏结束");

@@ -5,6 +5,7 @@ using TheresaBot.Main.Game.Undercover;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type.GameOptions;
 
@@ -12,8 +13,11 @@ namespace TheresaBot.Main.Handler
 {
     internal class UndercoverHandler : GameHandler
     {
+        private UCWordService ucWordService;
+
         public UndercoverHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
+            ucWordService = new UCWordService();
         }
 
         public async Task SendPrivateWords(GroupCommand command)
@@ -66,6 +70,60 @@ namespace TheresaBot.Main.Handler
             catch (GameException ex)
             {
                 await command.ReplyGroupMessageWithQuoteAsync(ex.RemindMessage);
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, "Undercover游戏异常");
+            }
+        }
+
+        public async Task CreateWords(FriendCommand command)
+        {
+            try
+            {
+                var maxCount = 5;//非超级管理员限制添加词条数量
+                var memberId = command.MemberId;
+                var isSuperManager = memberId.IsSuperManager();
+                var unauthCount = ucWordService.GetUnauthorizedCount(command.MemberId);
+                if (isSuperManager == false && unauthCount >= maxCount)
+                {
+                    await command.ReplyFriendMessageAsync($"已添加{unauthCount}个未经审核的词条，请等待超级管理员审核完毕后继续添加");
+                    return;
+                }
+                var newWords = new List<string[]>();
+                var splitArr = command.KeyWord.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var item in splitArr)
+                {
+                    if (string.IsNullOrWhiteSpace(item)) continue;
+                    var wordArr = item.Trim().Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                    if (wordArr.Length != 2) throw new HandlerException($"词条 {item} 格式不正确，添加失败");
+                    if (wordArr[0].Length == 0) throw new HandlerException($"词条 {item} 格式不正确，添加失败");
+                    if (wordArr[1].Length == 0) throw new HandlerException($"词条 {item} 格式不正确，添加失败");
+                    newWords.Add(wordArr);
+                }
+                if (isSuperManager == false)
+                {
+                    newWords = newWords.Take(maxCount - unauthCount).ToList();
+                    await command.ReplyFriendMessageAsync($"非超级管理员限制添加词条个数为{maxCount}个，剩余可添加词条{newWords.Count}个，等待管理员审核后可以添加更多词条");
+                    await Task.Delay(1000);
+                }
+                foreach (var item in newWords)
+                {
+                    if(ucWordService.CheckWordExist(item)) continue;
+                    ucWordService.AddWords(item, memberId, isSuperManager);
+                }
+                if (isSuperManager)
+                {
+                    await command.ReplyFriendMessageAsync("添加完毕");
+                }
+                else
+                {
+                    await command.ReplyFriendMessageAsync("添加完毕，请等待超级管理员审核~");
+                }
+            }
+            catch (HandlerException ex)
+            {
+                await command.ReplyFriendMessageAsync(ex.Message);
             }
             catch (Exception ex)
             {

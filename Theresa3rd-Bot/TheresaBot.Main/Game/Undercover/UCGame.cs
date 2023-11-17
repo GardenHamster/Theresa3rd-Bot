@@ -144,39 +144,42 @@ namespace TheresaBot.Main.Game.Undercover
         /// <returns></returns>
         public override async Task GameProcessingAsync()
         {
-            if (IsEnded) throw new GameStopException();
+            await CheckEnded();
             await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, "游戏开始，正在获取词条...");
+            await CheckEnded();
             await FetchWords();//随机获取词条
-            if (IsEnded) throw new GameStopException();
+            await CheckEnded();
             await DistWords();//派发随机身份
-            if (IsEnded) throw new GameStopException();
+            await CheckEnded();
             await SendWords();//私聊发送词条
-            if (IsEnded) throw new GameStopException();
-            await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"词条派发完毕，请各位查看私聊，如未收到私聊，请尝试添加本Bot为好友，然后在群内发送 {UCConfig.WordCommands.JoinCommands()} 重新私发词条。请各位组织语言，发言环节将在{UCConfig.PrepareSeconds}秒后开始...");
+            await CheckEnded();
+            await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"词条派发完毕，请各位查看私聊，如未收到私聊，请尝试添加本Bot为好友，然后在群内发送 {UCConfig.SendWordCommands.JoinCommands()} 重新私发词条。请各位组织语言，发言环节将在{UCConfig.PrepareSeconds}秒后开始...");
             await Task.Delay(UCConfig.PrepareSeconds * 1000);
+            await CheckEnded();
             while (IsSomeoneWin == false)
             {
                 CurrentRound = new UCRound();
                 GameRounds.Add(CurrentRound);
                 await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"现在开始第{GameRounds.Count + 1}轮发言，请各位在收到艾特消息后再进行发言...");
-                await Task.Delay(1000);
-                await PlayersSpeech(CurrentRound,LivePlayers);//发言环节
-                await Task.Delay(1000);
-                var voteResults = await PlayersVote(CurrentRound,LivePlayers);//投票环节
+                await CheckEndedAndDelay(1000);
+                await PlayersSpeech(CurrentRound, LivePlayers);//发言环节
+                await CheckEndedAndDelay(1000);
+                var voteResults = await PlayersVote(CurrentRound, LivePlayers);//投票环节
                 while (voteResults.Count > 1)
                 {
+                    await CheckEnded();
                     var subRound = CurrentRound.CreateSubRound();
                     var subPlayers = voteResults.Select(o => o.Player).ToList();
                     var subMemberIds = voteResults.Select(o => o.Player.MemberId).ToList();
                     await Session.SendGroupMessageWithAtAsync(GroupId, subMemberIds, $"投票后仍有{subMemberIds.Count}位玩家票数相同，请{subMemberIds.Count}位玩家按照提示继续发言...");
-                    await Task.Delay(1000);
-                    await PlayersSpeech(subRound,subPlayers);//发言环节
-                    await Task.Delay(1000);
-                    voteResults = await PlayersVote(subRound,subPlayers);//投票环节
+                    await CheckEndedAndDelay(1000);
+                    await PlayersSpeech(subRound, subPlayers);//发言环节
+                    await CheckEndedAndDelay(1000);
+                    voteResults = await PlayersVote(subRound, subPlayers);//投票环节
                 }
                 var outPlayer = voteResults.First().Player;
                 CurrentRound.End(outPlayer);
-                await Task.Delay(1000);
+                await CheckEndedAndDelay(1000);
             }
         }
 
@@ -217,32 +220,10 @@ namespace TheresaBot.Main.Game.Undercover
             }
         }
 
-        private async Task PlayersSpeech(UCRound round, List<UCPlayer> players)
-        {
-            foreach (var player in players)
-            {
-                SpeakingPlayer = player;
-                await Session.SendGroupMessageWithAtAsync(GroupId, player.MemberId, $"请在{UCConfig.SpeakingSeconds}秒内发送文字描述你的内容");
-                await round.WaitForSpeech(player, UCConfig.SpeakingSeconds);
-                SpeakingPlayer = null;
-                await Task.Delay(1000);
-            }
-        }
-
-        private async Task<List<UCVoteResult>> PlayersVote(UCRound round, List<UCPlayer> targets)
-        {
-            var contents = new List<BaseContent>();
-            contents.Add(new PlainContent($"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内发送数字选择投票对象"));
-            contents.Add(new PlainContent(ListPlayer(targets)));
-            var memberIds = LivePlayers.Select(o => o.MemberId).ToList();
-            await Session.SendGroupMessageWithAtAsync(GroupId, memberIds, contents);
-            await round.WaitForVote(LivePlayers, UCConfig.VotingSeconds);
-            return round.GetMaxVotes();
-        }
-
         private async Task FetchWords()
         {
-            UCWord = new UCWordService().GetRandomWord(MemberIds);
+            var excludeMembers = MemberIds.Where(o => o.IsSuperManager() == false).ToList();
+            UCWord = new UCWordService().GetRandomWord(excludeMembers);
             if (UCWord is null) throw new GameException("无法获取词条，请艾特管理员添加和审批更多词条");
             await Task.CompletedTask;
         }
@@ -251,21 +232,18 @@ namespace TheresaBot.Main.Game.Undercover
         {
             for (int i = 0; i < CivAmount; i++)
             {
-                if (IsEnded) throw new GameStopException();
                 var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
                 player.PlayerCamp = UCPlayerCamp.Civilian;
                 player.PlayerWord = UCWord.Word1;
             }
             for (int i = 0; i < UcAmount; i++)
             {
-                if (IsEnded) throw new GameStopException();
                 var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
                 player.PlayerCamp = UCPlayerCamp.Undercover;
                 player.PlayerWord = UCWord.Word2;
             }
             for (int i = 0; i < WbAmount; i++)
             {
-                if (IsEnded) throw new GameStopException();
                 var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
                 player.PlayerCamp = UCPlayerCamp.Whiteboard;
                 player.PlayerWord = string.Empty;
@@ -278,16 +256,41 @@ namespace TheresaBot.Main.Game.Undercover
             await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, "正在派发词条，请各位玩家查看私聊获取自己的词条...");
             foreach (var player in Players)
             {
-                if (IsEnded) throw new GameStopException();
+                await CheckEnded();
                 await Session.SendTempMessageAsync(GroupId, player.MemberId, player.GetWordMessage());
                 await Task.Delay(1000);
             }
         }
 
+        private async Task PlayersSpeech(UCRound round, List<UCPlayer> players)
+        {
+            foreach (var player in players)
+            {
+                await CheckEnded();
+                SpeakingPlayer = player;
+                await Session.SendGroupMessageWithAtAsync(GroupId, player.MemberId, $"请在{UCConfig.SpeakingSeconds}秒内发送文字描述你的内容");
+                await round.WaitForSpeech(this, player, UCConfig.SpeakingSeconds);
+                SpeakingPlayer = null;
+                await Task.Delay(1000);
+            }
+        }
+
+        private async Task<List<UCVoteResult>> PlayersVote(UCRound round, List<UCPlayer> targets)
+        {
+            await CheckEnded();
+            var contents = new List<BaseContent>();
+            contents.Add(new PlainContent($"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内发送数字选择投票对象"));
+            contents.Add(new PlainContent(ListPlayer(targets)));
+            var memberIds = LivePlayers.Select(o => o.MemberId).ToList();
+            await Session.SendGroupMessageWithAtAsync(GroupId, memberIds, contents);
+            await round.WaitForVote(this, LivePlayers, UCConfig.VotingSeconds);
+            return round.GetMaxVotes();
+        }
+
         private string GetCampInfos()
         {
             var builder = new StringBuilder();
-            var cvPlayer = Players.Where(o=>o.PlayerCamp==UCPlayerCamp.Civilian).ToList();
+            var cvPlayer = Players.Where(o => o.PlayerCamp == UCPlayerCamp.Civilian).ToList();
             var ucPlayer = Players.Where(o => o.PlayerCamp == UCPlayerCamp.Undercover).ToList();
             var wbPlayer = Players.Where(o => o.PlayerCamp == UCPlayerCamp.Whiteboard).ToList();
             string cvInfo = GetCampInfo(cvPlayer, "平民");
@@ -300,12 +303,12 @@ namespace TheresaBot.Main.Game.Undercover
             return builder.ToString();
         }
 
-        private string GetCampInfo(List<UCPlayer> players,string campName)
+        private string GetCampInfo(List<UCPlayer> players, string campName)
         {
             var builder = new StringBuilder();
             if (players.Count > 0)
             {
-                builder.AppendLine($"白板：");
+                builder.AppendLine($"{campName}：");
             }
             foreach (var player in players)
             {
@@ -313,14 +316,6 @@ namespace TheresaBot.Main.Game.Undercover
             }
             return builder.ToString();
         }
-
-
-
-
-
-
-
-
 
     }
 }

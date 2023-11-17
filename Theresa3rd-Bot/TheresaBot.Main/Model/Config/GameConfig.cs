@@ -21,7 +21,9 @@
     {
         public List<string> CreateCommands { get; set; } = new();
 
-        public List<string> WordCommands { get; set; } = new();
+        public List<string> AddWordCommands { get; set; } = new();
+
+        public List<string> SendWordCommands { get; set; } = new();
 
         public int PrepareSeconds { get; set; } = 1;
 
@@ -34,7 +36,7 @@
         public override BaseConfig FormatConfig()
         {
             if (CreateCommands is null) CreateCommands = new();
-            if (WordCommands is null) WordCommands = new();
+            if (SendWordCommands is null) SendWordCommands = new();
             if (PrepareSeconds < 1) PrepareSeconds = 1;
             if (SpeakingSeconds < 10) SpeakingSeconds = 10;
             if (VotingSeconds < 10) VotingSeconds = 10;

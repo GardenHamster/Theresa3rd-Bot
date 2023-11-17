@@ -76,7 +76,7 @@ namespace TheresaBot.Main.Helper
             {
                 foreach (var memberId in memberIds)
                 {
-                    await session.MuteGroupMember(groupId, memberId, seconds);
+                    await session.MuteGroupMemberAsync(groupId, memberId, seconds);
                     await Task.Delay(1000);
                 }
             }

@@ -515,7 +515,7 @@ namespace TheresaBot.Main.Invoker
                 return true;
             })),
             //谁是卧底重新获取词条
-            new(BotConfig.GameConfig?.Undercover?.WordCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            new(BotConfig.GameConfig?.Undercover?.SendWordCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
             {
                 UndercoverHandler handler = new UndercoverHandler(session, reporter);
                 await handler.SendPrivateWords(botCommand);

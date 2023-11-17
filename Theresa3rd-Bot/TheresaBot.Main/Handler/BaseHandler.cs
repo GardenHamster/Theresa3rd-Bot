@@ -35,6 +35,14 @@ namespace TheresaBot.Main.Handler
             await Reporter.SendError(ex, message);
         }
 
+        public async Task LogAndReplyError(FriendCommand command, Exception ex, string message = "")
+        {
+            LogHelper.Error(ex, message);
+            await command.ReplyError(ex, message);
+            await Task.Delay(1000);
+            await Reporter.SendError(ex, message);
+        }
+
         public async Task LogAndReportError(Exception ex, string message = "")
         {
             LogHelper.Error(ex, message);

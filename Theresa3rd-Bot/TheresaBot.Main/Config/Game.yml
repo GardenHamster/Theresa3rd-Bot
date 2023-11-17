@@ -4,7 +4,8 @@ StopCommands:                   ['结束游戏']										#结束游戏命令
 Undercover:
     Enable:                     true                                            #是否启用
     CreateCommands:             ['谁是卧底','卧底']						        #创建游戏命令
-    WordCommands:               ['我的词条']                                     #获取词条命令
+    AddWordCommands:            ['添加词条','新增词条']                           #新增词条命令，需要私聊使用
+    SendWordCommands:           ['我的词条']                                     #游戏中获取词条命令
     PrepareSeconds:             10                                              #派发词条后进入发言环节前的准备时间(秒)
     SpeakingSeconds:            120                                             #每个玩家的发言时长(秒)
     VotingSeconds:              60                                              #投票环节时长(秒)

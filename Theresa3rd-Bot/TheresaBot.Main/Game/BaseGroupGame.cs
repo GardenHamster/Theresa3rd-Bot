@@ -68,13 +68,13 @@ namespace TheresaBot.Main.Game
             {
                 try
                 {
-                    StartTime= DateTime.Now;
+                    StartTime = DateTime.Now;
                     Console.WriteLine($"{GameName}游戏已启动...");
                     await WaitPlayerAsync();
-                    if (IsEnded) throw new GameStopException();
+                    await CheckEnded();
                     await Session.SendGroupMessageAsync(GroupId, $"玩家集结完毕，游戏将在5秒后开始...");
                     await Task.Delay(5000);
-                    if (IsEnded) throw new GameStopException();
+                    await CheckEnded();
                     Console.WriteLine($"{GameName}游戏已开始...");
                     await GameProcessingAsync();
                     Console.WriteLine($"{GameName}游戏已完成...");
@@ -102,7 +102,7 @@ namespace TheresaBot.Main.Game
                 finally
                 {
                     IsEnded = true;
-                    EndTime= DateTime.Now;
+                    EndTime = DateTime.Now;
                 }
             });
             GameTask = task;
@@ -125,7 +125,7 @@ namespace TheresaBot.Main.Game
             await Session.SendGroupMessageAsync(GroupId, remindContents);
             while (Players.Count < MinPlayer)
             {
-                if (IsEnded) throw new GameStopException();
+                await CheckEnded();
                 if (waitSeconds < 0) throw new GameException("匹配超时，游戏已停止");
                 waitSeconds = waitSeconds - 1;
                 await Task.Delay(1000);
@@ -190,6 +190,29 @@ namespace TheresaBot.Main.Game
                 builder.Append($"{player.PlayerId}：{player.MemberName}");
             }
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// 判断游戏是否已经被停止，如果已停止则跳出线程
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="GameStopException"></exception>
+        public async Task CheckEnded()
+        {
+            if (IsEnded) throw new GameStopException();
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 判断游戏是否已经被停止并且睡眠，如果已停止则跳出线程
+        /// </summary>
+        /// <param name="daily"></param>
+        /// <returns></returns>
+        /// <exception cref="GameStopException"></exception>
+        public async Task CheckEndedAndDelay(int daily = 0)
+        {
+            if (IsEnded) throw new GameStopException();
+            if (daily > 0) await Task.Delay(daily);
         }
 
 

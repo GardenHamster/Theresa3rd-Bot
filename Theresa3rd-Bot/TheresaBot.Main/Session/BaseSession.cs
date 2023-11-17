@@ -32,5 +32,7 @@ namespace TheresaBot.Main.Session
 
         public abstract Task RevokeGroupMessageAsync(long groupId, long messageId);
 
+        public abstract Task MuteGroupMember(long groupId, long memberId, int seconds);
+
     }
 }

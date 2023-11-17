@@ -5,12 +5,12 @@ namespace TheresaBot.Main.Game.Undercover
     /// <summary>
     /// 发言记录
     /// </summary>
-    public class UndercoverRecord
+    public class UCSpeech
     {
         /// <summary>
         /// 发言玩家
         /// </summary>
-        public UndercoverPlayer Player { get; private set; }
+        public UCPlayer Player { get; private set; }
 
         /// <summary>
         /// 发言消息
@@ -27,7 +27,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         /// <param name="player"></param>
         /// <param name="relay"></param>
-        public UndercoverRecord(UndercoverPlayer player, GroupRelay relay)
+        public UCSpeech(UCPlayer player, GroupRelay relay)
         {
             Player = player;
             Relay = relay;

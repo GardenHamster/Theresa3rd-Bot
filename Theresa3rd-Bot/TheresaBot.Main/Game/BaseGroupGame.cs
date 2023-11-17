@@ -1,7 +1,7 @@
-﻿using TheresaBot.Main.Command;
+﻿using System.Text;
+using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
-using TheresaBot.Main.Game.Undercover;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Reporter;
@@ -14,6 +14,14 @@ namespace TheresaBot.Main.Game
     /// </summary>
     public abstract class BaseGroupGame<T> : BaseGame where T : BasePlayer
     {
+        /// <summary>
+        /// 游戏开始时间
+        /// </summary>
+        public DateTime? StartTime { get; set; }
+        /// <summary>
+        /// 游戏结束时间
+        /// </summary>
+        public DateTime? EndTime { get; set; }
         /// <summary>
         /// 最小加入人数
         /// </summary>
@@ -31,11 +39,15 @@ namespace TheresaBot.Main.Game
         /// </summary>
         public List<long> MemberIds => Players.Select(o => o.MemberId).Distinct().ToList();
         /// <summary>
-        /// 游戏线程
+        /// 游戏主持线程
         /// </summary>
         /// <returns></returns>
         public abstract Task GameProcessingAsync();
-
+        /// <summary>
+        /// 游戏结束线程
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task GameEndingAsync();
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -56,7 +68,8 @@ namespace TheresaBot.Main.Game
             {
                 try
                 {
-                    Console.WriteLine($"{GameName}游戏已创建...");
+                    StartTime= DateTime.Now;
+                    Console.WriteLine($"{GameName}游戏已启动...");
                     await WaitPlayerAsync();
                     if (IsEnded) throw new GameStopException();
                     await Session.SendGroupMessageAsync(GroupId, $"玩家集结完毕，游戏将在5秒后开始...");
@@ -64,6 +77,8 @@ namespace TheresaBot.Main.Game
                     if (IsEnded) throw new GameStopException();
                     Console.WriteLine($"{GameName}游戏已开始...");
                     await GameProcessingAsync();
+                    Console.WriteLine($"{GameName}游戏已完成...");
+                    await GameEndingAsync();
                     Console.WriteLine($"{GameName}游戏已结束...");
                 }
                 catch (GameStopException)
@@ -87,6 +102,7 @@ namespace TheresaBot.Main.Game
                 finally
                 {
                     IsEnded = true;
+                    EndTime= DateTime.Now;
                 }
             });
             GameTask = task;
@@ -158,6 +174,22 @@ namespace TheresaBot.Main.Game
         protected T GetPlayer(long memberId)
         {
             return Players.FirstOrDefault(o => o.MemberId == memberId);
+        }
+
+        /// <summary>
+        /// 获取玩家列表
+        /// </summary>
+        /// <param name="players"></param>
+        /// <returns></returns>
+        protected string ListPlayer(List<T> players)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (T player in players)
+            {
+                if (builder.Length > 0) builder.AppendLine();
+                builder.Append($"{player.PlayerId}：{player.MemberName}");
+            }
+            return builder.ToString();
         }
 
 

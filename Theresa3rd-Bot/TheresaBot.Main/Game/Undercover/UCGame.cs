@@ -1,19 +1,19 @@
-﻿using TheresaBot.Main.Command;
+﻿using System.Text;
+using TheresaBot.Main.Command;
+using TheresaBot.Main.Common;
+using TheresaBot.Main.Exceptions;
+using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
-using TheresaBot.Main.Session;
-using TheresaBot.Main.Helper;
-using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Services;
-using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Common;
-using TheresaBot.Main.Model.Config;
-using System.Text;
-using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Game.Undercover
 {
-    public class UndercoverGame : BaseGroupGame<UndercoverPlayer>
+    public class UCGame : BaseGroupGame<UCPlayer>
     {
         /// <summary>
         /// 游戏名称
@@ -38,15 +38,15 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 轮合集
         /// </summary>
-        public List<UndercoverRound> GameRounds { get; private set; } = new();
+        public List<UCRound> GameRounds { get; private set; } = new();
         /// <summary>
         /// 当前轮
         /// </summary>
-        public UndercoverRound CurrentRound { get; private set; }
+        public UCRound CurrentRound { get; private set; }
         /// <summary>
         /// 当前发言玩家
         /// </summary>
-        public UndercoverPlayer SpeakingPlayer { get; private set; }
+        public UCPlayer SpeakingPlayer { get; private set; }
         /// <summary>
         /// 是否正在投票环节中
         /// </summary>
@@ -54,7 +54,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 存活的玩家
         /// </summary>
-        public List<UndercoverPlayer> LivePlayers => Players.Where(o => o.IsOut == false).ToList();
+        public List<UCPlayer> LivePlayers => Players.Where(o => o.IsOut == false).ToList();
         /// <summary>
         /// 游戏词条
         /// </summary>
@@ -66,24 +66,24 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 平民是否已经获胜
         /// </summary>
-        public bool IsCivilianWin => Players.Where(o => o.PlayerType == UndercoverPlayerType.Undercover).All(o => o.IsOut);
+        public bool IsCivilianWin => Players.Where(o => o.PlayerCamp == UCPlayerCamp.Undercover).All(o => o.IsOut);
         /// <summary>
         /// 卧底是否已经获胜
         /// </summary>
-        public bool IsUndercoverWin => Players.Where(o => o.IsOut == false).All(o => o.PlayerType == UndercoverPlayerType.Undercover);
+        public bool IsUndercoverWin => Players.Where(o => o.IsOut == false).All(o => o.PlayerCamp == UCPlayerCamp.Undercover);
         /// <summary>
         /// 白板是否已经获胜
         /// </summary>
-        public bool IsWhiteboardWin => Players.Where(o => o.IsOut == false).All(o => o.PlayerType == UndercoverPlayerType.Whiteboard);
+        public bool IsWhiteboardWin => Players.Where(o => o.IsOut == false).All(o => o.PlayerCamp == UCPlayerCamp.Whiteboard);
 
         /// <summary>
         /// 创建一个标准游戏
         /// </summary>
-        public UndercoverGame(GroupCommand command, BaseSession session, BaseReporter reporter) : base(command, session, reporter)
+        public UCGame(GroupCommand command, BaseSession session, BaseReporter reporter) : base(command, session, reporter)
         {
-            CivAmount = 2;
+            CivAmount = 3;
             UcAmount = 1;
-            WbAmount = 0;
+            WbAmount = 1;
             MinPlayer = CivAmount + UcAmount + WbAmount;
         }
 
@@ -93,7 +93,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// <param name="civNum"></param>
         /// <param name="ucNum"></param>
         /// <param name="wbNum"></param>
-        public UndercoverGame(GroupCommand command, BaseSession session, BaseReporter reporter, int civNum, int ucNum, int wbNum) : base(command, session, reporter)
+        public UCGame(GroupCommand command, BaseSession session, BaseReporter reporter, int civNum, int ucNum, int wbNum) : base(command, session, reporter)
         {
             CivAmount = civNum;
             UcAmount = ucNum;
@@ -115,15 +115,17 @@ namespace TheresaBot.Main.Game.Undercover
                 if (SpeakingPlayer is not null)
                 {
                     if (SpeakingPlayer.MemberId != relay.MemberId) return false;
-                    var record = CurrentRound.AddPlayerRecord(SpeakingPlayer, relay);
+                    var record = CurrentRound.AddPlayerSpeech(SpeakingPlayer, relay);
                     return record is not null;
                 }
                 if (IsVoting)
                 {
                     var voter = GetPlayer(relay.MemberId);
                     if (voter is null) return false;
+                    if (voter.IsOut) return false;
                     var target = GetPlayer(relay.Message);
                     if (target is null) return false;
+                    if (target.IsOut) return false;
                     if (voter.MemberId == target.MemberId)
                     {
                         Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, "不能对自己进行投票");
@@ -154,35 +156,88 @@ namespace TheresaBot.Main.Game.Undercover
             await Task.Delay(UCConfig.PrepareSeconds * 1000);
             while (IsSomeoneWin == false)
             {
-                CurrentRound = new UndercoverRound();
+                CurrentRound = new UCRound();
                 GameRounds.Add(CurrentRound);
                 await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"现在开始第{GameRounds.Count + 1}轮发言，请各位在收到艾特消息后再进行发言...");
-                await PlayersSpeech();//发言环节
                 await Task.Delay(1000);
-                await PlayersVote();//投票环节
+                await PlayersSpeech(CurrentRound,LivePlayers);//发言环节
+                await Task.Delay(1000);
+                var voteResults = await PlayersVote(CurrentRound,LivePlayers);//投票环节
+                while (voteResults.Count > 1)
+                {
+                    var subRound = CurrentRound.CreateSubRound();
+                    var subPlayers = voteResults.Select(o => o.Player).ToList();
+                    var subMemberIds = voteResults.Select(o => o.Player.MemberId).ToList();
+                    await Session.SendGroupMessageWithAtAsync(GroupId, subMemberIds, $"投票后仍有{subMemberIds.Count}位玩家票数相同，请{subMemberIds.Count}位玩家按照提示继续发言...");
+                    await Task.Delay(1000);
+                    await PlayersSpeech(subRound,subPlayers);//发言环节
+                    await Task.Delay(1000);
+                    voteResults = await PlayersVote(subRound,subPlayers);//投票环节
+                }
+                var outPlayer = voteResults.First().Player;
+                CurrentRound.End(outPlayer);
                 await Task.Delay(1000);
             }
         }
 
-        private async Task PlayersVote()
+        public override async Task GameEndingAsync()
         {
-            List<BaseContent> contents=new List<BaseContent>();
-            contents.Add(new PlainContent($"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内发送数字选择投票对象"));
+            var winMessage = string.Empty;
+            var WinCamp = UCPlayerCamp.None;
 
-            await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, );
-            await CurrentRound.WaitForVote(LivePlayers,UCConfig.VotingSeconds);
+            if (IsCivilianWin)
+            {
+                WinCamp = UCPlayerCamp.Civilian;
+                winMessage = "平民干掉了所有卧底，平民获胜！";
+            }
+            else if (IsUndercoverWin)
+            {
+                WinCamp = UCPlayerCamp.Undercover;
+                winMessage = "卧底干掉了所有人，卧底获胜！";
+            }
+            else if (IsWhiteboardWin)
+            {
+                WinCamp = UCPlayerCamp.Whiteboard;
+                winMessage = "白板干掉了所有人，白板获胜！";
+            }
+
+            await Session.SendGroupMessageAsync(GroupId, $"游戏结束，{winMessage}");
+            await Task.Delay(1000);
+
+            await Session.SendGroupMessageAsync(GroupId, GetCampInfos());
+            await Task.Delay(1000);
+
+            if (UCConfig.MuteSeconds > 0)
+            {
+                var failPlayers = Players.Where(o => o.PlayerCamp != WinCamp).ToList();
+                var failMemberIds = failPlayers.Select(o => o.MemberId).ToList();
+                await Session.SendGroupMessageAsync(GroupId, $"非获胜阵营将自动禁言{UCConfig.MuteSeconds}秒");
+                await Task.Delay(1000);
+                await Session.MuteGroupMemberAsync(GroupId, failMemberIds, UCConfig.MuteSeconds);
+            }
         }
 
-        private async Task PlayersSpeech()
+        private async Task PlayersSpeech(UCRound round, List<UCPlayer> players)
         {
-            foreach (var player in Players)
+            foreach (var player in players)
             {
                 SpeakingPlayer = player;
                 await Session.SendGroupMessageWithAtAsync(GroupId, player.MemberId, $"请在{UCConfig.SpeakingSeconds}秒内发送文字描述你的内容");
-                await CurrentRound.WaitForSpeech(player, UCConfig.SpeakingSeconds);
+                await round.WaitForSpeech(player, UCConfig.SpeakingSeconds);
                 SpeakingPlayer = null;
                 await Task.Delay(1000);
             }
+        }
+
+        private async Task<List<UCVoteResult>> PlayersVote(UCRound round, List<UCPlayer> targets)
+        {
+            var contents = new List<BaseContent>();
+            contents.Add(new PlainContent($"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内发送数字选择投票对象"));
+            contents.Add(new PlainContent(ListPlayer(targets)));
+            var memberIds = LivePlayers.Select(o => o.MemberId).ToList();
+            await Session.SendGroupMessageWithAtAsync(GroupId, memberIds, contents);
+            await round.WaitForVote(LivePlayers, UCConfig.VotingSeconds);
+            return round.GetMaxVotes();
         }
 
         private async Task FetchWords()
@@ -197,22 +252,22 @@ namespace TheresaBot.Main.Game.Undercover
             for (int i = 0; i < CivAmount; i++)
             {
                 if (IsEnded) throw new GameStopException();
-                var player = Players.Where(o => o.PlayerType == UndercoverPlayerType.None).ToList().RandomItem();
-                player.PlayerType = UndercoverPlayerType.Civilian;
+                var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
+                player.PlayerCamp = UCPlayerCamp.Civilian;
                 player.PlayerWord = UCWord.Word1;
             }
             for (int i = 0; i < UcAmount; i++)
             {
                 if (IsEnded) throw new GameStopException();
-                var player = Players.Where(o => o.PlayerType == UndercoverPlayerType.None).ToList().RandomItem();
-                player.PlayerType = UndercoverPlayerType.Undercover;
+                var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
+                player.PlayerCamp = UCPlayerCamp.Undercover;
                 player.PlayerWord = UCWord.Word2;
             }
             for (int i = 0; i < WbAmount; i++)
             {
                 if (IsEnded) throw new GameStopException();
-                var player = Players.Where(o => o.PlayerType == UndercoverPlayerType.None).ToList().RandomItem();
-                player.PlayerType = UndercoverPlayerType.Whiteboard;
+                var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
+                player.PlayerCamp = UCPlayerCamp.Whiteboard;
                 player.PlayerWord = string.Empty;
             }
             await Task.CompletedTask;
@@ -227,6 +282,36 @@ namespace TheresaBot.Main.Game.Undercover
                 await Session.SendTempMessageAsync(GroupId, player.MemberId, player.GetWordMessage());
                 await Task.Delay(1000);
             }
+        }
+
+        private string GetCampInfos()
+        {
+            var builder = new StringBuilder();
+            var cvPlayer = Players.Where(o=>o.PlayerCamp==UCPlayerCamp.Civilian).ToList();
+            var ucPlayer = Players.Where(o => o.PlayerCamp == UCPlayerCamp.Undercover).ToList();
+            var wbPlayer = Players.Where(o => o.PlayerCamp == UCPlayerCamp.Whiteboard).ToList();
+            string cvInfo = GetCampInfo(cvPlayer, "平民");
+            string ucInfo = GetCampInfo(ucPlayer, "卧底");
+            string wbInfo = GetCampInfo(wbPlayer, "白板");
+            builder.AppendLine("本次游戏阵容如下：");
+            if (!string.IsNullOrEmpty(cvInfo)) builder.AppendLine(cvInfo);
+            if (!string.IsNullOrEmpty(ucInfo)) builder.AppendLine(ucInfo);
+            if (!string.IsNullOrEmpty(wbInfo)) builder.AppendLine(wbInfo);
+            return builder.ToString();
+        }
+
+        private string GetCampInfo(List<UCPlayer> players,string campName)
+        {
+            var builder = new StringBuilder();
+            if (players.Count > 0)
+            {
+                builder.AppendLine($"白板：");
+            }
+            foreach (var player in players)
+            {
+                builder.AppendLine($"  {player.MemberName}({player.MemberId})");
+            }
+            return builder.ToString();
         }
 
 

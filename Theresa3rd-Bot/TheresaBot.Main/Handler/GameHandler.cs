@@ -24,9 +24,9 @@ namespace TheresaBot.Main.Handler
                     await command.ReplyGroupMessageWithQuoteAsync("加入失败，目前没有可以加入的游戏");
                     return;
                 }
-                if (game is UndercoverGame ucGame)
+                if (game is UCGame ucGame)
                 {
-                    UndercoverPlayer player = new UndercoverPlayer(command.MemberId, command.MemberNick);
+                    UCPlayer player = new UCPlayer(command.MemberId, command.MemberNick);
                     ucGame.PlayerJoinAsync(player);
                     await command.ReplyGroupMessageWithQuoteAsync("加入成功！请耐心等待游戏开始");
                     return;

@@ -19,7 +19,7 @@ namespace TheresaBot.Main.Handler
         public async Task SendPrivateWords(GroupCommand command)
         {
             var game = GameCahce.GetGameByGroup(command.GroupId);
-            if (game is null || game.IsEnded || game is not UndercoverGame ucGame)
+            if (game is null || game.IsEnded || game is not UCGame ucGame)
             {
                 await command.ReplyGroupMessageWithQuoteAsync("游戏未开始，无法获取词条");
                 return;
@@ -30,7 +30,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithQuoteAsync("你还未加入游戏，无法获取词条");
                 return;
             }
-            if (player.PlayerType == UndercoverPlayerType.None)
+            if (player.PlayerCamp == UCPlayerCamp.None)
             {
                 await command.ReplyGroupMessageWithQuoteAsync("词条还未派发，请耐心等待...");
                 return;
@@ -47,13 +47,15 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                UndercoverGame ucGame = new UndercoverGame(command, Session, Reporter);
+                UCGame ucGame = new UCGame(command, Session, Reporter);
                 UCGameMode gameMode = await AskGameModeAsync(command);
                 if (gameMode == UCGameMode.Customize)
                 {
                     int[] nums = await AskCharacterNums(command);
-                    ucGame = new UndercoverGame(command, Session, Reporter, nums[0], nums[1], nums[2]);
+                    ucGame = new UCGame(command, Session, Reporter, nums[0], nums[1], nums[2]);
                 }
+                await Session.SendGroupMessageAsync(command.GroupId, $"正在创建{ucGame.GameName}游戏，其中平民：{ucGame.CivAmount}个，卧底：{ucGame.UcAmount}个，白板：{ucGame.WbAmount}个");
+                await Task.Delay(1000);
                 GameCahce.CreateGame(command, ucGame);
                 await ucGame.StartProcessing();
             }
@@ -74,7 +76,8 @@ namespace TheresaBot.Main.Handler
         private async Task<UCGameMode> AskGameModeAsync(GroupCommand command)
         {
             var processInfo = ProcessCache.CreateProcess(command);
-            var modeStep = processInfo.CreateStep("请在60秒内发送数字选择游戏模式", CheckUCModeAsync);
+
+            var modeStep = processInfo.CreateStep($"请在60秒内发送数字选择游戏模式\r\n{EnumHelper.UCGameModes.JoinToString()}", CheckUCModeAsync);
             await processInfo.StartProcessing();
             return modeStep.Answer;
         }
@@ -82,7 +85,7 @@ namespace TheresaBot.Main.Handler
         private async Task<int[]> AskCharacterNums(GroupCommand command)
         {
             var processInfo = ProcessCache.CreateProcess(command);
-            var modeStep = processInfo.CreateStep("请在60秒内发送 平民 卧底 白板 的数量，每个数字之间用空格隔开", CheckCharacterNumsAsync);
+            var modeStep = processInfo.CreateStep($"请在60秒内发送 平民 卧底 白板 的数量，每个数字之间用空格隔开", CheckCharacterNumsAsync);
             await processInfo.StartProcessing();
             return modeStep.Answer;
         }

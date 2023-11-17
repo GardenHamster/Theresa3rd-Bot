@@ -118,5 +118,11 @@ namespace TheresaBot.MiraiHttpApi.Session
             await MiraiHelper.Session.RevokeMessageAsync((int)messageId, groupId);
         }
 
+        public override async Task MuteGroupMember(long groupId, long memberId, int seconds)
+        {
+            var duration = TimeSpan.FromSeconds(seconds);
+            await MiraiHelper.Session.MuteAsync(memberId, groupId, duration);
+        }
+
     }
 }

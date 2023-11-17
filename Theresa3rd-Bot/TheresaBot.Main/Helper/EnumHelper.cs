@@ -1,5 +1,6 @@
 ﻿using TheresaBot.Main.Model.VO;
 using TheresaBot.Main.Type;
+using TheresaBot.Main.Type.GameOptions;
 using TheresaBot.Main.Type.StepOptions;
 
 namespace TheresaBot.Main.Helper
@@ -60,6 +61,12 @@ namespace TheresaBot.Main.Helper
             {(int)PixivRankingSortType.BookMarkRate, "收藏率倒序排序"},
             {(int)PixivRankingSortType.Ranking, "点赞数倒序排序"},
             {(int)PixivRankingSortType.RankingRate, "点赞率倒序排序"},
+        };
+
+        public static Dictionary<int, string> UCGameModes => new()
+        {
+            {(int)UCGameMode.Standard, "默认(3平民1卧底1白板)"},
+            {(int)UCGameMode.Customize, "自定义"},
         };
 
         public static string GetTypeName(this TimingSetuSourceType sourceType)

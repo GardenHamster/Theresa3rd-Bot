@@ -28,6 +28,8 @@
         public int SpeakingSeconds { get; set; } = 120;
 
         public int VotingSeconds { get; set; } = 60;
+
+        public int MuteSeconds { get; set; } = 0;
         
         public override BaseConfig FormatConfig()
         {
@@ -36,6 +38,7 @@
             if (PrepareSeconds < 1) PrepareSeconds = 1;
             if (SpeakingSeconds < 10) SpeakingSeconds = 10;
             if (VotingSeconds < 10) VotingSeconds = 10;
+            if (MuteSeconds < 0) MuteSeconds = 0;
             return this;
         }
     }

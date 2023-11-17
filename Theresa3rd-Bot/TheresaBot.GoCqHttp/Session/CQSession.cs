@@ -114,5 +114,11 @@ namespace TheresaBot.GoCqHttp.Session
             await CQHelper.Session.RecallMessageAsync(messageId);
         }
 
+        public override async Task MuteGroupMember(long groupId, long memberId, int seconds)
+        {
+            var duration = TimeSpan.FromSeconds(seconds);
+            await CQHelper.Session.BanGroupMemberAsync(groupId, memberId, duration);
+        }
+
     }
 }

@@ -12,6 +12,11 @@ namespace TheresaBot.Main.Helper
             return await session.SendGroupMessageAsync(groupId, contents, atMembers);
         }
 
+        public static async Task<BaseResult> SendGroupMessageWithAtAsync(this BaseSession session, long groupId, List<long> atMembers, List<BaseContent> contents)
+        {
+            return await session.SendGroupMessageAsync(groupId, contents, atMembers);
+        }
+
         public static async Task<BaseResult[]> SendGroupSetuAsync(this BaseSession session, long groupId, SetuContent setuContent, bool sendImgBehind)
         {
             List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
@@ -64,6 +69,24 @@ namespace TheresaBot.Main.Helper
                 LogHelper.Error(ex, "ReplyFriendErrorAsync异常");
             }
         }
+
+        public static async Task MuteGroupMemberAsync(this BaseSession session, long groupId, List<long> memberIds,int seconds)
+        {
+            try
+            {
+                foreach (var memberId in memberIds)
+                {
+                    await session.MuteGroupMember(groupId, memberId, seconds);
+                    await Task.Delay(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "ReplyFriendErrorAsync异常");
+            }
+        }
+
+        
 
 
 

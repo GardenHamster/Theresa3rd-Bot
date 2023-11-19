@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Exceptions;
+﻿using System.Text;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Relay;
 
@@ -22,9 +23,36 @@ namespace TheresaBot.Main.Game.Undercover
         public List<UCVote> Votes { get; private set; } = new();
 
         /// <summary>
+        /// 本轮可以发言的玩家
+        /// </summary>
+        public List<UCPlayer> SpeechPlayers { get; private set; } = new();
+
+        /// <summary>
+        /// 本轮可以投票的玩家
+        /// </summary>
+        public List<UCPlayer> VotePlayers { get; private set; } = new();
+
+        /// <summary>
+        /// 本轮的投票对象
+        /// </summary>
+        public List<UCPlayer> VoteTargets { get; private set; } = new();
+
+        /// <summary>
         /// 出局成员
         /// </summary>
         public List<UCPlayer> OutPlayers { get; private set; } = new();
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="speechPlayers"></param>
+        /// <param name="votePlayers"></param>
+        public UCRound(List<UCPlayer> speechPlayers, List<UCPlayer> votePlayers)
+        {
+            SpeechPlayers = speechPlayers.ToList();
+            VotePlayers = votePlayers.ToList();
+            VoteTargets = speechPlayers.ToList();
+        }
 
         /// <summary>
         /// 添加一个成员发言记录，如果该成员已经发言，则返回null
@@ -99,9 +127,9 @@ namespace TheresaBot.Main.Game.Undercover
         /// 创建一个子轮
         /// </summary>
         /// <returns></returns>
-        public UCRound CreateSubRound()
+        public UCRound CreateSubRound(List<UCPlayer> speechPlayers, List<UCPlayer> votePlayers)
         {
-            var subRound = new UCRound();
+            var subRound = new UCRound(speechPlayers, votePlayers);
             SubRounds.Add(subRound);
             return subRound;
         }
@@ -122,8 +150,71 @@ namespace TheresaBot.Main.Game.Undercover
         /// <returns></returns>
         public List<UCVoteResult> GetMaxVotes()
         {
-            var resultList = Votes.GroupBy(o => o.Target).Select(o => new UCVoteResult(o.Key, o.Count())).ToList();
-            return resultList.Maxs(o => o.VoteNum);
+            return GetVotes().Maxs(o => o.VoteNum);
+        }
+
+        /// <summary>
+        /// 获取被投票数最多玩家
+        /// </summary>
+        /// <returns></returns>
+        public List<UCVoteResult> GetVotes()
+        {
+            return Votes.GroupBy(o => o.Target).Select(o => new UCVoteResult(o.Key, o.Count())).ToList();
+        }
+
+        /// <summary>
+        /// 根据QQ获取玩家
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public UCPlayer GetVoter(long memberId)
+        {
+            return VotePlayers.FirstOrDefault(o => o.MemberId == memberId);
+        }
+
+        /// <summary>
+        /// 根据Id获取玩家
+        /// </summary>
+        /// <param name="playerId"></param>
+        /// <returns></returns>
+        public UCPlayer GetVoteTarget(string playerId)
+        {
+            if (string.IsNullOrWhiteSpace(playerId)) return null;
+            int id = playerId.Trim().ToInt();
+            if (id <= 0) return null;
+            return VoteTargets.FirstOrDefault(o => o.PlayerId == id);
+        }
+
+        /// <summary>
+        /// 获取玩家列表
+        /// </summary>
+        /// <param name="players"></param>
+        /// <returns></returns>
+        public string ListVoteTargets()
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (var player in VoteTargets)
+            {
+                if (builder.Length > 0) builder.AppendLine();
+                builder.Append($"{player.PlayerId}：{player.MemberName}");
+            }
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// 返回票数统计信息
+        /// </summary>
+        /// <returns></returns>
+        public string ListVotedCount()
+        {
+            var builder = new StringBuilder();
+            foreach (var player in VoteTargets)
+            {
+                if (builder.Length > 0) builder.AppendLine();
+                var count = Votes.Where(o => o.Target.MemberId == player.MemberId).Count();
+                builder.Append($"{player.MemberName}:{count}票");
+            }
+            return builder.ToString();
         }
 
         /// <summary>

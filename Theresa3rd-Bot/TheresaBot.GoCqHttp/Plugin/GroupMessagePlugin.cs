@@ -35,12 +35,13 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (memberId.IsBanMember()) return; //黑名单成员
 
                 var message = args.Message.Text;
-                var plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
-                var instruction = plainList.FirstOrDefault()?.Trim() ?? "";
+                var plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text?.Trim() ?? string.Empty).ToList();
+                var instruction = plainList.FirstOrDefault()?.Trim() ?? string.Empty;
                 var prefix = instruction.MatchPrefix();
                 var isAt = args.Message.Any(v => v is CqAtMsg atMsg && atMsg.Target == BotConfig.BotQQ);
+                var isQuote = args.Message.Any(v => v is CqReplyMsg qtMsg && qtMsg.UserId == BotConfig.BotQQ);
                 var isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
-                var relay = new CQGroupRelay(args, msgId, message, groupId, memberId);
+                var relay = new CQGroupRelay(args, msgId, message, groupId, memberId, isAt, isQuote, isInstruct);
 
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
                 if (GameCahce.HandleGameMessage(relay)) return; //处理游戏消息

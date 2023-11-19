@@ -8,6 +8,15 @@ namespace TheresaBot.Main.Game
     public abstract class BaseGame
     {
         /// <summary>
+        /// 是否已经结束
+        /// </summary>
+        public bool IsStarted { get; protected set; }
+
+        /// <summary>
+        /// 是否已经结束
+        /// </summary>
+        public bool IsEnded { get; protected set; }
+        /// <summary>
         /// 游戏所在群
         /// </summary>
         public long GroupId { get; set; }
@@ -19,10 +28,6 @@ namespace TheresaBot.Main.Game
         /// 游戏名称
         /// </summary>
         public abstract string GameName { get; }
-        /// <summary>
-        /// 是否已经结束
-        /// </summary>
-        public bool IsEnded { get; protected set; }
         /// <summary>
         /// 开始游戏线程
         /// </summary>

@@ -55,9 +55,10 @@ namespace TheresaBot.Main.Cache
             {
                 long groupId = command.GroupId;
                 BaseGame baseGame = GetGameByGroup(groupId);
-                if (baseGame is null || baseGame.IsEnded)
+                if (baseGame is null || baseGame.IsEnded == false)
                 {
                     GameDic[groupId] = newGame;
+                    return;
                 }
                 throw new GameException("群内的另一个游戏正在进行中");
             }

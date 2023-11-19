@@ -17,7 +17,7 @@ namespace TheresaBot.Main.Game
         /// <summary>
         /// 游戏开始时间
         /// </summary>
-        public DateTime? StartTime { get; set; }
+        public DateTime? CreateTime { get; set; }
         /// <summary>
         /// 游戏结束时间
         /// </summary>
@@ -25,11 +25,11 @@ namespace TheresaBot.Main.Game
         /// <summary>
         /// 最小加入人数
         /// </summary>
-        public int MinPlayer { get; protected set; }
+        public abstract int MinPlayer { get; protected set; }
         /// <summary>
         /// 组队时间
         /// </summary>
-        public int MatchSecond { get; protected set; }
+        public abstract int MatchSecond { get; protected set; }
         /// <summary>
         /// 玩家列表
         /// </summary>
@@ -68,13 +68,13 @@ namespace TheresaBot.Main.Game
             {
                 try
                 {
-                    StartTime = DateTime.Now;
+                    CreateTime = DateTime.Now;
                     Console.WriteLine($"{GameName}游戏已启动...");
                     await WaitPlayerAsync();
                     await CheckEnded();
                     await Session.SendGroupMessageAsync(GroupId, $"玩家集结完毕，游戏将在5秒后开始...");
-                    await Task.Delay(5000);
-                    await CheckEnded();
+                    await CheckEndedAndDelay(5000);
+                    IsStarted = true;
                     Console.WriteLine($"{GameName}游戏已开始...");
                     await GameProcessingAsync();
                     Console.WriteLine($"{GameName}游戏已完成...");
@@ -93,12 +93,6 @@ namespace TheresaBot.Main.Game
                 {
                     await Session.SendGroupMessageAsync(GroupId, ex.RemindMessage);
                 }
-                catch (Exception ex)
-                {
-                    LogHelper.Error(ex, $"{GameName}游戏异常");
-                    await Session.SendGroupMessageAsync(GroupId, $"{GameName}游戏异常");
-                    await Reporter.SendError(ex, $"{GameName}游戏异常");
-                }
                 finally
                 {
                     IsEnded = true;
@@ -116,12 +110,12 @@ namespace TheresaBot.Main.Game
         public virtual async Task WaitPlayerAsync()
         {
             int waitSeconds = MatchSecond;
-            string commandStr = BotConfig.GameConfig.Undercover.CreateCommands.JoinCommands();
+            string joinCommandStr = BotConfig.GameConfig.JoinCommands.JoinCommands();
             List<BaseContent> remindContents = new List<BaseContent>();
             remindContents.Add(new PlainContent($"{GameName}游戏创建完毕"));
-            remindContents.Add(new PlainContent($"距离游戏开始所需人数为：{MinPlayer}个"));
-            remindContents.Add(new PlainContent($"游戏匹配时长为{MatchSecond}秒，指定时间内未达到该人数游戏将会终止"));
-            remindContents.Add(new PlainContent($"发送群指令 {commandStr} 可以加入游戏"));
+            remindContents.Add(new PlainContent($"距离游戏开始剩余人数为：{MinPlayer - Players.Count}个"));
+            remindContents.Add(new PlainContent($"游戏匹配时长为 {MatchSecond} 秒，指定时间内未达到该人数游戏将会终止"));
+            remindContents.Add(new PlainContent($"发送群指令 【{joinCommandStr}】 可以加入该游戏"));
             await Session.SendGroupMessageAsync(GroupId, remindContents);
             while (Players.Count < MinPlayer)
             {
@@ -132,64 +126,43 @@ namespace TheresaBot.Main.Game
             }
         }
 
-        public virtual void PlayerJoinAsync(T player)
+        /// <summary>
+        /// 玩家加入游戏判断逻辑
+        /// </summary>
+        /// <param name="player"></param>
+        /// <exception cref="GameException"></exception>
+        public void PlayerJoinAsync(T player)
         {
             lock (Players)
             {
                 if (IsEnded)
                 {
-                    throw new GameStopException();
+                    throw new GameException("游戏已经结束了~");
+                }
+                if (IsStarted)
+                {
+                    throw new GameException("游戏已经开始了~");
                 }
                 if (Players.Count >= MinPlayer)
                 {
-                    throw new GameException("游戏已经满员了");
+                    throw new GameException("游戏已经满员了~");
                 }
                 if (Players.Any(o => o.MemberId == player.MemberId))
                 {
-                    throw new GameException("你已经加入游戏了，请耐心等待游戏开始");
+                    throw new GameException("你已经加入该游戏了，请耐心等待游戏开始");
                 }
-                player.PlayerId = Players.Count + 1;
-                Players.Add(player);
+                AddPlayer(player);
             }
         }
 
         /// <summary>
-        /// 根据Id获取玩家
+        /// 向游戏中添加一个玩家
         /// </summary>
-        /// <param name="playerId"></param>
-        /// <returns></returns>
-        protected T GetPlayer(string playerIdStr)
+        /// <param name="player"></param>
+        public void AddPlayer(T player)
         {
-            if (string.IsNullOrWhiteSpace(playerIdStr)) return null;
-            int playerId = playerIdStr.Trim().ToInt();
-            if (playerId <= 0) return null;
-            return Players.FirstOrDefault(o => o.PlayerId == playerId);
-        }
-
-        /// <summary>
-        /// 根据QQ获取玩家
-        /// </summary>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        protected T GetPlayer(long memberId)
-        {
-            return Players.FirstOrDefault(o => o.MemberId == memberId);
-        }
-
-        /// <summary>
-        /// 获取玩家列表
-        /// </summary>
-        /// <param name="players"></param>
-        /// <returns></returns>
-        protected string ListPlayer(List<T> players)
-        {
-            StringBuilder builder = new StringBuilder();
-            foreach (T player in players)
-            {
-                if (builder.Length > 0) builder.AppendLine();
-                builder.Append($"{player.PlayerId}：{player.MemberName}");
-            }
-            return builder.ToString();
+            player.SetPlayerId(Players.Count + 1);
+            Players.Add(player);
         }
 
         /// <summary>

@@ -25,9 +25,11 @@ namespace TheresaBot.MiraiHttpApi.Session
             if (contents.Count == 0) return MiraiResult.Undo;
             List<IChatMessage> msgList = new List<IChatMessage>();
             if (isAtAll) msgList.Add(new AtAllMessage());
-            if (atMembers is not null)
+            if (atMembers is null) atMembers = new();
+            foreach (long memberId in atMembers)
             {
-                foreach (long memberId in atMembers) msgList.Add(new AtMessage(memberId));
+                msgList.Add(new AtMessage(memberId));
+                msgList.Add(new PlainMessage(" "));
             }
             msgList.AddRange(await contents.ToMiraiMessageAsync(UploadTarget.Group));
             var msgId = await MiraiHelper.Session.SendGroupMessageAsync(groupId, msgList.ToArray());

@@ -2,7 +2,7 @@
 {
     public abstract class BasePlayer
     {
-        public int PlayerId { get; set; }
+        public int PlayerId { get; private set; }
 
         public long MemberId { get; private set; }
 
@@ -13,5 +13,11 @@
             MemberId = memberId;
             MemberName = memberName;
         }
+
+        public void SetPlayerId(int id)
+        {
+            PlayerId = id;
+        }
+
     }
 }

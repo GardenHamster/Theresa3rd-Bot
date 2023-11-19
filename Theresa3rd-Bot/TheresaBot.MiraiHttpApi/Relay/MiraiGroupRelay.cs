@@ -8,7 +8,10 @@ namespace TheresaBot.MiraiHttpApi.Relay
     {
         public IGroupMessageEventArgs Args { get; set; }
 
-        public MiraiGroupRelay(IGroupMessageEventArgs args, long msgId, string message, long groupId, long memberId) : base(msgId, message, groupId, memberId)
+        public override long QuoteMsgId => Args.Chain.OfType<QuoteMessage>().FirstOrDefault()?.Id ?? 0;
+
+        public MiraiGroupRelay(IGroupMessageEventArgs args, long msgId, string message, long groupId, long memberId, bool isAt, bool isQuote, bool isInstruct)
+            : base(msgId, message, groupId, memberId, isAt, isQuote, isInstruct)
         {
             this.Args = args;
         }

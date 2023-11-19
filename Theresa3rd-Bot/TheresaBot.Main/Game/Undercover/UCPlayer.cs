@@ -1,15 +1,11 @@
-﻿using System.Numerics;
-using System.Text.RegularExpressions;
-using TheresaBot.Main.Command;
-
-namespace TheresaBot.Main.Game.Undercover
+﻿namespace TheresaBot.Main.Game.Undercover
 {
     public class UCPlayer : BasePlayer
     {
         /// <summary>
         /// 玩家身份
         /// </summary>
-        public UCPlayerCamp PlayerCamp { get; set; }
+        public UCPlayerCamp PlayerCamp { get; set; } = UCPlayerCamp.None;
 
         /// <summary>
         /// 玩家词条

@@ -1,4 +1,5 @@
 ﻿using TheresaBot.Main.Dao;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
 
 namespace TheresaBot.Main.Services
@@ -12,14 +13,14 @@ namespace TheresaBot.Main.Services
             ucWordDao = new UCWordDao();
         }
 
-        public void AddWords(string[] wordArr, long memberId, bool isAuthed)
+        public void AddWords(string[] wordArr, long memberId)
         {
             UCWordPO wordPO = new UCWordPO
             {
                 Word1 = wordArr[0],
                 Word2 = wordArr[1],
-                CreateMember = memberId,
-                IsAuthorized = isAuthed,
+                CreateMember = memberId.IsSuperManager() ? 0 : memberId,
+                IsAuthorized = memberId.IsSuperManager(),
                 CreateDate = DateTime.Now,
             };
             ucWordDao.Insert(wordPO);

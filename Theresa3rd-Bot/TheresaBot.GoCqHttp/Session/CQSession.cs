@@ -26,7 +26,11 @@ namespace TheresaBot.GoCqHttp.Session
             List<CqMsg> msgList = new List<CqMsg>();
             if (isAtAll) msgList.Add(CqAtMsg.AtAll);
             if (atMembers is null) atMembers = new();
-            foreach (long memberId in atMembers) msgList.Add(new CqAtMsg(memberId));
+            foreach (long memberId in atMembers)
+            {
+                msgList.Add(new CqAtMsg(memberId));
+                msgList.Add(new CqTextMsg(" "));
+            }
             msgList.AddRange(contents.ToCQMessageAsync());
             var result = await CQHelper.Session.SendGroupMessageAsync(groupId, new CqMessage(msgList));
             return new CQResult(result, result.MessageId);

@@ -58,9 +58,10 @@ namespace TheresaBot.Main.Handler
                     int[] nums = await AskCharacterNums(command);
                     ucGame = new UCGame(command, Session, Reporter, nums[0], nums[1], nums[2]);
                 }
-                await Session.SendGroupMessageAsync(command.GroupId, $"正在创建{ucGame.GameName}游戏，其中平民：{ucGame.CivAmount}个，卧底：{ucGame.UcAmount}个，白板：{ucGame.WbAmount}个");
+                await Session.SendGroupMessageAsync(command.GroupId, $"正在创建{ucGame.GameName}游戏，其中平民{ucGame.CivAmount}个，卧底{ucGame.UcAmount}个，白板{ucGame.WbAmount}个");
                 await Task.Delay(1000);
                 GameCahce.CreateGame(command, ucGame);
+                ucGame.AddPlayer(new UCPlayer(command.MemberId, command.MemberName));
                 await ucGame.StartProcessing();
             }
             catch (ProcessException ex)
@@ -110,7 +111,7 @@ namespace TheresaBot.Main.Handler
                 foreach (var item in newWords)
                 {
                     if(ucWordService.CheckWordExist(item)) continue;
-                    ucWordService.AddWords(item, memberId, isSuperManager);
+                    ucWordService.AddWords(item, memberId);
                 }
                 if (isSuperManager)
                 {

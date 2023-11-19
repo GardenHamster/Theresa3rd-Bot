@@ -8,8 +8,10 @@ namespace TheresaBot.GoCqHttp.Relay
     {
         public CqGroupMessagePostContext Args { get; set; }
 
-        public CQGroupRelay(CqGroupMessagePostContext args, long msgId, string message, long groupId, long memberId)
-            : base(msgId, message, groupId, memberId)
+        public override long QuoteMsgId => Args.Message.OfType<CqReplyMsg>().FirstOrDefault()?.Id ?? 0;
+
+        public CQGroupRelay(CqGroupMessagePostContext args, long msgId, string message, long groupId, long memberId, bool isAt, bool isQuote, bool isInstruct)
+            : base(msgId, message, groupId, memberId, isAt, isQuote, isInstruct)
         {
             Args = args;
         }

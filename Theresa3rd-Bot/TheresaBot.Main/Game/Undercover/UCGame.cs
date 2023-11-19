@@ -182,11 +182,13 @@ namespace TheresaBot.Main.Game.Undercover
             await Session.SendGroupMessageAsync(GroupId, $"词条派发完毕，请各位查看私聊，如未收到私聊，请尝试添加本Bot为好友，然后在群内发送 {UCConfig.SendWordCommands.JoinCommands()} 重新私发词条。请各位组织语言，发言环节将在{UCConfig.PrepareSeconds}秒后开始...");
             await Task.Delay(UCConfig.PrepareSeconds * 1000);
             await CheckEnded();
-            while (IsSomeoneWin == false)
+            while (true)
             {
-                CurrentRound = new UCRound(LivePlayers, LivePlayers);
+                var parentRound = new UCRound(LivePlayers, LivePlayers);
+                var parentMemberIds = parentRound.VotePlayers.Select(o => o.MemberId).ToList();
+                CurrentRound = parentRound;
                 GameRounds.Add(CurrentRound);
-                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"现在开始第 {GameRounds.Count} 轮发言，请各位在收到艾特消息后再进行发言...");
+                await Session.SendGroupMessageWithAtAsync(GroupId, parentMemberIds, $"现在开始第 {GameRounds.Count} 轮发言，请各位在收到艾特消息后再进行发言...");
                 await CheckEndedAndDelay(1000);
                 await PlayersSpeech(CurrentRound);//发言环节
                 await CheckEndedAndDelay(1000);
@@ -195,16 +197,20 @@ namespace TheresaBot.Main.Game.Undercover
                 {
                     await CheckEnded();
                     var subPlayers = voteResults.Select(o => o.Player).ToList();
-                    var subMemberIds = voteResults.Select(o => o.Player.MemberId).ToList();
-                    CurrentRound = CurrentRound.CreateSubRound(subPlayers,LivePlayers);
+                    CurrentRound = CurrentRound.CreateSubRound(subPlayers, LivePlayers);
+                    var subMemberIds = CurrentRound.VotePlayers.Select(o => o.MemberId).ToList();
                     await Session.SendGroupMessageWithAtAsync(GroupId, subMemberIds, $"投票后仍有{subMemberIds.Count}位玩家票数相同，请{subMemberIds.Count}位玩家按照提示继续发言...");
                     await CheckEndedAndDelay(1000);
                     await PlayersSpeech(CurrentRound);//发言环节
                     await CheckEndedAndDelay(1000);
                     voteResults = await PlayersVote(CurrentRound);//投票环节
                 }
+
                 var outPlayer = voteResults.First().Player;
-                CurrentRound.End(outPlayer);
+                parentRound.End(outPlayer);
+                if (IsSomeoneWin) return;
+
+                await Session.SendGroupMessageAsync(GroupId, $"游戏继续...");
                 await CheckEndedAndDelay(1000);
             }
         }

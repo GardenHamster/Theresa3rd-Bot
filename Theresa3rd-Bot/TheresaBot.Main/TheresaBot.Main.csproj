@@ -22,13 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Controller\SubscribeController.cs~RF199a2582.TMP" />
-	  <None Remove="Model\Config\GameConfig.cs~RF207d7921.TMP" />
-	  <None Remove="Model\Process\t2itkesl.mfx~" />
-	  <None Remove="Timers\SchedulerManager.cs~RF6b4b5c8.TMP" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="AngleSharp" Version="0.17.1" />
 		<PackageReference Include="jieba.NET" Version="0.42.2" />
 		<PackageReference Include="log4net" Version="2.0.15" />

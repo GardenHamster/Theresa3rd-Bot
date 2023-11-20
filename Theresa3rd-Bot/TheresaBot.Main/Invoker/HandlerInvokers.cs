@@ -556,6 +556,14 @@ namespace TheresaBot.Main.Invoker
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
+            //添加谁是卧底词条
+            new(BotConfig.GameConfig?.Undercover?.AddWordCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                UndercoverHandler handler = new UndercoverHandler(session, reporter);
+                await handler.CreateWords(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
         };
 
         public readonly static List<CommandHandler<GroupQuoteCommand>> GroupQuoteCommands = new()

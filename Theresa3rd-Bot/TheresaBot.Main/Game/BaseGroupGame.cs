@@ -1,5 +1,4 @@
-﻿using System.Text;
-using TheresaBot.Main.Command;
+﻿using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
@@ -39,12 +38,17 @@ namespace TheresaBot.Main.Game
         /// </summary>
         public List<long> MemberIds => Players.Select(o => o.MemberId).Distinct().ToList();
         /// <summary>
-        /// 游戏主持线程
+        /// 游戏启动钩子
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task GameCreatedAsync();
+        /// <summary>
+        /// 游戏进行中钩子
         /// </summary>
         /// <returns></returns>
         public abstract Task GameProcessingAsync();
         /// <summary>
-        /// 游戏结束线程
+        /// 游戏结束钩子
         /// </summary>
         /// <returns></returns>
         public abstract Task GameEndingAsync();
@@ -69,8 +73,9 @@ namespace TheresaBot.Main.Game
                 try
                 {
                     CreateTime = DateTime.Now;
-                    Console.WriteLine($"{GameName}游戏已启动...");
-                    await WaitPlayerAsync();
+                    await GameCreatedAsync();
+                    Console.WriteLine($"{GameName}游戏已创建...");
+                    await PlayerWaitingAsync();
                     await CheckEnded();
                     await Session.SendGroupMessageAsync(GroupId, $"玩家集结完毕，游戏将在5秒后开始...");
                     await CheckEndedAndDelay(5000);
@@ -78,6 +83,7 @@ namespace TheresaBot.Main.Game
                     Console.WriteLine($"{GameName}游戏已开始...");
                     await GameProcessingAsync();
                     Console.WriteLine($"{GameName}游戏已完成...");
+                    await CheckEnded();
                     await GameEndingAsync();
                     Console.WriteLine($"{GameName}游戏已结束...");
                 }
@@ -107,12 +113,11 @@ namespace TheresaBot.Main.Game
         /// 等待玩家线程
         /// </summary>
         /// <returns></returns>
-        public virtual async Task WaitPlayerAsync()
+        public virtual async Task PlayerWaitingAsync()
         {
             int waitSeconds = MatchSecond;
             string joinCommandStr = BotConfig.GameConfig.JoinCommands.JoinCommands();
             List<BaseContent> remindContents = new List<BaseContent>();
-            remindContents.Add(new PlainContent($"{GameName}游戏创建完毕"));
             remindContents.Add(new PlainContent($"距离游戏开始剩余人数为：{MinPlayer - Players.Count}个"));
             remindContents.Add(new PlainContent($"游戏匹配时长为 {MatchSecond} 秒，指定时间内未达到该人数游戏将会终止"));
             remindContents.Add(new PlainContent($"发送群指令 【{joinCommandStr}】 可以加入该游戏"));

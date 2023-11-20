@@ -165,6 +165,15 @@ namespace TheresaBot.Main.Game.Undercover
             }
         }
 
+        public override async Task GameCreatedAsync()
+        {
+            var remindContents = new List<BaseContent>();
+            var addWordCommands = BotConfig.GameConfig.Undercover.AddWordCommands;
+            remindContents.Add(new PlainContent($"{GameName}游戏创建完毕"));
+            remindContents.Add(new PlainContent($"私聊使用指令 {addWordCommands.JoinCommands()} 可以添加自定义词条"));
+            await Session.SendGroupMessageAsync(GroupId, remindContents);
+        }
+
         /// <summary>
         /// 处理游戏流程
         /// </summary>

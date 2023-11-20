@@ -84,14 +84,19 @@ namespace TheresaBot.Main.Handler
             {
                 var maxCount = 5;//非超级管理员限制添加词条数量
                 var memberId = command.MemberId;
-                var isSuperManager = memberId.IsSuperManager();
+                var isManager = memberId.IsSuperManager();
                 var unauthCount = ucWordService.GetUnauthorizedCount(command.MemberId);
-                if (isSuperManager == false && unauthCount >= maxCount)
+                if (isManager == false && unauthCount >= maxCount)
                 {
                     await command.ReplyFriendMessageAsync($"已添加{unauthCount}个未经审核的词条，请等待超级管理员审核完毕后继续添加");
                     return;
                 }
-                var newWords = new List<string[]>();
+
+                var newWords = await AskNewWords(command);
+
+
+
+
                 var splitArr = command.KeyWord.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var item in splitArr)
                 {
@@ -102,7 +107,7 @@ namespace TheresaBot.Main.Handler
                     if (wordArr[1].Length == 0) throw new HandlerException($"词条 {item} 格式不正确，添加失败");
                     newWords.Add(wordArr);
                 }
-                if (isSuperManager == false)
+                if (isManager == false)
                 {
                     newWords = newWords.Take(maxCount - unauthCount).ToList();
                     await command.ReplyFriendMessageAsync($"非超级管理员限制添加词条个数为{maxCount}个，剩余可添加词条{newWords.Count}个，等待管理员审核后可以添加更多词条");
@@ -113,7 +118,7 @@ namespace TheresaBot.Main.Handler
                     if(ucWordService.CheckWordExist(item)) continue;
                     ucWordService.AddWords(item, memberId);
                 }
-                if (isSuperManager)
+                if (isManager)
                 {
                     await command.ReplyFriendMessageAsync("添加完毕");
                 }
@@ -135,7 +140,6 @@ namespace TheresaBot.Main.Handler
         private async Task<UCGameMode> AskGameModeAsync(GroupCommand command)
         {
             var processInfo = ProcessCache.CreateProcess(command);
-
             var modeStep = processInfo.CreateStep($"请在60秒内发送数字选择游戏模式\r\n{EnumHelper.UCGameModes.JoinToString()}", CheckUCModeAsync);
             await processInfo.StartProcessing();
             return modeStep.Answer;
@@ -145,6 +149,14 @@ namespace TheresaBot.Main.Handler
         {
             var processInfo = ProcessCache.CreateProcess(command);
             var modeStep = processInfo.CreateStep($"请在60秒内发送 平民 卧底 白板 的数量，每个数字之间用空格隔开", CheckCharacterNumsAsync);
+            await processInfo.StartProcessing();
+            return modeStep.Answer;
+        }
+
+        private async Task<List<string[]>> AskNewWords(FriendCommand command)
+        {
+            var processInfo = ProcessCache.CreateProcess(command);
+            var modeStep = processInfo.CreateStep($"请在60秒内发送词条，每个词条之间用空格隔开，多个词组之间换行隔开", CheckNewWordsAsync);
             await processInfo.StartProcessing();
             return modeStep.Answer;
         }
@@ -188,6 +200,11 @@ namespace TheresaBot.Main.Handler
                 throw new ProcessException("平民+卧底+白板数量必须在3人及以上");
             }
             return await Task.FromResult(new int[] { civNum, ucNum, wbNum });
+        }
+
+        private async Task<List<string[]>> CheckNewWordsAsync(string value)
+        {
+
         }
 
 

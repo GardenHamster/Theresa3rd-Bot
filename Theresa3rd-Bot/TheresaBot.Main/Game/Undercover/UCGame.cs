@@ -75,11 +75,11 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 卧底是否已经获胜
         /// </summary>
-        public bool IsUndercoverWin => Players.Where(o => o.IsOut == false).All(o => o.PlayerCamp == UCPlayerCamp.Undercover);
+        public bool IsUndercoverWin => Players.Where(o => o.PlayerCamp == UCPlayerCamp.Civilian).All(o => o.IsOut) || (LivePlayers.Count() <= 2 && LivePlayers.All(o => o.PlayerCamp == UCPlayerCamp.Civilian || o.PlayerCamp == UCPlayerCamp.Undercover));
         /// <summary>
         /// 白板是否已经获胜
         /// </summary>
-        public bool IsWhiteboardWin => Players.Where(o => o.IsOut == false).All(o => o.PlayerCamp == UCPlayerCamp.Whiteboard);
+        public bool IsWhiteboardWin => Players.Where(o => o.PlayerCamp != UCPlayerCamp.Whiteboard).All(o => o.IsOut);
         /// <summary>
         /// 最小加入人数
         /// </summary>
@@ -94,10 +94,9 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         public UCGame(GroupCommand command, BaseSession session, BaseReporter reporter) : base(command, session, reporter)
         {
-            CivAmount = 1;
-            //CivAmount = 3;
+            CivAmount = 3;
             UcAmount = 1;
-            WbAmount = 1;
+            WbAmount = 0;
             MinPlayer = CivAmount + UcAmount + WbAmount;
             MatchSecond = BotConfig.GameConfig.Undercover.MatchSeconds;
         }
@@ -115,6 +114,8 @@ namespace TheresaBot.Main.Game.Undercover
             WbAmount = wbNum;
             MinPlayer = CivAmount + UcAmount + WbAmount;
             MatchSecond = BotConfig.GameConfig.Undercover.MatchSeconds;
+            if (MinPlayer < 4) throw new GameException("游戏创建失败，游戏至少需要4名玩家");
+            if (MinPlayer < 5 && WbAmount > 0) throw new GameException("游戏创建失败，玩家达到5人及以上才可以加入白板");
         }
 
         /// <summary>

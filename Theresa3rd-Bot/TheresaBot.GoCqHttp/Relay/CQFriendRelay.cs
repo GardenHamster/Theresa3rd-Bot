@@ -8,7 +8,7 @@ namespace TheresaBot.GoCqHttp.Relay
     {
         public CqPrivateMessagePostContext Args { get; set; }
 
-        public CQFriendRelay(CqPrivateMessagePostContext args, int msgId, string message, long memberId) : base(msgId, message, memberId)
+        public CQFriendRelay(CqPrivateMessagePostContext args, long msgId, string message, long memberId, bool isInstruct) : base(msgId, message, memberId, isInstruct)
         {
             Args = args;
         }

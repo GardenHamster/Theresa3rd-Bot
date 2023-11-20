@@ -8,7 +8,7 @@ namespace TheresaBot.MiraiHttpApi.Relay
     {
         public IFriendMessageEventArgs Args { get; set; }
 
-        public MiraiFriendRelay(IFriendMessageEventArgs args, int msgId, string message, long memberId) : base(msgId, message, memberId)
+        public MiraiFriendRelay(IFriendMessageEventArgs args, int msgId, string message, long memberId, bool isInstruct) : base(msgId, message, memberId, isInstruct)
         {
             this.Args = args;
         }

@@ -2,13 +2,13 @@
 {
     public abstract class GroupRelay : BaseRelay
     {
-        public long GroupId { get; set; }
+        public long GroupId { get; init; }
 
-        public bool IsAt { get; set; }
+        public bool IsAt { get; init; }
 
-        public bool IsQuote { get; set; }
+        public bool IsQuote { get; init; }
 
-        public bool IsInstruct { get; set; }
+        public bool IsInstruct { get; init; }
 
         public abstract long QuoteMsgId { get; }
 

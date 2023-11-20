@@ -4,6 +4,7 @@ using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Game.Undercover;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Relay;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
@@ -91,27 +92,11 @@ namespace TheresaBot.Main.Handler
                     await command.ReplyFriendMessageAsync($"已添加{unauthCount}个未经审核的词条，请等待超级管理员审核完毕后继续添加");
                     return;
                 }
-
                 var newWords = await AskNewWords(command);
-
-
-
-
-                var splitArr = command.KeyWord.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var item in splitArr)
+                if (isManager == false && unauthCount + newWords.Count > maxCount)
                 {
-                    if (string.IsNullOrWhiteSpace(item)) continue;
-                    var wordArr = item.Trim().Split(" ", StringSplitOptions.RemoveEmptyEntries);
-                    if (wordArr.Length != 2) throw new HandlerException($"词条 {item} 格式不正确，添加失败");
-                    if (wordArr[0].Length == 0) throw new HandlerException($"词条 {item} 格式不正确，添加失败");
-                    if (wordArr[1].Length == 0) throw new HandlerException($"词条 {item} 格式不正确，添加失败");
-                    newWords.Add(wordArr);
-                }
-                if (isManager == false)
-                {
-                    newWords = newWords.Take(maxCount - unauthCount).ToList();
                     await command.ReplyFriendMessageAsync($"非超级管理员限制添加词条个数为{maxCount}个，剩余可添加词条{newWords.Count}个，等待管理员审核后可以添加更多词条");
-                    await Task.Delay(1000);
+                    return;
                 }
                 foreach (var item in newWords)
                 {
@@ -202,9 +187,24 @@ namespace TheresaBot.Main.Handler
             return await Task.FromResult(new int[] { civNum, ucNum, wbNum });
         }
 
-        private async Task<List<string[]>> CheckNewWordsAsync(string value)
+        private async Task<List<string[]>> CheckNewWordsAsync(BaseRelay relay)
         {
-
+            var newWords = new List<string[]>();
+            var splitArr = relay.Message.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var item in splitArr)
+            {
+                if (string.IsNullOrWhiteSpace(item)) continue;
+                var words = item.Trim().Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                if (words.Length != 2) throw new ProcessException($"词条 {item} 格式不正确，添加失败");
+                if (words[0].Length == 0) throw new ProcessException($"词条 {item} 格式不正确，添加失败");
+                if (words[1].Length == 0) throw new ProcessException($"词条 {item} 格式不正确，添加失败");
+                newWords.Add(words);
+            }
+            if (newWords.Count == 0)
+            {
+                throw new ProcessException("没有检测到词条，请重新发送");
+            }
+            return await Task.FromResult(newWords);
         }
 
 

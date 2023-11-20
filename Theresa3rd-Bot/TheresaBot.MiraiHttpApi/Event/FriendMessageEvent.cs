@@ -4,11 +4,15 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using TheresaBot.Main.Cache;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Helper;
+using TheresaBot.MiraiHttpApi.Relay;
 
 namespace TheresaBot.MiraiHttpApi.Event
 {
@@ -36,7 +40,10 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 string prefix = prefix = instruction.MatchPrefix();
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
+                var relay = new MiraiFriendRelay(args, msgId, message, memberId, isInstruct);
+
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
+                if (ProcessCache.HandleStep(relay)) return; //分步处理
 
                 MiraiFriendCommand botCommand = GetFriendCommand(args, instruction, prefix);
                 if (botCommand is not null)

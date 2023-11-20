@@ -7,11 +7,9 @@ using Mirai.CSharp.HttpApi.Options;
 using Mirai.CSharp.HttpApi.Session;
 using Mirai.CSharp.Models;
 using TheresaBot.Main.Common;
-using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Infos;
-using TheresaBot.Main.Model.VO;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Event;
 

@@ -70,7 +70,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        public static async Task MuteGroupMemberAsync(this BaseSession session, long groupId, List<long> memberIds,int seconds)
+        public static async Task MuteGroupMemberAsync(this BaseSession session, long groupId, List<long> memberIds, int seconds)
         {
             try
             {
@@ -86,7 +86,7 @@ namespace TheresaBot.Main.Helper
             }
         }
 
-        
+
 
 
 

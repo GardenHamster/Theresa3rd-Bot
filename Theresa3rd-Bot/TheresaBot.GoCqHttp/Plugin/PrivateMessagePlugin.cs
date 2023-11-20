@@ -1,8 +1,6 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using TheresaBot.GoCqHttp.Command;
 using TheresaBot.GoCqHttp.Relay;
 using TheresaBot.Main.Cache;

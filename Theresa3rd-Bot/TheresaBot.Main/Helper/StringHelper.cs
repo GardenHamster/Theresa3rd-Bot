@@ -301,7 +301,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="prefix"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        public static string JoinCommands(this List<string> commands, string prefix="", string separator = "/")
+        public static string JoinCommands(this List<string> commands, string prefix = "", string separator = "/")
         {
             if (string.IsNullOrEmpty(prefix)) prefix = BotConfig.DefaultPrefix;
             return commands?.Select(o => $"{prefix}{o}")?.ToList()?.JoinToString(separator) ?? string.Empty;

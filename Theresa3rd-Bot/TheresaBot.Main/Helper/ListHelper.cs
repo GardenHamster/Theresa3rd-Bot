@@ -19,7 +19,7 @@
             var sortList = sources.OrderByDescending(keySelector);
             var maxValue = keySelector(sources.First());
             var maxsList = new List<TSource>();
-            foreach ( var item in sortList )
+            foreach (var item in sortList)
             {
                 int value = keySelector(item);
                 if (value < maxValue) break;

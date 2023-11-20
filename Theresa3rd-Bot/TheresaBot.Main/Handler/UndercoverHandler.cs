@@ -100,7 +100,7 @@ namespace TheresaBot.Main.Handler
                 }
                 foreach (var item in newWords)
                 {
-                    if(ucWordService.CheckWordExist(item)) continue;
+                    if (ucWordService.CheckWordExist(item)) continue;
                     ucWordService.AddWords(item, memberId);
                 }
                 if (isManager)
@@ -195,9 +195,9 @@ namespace TheresaBot.Main.Handler
             {
                 if (string.IsNullOrWhiteSpace(item)) continue;
                 var words = item.Trim().Split(" ", StringSplitOptions.RemoveEmptyEntries);
-                if (words.Length != 2) throw new ProcessException($"词条 {item} 格式不正确，添加失败");
-                if (words[0].Length == 0) throw new ProcessException($"词条 {item} 格式不正确，添加失败");
-                if (words[1].Length == 0) throw new ProcessException($"词条 {item} 格式不正确，添加失败");
+                if (words.Length != 2) throw new ProcessException($"词组 {item} 格式不正确，添加失败");
+                if (words[0].Length == 0) throw new ProcessException($"词组 {item} 格式不正确，添加失败");
+                if (words[1].Length == 0) throw new ProcessException($"词组 {item} 格式不正确，添加失败");
                 newWords.Add(words);
             }
             if (newWords.Count == 0)

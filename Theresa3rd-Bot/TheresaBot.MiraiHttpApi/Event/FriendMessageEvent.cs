@@ -4,8 +4,6 @@ using Mirai.CSharp.HttpApi.Models.EventArgs;
 using Mirai.CSharp.HttpApi.Parsers;
 using Mirai.CSharp.HttpApi.Parsers.Attributes;
 using Mirai.CSharp.HttpApi.Session;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;

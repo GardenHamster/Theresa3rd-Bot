@@ -34,7 +34,7 @@
         public int VotingSeconds { get; set; } = 60;
 
         public int MuteSeconds { get; set; } = 0;
-        
+
         public override BaseConfig FormatConfig()
         {
             if (CreateCommands is null) CreateCommands = new();

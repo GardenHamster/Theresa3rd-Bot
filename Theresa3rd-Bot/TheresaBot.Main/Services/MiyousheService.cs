@@ -86,7 +86,7 @@ namespace TheresaBot.Main.Services
                 {
                     if (++index > getCount) break;
                     string postId = item.post.post_id;
-                    DateTime createTime = DateTimeHelper.UnixTimeStampToDateTime(item.post.created_at);
+                    DateTime createTime = DateTimeHelper.ToDateTime(item.post.created_at);
                     if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, postId)) continue;
                     SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);

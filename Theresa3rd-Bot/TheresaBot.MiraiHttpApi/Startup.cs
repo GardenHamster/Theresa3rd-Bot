@@ -71,7 +71,10 @@ namespace TheresaBot.MiraiHttpApi
                 TimerManager.InitTimers(session, reporter);
                 SchedulerManager.InitSchedulers(session, reporter);
                 LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£ºv{BotConfig.BotVersion}");
-                Task welcomeTask = MiraiHelper.SendStartUpMessageAsync();
+                if (RunningDatas.RunningSeconds > 60 * 60)
+                {
+                    Task welcomeTask = MiraiHelper.SendStartUpMessageAsync();
+                }
             }
             catch (Exception ex)
             {

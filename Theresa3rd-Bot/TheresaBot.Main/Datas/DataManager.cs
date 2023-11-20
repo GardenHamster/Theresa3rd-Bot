@@ -6,7 +6,9 @@ namespace TheresaBot.Main.Datas
     {
         public static void LoadInitDatas()
         {
+            CountDatas.LoadDatas();
             RunningDatas.LoadDatas();
+            RunningDatas.SaveDatas();
             WebsiteDatas.LoadWebsite();
             SubscribeDatas.LoadSubscribeTask();
             BanTagDatas.LoadDatas();

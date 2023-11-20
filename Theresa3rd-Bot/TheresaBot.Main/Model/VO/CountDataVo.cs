@@ -1,8 +1,8 @@
 ﻿namespace TheresaBot.Main.Model.VO
 {
-    public record RunningDataVo
+    public record CountDataVo
     {
-        public int RunningSeconds { get; set; }
+        public long RunningSeconds { get; set; }
 
         public int HandleTimes { get; set; }
 

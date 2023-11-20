@@ -25,13 +25,13 @@ namespace TheresaBot.Main.Controller
         [Route("single")]
         public ApiResult GetSingle()
         {
-            RunningDataVo data = new RunningDataVo()
+            CountDataVo data = new CountDataVo()
             {
-                RunningSeconds = DateTime.Now.SecondDiff(RunningDatas.StartTime),
-                HandleTimes = RunningDatas.TotalCount.HandleTimes,
-                PixivPushTimes = RunningDatas.TotalCount.PixivPushTimes,
-                PixivScanTimes = RunningDatas.TotalCount.PixivScanTimes,
-                PixivScanError = RunningDatas.TotalCount.PixivScanError,
+                RunningSeconds = RunningDatas.RunningSeconds,
+                HandleTimes = CountDatas.TotalCount.HandleTimes,
+                PixivPushTimes = CountDatas.TotalCount.PixivPushTimes,
+                PixivScanTimes = CountDatas.TotalCount.PixivScanTimes,
+                PixivScanError = CountDatas.TotalCount.PixivScanError,
             };
             return ApiResult.Success(data);
         }
@@ -41,13 +41,13 @@ namespace TheresaBot.Main.Controller
         [Route("total")]
         public ApiResult GetTotal()
         {
-            RunningDataVo data = new RunningDataVo()
+            CountDataVo data = new CountDataVo()
             {
-                RunningSeconds = RunningDatas.TotalCount.RunningSeconds,
-                HandleTimes = RunningDatas.TotalCount.HandleTimes,
-                PixivPushTimes = RunningDatas.TotalCount.PixivPushTimes,
-                PixivScanTimes = RunningDatas.TotalCount.PixivScanTimes,
-                PixivScanError = RunningDatas.TotalCount.PixivScanError,
+                RunningSeconds = RunningDatas.TotalSeconds,
+                HandleTimes = CountDatas.TotalCount.HandleTimes,
+                PixivPushTimes = CountDatas.TotalCount.PixivPushTimes,
+                PixivScanTimes = CountDatas.TotalCount.PixivScanTimes,
+                PixivScanError = CountDatas.TotalCount.PixivScanError,
             };
             return ApiResult.Success(data);
         }

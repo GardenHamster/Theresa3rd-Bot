@@ -21,7 +21,7 @@ namespace TheresaBot.Main.Command
 
         public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
         {
-            RunningDatas.AddHandleTimes();
+            CountDatas.AddHandleTimes();
             return await HandlerInvoker.HandleMethod.Invoke(this, session, reporter);
         }
 

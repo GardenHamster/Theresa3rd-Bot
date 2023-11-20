@@ -2,8 +2,6 @@
 {
     public record CountData
     {
-        public int RunningSeconds { get; set; }
-
         public int HandleTimes { get; set; }
 
         public int PixivPushTimes { get; set; }

@@ -193,6 +193,10 @@ namespace TheresaBot.Main.Game.Undercover
                 await CheckEndedAndDelay(1000);
                 await PlayersSpeech(CurrentRound);//发言环节
                 await CheckEndedAndDelay(1000);
+                await Session.SendGroupMessageAsync(GroupId, "本轮发言完毕，以下是轮的发言记录");
+                await CheckEndedAndDelay(1000);
+                await SendSpeechHistory(CurrentRound);
+                await CheckEndedAndDelay(1000);
                 var voteResults = await PlayersVote(CurrentRound);//投票环节
                 while (voteResults.Count > 1)
                 {
@@ -203,6 +207,10 @@ namespace TheresaBot.Main.Game.Undercover
                     await Session.SendGroupMessageWithAtAsync(GroupId, subMemberIds, $"投票后仍有{subMemberIds.Count}位玩家票数相同，请{subMemberIds.Count}位玩家按照提示继续发言...");
                     await CheckEndedAndDelay(1000);
                     await PlayersSpeech(CurrentRound);//发言环节
+                    await CheckEndedAndDelay(1000);
+                    await Session.SendGroupMessageAsync(GroupId, "本轮发言完毕，以下是轮的发言记录");
+                    await CheckEndedAndDelay(1000);
+                    await SendSpeechHistory(CurrentRound);
                     await CheckEndedAndDelay(1000);
                     voteResults = await PlayersVote(CurrentRound);//投票环节
                 }
@@ -229,7 +237,7 @@ namespace TheresaBot.Main.Game.Undercover
             else if (IsUndercoverWin)
             {
                 WinCamp = UCPlayerCamp.Undercover;
-                winMessage = "卧底干掉了所有人，卧底获胜！";
+                winMessage = "卧底干掉了所有平民，卧底获胜！";
             }
             else if (IsWhiteboardWin)
             {
@@ -263,17 +271,24 @@ namespace TheresaBot.Main.Game.Undercover
 
         private async Task DistWords()
         {
+            string cvWord = UCWord.Word1;
+            string ucWord = UCWord.Word2;
+            if (RandomHelper.RandomBetween(0, 99) < 50)
+            {
+                cvWord = UCWord.Word2;
+                ucWord = UCWord.Word1;
+            }
             for (int i = 0; i < CivAmount; i++)
             {
                 var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
                 player.PlayerCamp = UCPlayerCamp.Civilian;
-                player.PlayerWord = UCWord.Word1;
+                player.PlayerWord = cvWord;
             }
             for (int i = 0; i < UcAmount; i++)
             {
                 var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
                 player.PlayerCamp = UCPlayerCamp.Undercover;
-                player.PlayerWord = UCWord.Word2;
+                player.PlayerWord = ucWord;
             }
             for (int i = 0; i < WbAmount; i++)
             {
@@ -313,6 +328,18 @@ namespace TheresaBot.Main.Game.Undercover
                     WaitingQuote = null;
                 }
             }
+        }
+
+        private async Task SendSpeechHistory(UCRound round)
+        {
+            var contents = new List<ForwardContent>();
+            foreach (var speech in round.Speechs)
+            {
+                var player = speech.Player;
+                var content = new ForwardContent(player.MemberId, player.MemberName, speech.Content);
+                contents.Add(content);
+            }
+            await Session.SendGroupForwardAsync(GroupId, contents);
         }
 
         private async Task<List<UCVoteResult>> PlayersVote(UCRound round)

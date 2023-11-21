@@ -28,7 +28,6 @@ namespace TheresaBot.Main.Model.Pixiv
         public int rating_count { get; set; }
         public int view_count { get; set; }
         public long illust_upload_timestamp { get; set; }
-
         public double Rating_rate => Convert.ToDouble(rating_count) / view_count;
         public bool IsIllust() => illust_type == "0";
         public bool IsR18() => GetTags().IsR18();

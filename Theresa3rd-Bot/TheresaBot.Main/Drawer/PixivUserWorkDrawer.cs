@@ -30,7 +30,7 @@ namespace TheresaBot.Main.Drawer
 
             var imgInfo = new SKImageInfo(canvasWidth, canvasHeight);
             using SKSurface surface = SKSurface.Create(imgInfo);
-            SKCanvas canvas = surface.Canvas;
+            using SKCanvas canvas = surface.Canvas;
             canvas.Clear(SKColors.LightGray);
 
             startX = CellMargin;
@@ -48,7 +48,7 @@ namespace TheresaBot.Main.Drawer
                 var drawing = arrangeList[i];
                 int row = drawing.Row, column = drawing.Column;
                 bool isHorizontal = drawing.IsHorizontal;
-                SKBitmap originBitmap = drawing.OriginBitmap;
+                using SKBitmap originBitmap = drawing.OriginBitmap;
                 var detail = drawing.Detail;
                 startX = areaX + CellMargin * column + CellWidth * (column - 1);
                 startY = areaY + CellMargin * row + CellHeight * (row - 1);

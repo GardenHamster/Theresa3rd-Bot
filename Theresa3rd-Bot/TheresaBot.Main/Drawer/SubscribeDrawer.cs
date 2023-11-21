@@ -41,7 +41,7 @@ namespace TheresaBot.Main.Drawer
 
             var imgInfo = new SKImageInfo(canvasWidth, canvasHeight);
             using SKSurface surface = SKSurface.Create(imgInfo);
-            SKCanvas canvas = surface.Canvas;
+            using SKCanvas canvas = surface.Canvas;
             canvas.Clear(SKColors.White);
 
             startY += TitleMargin;

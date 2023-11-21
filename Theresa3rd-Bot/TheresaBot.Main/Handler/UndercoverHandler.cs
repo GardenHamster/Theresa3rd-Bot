@@ -35,7 +35,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithQuoteAsync("你还未加入游戏，无法获取词条");
                 return;
             }
-            if (player.PlayerCamp == UCPlayerCamp.None)
+            if (player.PlayerCamp == UCCamp.None)
             {
                 await command.ReplyGroupMessageWithQuoteAsync("词条还未派发，请耐心等待...");
                 return;

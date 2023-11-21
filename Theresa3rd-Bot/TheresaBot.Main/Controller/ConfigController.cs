@@ -281,5 +281,23 @@ namespace TheresaBot.Main.Controller
             return ApiResult.Success(config);
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("get/game")]
+        public ApiResult GetGame()
+        {
+            return ApiResult.Success(BotConfig.GameConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/game")]
+        public ApiResult SetGame([FromBody] GameConfig config)
+        {
+            BotConfig.GameConfig = config.FormatConfig();
+            ConfigHelper.GameOperater.SaveConfig(config);
+            return ApiResult.Success(config);
+        }
+
     }
 }

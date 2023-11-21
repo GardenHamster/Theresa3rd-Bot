@@ -8,7 +8,7 @@
 
         public UndercoverConfig Undercover { get; set; }
 
-        public override BaseConfig FormatConfig()
+        public override GameConfig FormatConfig()
         {
             if (JoinCommands is null) JoinCommands = new();
             if (StopCommands is null) StopCommands = new();

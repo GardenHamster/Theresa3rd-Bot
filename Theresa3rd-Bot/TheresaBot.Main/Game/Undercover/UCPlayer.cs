@@ -5,7 +5,7 @@
         /// <summary>
         /// 玩家身份
         /// </summary>
-        public UCPlayerCamp PlayerCamp { get; set; } = UCPlayerCamp.None;
+        public UCCamp PlayerCamp { get; set; } = UCCamp.None;
 
         /// <summary>
         /// 玩家词条
@@ -40,7 +40,7 @@
         /// <returns></returns>
         public string GetWordMessage()
         {
-            if (PlayerCamp == UCPlayerCamp.Whiteboard)
+            if (PlayerCamp == UCCamp.Whiteboard)
             {
                 return $"本轮游戏中，你是白板，词条为空";
             }

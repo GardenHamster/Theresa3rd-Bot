@@ -71,15 +71,15 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 平民是否已经获胜
         /// </summary>
-        public bool IsCivilianWin => Players.Where(o => o.PlayerCamp == UCPlayerCamp.Undercover).All(o => o.IsOut);
+        public bool IsCivilianWin => Players.Where(o => o.PlayerCamp == UCCamp.Undercover).All(o => o.IsOut);
         /// <summary>
         /// 卧底是否已经获胜
         /// </summary>
-        public bool IsUndercoverWin => Players.Where(o => o.PlayerCamp == UCPlayerCamp.Civilian).All(o => o.IsOut) || (LivePlayers.Count() <= 2 && LivePlayers.All(o => o.PlayerCamp == UCPlayerCamp.Civilian || o.PlayerCamp == UCPlayerCamp.Undercover));
+        public bool IsUndercoverWin => Players.Where(o => o.PlayerCamp == UCCamp.Civilian).All(o => o.IsOut) || (LivePlayers.Count() <= 2 && LivePlayers.All(o => o.PlayerCamp == UCCamp.Civilian || o.PlayerCamp == UCCamp.Undercover));
         /// <summary>
         /// 白板是否已经获胜
         /// </summary>
-        public bool IsWhiteboardWin => Players.Where(o => o.PlayerCamp != UCPlayerCamp.Whiteboard).All(o => o.IsOut);
+        public bool IsWhiteboardWin => Players.Where(o => o.PlayerCamp != UCCamp.Whiteboard).All(o => o.IsOut);
         /// <summary>
         /// 最小加入人数
         /// </summary>
@@ -236,21 +236,21 @@ namespace TheresaBot.Main.Game.Undercover
         public override async Task GameEndingAsync()
         {
             var winMessage = string.Empty;
-            var WinCamp = UCPlayerCamp.None;
+            var WinCamp = UCCamp.None;
 
             if (IsCivilianWin)
             {
-                WinCamp = UCPlayerCamp.Civilian;
+                WinCamp = UCCamp.Civilian;
                 winMessage = "平民干掉了所有卧底，平民获胜！";
             }
             else if (IsUndercoverWin)
             {
-                WinCamp = UCPlayerCamp.Undercover;
+                WinCamp = UCCamp.Undercover;
                 winMessage = "卧底干掉了所有平民，卧底获胜！";
             }
             else if (IsWhiteboardWin)
             {
-                WinCamp = UCPlayerCamp.Whiteboard;
+                WinCamp = UCCamp.Whiteboard;
                 winMessage = "白板干掉了所有人，白板获胜！";
             }
 
@@ -289,20 +289,20 @@ namespace TheresaBot.Main.Game.Undercover
             }
             for (int i = 0; i < CivAmount; i++)
             {
-                var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
-                player.PlayerCamp = UCPlayerCamp.Civilian;
+                var player = Players.Where(o => o.PlayerCamp == UCCamp.None).ToList().RandomItem();
+                player.PlayerCamp = UCCamp.Civilian;
                 player.PlayerWord = cvWord;
             }
             for (int i = 0; i < UcAmount; i++)
             {
-                var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
-                player.PlayerCamp = UCPlayerCamp.Undercover;
+                var player = Players.Where(o => o.PlayerCamp == UCCamp.None).ToList().RandomItem();
+                player.PlayerCamp = UCCamp.Undercover;
                 player.PlayerWord = ucWord;
             }
             for (int i = 0; i < WbAmount; i++)
             {
-                var player = Players.Where(o => o.PlayerCamp == UCPlayerCamp.None).ToList().RandomItem();
-                player.PlayerCamp = UCPlayerCamp.Whiteboard;
+                var player = Players.Where(o => o.PlayerCamp == UCCamp.None).ToList().RandomItem();
+                player.PlayerCamp = UCCamp.Whiteboard;
                 player.PlayerWord = string.Empty;
             }
             await Task.CompletedTask;
@@ -375,9 +375,9 @@ namespace TheresaBot.Main.Game.Undercover
         private string GetCampInfos()
         {
             var builder = new StringBuilder();
-            var cvPlayer = Players.Where(o => o.PlayerCamp == UCPlayerCamp.Civilian).ToList();
-            var ucPlayer = Players.Where(o => o.PlayerCamp == UCPlayerCamp.Undercover).ToList();
-            var wbPlayer = Players.Where(o => o.PlayerCamp == UCPlayerCamp.Whiteboard).ToList();
+            var cvPlayer = Players.Where(o => o.PlayerCamp == UCCamp.Civilian).ToList();
+            var ucPlayer = Players.Where(o => o.PlayerCamp == UCCamp.Undercover).ToList();
+            var wbPlayer = Players.Where(o => o.PlayerCamp == UCCamp.Whiteboard).ToList();
             string cvInfo = GetCampInfo(cvPlayer, "平民");
             string ucInfo = GetCampInfo(ucPlayer, "卧底");
             string wbInfo = GetCampInfo(wbPlayer, "白板");

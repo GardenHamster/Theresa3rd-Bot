@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using TheresaBot.Main.Model.Config;
+using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 
 namespace TheresaBot.Main.Model.Yml
@@ -27,14 +29,40 @@ namespace TheresaBot.Main.Model.Yml
         public void SaveConfig(T data)
         {
             data.FormatConfig();
-            var serializer = new SerializerBuilder().Build();
+            var enumConverter = new EnumConverter();
+            var serializer = new SerializerBuilder().WithTypeConverter(enumConverter).Build();
             var yamlContent = serializer.Serialize(data);
             using StreamWriter stream = new StreamWriter(YmlPath, false, Encoding.GetEncoding("gb2312"));
             stream.Write(yamlContent);
             stream.Flush();
             stream.Close();
         }
-
-
     }
+
+    internal class EnumConverter : IYamlTypeConverter
+    {
+        public bool Accepts(System.Type type)
+        {
+            return type.IsEnum;
+        }
+
+        public object ReadYaml(IParser parser, System.Type type)
+        {
+            int enumValue = 0;
+            var value = parser.Consume<Scalar>().Value;
+            if (int.TryParse(value, out enumValue))
+            {
+                return enumValue;
+            }
+            return Enum.Parse(type, value);
+        }
+
+        public void WriteYaml(IEmitter emitter, object value, System.Type type)
+        {
+            var enumValue = (int)value;
+            emitter.Emit(new Scalar(AnchorName.Empty, TagName.Empty, enumValue.ToString(), ScalarStyle.Any, true, false));
+        }
+    }
+
+
 }

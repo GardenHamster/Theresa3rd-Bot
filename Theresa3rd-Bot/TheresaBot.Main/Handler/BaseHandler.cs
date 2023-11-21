@@ -144,7 +144,7 @@ namespace TheresaBot.Main.Handler
             return true;
         }
 
-        public async Task<bool> CheckPixivRankingEnableAsync(GroupCommand command, PixivRankingSafeItem rankingItem)
+        public async Task<bool> CheckPixivRankingEnableAsync(GroupCommand command, PixivRankingItem rankingItem)
         {
             if (command.GroupId.IsPixivRankingAuthorized() == false)
             {

@@ -29,67 +29,67 @@ namespace TheresaBot.Main.Handler
         public async Task SendDailyRanking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Daily;
-            PixivRankingSafeItem rankingItem = BotConfig.PixivRankingConfig.Daily;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Daily;
             await ReplyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task SendDailyAIRanking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.DailyAI;
-            PixivRankingSafeItem rankingItem = BotConfig.PixivRankingConfig.DailyAI;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.DailyAI;
             await ReplyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task SendMaleRanking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Male;
-            PixivRankingSafeItem rankingItem = BotConfig.PixivRankingConfig.Male;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Male;
             await ReplyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task SendWeeklyRanking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Weekly;
-            PixivRankingSafeItem rankingItem = BotConfig.PixivRankingConfig.Weekly;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Weekly;
             await ReplyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task SendMonthlyRanking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Monthly;
-            PixivRankingSafeItem rankingItem = BotConfig.PixivRankingConfig.Monthly;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Monthly;
             await ReplyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task SendDailyR18Ranking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Daily_R18;
-            PixivRankingSafeItem rankingItem = BotConfig.PixivRankingConfig.Daily;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Daily;
             await ReplyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task SendDailyAIR18Ranking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.DailyAI_R18;
-            PixivRankingSafeItem rankingItem = BotConfig.PixivRankingConfig.DailyAI;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.DailyAI;
             await ReplyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task SendMaleR18Ranking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Male_R18;
-            PixivRankingSafeItem rankingItem = BotConfig.PixivRankingConfig.Male;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Male;
             await ReplyRanking(command, rankingMode, rankingItem);
         }
 
         public async Task SendWeeklyR18Ranking(GroupCommand command)
         {
             PixivRankingMode rankingMode = PixivRankingMode.Weekly_R18;
-            PixivRankingSafeItem rankingItem = BotConfig.PixivRankingConfig.Weekly;
+            PixivRankingItem rankingItem = BotConfig.PixivRankingConfig.Weekly;
             await ReplyRanking(command, rankingMode, rankingItem);
         }
 
-        public async Task HandleRankingSubscribeAsync(PixivRankingTimer rankingTimer, PixivRankingSafeItem rankingItem, PixivRankingMode rankingMode)
+        public async Task HandleRankingSubscribeAsync(PixivRankingTimer rankingTimer, PixivRankingItem rankingItem, PixivRankingMode rankingMode)
         {
             try
             {
@@ -205,7 +205,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task ReplyRanking(GroupCommand command, PixivRankingMode rankingMode, PixivRankingSafeItem rankingItem)
+        private async Task ReplyRanking(GroupCommand command, PixivRankingMode rankingMode, PixivRankingItem rankingItem)
         {
             var dateStr = string.Empty;
             var idStr = string.Empty;
@@ -235,7 +235,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task ReplyRankingPreview(GroupCommand command, PixivRankingMode rankingMode, PixivRankingSafeItem rankingItem, string search_date)
+        private async Task ReplyRankingPreview(GroupCommand command, PixivRankingMode rankingMode, PixivRankingItem rankingItem, string search_date)
         {
             try
             {
@@ -295,7 +295,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        private async Task ReplyRankingDetail(GroupCommand command, PixivRankingMode rankingMode, PixivRankingSafeItem rankingItem, string search_date, string idStr)
+        private async Task ReplyRankingDetail(GroupCommand command, PixivRankingMode rankingMode, PixivRankingItem rankingItem, string search_date, string idStr)
         {
             var idList = idStr.SplitToIdList();
             if (idList.Count == 0)

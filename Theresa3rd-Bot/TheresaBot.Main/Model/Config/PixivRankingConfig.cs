@@ -14,11 +14,11 @@ namespace TheresaBot.Main.Model.Config
         public int GroupCD { get; set; }
         public int CacheSeconds { get; set; }
         public int SendDetail { get; set; }
-        public PixivRankingR18Item Daily { get; set; }
-        public PixivRankingR18Item DailyAI { get; set; }
-        public PixivRankingR18Item Male { get; set; }
-        public PixivRankingR18Item Weekly { get; set; }
-        public PixivRankingSafeItem Monthly { get; set; }
+        public PixivRankingItemWithR18 Daily { get; set; }
+        public PixivRankingItemWithR18 DailyAI { get; set; }
+        public PixivRankingItemWithR18 Male { get; set; }
+        public PixivRankingItemWithR18 Weekly { get; set; }
+        public PixivRankingItemWithoutR18 Monthly { get; set; }
         public List<PixivRankingTimer> Subscribes { get; set; } = new();
 
         public override PixivRankingConfig FormatConfig()
@@ -39,10 +39,9 @@ namespace TheresaBot.Main.Model.Config
         }
     }
 
-    public record PixivRankingSafeItem : BaseConfig
+    public abstract record PixivRankingItem : BaseConfig
     {
         public bool Enable { get; set; }
-        public List<string> Commands { get; set; } = new();
         public int MinRatingCount { get; set; }
         public double MinRatingRate { get; set; }
         public int MinBookCount { get; set; }
@@ -54,18 +53,32 @@ namespace TheresaBot.Main.Model.Config
             if (MinRatingRate < 0) MinRatingRate = 0;
             if (MinBookCount < 0) MinBookCount = 0;
             if (MinBookRate < 0) MinBookRate = 0;
+            return this;
+        }
+    }
+
+    public record PixivRankingItemWithoutR18 : PixivRankingItem
+    {
+        public List<string> Commands { get; set; } = new();
+
+        public override BaseConfig FormatConfig()
+        {
+            base.FormatConfig();
             if (Commands is null) Commands = new();
             return this;
         }
     }
 
-    public record PixivRankingR18Item : PixivRankingSafeItem
+    public record PixivRankingItemWithR18 : PixivRankingItem
     {
+        public List<string> Commands { get; set; } = new();
+
         public List<string> R18Commands { get; set; } = new();
 
         public override BaseConfig FormatConfig()
         {
             base.FormatConfig();
+            if (Commands is null) Commands = new();
             if (R18Commands is null) R18Commands = new();
             return this;
         }

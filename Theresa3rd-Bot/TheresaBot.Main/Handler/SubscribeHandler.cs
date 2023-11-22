@@ -32,8 +32,9 @@ namespace TheresaBot.Main.Handler
                 var pixivUserSubList = subscribeService.getSubscribes(command.GroupId, SubscribeType.P站画师);
                 var pixivTagSubList = subscribeService.getSubscribes(command.GroupId, SubscribeType.P站标签).Select(o => o with { SubscribeCode = String.Empty }).ToList();
                 var drawTagList = pixivTagSubList.Select(o => o with { SubscribeCode = String.Empty });
-                string fullSavePath = FilePath.GetTempImgSavePath();
-                FileInfo fileInfo = new SubscribeDrawer().DrawSubscribe(miyousheSubList, pixivUserSubList, pixivTagSubList, fullSavePath);
+                var fullSavePath = FilePath.GetTempImgSavePath();
+                using var drawer = new SubscribeDrawer();
+                FileInfo fileInfo = drawer.DrawSubscribe(miyousheSubList, pixivUserSubList, pixivTagSubList, fullSavePath);
                 List<BaseContent> sendContents = new List<BaseContent>();
                 sendContents.Add(new PlainContent("当前群已订阅内容如下"));
                 sendContents.Add(new LocalImageContent(fileInfo));

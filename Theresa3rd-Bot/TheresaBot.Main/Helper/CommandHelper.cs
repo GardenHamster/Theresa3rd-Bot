@@ -38,15 +38,16 @@ namespace TheresaBot.Main.Helper
         /// <param name="setuContent"></param>
         /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
         /// <param name="sendImgBehind"></param>
-        /// <param name="isAt"></param>
         /// <returns></returns>
         public static async Task<BaseResult[]> ReplyGroupSetuAsync(this GroupCommand command, SetuContent setuContent, int revokeInterval, bool sendImgBehind)
         {
-            BaseResult[] results = await command.ReplyAndRevokeAsync(setuContent, revokeInterval, sendImgBehind);
-            if (results.Any(o => o.IsFailed) && BotConfig.PixivConfig.ImgResend != ResendType.None) //发送失败后重发
+            var resendType = BotConfig.PixivConfig.ImgResend;
+            var results = await command.ReplyAndRevokeAsync(setuContent, revokeInterval, sendImgBehind);
+            if (results.Any(o => o.IsFailed) && resendType != ResendType.None) //发送失败后重发
             {
                 await Task.Delay(1000);
-                SetuContent resendContent = setuContent.ToResendContent(BotConfig.PixivConfig.ImgResend);
+                var resendContent = setuContent.ToResendContent(resendType);
+                Console.WriteLine($"涩图内容发送失败，尝试使用{resendType}后再次发送...");
                 results = await command.ReplyAndRevokeAsync(resendContent, revokeInterval, sendImgBehind);
             }
             return results;
@@ -58,15 +59,16 @@ namespace TheresaBot.Main.Helper
         /// <param name="command"></param>
         /// <param name="setuContents"></param>
         /// <param name="revokeInterval">撤回延时，0表示不撤回</param>
-        /// <param name="isAt"></param>
         /// <returns></returns>
         public static async Task<BaseResult> ReplyGroupSetuAsync(this GroupCommand command, List<SetuContent> setuContents, int revokeInterval)
         {
-            BaseResult results = await command.ReplyAndRevokeAsync(setuContents, revokeInterval);
-            if (results.IsFailed && BotConfig.PixivConfig.ImgResend != ResendType.None)
+            var resendType = BotConfig.PixivConfig.ImgResend;
+            var results = await command.ReplyAndRevokeAsync(setuContents, revokeInterval);
+            if (results.IsFailed && resendType != ResendType.None)
             {
                 await Task.Delay(1000);
-                List<SetuContent> resendContents = setuContents.ToResendContent(BotConfig.PixivConfig.ImgResend);
+                var resendContents = setuContents.ToResendContent(resendType);
+                Console.WriteLine($"涩图内容发送失败，尝试使用{resendType}后再次发送...");
                 results = await command.ReplyAndRevokeAsync(resendContents, revokeInterval);
             }
             return results;

@@ -116,8 +116,20 @@ namespace TheresaBot.Main.Drawer
             startX += subNameWidth;
         }
 
-
-
+        public override void Dispose()
+        {
+            try
+            {
+                base.Dispose();
+                Dispose(TitlePaint);
+                Dispose(HeaderPaint);
+                Dispose(DetailPaint1);
+                Dispose(DetailPaint2);
+            }
+            catch (Exception)
+            {
+            }
+        }
 
     }
 }

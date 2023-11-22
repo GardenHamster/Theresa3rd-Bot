@@ -193,17 +193,17 @@ namespace TheresaBot.Main.Handler
 
         public BaseContent GetSourceMessage(SaucenaoItem saucenaoItem)
         {
-            return new PlainContent($"相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}");
+            return new PlainContent(saucenaoItem.GetSourceContent());
         }
 
         public BaseContent GetSimpleMessage(SaucenaoItem saucenaoItem)
         {
-            return new PlainContent($"相似度：{saucenaoItem.Similarity}%，来源:{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}，链接：{saucenaoItem.SourceUrl}");
+            return new PlainContent(saucenaoItem.GetSimpleContent());
         }
 
         public BaseContent GetSimpleMessage(Ascii2dItem ascii2dItem)
         {
-            return new PlainContent($"来源:{Enum.GetName(typeof(SetuSourceType), ascii2dItem.SourceType)}，链接：{ascii2dItem.SourceUrl}");
+            return new PlainContent(ascii2dItem.GetSimpleContent());
         }
 
         private async Task<SetuContent> GetSaucenaoContentAsync(GroupCommand command, SaucenaoItem saucenaoItem)
@@ -227,8 +227,10 @@ namespace TheresaBot.Main.Handler
             }
             else
             {
-                List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.Add(GetSimpleMessage(saucenaoItem));
+                List<BaseContent> workMsgs = new List<BaseContent>()
+                {
+                    GetSimpleMessage(saucenaoItem)
+                };
                 return new(workMsgs);
             }
         }

@@ -189,7 +189,8 @@ namespace TheresaBot.Main.Handler
                 }
                 var maskNames = BotConfig.WordCloudConfig.DefaultMasks ?? new();
                 var maskItem = GetRandomMaskItem(maskNames);
-                var wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words, maskItem);
+                using var drawer = new WordCloudDrawer();
+                var wordCloudFile = await drawer.DrawWordCloud(words, maskItem);
                 contents.Add(new LocalImageContent(wordCloudFile));
                 await groupCommand.ReplyGroupMessageWithQuoteAsync(contents);
             }
@@ -266,7 +267,8 @@ namespace TheresaBot.Main.Handler
                 }
                 var maskNames = timer.Masks ?? new();
                 var maskItem = GetRandomMaskItem(maskNames);
-                FileInfo wordCloudFile = await new WordCloudDrawer().DrawWordCloud(words, maskItem);
+                using var drawer = new WordCloudDrawer();
+                FileInfo wordCloudFile = await drawer.DrawWordCloud(words, maskItem);
                 contents.Add(new LocalImageContent(wordCloudFile));
                 await Session.SendGroupMessageAsync(groupId, contents);
             }

@@ -61,7 +61,7 @@ namespace TheresaBot.Main.Services
 
         public async Task<List<PixivRankingDetail>> filterContents(PixivRankingItem rankingItem, List<PixivRankingContent> rankingContents, PixivRankingMode rankingMode)
         {
-            List<PixivRankingDetail> rankingDetails = new List<PixivRankingDetail>();
+            var rankingDetails = new List<PixivRankingDetail>();
             foreach (var rankingContent in rankingContents)
             {
                 try
@@ -113,10 +113,6 @@ namespace TheresaBot.Main.Services
             {
                 LogHelper.Error(ex);
                 return null;
-            }
-            finally
-            {
-                await Task.Delay(500);
             }
         }
 

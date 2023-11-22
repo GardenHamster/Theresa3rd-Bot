@@ -181,7 +181,8 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                return await new PixivUserWorkDrawer().DrawPreview(profileInfo, details, fullSavePath);
+                using var drawer = new PixivUserWorkDrawer();
+                return await drawer.DrawPreview(profileInfo, details, fullSavePath);
             }
             catch (Exception ex)
             {

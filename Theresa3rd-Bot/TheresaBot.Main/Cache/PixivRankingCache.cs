@@ -13,6 +13,7 @@ namespace TheresaBot.Main.Cache
             if (rankingInfo is null) return;
             if (CacheDic.ContainsKey(rankingMode) == false) CacheDic[rankingMode] = new();
             PixivRankingInfo cacheInfo = rankingInfo with { SearchDate = searchDate };
+            CacheDic[rankingMode].RemoveAll(o => o.SearchDate == searchDate || o.RankingDate == searchDate);
             CacheDic[rankingMode].Add(cacheInfo);
         }
 

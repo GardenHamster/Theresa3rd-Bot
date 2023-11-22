@@ -363,7 +363,8 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                return await new PixivRankingDrawer().DrawPreview(rankingInfo, details, fullSavePath);
+                using var drawer = new PixivRankingDrawer();
+                return await drawer.DrawPreview(rankingInfo, details, fullSavePath);
             }
             catch (Exception ex)
             {

@@ -5,9 +5,15 @@ namespace TheresaBot.Main.Model.Cache
 {
     public record PixivRankingInfo
     {
-        public string RankingDate { get; set; }
 
+        /// <summary>
+        /// 搜索指令中传入的日期，有可能是空字符串，空字符串表示日榜最新日期
+        /// </summary>
         public string SearchDate { get; set; }
+        /// <summary>
+        /// 榜单日期
+        /// </summary>
+        public string RankingDate { get; set; }
 
         public DateTime CreateDate { get; set; }
 

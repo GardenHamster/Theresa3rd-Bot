@@ -101,7 +101,7 @@ namespace TheresaBot.Main.Handler
                 foreach (var item in newWords)
                 {
                     if (ucWordService.CheckWordExist(item)) continue;
-                    ucWordService.AddWords(item, memberId);
+                    ucWordService.AddWords(item[0], item[1], memberId);
                 }
                 if (isManager)
                 {

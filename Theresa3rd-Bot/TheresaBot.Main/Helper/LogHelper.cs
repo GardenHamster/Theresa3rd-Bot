@@ -29,7 +29,7 @@ namespace TheresaBot.Main.Helper
         /// 输出日志到控制台
         /// </summary>
         /// <param name="message"></param>
-        public static void OutputConsole(string message)
+        public static void Console(string message)
         {
             ConsoleLog.Info(message);
         }

@@ -202,21 +202,15 @@ namespace TheresaBot.Main.Services
             return subscribeGroupDao.delBySubscribeId(groupId, subscribeId);
         }
 
-        public int deleteSubscribeGroup(int subscribeGroupId)
+        public int deleteSubscribeGroup(int id)
         {
-            return subscribeGroupDao.delBySubscribeGroupId(subscribeGroupId);
+            return subscribeGroupDao.DeleteById(id);
         }
 
-        public void deleteSubscribeGroup(List<int> subscribeGroupIds)
+        public int deleteSubscribeGroup(List<int> ids)
         {
-            foreach (int subscribeGroupId in subscribeGroupIds)
-            {
-                subscribeGroupDao.delBySubscribeGroupId(subscribeGroupId);
-            }
+            return subscribeGroupDao.DeleteByIds(ids);
         }
-
-
-
 
     }
 }

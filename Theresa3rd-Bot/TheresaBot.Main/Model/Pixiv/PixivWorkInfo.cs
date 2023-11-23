@@ -13,7 +13,6 @@ namespace TheresaBot.Main.Model.Pixiv
         public int illustId { get; set; }
         public string illustTitle { get; set; }
         public int illustType { get; set; }
-        public string illustComment { get; set; }
         public int userId { get; set; }
         public string userName { get; set; }
         public DateTime createDate { get; set; }
@@ -24,9 +23,7 @@ namespace TheresaBot.Main.Model.Pixiv
         public int aiType { get; set; }
 
         public double likeRate => Convert.ToDouble(likeCount) / viewCount;
-
         public double bookmarkRate => Convert.ToDouble(bookmarkCount) / viewCount;
-
         public bool IsIllust => illustType == 0;
 
         public override bool IsR18 => xRestrict > 0 || GetTags().IsR18();
@@ -39,9 +36,7 @@ namespace TheresaBot.Main.Model.Pixiv
         public override string UserName => userName;
 
         public override List<string> GetTags() => tags?.getTags() ?? new List<string>();
-
         public override List<string> HavingBanTags() => GetTags().HavingBanTags();
-
         public override List<string> GetOriginalUrls()
         {
             if (urls is null) return new List<string>();
@@ -61,4 +56,5 @@ namespace TheresaBot.Main.Model.Pixiv
         public string small { get; set; }
         public string thumb { get; set; }
     }
+
 }

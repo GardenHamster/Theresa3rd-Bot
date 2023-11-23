@@ -54,8 +54,9 @@ namespace TheresaBot.Main.Helper
             client.BaseAddress = new Uri(url);
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            using HttpResponseMessage response = await client.GetAsync(url);
-            return await response.Content.ReadAsStringAsync();
+            using var response = await client.GetAsync(url);
+            using var result = response.Content;
+            return await result.ReadAsStringAsync();
         }
 
         /// <summary>
@@ -71,8 +72,9 @@ namespace TheresaBot.Main.Helper
             client.BaseAddress = new Uri(url);
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            using HttpResponseMessage response = await client.GetAsync(url);
-            return await response.Content.ReadAsStringAsync();
+            using var response = await client.GetAsync(url);
+            using var result = response.Content;
+            return await result.ReadAsStringAsync();
         }
 
         /// <summary>
@@ -90,8 +92,9 @@ namespace TheresaBot.Main.Helper
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            using HttpResponseMessage response = await client.PostAsync(url, content);
-            return await response.Content.ReadAsStringAsync();
+            using var response = await client.PostAsync(url, content);
+            using var result = response.Content;
+            return await result.ReadAsStringAsync();
         }
 
         /// <summary>
@@ -130,8 +133,9 @@ namespace TheresaBot.Main.Helper
             fileContent.Headers.ContentDisposition.FileName = imageFile.Name;
             fileContent.Headers.ContentDisposition.Name = "file";
             formData.Add(fileContent);
-            using HttpResponseMessage res = client.PostAsync(postUrl, formData).Result;
-            return await res.Content.ReadAsStringAsync();
+            using var response = await client.PostAsync(postUrl, formData);
+            using var result = response.Content;
+            return await result.ReadAsStringAsync();
         }
 
         /// <summary>

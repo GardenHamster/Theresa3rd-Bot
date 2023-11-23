@@ -44,7 +44,7 @@ namespace TheresaBot.Main.Drawer
 
             for (int i = 0; i < arrangeList.Count; i++)
             {
-                var drawing = arrangeList[i];
+                using var drawing = arrangeList[i];
                 int row = drawing.Row, column = drawing.Column;
                 bool isHorizontal = drawing.IsHorizontal;
                 SKBitmap originBitmap = drawing.OriginBitmap;

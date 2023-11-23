@@ -47,7 +47,7 @@ namespace TheresaBot.Main.Helper
             {
                 await Task.Delay(1000);
                 var resendContent = setuContent.ToResendContent(resendType);
-                Console.WriteLine($"涩图内容发送失败，尝试使用{resendType}后再次发送...");
+                LogHelper.Console($"涩图内容发送失败，尝试使用{resendType}后再次发送...");
                 results = await command.ReplyAndRevokeAsync(resendContent, revokeInterval, sendImgBehind);
             }
             return results;
@@ -68,7 +68,7 @@ namespace TheresaBot.Main.Helper
             {
                 await Task.Delay(1000);
                 var resendContents = setuContents.ToResendContent(resendType);
-                Console.WriteLine($"涩图内容发送失败，尝试使用{resendType}后再次发送...");
+                LogHelper.Console($"涩图内容发送失败，尝试使用{resendType}后再次发送...");
                 results = await command.ReplyAndRevokeAsync(resendContents, revokeInterval);
             }
             return results;

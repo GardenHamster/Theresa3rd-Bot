@@ -362,9 +362,9 @@ namespace TheresaBot.Main.Helper
             client.DefaultRequestHeaders.Add("User-Agent", HttpHelper.GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             if (BotConfig.PixivConfig.FreeProxy) url = url.ToHttpUrl();
-            HttpResponseMessage response = await client.GetAsync(url);
-            //response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            using var response = await client.GetAsync(url);
+            using var content = response.Content;
+            return await content.ReadAsStringAsync();
         }
 
         /// <summary>

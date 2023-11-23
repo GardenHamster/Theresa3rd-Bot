@@ -15,6 +15,11 @@ namespace TheresaBot.Main.Dao
             return Db.Ado.SqlQuery<UCWordPO>(sqlStr, new { MemberIds = excludeMembers }).FirstOrDefault();
         }
 
+        public List<UCWordPO> GetWords()
+        {
+            return Db.Queryable<UCWordPO>().OrderByDescending(o => o.Id).ToList();
+        }
+
         public int GetAvailableWordCount()
         {
             string sqlStr = "select count(Id) count from uc_word where IsAuthorized=1 and CreateMember=0";
@@ -25,6 +30,8 @@ namespace TheresaBot.Main.Dao
         {
             return Db.Queryable<UCWordPO>().Where(o => o.IsAuthorized == false && o.CreateMember == memberId).Count();
         }
+
+
 
     }
 }

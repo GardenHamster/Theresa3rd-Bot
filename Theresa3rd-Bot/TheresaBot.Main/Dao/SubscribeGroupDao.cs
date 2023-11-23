@@ -108,16 +108,5 @@ namespace TheresaBot.Main.Dao
             return Db.Deleteable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).ExecuteCommand();
         }
 
-        /// <summary>
-        /// 删除订阅
-        /// </summary>
-        /// <param name="subscribeGroupId"></param>
-        public int delBySubscribeGroupId(int subscribeGroupId)
-        {
-            return Db.Deleteable<SubscribeGroupPO>().Where(o => o.Id == subscribeGroupId).ExecuteCommand();
-        }
-
-
-
     }
 }

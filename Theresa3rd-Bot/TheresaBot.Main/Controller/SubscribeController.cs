@@ -27,7 +27,7 @@ namespace TheresaBot.Main.Controller
         public ApiResult GetPixivUserList()
         {
             var subscribeDatas = subscribeService.getSubscribeDatas(SubscribeType.P站画师);
-            var subscribeList = subscribeDatas.Select(o => ToSubscribeVo(o));
+            var subscribeList = subscribeDatas.Select(ToSubscribeVo).ToList();
             return ApiResult.Success(subscribeList);
         }
 
@@ -37,7 +37,7 @@ namespace TheresaBot.Main.Controller
         public ApiResult GetPixivTagList()
         {
             var subscribeDatas = subscribeService.getSubscribeDatas(SubscribeType.P站标签);
-            var subscribeList = subscribeDatas.Select(o => ToSubscribeVo(o));
+            var subscribeList = subscribeDatas.Select(ToSubscribeVo).ToList();
             return ApiResult.Success(subscribeList);
         }
 
@@ -47,18 +47,18 @@ namespace TheresaBot.Main.Controller
         public ApiResult GetMiyousheUserList()
         {
             var subscribeDatas = subscribeService.getSubscribeDatas(SubscribeType.米游社用户);
-            var subscribeList = subscribeDatas.Select(o => ToSubscribeVo(o));
+            var subscribeList = subscribeDatas.Select(ToSubscribeVo).ToList();
             return ApiResult.Success(subscribeList);
         }
 
         [HttpPost]
         [Authorize]
         [Route("delete")]
-        public ApiResult Delete([FromBody] DeleteSubscribeDto deleteDto)
+        public ApiResult Delete([FromBody] IdsDto idsDto)
         {
-            if (deleteDto.Ids is null) return ApiResult.ParamError;
-            if (deleteDto.Ids.Count == 0) return ApiResult.ParamError;
-            subscribeService.deleteSubscribeGroup(deleteDto.Ids);
+            if (idsDto.Ids is null) return ApiResult.ParamError;
+            if (idsDto.Ids.Count == 0) return ApiResult.ParamError;
+            subscribeService.deleteSubscribeGroup(idsDto.Ids);
             return ApiResult.Success("退订成功");
         }
 

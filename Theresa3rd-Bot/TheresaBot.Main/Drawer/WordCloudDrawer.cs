@@ -9,7 +9,7 @@ namespace TheresaBot.Main.Drawer
         {
             var fontFile = GetWordCloudFontFile() ?? GetDefaultFont();
             if (fontFile is null) throw new Exception("未指定用于绘制词云的字体");
-            var wordCloud = new WordCloud.WordCloud(fontFile, true);
+            using var wordCloud = new WordCloud.WordCloud(fontFile, true);
             var fullImageSavePath = FilePath.GetWordCloudImgSavePath();
             var maskFile = GetMaskFile(maskItem);
             if (maskItem is null || maskFile is null)

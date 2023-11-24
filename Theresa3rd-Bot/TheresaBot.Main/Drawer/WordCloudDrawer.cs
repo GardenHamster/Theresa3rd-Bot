@@ -16,11 +16,11 @@ namespace TheresaBot.Main.Drawer
             {
                 var width = BotConfig.WordCloudConfig.DefaultWidth;
                 var height = BotConfig.WordCloudConfig.DefaultHeight;
-                return await wordCloud.Draw(words, width, height, fullImageSavePath);
+                return await wordCloud.Draw(words, (ushort)width, (ushort)height, fullImageSavePath);
             }
             else
             {
-                return await wordCloud.Draw(words, maskFile, maskItem.Width, fullImageSavePath);
+                return await wordCloud.Draw(words, maskFile, (ushort)maskItem.Width, fullImageSavePath);
             }
         }
 

@@ -9,6 +9,7 @@
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<WarningLevel>3</WarningLevel>
+		<ServerGarbageCollection>false</ServerGarbageCollection>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

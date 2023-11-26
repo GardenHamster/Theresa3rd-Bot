@@ -21,6 +21,10 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         public override string GameName { get; } = "谁是卧底";
         /// <summary>
+        /// 阵营角色数量比例(平民:卧底:白板)
+        /// </summary>
+        public int[] CampScales { get; init; }
+        /// <summary>
         /// 平民数量
         /// </summary>
         public int CivAmount { get; private set; } = 2;
@@ -98,7 +102,7 @@ namespace TheresaBot.Main.Game.Undercover
             UcAmount = 1;
             WbAmount = 0;
             MinPlayer = CivAmount + UcAmount + WbAmount;
-            MatchSecond = BotConfig.GameConfig.Undercover.MatchSeconds;
+            InitGame();
         }
 
         /// <summary>
@@ -109,13 +113,36 @@ namespace TheresaBot.Main.Game.Undercover
         /// <param name="wbNum"></param>
         public UCGame(GroupCommand command, BaseSession session, BaseReporter reporter, int civNum, int ucNum, int wbNum) : base(command, session, reporter)
         {
-            CivAmount = civNum;
-            UcAmount = ucNum;
-            WbAmount = wbNum;
+            CivAmount = civNum >= 0 ? civNum : 0;
+            UcAmount = ucNum >= 0 ? ucNum : 0;
+            WbAmount = wbNum >= 0 ? wbNum : 0;
             MinPlayer = CivAmount + UcAmount + WbAmount;
+            InitGame();
+        }
+
+        /// <summary>
+        /// 创建一个自由加入的游戏
+        /// </summary>
+        /// <param name="civNum"></param>
+        /// <param name="ucNum"></param>
+        /// <param name="wbNum"></param>
+        public UCGame(GroupCommand command, BaseSession session, BaseReporter reporter, int[] campScales) : base(command, session, reporter, true)
+        {
+            MinPlayer = 4;
+            CampScales = campScales;
+            InitGame();
+        }
+
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <exception cref="GameException"></exception>
+        private void InitGame()
+        {
             MatchSecond = BotConfig.GameConfig.Undercover.MatchSeconds;
             if (MinPlayer < 4) throw new GameException("游戏创建失败，游戏至少需要4名玩家");
             if (MinPlayer < 5 && WbAmount > 0) throw new GameException("游戏创建失败，玩家达到5人及以上才可以加入白板");
+            if (MatchSecond < 10) MatchSecond = 10;
         }
 
         /// <summary>
@@ -165,6 +192,10 @@ namespace TheresaBot.Main.Game.Undercover
             }
         }
 
+        /// <summary>
+        /// 游戏创建完毕事件
+        /// </summary>
+        /// <returns></returns>
         public override async Task GameCreatedAsync()
         {
             var remindContents = new List<BaseContent>();
@@ -172,6 +203,27 @@ namespace TheresaBot.Main.Game.Undercover
             remindContents.Add(new PlainContent($"{GameName}游戏创建完毕"));
             remindContents.Add(new PlainContent($"私聊使用指令 {addWordCommands.JoinCommands()} 可以添加自定义词条"));
             await Session.SendGroupMessageAsync(GroupId, remindContents);
+        }
+
+        /// <summary>
+        /// 玩家匹配完毕事件
+        /// </summary>
+        /// <returns></returns>
+        public override async Task PlayerWaitingCompletedAsync()
+        {
+            int players = Players.Count;
+            if (players < MinPlayer) throw new GameException($"游戏匹配失败，最低加入人数为{MinPlayer}人~");
+            if (CampScales is null) throw new GameException($"游戏匹配失败，未指定阵营人数比例~");
+            int civScale = CampScales[0];
+            int ucScale = CampScales[1];
+            int wbScale = CampScales[2];
+            int sumScale = civScale + ucScale + wbScale;
+            if (players < sumScale) throw new GameException($"阵营分配失败，当前游戏人数不足{sumScale}人~");
+            int groups = players / sumScale;
+            CivAmount = groups * civScale + players % sumScale;
+            UcAmount = groups * ucScale;
+            WbAmount = groups * wbScale;
+            await Task.CompletedTask;
         }
 
         /// <summary>

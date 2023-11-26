@@ -21,6 +21,48 @@ namespace TheresaBot.Main.Handler
             ucWordService = new UCWordService();
         }
 
+        public async Task CreateUndercover(GroupCommand command)
+        {
+            try
+            {
+                UCGame ucGame;
+                var gameMode = await AskGameModeAsync(command);
+                if (gameMode == UCGameMode.Free)
+                {
+                    int[] scales = await AskCampScales(command);
+                    ucGame = new UCGame(command, Session, Reporter, scales);
+                    await Session.SendGroupMessageAsync(command.GroupId, $"正在创建{ucGame.GameName}游戏");
+                }
+                else if (gameMode == UCGameMode.Customize)
+                {
+                    int[] nums = await AskCharacterNums(command);
+                    ucGame = new UCGame(command, Session, Reporter, nums[0], nums[1], nums[2]);
+                    await Session.SendGroupMessageAsync(command.GroupId, $"正在创建{ucGame.GameName}游戏，其中平民{ucGame.CivAmount}个，卧底{ucGame.UcAmount}个，白板{ucGame.WbAmount}个");
+                }
+                else
+                {
+                    ucGame = new UCGame(command, Session, Reporter);
+                    await Session.SendGroupMessageAsync(command.GroupId, $"正在创建{ucGame.GameName}游戏，其中平民{ucGame.CivAmount}个，卧底{ucGame.UcAmount}个，白板{ucGame.WbAmount}个");
+                }
+                await Task.Delay(1000);
+                GameCahce.CreateGame(command, ucGame);
+                ucGame.AddPlayer(new UCPlayer(command.MemberId, command.MemberName));
+                await ucGame.StartProcessing();
+            }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
+            catch (GameException ex)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync(ex.RemindMessage);
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, "Undercover游戏异常");
+            }
+        }
+
         public async Task SendPrivateWords(GroupCommand command)
         {
             var game = GameCahce.GetGameByGroup(command.GroupId);
@@ -46,37 +88,6 @@ namespace TheresaBot.Main.Handler
             await command.SendTempMessageAsync(contents);
             await Task.Delay(1000);
             await command.ReplyGroupMessageWithQuoteAsync("词条已私发，请查看私聊消息");
-        }
-
-        public async Task CreateUndercover(GroupCommand command)
-        {
-            try
-            {
-                UCGame ucGame = new UCGame(command, Session, Reporter);
-                UCGameMode gameMode = await AskGameModeAsync(command);
-                if (gameMode == UCGameMode.Customize)
-                {
-                    int[] nums = await AskCharacterNums(command);
-                    ucGame = new UCGame(command, Session, Reporter, nums[0], nums[1], nums[2]);
-                }
-                await Session.SendGroupMessageAsync(command.GroupId, $"正在创建{ucGame.GameName}游戏，其中平民{ucGame.CivAmount}个，卧底{ucGame.UcAmount}个，白板{ucGame.WbAmount}个");
-                await Task.Delay(1000);
-                GameCahce.CreateGame(command, ucGame);
-                ucGame.AddPlayer(new UCPlayer(command.MemberId, command.MemberName));
-                await ucGame.StartProcessing();
-            }
-            catch (ProcessException ex)
-            {
-                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
-            }
-            catch (GameException ex)
-            {
-                await command.ReplyGroupMessageWithQuoteAsync(ex.RemindMessage);
-            }
-            catch (Exception ex)
-            {
-                await LogAndReplyError(command, ex, "Undercover游戏异常");
-            }
         }
 
         public async Task CreateWords(FriendCommand command)
@@ -138,6 +149,14 @@ namespace TheresaBot.Main.Handler
             return modeStep.Answer;
         }
 
+        private async Task<int[]> AskCampScales(GroupCommand command)
+        {
+            var processInfo = ProcessCache.CreateProcess(command);
+            var modeStep = processInfo.CreateStep($"请在60秒内发送 平民 卧底 白板 的比例，每个数字之间用空格隔开", CheckCampScalesAsync);
+            await processInfo.StartProcessing();
+            return modeStep.Answer;
+        }
+
         private async Task<List<string[]>> AskNewWords(FriendCommand command)
         {
             var processInfo = ProcessCache.CreateProcess(command);
@@ -180,9 +199,52 @@ namespace TheresaBot.Main.Handler
             {
                 throw new ProcessException("白板数量必须为数字");
             }
+            if (civNum < 2)
+            {
+                throw new ProcessException("平民数量至少在2人以上");
+            }
             if (civNum + ucNum + wbNum < 3)
             {
                 throw new ProcessException("平民+卧底+白板数量必须在3人及以上");
+            }
+            return await Task.FromResult(new int[] { civNum, ucNum, wbNum });
+        }
+
+        private async Task<int[]> CheckCampScalesAsync(string value)
+        {
+            int civNum = 0, ucNum = 0, wbNum = 0;
+            var splitArr = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (splitArr.Length < 3)
+            {
+                throw new ProcessException("必须指定每个阵营的角色比例");
+            }
+            if (splitArr.Length > 0 && !int.TryParse(splitArr[0], out civNum))
+            {
+                throw new ProcessException("平民比例必须为数字");
+            }
+            if (splitArr.Length > 1 && !int.TryParse(splitArr[1], out ucNum))
+            {
+                throw new ProcessException("卧底比例必须为数字");
+            }
+            if (splitArr.Length > 2 && !int.TryParse(splitArr[2], out wbNum))
+            {
+                throw new ProcessException("白板比例必须为数字");
+            }
+            if (civNum < 2)
+            {
+                throw new ProcessException("平民比例至少在2及以上");
+            }
+            if (ucNum < 1)
+            {
+                throw new ProcessException("卧底比例至少在1及以上");
+            }
+            if (ucNum > civNum)
+            {
+                throw new ProcessException("卧底比例不能大于平民的比例");
+            }
+            if (wbNum > civNum)
+            {
+                throw new ProcessException("白板比例不能大于平民的比例");
             }
             return await Task.FromResult(new int[] { civNum, ucNum, wbNum });
         }

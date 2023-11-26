@@ -27,11 +27,10 @@ namespace TheresaBot.Main.Handler
                 if (game is UCGame ucGame)
                 {
                     UCPlayer player = new UCPlayer(command.MemberId, command.MemberNick);
-                    ucGame.PlayerJoinAsync(player);
-                    await command.ReplyGroupMessageWithQuoteAsync("加入成功！请耐心等待游戏开始");
+                    await ucGame.PlayerJoinAsync(player);
                     return;
                 }
-                throw new Exception("加入失败，未定义该类型游戏的加入方法");
+                throw new Exception("加入失败，未定义游戏加入方法");
             }
             catch (GameException ex)
             {

@@ -65,8 +65,9 @@ namespace TheresaBot.Main.Helper
 
         public static Dictionary<int, string> UCGameModes => new()
         {
-            {(int)UCGameMode.Standard, "默认(3平民1卧底1白板)"},
+            {(int)UCGameMode.Standard, "默认"},
             {(int)UCGameMode.Customize, "自定义"},
+            {(int)UCGameMode.Customize, "自由加入"},
         };
 
         public static string GetTypeName(this TimingSetuSourceType sourceType)

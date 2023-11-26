@@ -16,11 +16,15 @@ namespace TheresaBot.Main.Game
         /// <summary>
         /// 游戏开始时间
         /// </summary>
-        public DateTime? CreateTime { get; set; }
+        public DateTime? CreateTime { get; private set; }
         /// <summary>
         /// 游戏结束时间
         /// </summary>
-        public DateTime? EndTime { get; set; }
+        public DateTime? EndTime { get; private set; }
+        /// <summary>
+        /// 自由加入模式
+        /// </summary>
+        public bool FreeToJoin { get; private set; }
         /// <summary>
         /// 最小加入人数
         /// </summary>
@@ -43,6 +47,11 @@ namespace TheresaBot.Main.Game
         /// <returns></returns>
         public abstract Task GameCreatedAsync();
         /// <summary>
+        /// 玩家匹配完毕钩子
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task PlayerWaitingCompletedAsync();
+        /// <summary>
         /// 游戏进行中钩子
         /// </summary>
         /// <returns></returns>
@@ -60,6 +69,17 @@ namespace TheresaBot.Main.Game
         /// <param name="reporter"></param>
         public BaseGroupGame(GroupCommand command, BaseSession session, BaseReporter reporter) : base(command, session, reporter)
         {
+            FreeToJoin = false;
+        }
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="session"></param>
+        /// <param name="reporter"></param>
+        public BaseGroupGame(GroupCommand command, BaseSession session, BaseReporter reporter, bool freeToJoin) : base(command, session, reporter)
+        {
+            FreeToJoin = freeToJoin;
         }
 
         /// <summary>
@@ -75,7 +95,16 @@ namespace TheresaBot.Main.Game
                     CreateTime = DateTime.Now;
                     await GameCreatedAsync();
                     Console.WriteLine($"{GameName}游戏已创建...");
-                    await PlayerWaitingAsync();
+                    if (FreeToJoin)
+                    {
+                        await PlayerWaitingAsync();
+                        await CheckEnded();
+                        await PlayerWaitingCompletedAsync();
+                    }
+                    else
+                    {
+                        await PlayerMatchingAsync();
+                    }
                     await CheckEnded();
                     await Session.SendGroupMessageAsync(GroupId, $"玩家集结完毕，游戏将在5秒后开始...");
                     await CheckEndedAndDelay(5000);
@@ -94,6 +123,8 @@ namespace TheresaBot.Main.Game
                 catch (GameEndException ex)
                 {
                     await Session.SendGroupMessageAsync(GroupId, ex.RemindMessage);
+                    await Task.Delay(1000);
+                    await Session.SendGroupMessageAsync(GroupId, $"游戏已结束...");
                 }
                 catch (GameException ex)
                 {
@@ -113,13 +144,13 @@ namespace TheresaBot.Main.Game
         /// 等待玩家线程
         /// </summary>
         /// <returns></returns>
-        public virtual async Task PlayerWaitingAsync()
+        public virtual async Task PlayerMatchingAsync()
         {
             int waitSeconds = MatchSecond;
             string joinCommandStr = BotConfig.GameConfig.JoinCommands.JoinCommands();
             List<BaseContent> remindContents = new List<BaseContent>();
             remindContents.Add(new PlainContent($"距离游戏开始剩余人数为：{MinPlayer - Players.Count}个"));
-            remindContents.Add(new PlainContent($"游戏匹配时长为 {MatchSecond} 秒，指定时间内未达到该人数游戏将会终止"));
+            remindContents.Add(new PlainContent($"游戏匹配时长为 {MatchSecond} 秒，匹配时间内未达到该人数游戏将会终止"));
             remindContents.Add(new PlainContent($"发送群指令 【{joinCommandStr}】 可以加入该游戏"));
             await Session.SendGroupMessageAsync(GroupId, remindContents);
             while (Players.Count < MinPlayer)
@@ -132,11 +163,31 @@ namespace TheresaBot.Main.Game
         }
 
         /// <summary>
+        /// 等待玩家线程
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task PlayerWaitingAsync()
+        {
+            int waitSeconds = MatchSecond;
+            string joinCommandStr = BotConfig.GameConfig.JoinCommands.JoinCommands();
+            List<BaseContent> remindContents = new List<BaseContent>();
+            remindContents.Add(new PlainContent($"正在等待玩家加入，游戏匹配时长为 {MatchSecond} 秒，最低玩家人数为 {MinPlayer} 人"));
+            remindContents.Add(new PlainContent($"发送群指令 【{joinCommandStr}】 可以加入该游戏"));
+            await Session.SendGroupMessageAsync(GroupId, remindContents);
+            while (Players.Count < MinPlayer)
+            {
+                await CheckEnded();
+                waitSeconds = waitSeconds - 1;
+                await Task.Delay(1000);
+            }
+        }
+
+        /// <summary>
         /// 玩家加入游戏判断逻辑
         /// </summary>
         /// <param name="player"></param>
         /// <exception cref="GameException"></exception>
-        public void PlayerJoinAsync(T player)
+        public async Task PlayerJoinAsync(T player)
         {
             lock (Players)
             {
@@ -157,6 +208,14 @@ namespace TheresaBot.Main.Game
                     throw new GameException("你已经加入该游戏了，请耐心等待游戏开始");
                 }
                 AddPlayer(player);
+            }
+            if (FreeToJoin)
+            {
+                await Session.SendGroupMessageAsync(GroupId, $"加入成功！请耐心等待游戏开始");
+            }
+            else
+            {
+                await Session.SendGroupMessageAsync(GroupId, $"加入成功！当前加入人数为 {Players.Count}/{MinPlayer} 人");
             }
         }
 

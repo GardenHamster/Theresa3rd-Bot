@@ -54,7 +54,6 @@ namespace TheresaBot.Main.Handler
                 else
                 {
                     game.Stop();
-                    await command.ReplyGroupMessageWithQuoteAsync("游戏已停止~");
                 }
             }
             catch (GameException ex)

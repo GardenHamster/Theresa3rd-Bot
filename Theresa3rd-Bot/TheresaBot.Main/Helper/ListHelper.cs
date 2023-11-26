@@ -17,7 +17,7 @@
         {
             if (sources is null || sources.Count == 0) return new();
             var sortList = sources.OrderByDescending(keySelector);
-            var maxValue = keySelector(sources.First());
+            var maxValue = keySelector(sortList.First());
             var maxsList = new List<TSource>();
             foreach (var item in sortList)
             {

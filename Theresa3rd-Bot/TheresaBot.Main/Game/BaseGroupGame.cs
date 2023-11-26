@@ -45,7 +45,7 @@ namespace TheresaBot.Main.Game
         /// 游戏启动钩子
         /// </summary>
         /// <returns></returns>
-        public abstract Task GameCreatedAsync();
+        public abstract Task GameCreatedAsync(GroupCommand command);
         /// <summary>
         /// 玩家匹配完毕钩子
         /// </summary>
@@ -93,7 +93,7 @@ namespace TheresaBot.Main.Game
                 try
                 {
                     CreateTime = DateTime.Now;
-                    await GameCreatedAsync();
+                    await GameCreatedAsync(Command);
                     Console.WriteLine($"{GameName}游戏已创建...");
                     if (FreeToJoin)
                     {
@@ -151,7 +151,7 @@ namespace TheresaBot.Main.Game
             List<BaseContent> remindContents = new List<BaseContent>();
             remindContents.Add(new PlainContent($"距离游戏开始剩余人数为：{MinPlayer - Players.Count}个"));
             remindContents.Add(new PlainContent($"游戏匹配时长为 {MatchSecond} 秒，匹配时间内未达到该人数游戏将会终止"));
-            remindContents.Add(new PlainContent($"发送群指令 【{joinCommandStr}】 可以加入该游戏"));
+            remindContents.Add(new PlainContent($"发送群指令【{joinCommandStr}】可以加入该游戏"));
             await Session.SendGroupMessageAsync(GroupId, remindContents);
             while (Players.Count < MinPlayer)
             {

@@ -55,7 +55,7 @@ namespace TheresaBot.Main.Cache
             {
                 long groupId = command.GroupId;
                 BaseGame baseGame = GetGameByGroup(groupId);
-                if (baseGame is null || baseGame.IsEnded == false)
+                if (baseGame is null || baseGame.IsEnded)
                 {
                     GameDic[groupId] = newGame;
                     return;

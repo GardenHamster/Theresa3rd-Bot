@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Helper
         {
             {(int)UCGameMode.Standard, "默认"},
             {(int)UCGameMode.Customize, "自定义"},
-            {(int)UCGameMode.Customize, "自由加入"},
+            {(int)UCGameMode.Free, "自由加入"},
         };
 
         public static string GetTypeName(this TimingSetuSourceType sourceType)

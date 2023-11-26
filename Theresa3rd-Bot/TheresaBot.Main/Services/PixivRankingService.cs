@@ -68,7 +68,6 @@ namespace TheresaBot.Main.Services
                 {
                     if (checkContentIsOk(rankingItem, rankingContent, rankingMode) == false) continue;
                     PixivWorkInfo pixivWorkInfo = await getRankingWork(rankingContent);
-                    await Task.Delay(500);
                     if (pixivWorkInfo is null) continue;
                     if (checkWorkIsOk(rankingItem, pixivWorkInfo) == false) continue;
                     PixivRankingDetail rankingDetail = new PixivRankingDetail(rankingContent, pixivWorkInfo);

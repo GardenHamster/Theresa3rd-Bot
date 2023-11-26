@@ -196,13 +196,12 @@ namespace TheresaBot.Main.Game.Undercover
         /// 游戏创建完毕事件
         /// </summary>
         /// <returns></returns>
-        public override async Task GameCreatedAsync()
+        public override async Task GameCreatedAsync(GroupCommand command)
         {
             var remindContents = new List<BaseContent>();
             var addWordCommands = BotConfig.GameConfig.Undercover.AddWordCommands;
-            remindContents.Add(new PlainContent($"{GameName}游戏创建完毕"));
-            remindContents.Add(new PlainContent($"私聊使用指令 {addWordCommands.JoinCommands()} 可以添加自定义词条"));
-            await Session.SendGroupMessageAsync(GroupId, remindContents);
+            remindContents.Add(new PlainContent($"{GameName}游戏创建完毕，已为你自动加入游戏..."));
+            await Session.SendGroupMessageWithAtAsync(GroupId, command.MemberId, remindContents);
         }
 
         /// <summary>
@@ -235,7 +234,7 @@ namespace TheresaBot.Main.Game.Undercover
             await CheckEnded();
             await Session.SendGroupMessageAsync(GroupId, "游戏开始，正在获取词条...");
             await CheckEnded();
-            await FetchWords();//随机获取词条
+            await FetchWords();//获取随机词条
             await CheckEnded();
             await DistWords();//派发随机身份
             await CheckEnded();
@@ -254,7 +253,7 @@ namespace TheresaBot.Main.Game.Undercover
                 await CheckEndedAndDelay(1000);
                 await PlayersSpeech(CurrentRound);//发言环节
                 await CheckEndedAndDelay(1000);
-                await Session.SendGroupMessageAsync(GroupId, "本轮发言完毕，以下是轮的发言记录");
+                await Session.SendGroupMessageAsync(GroupId, "本轮发言完毕，以下是本轮的发言记录");
                 await CheckEndedAndDelay(1000);
                 await SendSpeechHistory(CurrentRound);
                 await CheckEndedAndDelay(1000);
@@ -322,6 +321,11 @@ namespace TheresaBot.Main.Game.Undercover
             }
         }
 
+        /// <summary>
+        /// 随机获取词条
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="GameException"></exception>
         private async Task FetchWords()
         {
             var excludeMembers = MemberIds.Where(o => o.IsSuperManager() == false).ToList();
@@ -330,6 +334,10 @@ namespace TheresaBot.Main.Game.Undercover
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 派发随机身份
+        /// </summary>
+        /// <returns></returns>
         private async Task DistWords()
         {
             string cvWord = UCWord.Word1;
@@ -360,6 +368,10 @@ namespace TheresaBot.Main.Game.Undercover
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 私聊发送词条
+        /// </summary>
+        /// <returns></returns>
         private async Task SendWords()
         {
             await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, "正在派发词条，请各位玩家查看私聊获取自己的词条...");

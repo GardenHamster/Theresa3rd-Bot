@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
@@ -61,17 +62,25 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         public bool IsVoting { get; private set; }
         /// <summary>
-        /// 存活的玩家
-        /// </summary>
-        public List<UCPlayer> LivePlayers => Players.Where(o => o.IsOut == false).ToList();
-        /// <summary>
         /// 游戏词条
         /// </summary>
         public UndercoverConfig UCConfig => BotConfig.GameConfig.Undercover;
         /// <summary>
-        /// 是否已有某个阵容获胜
+        /// 存活的玩家
         /// </summary>
-        public bool IsSomeoneWin => IsCivilianWin || IsUndercoverWin || IsWhiteboardWin;
+        public List<UCPlayer> LivePlayers => Players.Where(o => o.IsOut == false).ToList();
+        /// <summary>
+        /// 存活的平民
+        /// </summary>
+        public List<UCPlayer> LiveCivilians => Players.Where(o => o.IsOut == false && o.PlayerCamp == UCCamp.Civilian).ToList();
+        /// <summary>
+        /// 存活的卧底
+        /// </summary>
+        public List<UCPlayer> LiveUndercovers => Players.Where(o => o.IsOut == false && o.PlayerCamp == UCCamp.Undercover).ToList();
+        /// <summary>
+        /// 存活的白板
+        /// </summary>
+        public List<UCPlayer> LiveWhiteboards => Players.Where(o => o.IsOut == false && o.PlayerCamp == UCCamp.Whiteboard).ToList();
         /// <summary>
         /// 平民是否已经获胜
         /// </summary>
@@ -79,15 +88,19 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 卧底是否已经获胜
         /// </summary>
-        public bool IsUndercoverWin => Players.Where(o => o.PlayerCamp == UCCamp.Civilian).All(o => o.IsOut) || (LivePlayers.Count() <= 2 && LivePlayers.All(o => o.PlayerCamp == UCCamp.Civilian || o.PlayerCamp == UCCamp.Undercover));
+        public bool IsUndercoverWin => Players.Where(o => o.PlayerCamp == UCCamp.Civilian).All(o => o.IsOut) || (LivePlayers.Count == 2 && LiveCivilians.Count == 1 && LiveUndercovers.Count == 1);
         /// <summary>
         /// 白板是否已经获胜
         /// </summary>
-        public bool IsWhiteboardWin => Players.Where(o => o.PlayerCamp != UCCamp.Whiteboard).All(o => o.IsOut);
+        public bool IsWhiteboardWin => Players.Where(o => o.PlayerCamp != UCCamp.Whiteboard).All(o => o.IsOut) || (LivePlayers.Count == 2 && LiveCivilians.Count == 1 && LiveWhiteboards.Count == 1);
+        /// <summary>
+        /// 是否已有某个阵容获胜
+        /// </summary>
+        public bool IsSomeoneWin => IsCivilianWin || IsUndercoverWin || IsWhiteboardWin;
         /// <summary>
         /// 最小加入人数
         /// </summary>
-        public override int MinPlayer { get; protected set; } = 5;
+        public override int MinPlayer { get; protected set; } = 4;
         /// <summary>
         /// 组队时间
         /// </summary>
@@ -279,25 +292,35 @@ namespace TheresaBot.Main.Game.Undercover
                 parentRound.End(outPlayer);
                 if (IsSomeoneWin) return;
 
-                await Session.SendGroupMessageAsync(GroupId, $"游戏继续...");
+                await Session.SendGroupMessageAsync(GroupId, $"玩家{outPlayer.MemberName}({outPlayer.MemberId})出局，游戏继续...");
                 await CheckEndedAndDelay(1000);
             }
         }
 
         public override async Task GameEndingAsync()
         {
-            var winMessage = string.Empty;
             var WinCamp = UCCamp.None;
+            var winMessage = string.Empty;
 
             if (IsCivilianWin)
             {
                 WinCamp = UCCamp.Civilian;
                 winMessage = "平民干掉了所有卧底，平民获胜！";
             }
+            else if (IsUndercoverWin && LivePlayers.Count == 2)
+            {
+                WinCamp = UCCamp.Undercover;
+                winMessage = "存活玩家剩余2人，且卧底和平民各存活1人，卧底获胜！";
+            }
             else if (IsUndercoverWin)
             {
                 WinCamp = UCCamp.Undercover;
                 winMessage = "卧底干掉了所有平民，卧底获胜！";
+            }
+            else if (IsWhiteboardWin && LivePlayers.Count == 2)
+            {
+                WinCamp = UCCamp.Whiteboard;
+                winMessage = "存活玩家剩余2人，且白板和平民各存活1人，白板获胜！";
             }
             else if (IsWhiteboardWin)
             {
@@ -438,30 +461,29 @@ namespace TheresaBot.Main.Game.Undercover
 
         private string GetCampInfos()
         {
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine("本次游戏阵容如下：");
             var cvPlayer = Players.Where(o => o.PlayerCamp == UCCamp.Civilian).ToList();
             var ucPlayer = Players.Where(o => o.PlayerCamp == UCCamp.Undercover).ToList();
             var wbPlayer = Players.Where(o => o.PlayerCamp == UCCamp.Whiteboard).ToList();
             string cvInfo = GetCampInfo(cvPlayer, "平民");
             string ucInfo = GetCampInfo(ucPlayer, "卧底");
             string wbInfo = GetCampInfo(wbPlayer, "白板");
-            builder.AppendLine("本次游戏阵容如下：");
             if (!string.IsNullOrEmpty(cvInfo)) builder.AppendLine(cvInfo);
             if (!string.IsNullOrEmpty(ucInfo)) builder.AppendLine(ucInfo);
-            if (!string.IsNullOrEmpty(wbInfo)) builder.AppendLine(wbInfo);
+            if (!string.IsNullOrEmpty(wbInfo)) builder.Append(wbInfo);
             return builder.ToString();
         }
 
         private string GetCampInfo(List<UCPlayer> players, string campName)
         {
-            var builder = new StringBuilder();
-            if (players.Count > 0)
+            if (players.Count == 0) return string.Empty;
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine($"{campName}：");
+            for (int i = 0; i < players.Count; i++)
             {
-                builder.AppendLine($"{campName}：");
-            }
-            foreach (var player in players)
-            {
-                builder.AppendLine($"  {player.MemberName}({player.MemberId})");
+                if (i > 0) builder.AppendLine();
+                builder.Append($"  {players[i].MemberName}({players[i].MemberId})");
             }
             return builder.ToString();
         }

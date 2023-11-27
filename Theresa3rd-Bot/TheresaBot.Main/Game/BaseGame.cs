@@ -39,6 +39,12 @@ namespace TheresaBot.Main.Game
         /// <param name="relay"></param>
         /// <returns></returns>
         public abstract bool HandleGameMessage(GroupRelay relay);
+        /// <summary>
+        /// 判断某个成员是否已经加入游戏
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public abstract bool IsMemberJoined(long memberId);
 
         protected GroupCommand Command { get; set; }
 

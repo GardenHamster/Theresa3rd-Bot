@@ -46,7 +46,6 @@ namespace TheresaBot.Main.Handler
                 }
                 await Task.Delay(1000);
                 GameCahce.CreateGame(command, ucGame);
-                ucGame.AddPlayer(new UCPlayer(command.MemberId, command.MemberName));
                 await ucGame.StartProcessing();
             }
             catch (ProcessException ex)

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Relay;
@@ -99,12 +100,13 @@ namespace TheresaBot.Main.Game.Undercover
             int lastSeconds = waitSeconds;
             while (lastSeconds > 0)
             {
-                var record = GetPlayerSpeech(player);
-                if (record is not null) return;
-                await game.CheckEndedAndDelay(1000);
                 lastSeconds--;
+                await game.CheckEndedAndDelay(1000);
+                var speech = GetPlayerSpeech(player);
+                if (speech is null) continue;
+                if (await game.CheckSpeech(speech)) return;
             }
-            throw new GameEndException($"玩家{player.MemberName}未能在指定时间内发言，游戏结束");
+            throw new GameFailedException($"玩家{player.MemberName}未能在指定时间内发言，游戏结束");
         }
 
         /// <summary>
@@ -116,11 +118,11 @@ namespace TheresaBot.Main.Game.Undercover
             int lastSeconds = waitSeconds;
             while (lastSeconds > 0)
             {
-                if (Votes.Count >= votePlayers.Count) return;
-                await game.CheckEndedAndDelay(1000);
                 lastSeconds--;
+                await game.CheckEndedAndDelay(1000);
+                if (Votes.Count >= votePlayers.Count) return;
             }
-            throw new GameEndException($"部分玩家在指定时间内未进行投票，游戏结束");
+            throw new GameFailedException($"部分玩家在指定时间内未进行投票，游戏结束");
         }
 
         /// <summary>

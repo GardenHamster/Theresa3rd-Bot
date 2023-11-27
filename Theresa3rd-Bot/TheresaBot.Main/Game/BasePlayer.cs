@@ -8,6 +8,8 @@
 
         public string MemberName { get; private set; }
 
+        public string NameAndQQ => $"{MemberName}({MemberId})";
+
         public BasePlayer(long memberId, string memberName)
         {
             MemberId = memberId;

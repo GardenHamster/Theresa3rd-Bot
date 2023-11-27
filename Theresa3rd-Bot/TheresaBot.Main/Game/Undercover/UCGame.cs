@@ -40,7 +40,15 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 游戏词条
         /// </summary>
-        public UCWordPO UCWord { get; private set; }
+        public UCWordPO GameWords { get; private set; }
+        /// <summary>
+        /// 平民词条
+        /// </summary>
+        public string CivWords { get; private set; }
+        /// <summary>
+        /// 卧底词条
+        /// </summary>
+        public string UCWords { get; private set; }
         /// <summary>
         /// 轮合集
         /// </summary>
@@ -172,37 +180,48 @@ namespace TheresaBot.Main.Game.Undercover
                 if (CurrentRound is null) return false;
                 if (SpeakingPlayer is not null)
                 {
-                    if (SpeakingPlayer.MemberId != relay.MemberId) return false;
-                    if (relay.IsAt == false && relay.IsQuote == false) return false;
-                    if (relay.IsQuote && WaitingQuote is not null && relay.QuoteMsgId != 0 && relay.QuoteMsgId != WaitingQuote.MessageId) return false;
-                    var record = CurrentRound.AddPlayerSpeech(SpeakingPlayer, relay);
-                    return record is not null;
+                    return HandleSpeechMessage(relay);
                 }
                 if (IsVoting)
                 {
-                    var voter = CurrentRound.GetVoter(relay.MemberId);
-                    if (voter is null) return false;
-                    if (voter.IsOut) return false;
-                    var target = CurrentRound.GetVoteTarget(relay.Message);
-                    if (target is null) return false;
-                    if (target.IsOut) return false;
-                    if (voter.MemberId == target.MemberId)
-                    {
-                        Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, "不能对自己进行投票，请重新投票");
-                        return true;
-                    }
-                    var vote = CurrentRound.AddPlayerVote(voter, target);
-                    if (vote is not null)
-                    {
-                        List<BaseContent> contents = new List<BaseContent>();
-                        contents.Add(new PlainContent("投票成功！当前票数为："));
-                        contents.Add(new PlainContent(CurrentRound.ListVotedCount()));
-                        Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, contents);
-                        return true;
-                    }
+                    return HandleVoteMessage(relay);
                 }
                 return false;
             }
+        }
+
+        private bool HandleSpeechMessage(GroupRelay relay)
+        {
+            if (SpeakingPlayer.MemberId != relay.MemberId) return false;
+            if (relay.IsAt == false && relay.IsQuote == false) return false;
+            if (relay.IsQuote && WaitingQuote is not null && relay.QuoteMsgId != 0 && relay.QuoteMsgId != WaitingQuote.MessageId) return false;
+            var record = CurrentRound.AddPlayerSpeech(SpeakingPlayer, relay);
+            return record is not null;
+        }
+
+        private bool HandleVoteMessage(GroupRelay relay)
+        {
+            var voter = CurrentRound.GetVoter(relay.MemberId);
+            if (voter is null) return false;
+            if (voter.IsOut) return false;
+            var target = CurrentRound.GetVoteTarget(relay.Message);
+            if (target is null) return false;
+            if (target.IsOut) return false;
+            if (voter.MemberId == target.MemberId)
+            {
+                Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, "不能对自己进行投票，请重新投票");
+                return true;
+            }
+            var vote = CurrentRound.AddPlayerVote(voter, target);
+            if (vote is not null)
+            {
+                List<BaseContent> contents = new List<BaseContent>();
+                contents.Add(new PlainContent("投票成功！当前票数为："));
+                contents.Add(new PlainContent(CurrentRound.ListVotedCount()));
+                Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, contents);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -211,10 +230,8 @@ namespace TheresaBot.Main.Game.Undercover
         /// <returns></returns>
         public override async Task GameCreatedAsync(GroupCommand command)
         {
-            var remindContents = new List<BaseContent>();
-            var addWordCommands = BotConfig.GameConfig.Undercover.AddWordCommands;
-            remindContents.Add(new PlainContent($"{GameName}游戏创建完毕，已为你自动加入游戏..."));
-            await Session.SendGroupMessageWithAtAsync(GroupId, command.MemberId, remindContents);
+            AddPlayer(new UCPlayer(command.MemberId, command.MemberName));
+            await Session.SendGroupMessageWithAtAsync(GroupId, command.MemberId, $"{GameName}游戏创建完毕，已为你自动加入游戏...");
         }
 
         /// <summary>
@@ -290,14 +307,15 @@ namespace TheresaBot.Main.Game.Undercover
 
                 var outPlayer = voteResults.First().Player;
                 parentRound.End(outPlayer);
-                if (IsSomeoneWin) return;
 
-                await Session.SendGroupMessageAsync(GroupId, $"玩家{outPlayer.MemberName}({outPlayer.MemberId})出局，游戏继续...");
+                if (IsSomeoneWin) throw new GameFinishedException();
+
+                await Session.SendGroupMessageAsync(GroupId, $"玩家{outPlayer.NameAndQQ}出局，游戏继续...");
                 await CheckEndedAndDelay(1000);
             }
         }
 
-        public override async Task GameEndingAsync()
+        public override async Task GameFinishingAsync()
         {
             var WinCamp = UCCamp.None;
             var winMessage = string.Empty;
@@ -352,8 +370,8 @@ namespace TheresaBot.Main.Game.Undercover
         private async Task FetchWords()
         {
             var excludeMembers = MemberIds.Where(o => o.IsSuperManager() == false).ToList();
-            UCWord = new UCWordService().GetRandomWord(excludeMembers);
-            if (UCWord is null) throw new GameException("无法获取词条，请艾特管理员添加和审批更多词条");
+            GameWords = new UCWordService().GetRandomWord(excludeMembers);
+            if (GameWords is null) throw new GameException("无法获取词条，请艾特管理员添加和审批更多词条");
             await Task.CompletedTask;
         }
 
@@ -363,30 +381,34 @@ namespace TheresaBot.Main.Game.Undercover
         /// <returns></returns>
         private async Task DistWords()
         {
-            string cvWord = UCWord.Word1;
-            string ucWord = UCWord.Word2;
             if (RandomHelper.RandomBetween(0, 99) < 50)
             {
-                cvWord = UCWord.Word2;
-                ucWord = UCWord.Word1;
+                UCWords = GameWords.Word1;
+                CivWords = GameWords.Word2;
+            }
+            else
+            {
+                UCWords = GameWords.Word2;
+                CivWords = GameWords.Word1;
+            }
+            for (int i = 0; i < WbAmount; i++)
+            {
+                //第一名玩家不能设置为白板
+                var player = Players.Skip(1).Where(o => o.PlayerCamp == UCCamp.None).ToList().RandomItem();
+                player.PlayerCamp = UCCamp.Whiteboard;
+                player.PlayerWord = string.Empty;
             }
             for (int i = 0; i < CivAmount; i++)
             {
                 var player = Players.Where(o => o.PlayerCamp == UCCamp.None).ToList().RandomItem();
                 player.PlayerCamp = UCCamp.Civilian;
-                player.PlayerWord = cvWord;
+                player.PlayerWord = CivWords;
             }
             for (int i = 0; i < UcAmount; i++)
             {
                 var player = Players.Where(o => o.PlayerCamp == UCCamp.None).ToList().RandomItem();
                 player.PlayerCamp = UCCamp.Undercover;
-                player.PlayerWord = ucWord;
-            }
-            for (int i = 0; i < WbAmount; i++)
-            {
-                var player = Players.Where(o => o.PlayerCamp == UCCamp.None).ToList().RandomItem();
-                player.PlayerCamp = UCCamp.Whiteboard;
-                player.PlayerWord = string.Empty;
+                player.PlayerWord = UCWords;
             }
             await Task.CompletedTask;
         }
@@ -424,6 +446,43 @@ namespace TheresaBot.Main.Game.Undercover
                     WaitingQuote = null;
                 }
             }
+        }
+
+        public async Task<bool> CheckSpeech(UCSpeech speech)
+        {
+            var player = speech.Player;
+            if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.Contains(CivWords))
+            {
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了平民的词组");
+                throw new GameFinishedException();
+            }
+            if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.Contains(UCWords))
+            {
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了卧底的词组");
+                throw new GameFinishedException();
+            }
+            if (player.PlayerCamp != UCCamp.Whiteboard && speech.Content.Contains(player.PlayerWord))
+            {
+                player.SetOut();
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"玩家{player.NameAndQQ}的发言中包含了自己的词条，判定出局");
+                return true;
+            }
+            var similarity = ;
+            var similarSpeechs = GetSimilarSpeech(speech.Content, similarity);
+            if (similarSpeechs.Count > 0)
+            {
+                List<BaseContent> remindContents = new List<BaseContent>();
+                remindContents.Add(new PlainContent($"存在相似的历史发言，请重新发言~"));
+                remindContents.Add
+                await Session.SendGroupMessageWithAtAsync(GroupId, player.MemberId, remindContents);
+                return false;
+            }
+            return true;
+        }
+
+        private List<UCSpeech> GetSimilarSpeech(string content,decimal similarity)
+        {
+
         }
 
         private async Task SendSpeechHistory(UCRound round)

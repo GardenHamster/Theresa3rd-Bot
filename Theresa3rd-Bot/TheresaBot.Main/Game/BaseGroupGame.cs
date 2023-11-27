@@ -60,7 +60,7 @@ namespace TheresaBot.Main.Game
         /// 游戏结束钩子
         /// </summary>
         /// <returns></returns>
-        public abstract Task GameEndingAsync();
+        public abstract Task GameFinishingAsync();
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -112,15 +112,19 @@ namespace TheresaBot.Main.Game
                     Console.WriteLine($"{GameName}游戏已开始...");
                     await GameProcessingAsync();
                     Console.WriteLine($"{GameName}游戏已完成...");
-                    await CheckEnded();
-                    await GameEndingAsync();
-                    Console.WriteLine($"{GameName}游戏已结束...");
+                    throw new GameFinishedException();
                 }
-                catch (GameStopException)
+                catch (GameStopedException)
                 {
                     await Session.SendGroupMessageAsync(GroupId, $"游戏已停止...");
                 }
-                catch (GameEndException ex)
+                catch (GameFinishedException)
+                {
+                    await GameFinishingAsync();
+                    await Task.Delay(1000);
+                    await Session.SendGroupMessageAsync(GroupId, $"游戏已结束...");
+                }
+                catch (GameFailedException ex)
                 {
                     await Session.SendGroupMessageAsync(GroupId, ex.RemindMessage);
                     await Task.Delay(1000);
@@ -134,6 +138,7 @@ namespace TheresaBot.Main.Game
                 {
                     IsEnded = true;
                     EndTime = DateTime.Now;
+                    Console.WriteLine($"{GameName}游戏已结束...");
                 }
             });
             GameTask = task;
@@ -233,10 +238,10 @@ namespace TheresaBot.Main.Game
         /// 判断游戏是否已经被停止，如果已停止则跳出线程
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="GameStopException"></exception>
+        /// <exception cref="GameStopedException"></exception>
         public async Task CheckEnded()
         {
-            if (IsEnded) throw new GameStopException();
+            if (IsEnded) throw new GameStopedException();
             await Task.CompletedTask;
         }
 
@@ -245,10 +250,10 @@ namespace TheresaBot.Main.Game
         /// </summary>
         /// <param name="daily"></param>
         /// <returns></returns>
-        /// <exception cref="GameStopException"></exception>
+        /// <exception cref="GameStopedException"></exception>
         public async Task CheckEndedAndDelay(int daily = 0)
         {
-            if (IsEnded) throw new GameStopException();
+            if (IsEnded) throw new GameStopedException();
             if (daily > 0) await Task.Delay(daily);
         }
 

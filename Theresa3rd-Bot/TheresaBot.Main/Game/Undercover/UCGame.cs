@@ -467,7 +467,7 @@ namespace TheresaBot.Main.Game.Undercover
                 await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"玩家{player.NameAndQQ}的发言中包含了自己的词条，判定出局");
                 return true;
             }
-            var similarity = ;
+            var similarity = UCConfig.MaxSimilarity;
             var similarSpeechs = GetSimilarSpeech(speech.Content, similarity);
             if (similarSpeechs.Count > 0)
             {
@@ -480,7 +480,7 @@ namespace TheresaBot.Main.Game.Undercover
             return true;
         }
 
-        private List<UCSpeech> GetSimilarSpeech(string content,decimal similarity)
+        private List<UCSpeech> GetSimilarSpeech(string content, decimal similarity)
         {
 
         }

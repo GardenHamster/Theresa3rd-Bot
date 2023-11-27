@@ -25,6 +25,8 @@
 
         public List<string> SendWordCommands { get; set; } = new();
 
+        public decimal MaxSimilarity { get; set; }
+
         public int MatchSeconds { get; set; } = 120;
 
         public int PrepareSeconds { get; set; } = 1;

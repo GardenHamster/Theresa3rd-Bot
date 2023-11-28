@@ -77,8 +77,8 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task ReplyDailyWordCloudAsync(GroupCommand groupCommand)
         {
-            DateTime startTime = DateTimeHelper.GetDayStart();
-            DateTime endTime = DateTimeHelper.GetDayEnd();
+            DateTime startTime = DateTime.Now.AddDays(-1);
+            DateTime endTime = DateTime.Now;
             var remindMsg = $"今日词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
@@ -90,8 +90,8 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task ReplyWeeklyWordCloudAsync(GroupCommand groupCommand)
         {
-            DateTime startTime = DateTimeHelper.GetWeekStart();
-            DateTime endTime = DateTimeHelper.GetWeekEnd();
+            DateTime startTime = DateTime.Now.AddDays(-7);
+            DateTime endTime = DateTime.Now;
             var remindMsg = $"本周词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
@@ -103,8 +103,8 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task ReplyMonthlyWordCloudAsync(GroupCommand groupCommand)
         {
-            DateTime startTime = DateTimeHelper.GetWeekStart();
-            DateTime endTime = DateTimeHelper.GetWeekEnd();
+            DateTime startTime = DateTime.Now.AddMonths(-1);
+            DateTime endTime = DateTime.Now;
             var remindMsg = $"本月词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }
@@ -116,8 +116,8 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task ReplyYearlyWordCloudAsync(GroupCommand groupCommand)
         {
-            DateTime startTime = DateTimeHelper.GetYearStart();
-            DateTime endTime = DateTimeHelper.GetYearEnd();
+            DateTime startTime = DateTime.Now.AddYears(-1);
+            DateTime endTime = DateTime.Now;
             var remindMsg = $"本年词云如下，统计时间段为：{startTime.ToSimpleString()} 至 {endTime.ToSimpleString()}";
             await ReplyWordCloudAsync(groupCommand, startTime, endTime, remindMsg);
         }

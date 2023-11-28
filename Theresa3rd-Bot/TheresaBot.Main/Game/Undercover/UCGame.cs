@@ -171,23 +171,20 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        public override bool HandleGameMessage(GroupRelay relay)
+        public override async Task<bool> HandleGameMessageAsync(GroupRelay relay)
         {
-            lock (this)
+            if (IsEnded) return false;
+            if (IsStarted == false) return false;
+            if (CurrentRound is null) return false;
+            if (SpeakingPlayer is not null)
             {
-                if (IsEnded) return false;
-                if (IsStarted == false) return false;
-                if (CurrentRound is null) return false;
-                if (SpeakingPlayer is not null)
-                {
-                    return HandleSpeechMessage(relay);
-                }
-                if (IsVoting)
-                {
-                    return HandleVoteMessage(relay);
-                }
-                return false;
+                return await HandleSpeechMessageAsync(relay);
             }
+            if (IsVoting)
+            {
+                return await HandleVoteMessage(relay);
+            }
+            return false;
         }
 
         /// <summary>
@@ -195,13 +192,23 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        private bool HandleSpeechMessage(GroupRelay relay)
+        private async Task<bool> HandleSpeechMessageAsync(GroupRelay relay)
         {
             if (SpeakingPlayer.MemberId != relay.MemberId) return false;
             if (relay.IsAt == false && relay.IsQuote == false) return false;
             if (relay.IsQuote && WaitingQuote is not null && relay.QuoteMsgId != 0 && relay.QuoteMsgId != WaitingQuote.MessageId) return false;
-            var record = CurrentRound.AddPlayerSpeech(SpeakingPlayer, relay);
-            return record is not null;
+            if (CurrentRound.IsPlayerSpeeched(relay.MemberId)) return false;
+            var similarSpeechs = GetSimilarSpeech(relay, UCConfig.MaxSimilarity / 100);
+            if (similarSpeechs.Count > 0)
+            {
+                List<BaseContent> remindContents = new List<BaseContent>();
+                remindContents.Add(new PlainContent($"存在相似的历史发言，请重新发言~"));
+                remindContents.Add(new PlainContent(GetSimilarContent(similarSpeechs)));
+                await Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, remindContents);
+                return true;
+            }
+            CurrentRound.AddPlayerSpeech(SpeakingPlayer, relay);
+            return true;
         }
 
         /// <summary>
@@ -209,7 +216,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        private bool HandleVoteMessage(GroupRelay relay)
+        private async Task<bool> HandleVoteMessage(GroupRelay relay)
         {
             var voter = CurrentRound.GetVoter(relay.MemberId);
             if (voter is null) return false;
@@ -219,7 +226,7 @@ namespace TheresaBot.Main.Game.Undercover
             if (target.IsOut) return false;
             if (voter.MemberId == target.MemberId)
             {
-                Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, "不能对自己进行投票，请重新投票");
+                await Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, "不能对自己进行投票，请重新投票");
                 return true;
             }
             var vote = CurrentRound.AddPlayerVote(voter, target);
@@ -228,7 +235,7 @@ namespace TheresaBot.Main.Game.Undercover
                 List<BaseContent> contents = new List<BaseContent>();
                 contents.Add(new PlainContent("投票成功！当前票数为："));
                 contents.Add(new PlainContent(CurrentRound.ListVotedCount()));
-                Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, contents);
+                await Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, contents);
                 return true;
             }
             return false;
@@ -242,6 +249,8 @@ namespace TheresaBot.Main.Game.Undercover
         {
             AddPlayer(new UCPlayer(command.MemberId, command.MemberName));
             await Session.SendGroupMessageWithAtAsync(GroupId, command.MemberId, $"{GameName}游戏创建完毕，已为你自动加入游戏...");
+            await Task.Delay(1000);
+            await Session.SendGroupTemplateAsync(GroupId, UCConfig.RuleMsg);
         }
 
         /// <summary>
@@ -280,7 +289,7 @@ namespace TheresaBot.Main.Game.Undercover
             await CheckEnded();
             await SendWords();//私聊发送词条
             await CheckEnded();
-            await Session.SendGroupMessageAsync(GroupId, $"词条派发完毕，请各位查看私聊，如未收到私聊，请尝试添加本Bot为好友，然后在群内发送 {UCConfig.SendWordCommands.JoinCommands()} 重新私发词条。请各位组织语言，发言环节将在{UCConfig.PrepareSeconds}秒后开始...");
+            await Session.SendGroupMessageAsync(GroupId, $"词条派发完毕，请各位查看私聊\r\n如未收到私聊，请尝试添加本Bot为好友，然后在群内发送 {UCConfig.SendWordCommands.JoinCommands()} 重新私发词条。\r\n请各位组织语言，发言环节将在{UCConfig.PrepareSeconds}秒后开始...");
             await Task.Delay(UCConfig.PrepareSeconds * 1000);
             await CheckEnded();
             while (true)
@@ -317,10 +326,10 @@ namespace TheresaBot.Main.Game.Undercover
 
                 var outPlayer = voteResults.First().Player;
                 parentRound.End(outPlayer);
-
+                await Session.SendGroupMessageAsync(GroupId, $"玩家{outPlayer.NameAndQQ}出局");
                 if (IsSomeoneWin) throw new GameFinishedException();
-
-                await Session.SendGroupMessageAsync(GroupId, $"玩家{outPlayer.NameAndQQ}出局，游戏继续...");
+                await CheckEndedAndDelay(1000);
+                await Session.SendGroupMessageAsync(GroupId, $"游戏继续...");
                 await CheckEndedAndDelay(1000);
             }
         }
@@ -360,7 +369,7 @@ namespace TheresaBot.Main.Game.Undercover
                 winMessage = "白板干掉了所有人，白板获胜！";
             }
 
-            await Session.SendGroupMessageAsync(GroupId, $"游戏结束，{winMessage}");
+            await Session.SendGroupMessageAsync(GroupId, $"{winMessage}");
             await Task.Delay(1000);
 
             await Session.SendGroupMessageAsync(GroupId, GetCampInfos());
@@ -417,8 +426,8 @@ namespace TheresaBot.Main.Game.Undercover
             }
             for (int i = 0; i < WbAmount; i++)
             {
-                //第一名玩家不能设置为白板
-                var player = Players.Skip(1).Where(o => o.PlayerCamp == UCCamp.None).ToList().RandomItem();
+                //前两名玩家不能设置为白板
+                var player = Players.Skip(2).Where(o => o.PlayerCamp == UCCamp.None).ToList().RandomItem();
                 player.PlayerCamp = UCCamp.Whiteboard;
                 player.PlayerWord = string.Empty;
             }
@@ -502,16 +511,6 @@ namespace TheresaBot.Main.Game.Undercover
                 await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"玩家{player.NameAndQQ}的发言中包含了自己的词条，判定出局");
                 return true;
             }
-            var similarity = UCConfig.MaxSimilarity;
-            var similarSpeechs = GetSimilarSpeech(speech.Content, similarity / 100);
-            if (similarSpeechs.Count > 0)
-            {
-                List<BaseContent> remindContents = new List<BaseContent>();
-                remindContents.Add(new PlainContent($"存在相似的历史发言，请重新发言~"));
-                remindContents.Add(new PlainContent(GetSimilarContent(similarSpeechs)));
-                await Session.SendGroupMessageWithAtAsync(GroupId, player.MemberId, remindContents);
-                return false;
-            }
             return true;
         }
 
@@ -521,12 +520,12 @@ namespace TheresaBot.Main.Game.Undercover
         /// <param name="content"></param>
         /// <param name="similarity">0~1的小数</param>
         /// <returns></returns>
-        private List<UCSpeech> GetSimilarSpeech(string content, decimal similarity)
+        private List<UCSpeech> GetSimilarSpeech(GroupRelay relay, decimal similarity)
         {
             var speechs = new List<UCSpeech>();
             foreach (var round in GameRounds)
             {
-                speechs.AddRange(round.GetSimilarSpeechs(content, similarity));
+                speechs.AddRange(round.GetSimilarSpeechs(relay.Message, similarity));
             }
             return speechs;
         }
@@ -542,8 +541,7 @@ namespace TheresaBot.Main.Game.Undercover
             foreach (var speech in similarSpeechs)
             {
                 if (builder.Length > 0) builder.AppendLine();
-                builder.AppendLine($"{speech.Player.NameAndQQ}：");
-                builder.Append($"  {speech.Content}");
+                builder.Append($"{speech.Player.NameAndQQ}：{speech.Content}");
             }
             return builder.ToString();
         }

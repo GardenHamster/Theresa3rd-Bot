@@ -94,7 +94,6 @@ namespace TheresaBot.Main.Game
                 {
                     CreateTime = DateTime.Now;
                     await GameCreatedAsync(Command);
-                    Console.WriteLine($"{GameName}游戏已创建...");
                     if (FreeToJoin)
                     {
                         await PlayerWaitingAsync();
@@ -109,9 +108,7 @@ namespace TheresaBot.Main.Game
                     await Session.SendGroupMessageAsync(GroupId, $"玩家集结完毕，游戏将在5秒后开始...");
                     await CheckEndedAndDelay(5000);
                     IsStarted = true;
-                    Console.WriteLine($"{GameName}游戏已开始...");
                     await GameProcessingAsync();
-                    Console.WriteLine($"{GameName}游戏已完成...");
                     throw new GameFinishedException();
                 }
                 catch (GameStopedException)
@@ -138,7 +135,6 @@ namespace TheresaBot.Main.Game
                 {
                     IsEnded = true;
                     EndTime = DateTime.Now;
-                    Console.WriteLine($"{GameName}游戏已结束...");
                 }
             });
             GameTask = task;

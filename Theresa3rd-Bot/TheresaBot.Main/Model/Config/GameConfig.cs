@@ -37,6 +37,8 @@
 
         public int MuteSeconds { get; set; } = 0;
 
+        public string RuleMsg { get; set; }
+
         public override BaseConfig FormatConfig()
         {
             if (CreateCommands is null) CreateCommands = new();

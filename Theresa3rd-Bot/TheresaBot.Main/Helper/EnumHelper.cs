@@ -65,7 +65,7 @@ namespace TheresaBot.Main.Helper
 
         public static Dictionary<int, string> UCGameModes => new()
         {
-            {(int)UCGameMode.Standard, "默认"},
+            {(int)UCGameMode.Standard, "默认(3平1卧)"},
             {(int)UCGameMode.Customize, "自定义"},
             {(int)UCGameMode.Free, "自由加入"},
         };

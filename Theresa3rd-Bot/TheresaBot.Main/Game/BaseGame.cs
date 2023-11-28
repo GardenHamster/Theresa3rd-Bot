@@ -7,6 +7,12 @@ namespace TheresaBot.Main.Game
 {
     public abstract class BaseGame
     {
+        protected GroupCommand Command { get; set; }
+
+        protected BaseSession Session { get; set; }
+
+        protected BaseReporter Reporter { get; set; }
+
         /// <summary>
         /// 是否已经结束
         /// </summary>
@@ -38,19 +44,13 @@ namespace TheresaBot.Main.Game
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        public abstract bool HandleGameMessage(GroupRelay relay);
+        public abstract Task<bool> HandleGameMessageAsync(GroupRelay relay);
         /// <summary>
         /// 判断某个成员是否已经加入游戏
         /// </summary>
         /// <param name="memberId"></param>
         /// <returns></returns>
         public abstract bool IsMemberJoined(long memberId);
-
-        protected GroupCommand Command { get; set; }
-
-        protected BaseSession Session { get; set; }
-
-        protected BaseReporter Reporter { get; set; }
 
         public BaseGame(GroupCommand command, BaseSession session, BaseReporter reporter)
         {

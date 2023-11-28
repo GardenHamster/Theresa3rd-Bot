@@ -56,6 +56,15 @@ namespace TheresaBot.Main.Game.Undercover
         }
 
         /// <summary>
+        /// 判断本轮中某位玩家是否已经发言
+        /// </summary>
+        /// <returns></returns>
+        public bool IsPlayerSpeeched(long memberId)
+        {
+            return Speechs.Any(o => o.Player.MemberId == memberId);
+        }
+
+        /// <summary>
         /// 添加一个成员发言记录，如果该成员已经发言，则返回null
         /// </summary>
         /// <param name="player"></param>

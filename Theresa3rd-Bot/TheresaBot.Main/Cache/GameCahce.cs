@@ -37,11 +37,11 @@ namespace TheresaBot.Main.Cache
                 long groupId = relay.GroupId;
                 long memberId = relay.MemberId;
                 if (!GameDic.ContainsKey(groupId)) return false;
-                BaseGame game = GameDic[groupId];
+                var game = GameDic[groupId];
                 if (game is null) return false;
                 if (game.IsEnded) return false;
                 if (game.IsMemberJoined(memberId) == false) return false;
-                return game.HandleGameMessage(relay);
+                return game.HandleGameMessageAsync(relay).Result;
             }
         }
 

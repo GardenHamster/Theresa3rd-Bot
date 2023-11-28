@@ -44,6 +44,15 @@ namespace TheresaBot.Main.Helper
             return await session.SendGroupMergeAsync(groupId, sendContents);
         }
 
+        public static async Task<BaseResult> SendGroupTemplateAsync(this BaseSession session, long groupId, string template, string defaultmsg = "")
+        {
+            template = template?.Trim()?.TrimLine();
+            if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
+            if (string.IsNullOrWhiteSpace(template)) return BaseResult.Undo;
+            if (template.StartsWith(" ") == false) template = " " + template;
+            return await session.SendGroupMessageAsync(groupId, template.SplitToChainAsync());
+        }
+
         public static async Task ReplyGroupErrorAsync(this BaseSession session, Exception exception, long groupId)
         {
             try

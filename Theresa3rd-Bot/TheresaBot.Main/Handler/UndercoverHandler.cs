@@ -31,18 +31,15 @@ namespace TheresaBot.Main.Handler
                 {
                     int[] scales = await AskCampScales(command);
                     ucGame = new UCGame(command, Session, Reporter, scales);
-                    await Session.SendGroupMessageAsync(command.GroupId, $"正在创建{ucGame.GameName}游戏");
                 }
                 else if (gameMode == UCGameMode.Customize)
                 {
                     int[] nums = await AskCharacterNums(command);
                     ucGame = new UCGame(command, Session, Reporter, nums[0], nums[1], nums[2]);
-                    await Session.SendGroupMessageAsync(command.GroupId, $"正在创建{ucGame.GameName}游戏，其中平民{ucGame.CivAmount}个，卧底{ucGame.UcAmount}个，白板{ucGame.WbAmount}个");
                 }
                 else
                 {
                     ucGame = new UCGame(command, Session, Reporter);
-                    await Session.SendGroupMessageAsync(command.GroupId, $"正在创建{ucGame.GameName}游戏，其中平民{ucGame.CivAmount}个，卧底{ucGame.UcAmount}个，白板{ucGame.WbAmount}个");
                 }
                 await Task.Delay(1000);
                 GameCahce.CreateGame(command, ucGame);

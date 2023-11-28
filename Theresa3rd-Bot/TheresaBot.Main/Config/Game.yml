@@ -12,3 +12,7 @@ Undercover:
     SpeakingSeconds:            120                                             #每个玩家的发言时长(秒)
     VotingSeconds:              120                                             #投票环节时长(秒)
     MuteSeconds:                0                                               #失败方被禁言的时长(秒)
+    RuleMsg:                    |
+                                以下是游戏规则：
+                                所有卧底出局时，平民获胜
+                                所有平民出局或者仅剩1平民1卧底时，卧底获胜

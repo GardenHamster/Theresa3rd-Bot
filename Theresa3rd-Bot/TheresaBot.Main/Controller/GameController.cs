@@ -27,13 +27,13 @@ namespace TheresaBot.Main.Controller
         {
             var words = wordService.GetWords();
             var wordList = words.Select(ToUCWordVo).ToList();
-            return ApiResult.Success(words);
+            return ApiResult.Success(wordList);
         }
 
         [HttpPost]
         [Authorize]
         [Route("add/undercover/words")]
-        public ApiResult AddUCWord([FromBody] AddUCWordDto wordDto)
+        public ApiResult AddUCWords([FromBody] AddUCWordDto wordDto)
         {
             if (wordDto is null) return ApiResult.ParamError;
             if (string.IsNullOrWhiteSpace(wordDto.Word1)) return ApiResult.ParamError;
@@ -44,8 +44,19 @@ namespace TheresaBot.Main.Controller
 
         [HttpPost]
         [Authorize]
+        [Route("auth/undercover/words")]
+        public ApiResult AuthUCWords([FromBody] IdsDto idsDto)
+        {
+            if (idsDto.Ids is null) return ApiResult.ParamError;
+            if (idsDto.Ids.Count == 0) return ApiResult.ParamError;
+            wordService.AuthorizeWords(idsDto.Ids);
+            return ApiResult.Success();
+        }
+
+        [HttpPost]
+        [Authorize]
         [Route("delete/undercover/words")]
-        public ApiResult DelUCWord([FromBody] IdsDto idsDto)
+        public ApiResult DelUCWords([FromBody] IdsDto idsDto)
         {
             if (idsDto.Ids is null) return ApiResult.ParamError;
             if (idsDto.Ids.Count == 0) return ApiResult.ParamError;

@@ -31,6 +31,10 @@ namespace TheresaBot.Main.Dao
             return Db.Queryable<UCWordPO>().Where(o => o.IsAuthorized == false && o.CreateMember == memberId).Count();
         }
 
+        public int AuthorizeWords(List<int> ids)
+        {
+            return Db.Updateable<UCWordPO>().SetColumns(o => o.IsAuthorized == true).Where(o => ids.Contains(o.Id)).ExecuteCommand();
+        }
 
 
     }

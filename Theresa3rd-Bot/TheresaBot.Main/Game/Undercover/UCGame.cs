@@ -190,6 +190,11 @@ namespace TheresaBot.Main.Game.Undercover
             }
         }
 
+        /// <summary>
+        /// 处理发言消息
+        /// </summary>
+        /// <param name="relay"></param>
+        /// <returns></returns>
         private bool HandleSpeechMessage(GroupRelay relay)
         {
             if (SpeakingPlayer.MemberId != relay.MemberId) return false;
@@ -199,6 +204,11 @@ namespace TheresaBot.Main.Game.Undercover
             return record is not null;
         }
 
+        /// <summary>
+        /// 处理投票消息
+        /// </summary>
+        /// <param name="relay"></param>
+        /// <returns></returns>
         private bool HandleVoteMessage(GroupRelay relay)
         {
             var voter = CurrentRound.GetVoter(relay.MemberId);
@@ -315,6 +325,10 @@ namespace TheresaBot.Main.Game.Undercover
             }
         }
 
+        /// <summary>
+        /// 游戏结束阶段事件
+        /// </summary>
+        /// <returns></returns>
         public override async Task GameFinishingAsync()
         {
             var WinCamp = UCCamp.None;
@@ -438,6 +452,11 @@ namespace TheresaBot.Main.Game.Undercover
             }
         }
 
+        /// <summary>
+        /// 发言流程
+        /// </summary>
+        /// <param name="round"></param>
+        /// <returns></returns>
         private async Task PlayersSpeech(UCRound round)
         {
             foreach (var player in round.SpeechPlayers)
@@ -458,6 +477,12 @@ namespace TheresaBot.Main.Game.Undercover
             }
         }
 
+        /// <summary>
+        /// 检查发言
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
+        /// <exception cref="GameFinishedException"></exception>
         public async Task<bool> CheckSpeech(UCSpeech speech)
         {
             var player = speech.Player;
@@ -478,18 +503,24 @@ namespace TheresaBot.Main.Game.Undercover
                 return true;
             }
             var similarity = UCConfig.MaxSimilarity;
-            var similarSpeechs = GetSimilarSpeech(speech.Content, similarity);
+            var similarSpeechs = GetSimilarSpeech(speech.Content, similarity / 100);
             if (similarSpeechs.Count > 0)
             {
                 List<BaseContent> remindContents = new List<BaseContent>();
                 remindContents.Add(new PlainContent($"存在相似的历史发言，请重新发言~"));
-                remindContents.AddRange(GetSimilarContent(similarSpeechs));
+                remindContents.Add(new PlainContent(GetSimilarContent(similarSpeechs)));
                 await Session.SendGroupMessageWithAtAsync(GroupId, player.MemberId, remindContents);
                 return false;
             }
             return true;
         }
 
+        /// <summary>
+        /// 根据百分比获取相似的发言
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="similarity">0~1的小数</param>
+        /// <returns></returns>
         private List<UCSpeech> GetSimilarSpeech(string content, decimal similarity)
         {
             var speechs = new List<UCSpeech>();
@@ -500,17 +531,28 @@ namespace TheresaBot.Main.Game.Undercover
             return speechs;
         }
 
-        private List<BaseContent> GetSimilarContent(List<UCSpeech> similarSpeechs)
+        /// <summary>
+        /// 获取相似的发言记录
+        /// </summary>
+        /// <param name="similarSpeechs"></param>
+        /// <returns></returns>
+        private string GetSimilarContent(List<UCSpeech> similarSpeechs)
         {
-            var contents = new List<BaseContent>();
+            var builder = new StringBuilder();
             foreach (var speech in similarSpeechs)
             {
-                contents.Add(new PlainContent($"{speech.Player.NameAndQQ}："));
-                contents.Add(new PlainContent($"  {speech.Content}"));
+                if (builder.Length > 0) builder.AppendLine();
+                builder.AppendLine($"{speech.Player.NameAndQQ}：");
+                builder.Append($"  {speech.Content}");
             }
-            return contents;
+            return builder.ToString();
         }
 
+        /// <summary>
+        /// 发送某一轮的发言记录
+        /// </summary>
+        /// <param name="round"></param>
+        /// <returns></returns>
         private async Task SendSpeechHistory(UCRound round)
         {
             var contents = new List<ForwardContent>();
@@ -523,6 +565,11 @@ namespace TheresaBot.Main.Game.Undercover
             await Session.SendGroupForwardAsync(GroupId, contents);
         }
 
+        /// <summary>
+        /// 投票流程
+        /// </summary>
+        /// <param name="round"></param>
+        /// <returns></returns>
         private async Task<List<UCVoteResult>> PlayersVote(UCRound round)
         {
             try
@@ -544,6 +591,10 @@ namespace TheresaBot.Main.Game.Undercover
             }
         }
 
+        /// <summary>
+        /// 获取阵营信息
+        /// </summary>
+        /// <returns></returns>
         private string GetCampInfos()
         {
             StringBuilder builder = new StringBuilder();
@@ -560,6 +611,12 @@ namespace TheresaBot.Main.Game.Undercover
             return builder.ToString();
         }
 
+        /// <summary>
+        /// 获取阵营信息
+        /// </summary>
+        /// <param name="players"></param>
+        /// <param name="campName"></param>
+        /// <returns></returns>
         private string GetCampInfo(List<UCPlayer> players, string campName)
         {
             if (players.Count == 0) return string.Empty;

@@ -74,6 +74,11 @@ namespace TheresaBot.Main.Services
             return ucWordDao.DeleteByIds(ids);
         }
 
+        public int AuthorizeWords(List<int> ids)
+        {
+            return ucWordDao.AuthorizeWords(ids);
+        }
+
 
     }
 }

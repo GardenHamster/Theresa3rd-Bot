@@ -1,6 +1,4 @@
 ﻿using SqlSugar;
-using System.Collections.Generic;
-using System.Numerics;
 using System.Text;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
@@ -169,6 +167,8 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 获取包含子轮的发言记录
         /// </summary>
+        /// <param name="str"></param>
+        /// <param name="similarity">0~1的小数</param>
         /// <returns></returns>
         public List<UCSpeech> GetSimilarSpeechs(string str, decimal similarity)
         {

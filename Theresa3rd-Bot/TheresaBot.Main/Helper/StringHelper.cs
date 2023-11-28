@@ -73,6 +73,21 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 判断一个字符串是否与另外一个字符串相似
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="compare"></param>
+        /// <param name="similarity">0~1的小数</param>
+        /// <returns></returns>
+        public static bool IsSimilar(this string str, string compare, decimal similarity)
+        {
+            if (string.IsNullOrEmpty(str)) return false;
+            if (string.IsNullOrEmpty(compare)) return false;
+            var count = str.Where(o => compare.Contains(o)).Count();
+            return Convert.ToDecimal(count) / str.Length >= similarity;
+        }
+
+        /// <summary>
         /// 提取一个分隔符以后的全部内容
         /// </summary>
         /// <param name="str"></param>

@@ -363,6 +363,16 @@ namespace TheresaBot.Main.Game.Undercover
         }
 
         /// <summary>
+        /// 判断玩家是否已经加入游戏
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public override bool IsMemberJoined(long memberId)
+        {
+            return Players.Any(o => o.MemberId == memberId);
+        }
+
+        /// <summary>
         /// 随机获取词条
         /// </summary>
         /// <returns></returns>
@@ -473,7 +483,7 @@ namespace TheresaBot.Main.Game.Undercover
             {
                 List<BaseContent> remindContents = new List<BaseContent>();
                 remindContents.Add(new PlainContent($"存在相似的历史发言，请重新发言~"));
-                remindContents.Add
+                remindContents.AddRange(GetSimilarContent(similarSpeechs));
                 await Session.SendGroupMessageWithAtAsync(GroupId, player.MemberId, remindContents);
                 return false;
             }
@@ -482,7 +492,23 @@ namespace TheresaBot.Main.Game.Undercover
 
         private List<UCSpeech> GetSimilarSpeech(string content, decimal similarity)
         {
+            var speechs = new List<UCSpeech>();
+            foreach (var round in GameRounds)
+            {
+                speechs.AddRange(round.GetSimilarSpeechs(content, similarity));
+            }
+            return speechs;
+        }
 
+        private List<BaseContent> GetSimilarContent(List<UCSpeech> similarSpeechs)
+        {
+            var contents = new List<BaseContent>();
+            foreach (var speech in similarSpeechs)
+            {
+                contents.Add(new PlainContent($"{speech.Player.NameAndQQ}："));
+                contents.Add(new PlainContent($"  {speech.Content}"));
+            }
+            return contents;
         }
 
         private async Task SendSpeechHistory(UCRound round)

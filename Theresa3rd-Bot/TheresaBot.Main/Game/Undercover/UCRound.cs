@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using SqlSugar;
+using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
@@ -162,6 +164,27 @@ namespace TheresaBot.Main.Game.Undercover
         public List<UCVoteResult> GetVotes()
         {
             return Votes.GroupBy(o => o.Target).Select(o => new UCVoteResult(o.Key, o.Count())).ToList();
+        }
+
+        /// <summary>
+        /// 获取包含子轮的发言记录
+        /// </summary>
+        /// <returns></returns>
+        public List<UCSpeech> GetSimilarSpeechs(string str, decimal similarity)
+        {
+            var speechs = new List<UCSpeech>();
+            foreach (var speech in Speechs)
+            {
+                if (str.IsSimilar(speech.Content, similarity))
+                {
+                    speechs.Add(speech);
+                }
+            }
+            foreach (var round in SubRounds)
+            {
+                speechs.AddRange(round.GetSimilarSpeechs(str, similarity));
+            }
+            return speechs;
         }
 
         /// <summary>

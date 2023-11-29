@@ -35,14 +35,18 @@
         }
 
         /// <summary>
-        /// 获取词条内容提示信息
+        /// 获取词条信息
         /// </summary>
         /// <returns></returns>
-        public string GetWordMessage()
+        public string GetWordMessage(bool withId)
         {
             if (PlayerCamp == UCCamp.Whiteboard)
             {
                 return $"本轮游戏中，你是白板，词条为空";
+            }
+            if (withId)
+            {
+                return $"本轮游戏中，你的词条是：{PlayerWord}，身份是：{PlayerCamp.CampName}";
             }
             else
             {

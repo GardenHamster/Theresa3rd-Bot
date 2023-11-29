@@ -96,7 +96,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 最小加入人数
         /// </summary>
-        public override int MinPlayer { get; protected set; } = 4;
+        public override int MinPlayer { get; protected set; } = 3;
         /// <summary>
         /// 组队时间
         /// </summary>
@@ -111,7 +111,6 @@ namespace TheresaBot.Main.Game.Undercover
             UcAmount = 1;
             WbAmount = 0;
             MinPlayer = CivAmount + UcAmount + WbAmount;
-            CheckAndInit();
         }
 
         /// <summary>
@@ -126,7 +125,8 @@ namespace TheresaBot.Main.Game.Undercover
             UcAmount = ucNum >= 0 ? ucNum : 0;
             WbAmount = wbNum >= 0 ? wbNum : 0;
             MinPlayer = CivAmount + UcAmount + WbAmount;
-            CheckAndInit();
+            if (MinPlayer < 3) throw new GameException("游戏创建失败，游戏至少需要3名玩家");
+            if (MinPlayer < 5 && WbAmount > 0) throw new GameException("游戏创建失败，玩家达到5人及以上才可以加入白板");
         }
 
         /// <summary>
@@ -137,20 +137,8 @@ namespace TheresaBot.Main.Game.Undercover
         /// <param name="wbNum"></param>
         public UCGame(GroupCommand command, BaseSession session, BaseReporter reporter, int[] campScales) : base(command, session, reporter, true)
         {
-            MinPlayer = 4;
+            MinPlayer = 3;
             CampScales = campScales;
-        }
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        /// <exception cref="GameException"></exception>
-        protected override void CheckAndInit()
-        {
-            MatchSecond = BotConfig.GameConfig.Undercover.MatchSeconds;
-            if (MinPlayer < 4) throw new GameException("游戏创建失败，游戏至少需要4名玩家");
-            if (MinPlayer < 5 && WbAmount > 0) throw new GameException("游戏创建失败，玩家达到5人及以上才可以加入白板");
-            if (MatchSecond < 10) MatchSecond = 10;
         }
 
         /// <summary>
@@ -308,6 +296,7 @@ namespace TheresaBot.Main.Game.Undercover
             await Session.SendGroupMessageWithAtAsync(GroupId, command.MemberId, $"{GameName}游戏创建完毕，已为你自动加入游戏...");
             await Task.Delay(1000);
             await Session.SendGroupTemplateAsync(GroupId, UCConfig.RuleMsg);
+            await Task.Delay(1000);
         }
 
         /// <summary>
@@ -328,7 +317,6 @@ namespace TheresaBot.Main.Game.Undercover
             CivAmount = groups * civScale + players % sumScale;
             UcAmount = groups * ucScale;
             WbAmount = groups * wbScale;
-            CheckAndInit();
             RandomSortPlayers();
             await Task.CompletedTask;
         }
@@ -387,6 +375,12 @@ namespace TheresaBot.Main.Game.Undercover
                 await CheckEndedAndDelay(1000);
                 await SendSpeechHistory(CurrentRound);
                 await CheckEndedAndDelay(1000);
+                if (GameRounds.Count == 1 && Players.Count <= UCConfig.FirstRoundNonVoting)
+                {
+                    await Session.SendGroupMessageAsync(GroupId, $"由于当前玩家人数少于等于{UCConfig.FirstRoundNonVoting}人，首轮将不进行投票");
+                    await Task.Delay(1000);
+                    continue;
+                }
                 var voteResults = await PlayersVote(CurrentRound);//投票环节
                 while (voteResults.Count > 1)
                 {
@@ -505,7 +499,7 @@ namespace TheresaBot.Main.Game.Undercover
             foreach (var player in Players)
             {
                 await CheckEnded();
-                await Session.SendTempMessageAsync(GroupId, player.MemberId, player.GetWordMessage());
+                await Session.SendTempMessageAsync(GroupId, player.MemberId, player.GetWordMessage(UCConfig.SendIdentity));
                 await Task.Delay(1000);
             }
         }
@@ -544,21 +538,21 @@ namespace TheresaBot.Main.Game.Undercover
         public async Task<bool> CheckSpeech(UCSpeech speech)
         {
             var player = speech.Player;
-            if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.Contains(CivWords))
+            if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.EqualsIgnoreCase(CivWords))
             {
-                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了平民的词组");
+                WinedCamp = UCCamp.Whiteboard;
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了词条");
                 throw new GameFinishedException();
             }
-            if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.Contains(UCWords))
+            if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.EqualsIgnoreCase(UCWords))
             {
-                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了卧底的词组");
+                WinedCamp = UCCamp.Whiteboard;
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了词条");
                 throw new GameFinishedException();
             }
             if (player.PlayerCamp != UCCamp.Whiteboard && speech.Content.Contains(player.PlayerWord))
             {
-                player.SetOut();
-                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"玩家{player.NameAndQQ}的发言中包含了自己的词条，判定出局");
-                return true;
+                throw new GameFailedException($"玩家{player.NameAndQQ}的发言中包含了自己的词条，游戏结束");
             }
             return true;
         }

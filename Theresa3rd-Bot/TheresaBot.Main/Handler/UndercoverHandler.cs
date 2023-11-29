@@ -1,5 +1,6 @@
 ﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
+using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Game.Undercover;
 using TheresaBot.Main.Helper;
@@ -78,8 +79,9 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithQuoteAsync("词条还未派发，请耐心等待...");
                 return;
             }
+            var ucConfig = BotConfig.GameConfig.Undercover;
             var contents = new List<BaseContent> {
-                new PlainContent(player.GetWordMessage())
+                new PlainContent(player.GetWordMessage(ucConfig.SendIdentity))
             };
             await command.SendTempMessageAsync(contents);
             await Task.Delay(1000);
@@ -216,7 +218,7 @@ namespace TheresaBot.Main.Handler
             var splitArr = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             if (splitArr.Length < 3)
             {
-                throw new ProcessException("必须指定每个阵营的角色比例");
+                throw new ProcessException("必须指定每个阵营的人数比例");
             }
             if (splitArr.Length > 0 && !int.TryParse(splitArr[0], out civNum))
             {

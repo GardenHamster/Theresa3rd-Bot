@@ -25,6 +25,10 @@
 
         public List<string> SendWordCommands { get; set; } = new();
 
+        public bool SendIdentity { get; set; }
+
+        public int FirstRoundNonVoting { get; set; } = 3;
+
         public decimal MaxSimilarity { get; set; }
 
         public int MatchSeconds { get; set; } = 120;
@@ -42,8 +46,10 @@
         public override BaseConfig FormatConfig()
         {
             if (CreateCommands is null) CreateCommands = new();
+            if (AddWordCommands is null) AddWordCommands = new();
             if (SendWordCommands is null) SendWordCommands = new();
-            if (PrepareSeconds < 1) PrepareSeconds = 1;
+            if (MatchSeconds < 30) MatchSeconds = 30;
+            if (PrepareSeconds < 5) PrepareSeconds = 5;
             if (SpeakingSeconds < 10) SpeakingSeconds = 10;
             if (VotingSeconds < 10) VotingSeconds = 10;
             if (MuteSeconds < 0) MuteSeconds = 0;

@@ -50,6 +50,10 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         public string UCWords { get; private set; }
         /// <summary>
+        /// 获胜阵营
+        /// </summary>
+        public UCCamp WinedCamp { get; private set; } = UCCamp.None;
+        /// <summary>
         /// 轮合集
         /// </summary>
         public List<UCRound> GameRounds { get; private set; } = new();
@@ -89,22 +93,6 @@ namespace TheresaBot.Main.Game.Undercover
         /// 存活的白板
         /// </summary>
         public List<UCPlayer> LiveWhiteboards => Players.Where(o => o.IsOut == false && o.PlayerCamp == UCCamp.Whiteboard).ToList();
-        /// <summary>
-        /// 平民是否已经获胜
-        /// </summary>
-        public bool IsCivilianWin => Players.Where(o => o.PlayerCamp == UCCamp.Undercover).All(o => o.IsOut);
-        /// <summary>
-        /// 卧底是否已经获胜
-        /// </summary>
-        public bool IsUndercoverWin => Players.Where(o => o.PlayerCamp == UCCamp.Civilian).All(o => o.IsOut) || (LivePlayers.Count == 2 && LiveCivilians.Count == 1 && LiveUndercovers.Count == 1);
-        /// <summary>
-        /// 白板是否已经获胜
-        /// </summary>
-        public bool IsWhiteboardWin => Players.Where(o => o.PlayerCamp != UCCamp.Whiteboard).All(o => o.IsOut) || (LivePlayers.Count == 2 && LiveCivilians.Count == 1 && LiveWhiteboards.Count == 1);
-        /// <summary>
-        /// 是否已有某个阵容获胜
-        /// </summary>
-        public bool IsSomeoneWin => IsCivilianWin || IsUndercoverWin || IsWhiteboardWin;
         /// <summary>
         /// 最小加入人数
         /// </summary>
@@ -164,6 +152,76 @@ namespace TheresaBot.Main.Game.Undercover
             if (MinPlayer < 4) throw new GameException("游戏创建失败，游戏至少需要4名玩家");
             if (MinPlayer < 5 && WbAmount > 0) throw new GameException("游戏创建失败，玩家达到5人及以上才可以加入白板");
             if (MatchSecond < 10) MatchSecond = 10;
+        }
+
+        /// <summary>
+        /// 平民是否已经获胜(所有卧底和白板已经出局)
+        /// </summary>
+        public bool IsCivilianWin(ref string winMsg)
+        {
+            if (Players.Where(o => o.PlayerCamp != UCCamp.Civilian).All(o => o.IsOut))
+            {
+                winMsg = "所有卧底和白板出局，平民获胜！";
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 卧底是否已经获胜(所有平民白板出局或者剩下2人时还存在一个卧底)
+        /// </summary>
+        public bool IsUndercoverWin(ref string winMsg)
+        {
+            if (Players.Where(o => o.PlayerCamp != UCCamp.Undercover).All(o => o.IsOut))
+            {
+                winMsg = "所有平民和白板出局，卧底获胜！";
+                return true;
+            }
+            if (LivePlayers.Count <= 2 && LiveUndercovers.Count >= 1)
+            {
+                winMsg = "剩余2人存活且卧底存活，卧底获胜！";
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 白板是否已经获胜(所有卧底出局且白板存活)
+        /// </summary>
+        public bool IsWhiteboardWin(ref string winMsg)
+        {
+            if (Players.Where(o => o.PlayerCamp == UCCamp.Undercover).All(o => o.IsOut) && LiveWhiteboards.Count >= 1)
+            {
+                winMsg = "所有卧底出局且白板存活，白板获胜！";
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 是否已有某个阵容获胜
+        /// </summary>
+        public async Task CheckSomeoneWinAsync()
+        {
+            string winMsg = string.Empty;
+            if (IsCivilianWin(ref winMsg))
+            {
+                WinedCamp = UCCamp.Civilian;
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, winMsg);
+                throw new GameFinishedException();
+            }
+            if (IsUndercoverWin(ref winMsg))
+            {
+                WinedCamp = UCCamp.Undercover;
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, winMsg);
+                throw new GameFinishedException();
+            }
+            if (IsWhiteboardWin(ref winMsg))
+            {
+                WinedCamp = UCCamp.Whiteboard;
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, winMsg);
+                throw new GameFinishedException();
+            }
         }
 
         /// <summary>
@@ -327,7 +385,7 @@ namespace TheresaBot.Main.Game.Undercover
                 var outPlayer = voteResults.First().Player;
                 parentRound.End(outPlayer);
                 await Session.SendGroupMessageAsync(GroupId, $"玩家{outPlayer.NameAndQQ}出局");
-                if (IsSomeoneWin) throw new GameFinishedException();
+                await CheckSomeoneWinAsync();//检查是否有某个阵营已经获胜
                 await CheckEndedAndDelay(1000);
                 await Session.SendGroupMessageAsync(GroupId, $"游戏继续...");
                 await CheckEndedAndDelay(1000);
@@ -340,44 +398,12 @@ namespace TheresaBot.Main.Game.Undercover
         /// <returns></returns>
         public override async Task GameFinishingAsync()
         {
-            var WinCamp = UCCamp.None;
-            var winMessage = string.Empty;
-
-            if (IsCivilianWin)
-            {
-                WinCamp = UCCamp.Civilian;
-                winMessage = "平民干掉了所有卧底，平民获胜！";
-            }
-            else if (IsUndercoverWin && LivePlayers.Count == 2)
-            {
-                WinCamp = UCCamp.Undercover;
-                winMessage = "存活玩家剩余2人，且卧底和平民各存活1人，卧底获胜！";
-            }
-            else if (IsUndercoverWin)
-            {
-                WinCamp = UCCamp.Undercover;
-                winMessage = "卧底干掉了所有平民，卧底获胜！";
-            }
-            else if (IsWhiteboardWin && LivePlayers.Count == 2)
-            {
-                WinCamp = UCCamp.Whiteboard;
-                winMessage = "存活玩家剩余2人，且白板和平民各存活1人，白板获胜！";
-            }
-            else if (IsWhiteboardWin)
-            {
-                WinCamp = UCCamp.Whiteboard;
-                winMessage = "白板干掉了所有人，白板获胜！";
-            }
-
-            await Session.SendGroupMessageAsync(GroupId, $"{winMessage}");
-            await Task.Delay(1000);
-
+            if (WinedCamp == UCCamp.None) throw new GameException("游戏异常，未指定获胜阵营");
             await Session.SendGroupMessageAsync(GroupId, GetCampInfos());
             await Task.Delay(1000);
-
             if (UCConfig.MuteSeconds > 0)
             {
-                var failPlayers = Players.Where(o => o.PlayerCamp != WinCamp).ToList();
+                var failPlayers = Players.Where(o => o.PlayerCamp != WinedCamp).ToList();
                 var failMemberIds = failPlayers.Select(o => o.MemberId).ToList();
                 await Session.SendGroupMessageAsync(GroupId, $"非获胜阵营将自动禁言{UCConfig.MuteSeconds}秒");
                 await Task.Delay(1000);

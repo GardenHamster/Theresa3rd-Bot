@@ -35,6 +35,11 @@ namespace TheresaBot.Main.Game
         /// </summary>
         public abstract string GameName { get; }
         /// <summary>
+        /// 游戏初始化
+        /// </summary>
+        /// <returns></returns>
+        protected abstract void CheckAndInit();
+        /// <summary>
         /// 开始游戏线程
         /// </summary>
         /// <returns></returns>

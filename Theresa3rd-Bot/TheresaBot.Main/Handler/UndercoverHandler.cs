@@ -140,7 +140,7 @@ namespace TheresaBot.Main.Handler
         private async Task<int[]> AskCharacterNums(GroupCommand command)
         {
             var processInfo = ProcessCache.CreateProcess(command);
-            var modeStep = processInfo.CreateStep($"请在60秒内发送 平民 卧底 白板 的数量，每个数字之间用空格隔开", CheckCharacterNumsAsync);
+            var modeStep = processInfo.CreateStep($"请在60秒内发送【平民 卧底 白板】的数量，每个数字之间用空格隔开，比如：4 1 0", CheckCharacterNumsAsync);
             await processInfo.StartProcessing();
             return modeStep.Answer;
         }
@@ -148,7 +148,7 @@ namespace TheresaBot.Main.Handler
         private async Task<int[]> AskCampScales(GroupCommand command)
         {
             var processInfo = ProcessCache.CreateProcess(command);
-            var modeStep = processInfo.CreateStep($"请在60秒内发送 平民 卧底 白板 的比例，每个数字之间用空格隔开", CheckCampScalesAsync);
+            var modeStep = processInfo.CreateStep($"请在60秒内发送【平民 卧底 白板】的比例，每个数字之间用空格隔开，比如：4 1 0", CheckCampScalesAsync);
             await processInfo.StartProcessing();
             return modeStep.Answer;
         }
@@ -156,7 +156,7 @@ namespace TheresaBot.Main.Handler
         private async Task<List<string[]>> AskNewWords(FriendCommand command)
         {
             var processInfo = ProcessCache.CreateProcess(command);
-            var modeStep = processInfo.CreateStep($"请在60秒内发送词条，每个词条之间用空格隔开，多个词组之间换行隔开", CheckNewWordsAsync);
+            var modeStep = processInfo.CreateStep($"请在60秒内发送词条，每个词条之间用空格隔开，多个词组之间换行隔开，比如：牛奶 豆浆\r\n苹果 雪梨", CheckNewWordsAsync);
             await processInfo.StartProcessing();
             return modeStep.Answer;
         }
@@ -181,7 +181,7 @@ namespace TheresaBot.Main.Handler
             var splitArr = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             if (splitArr.Length < 1)
             {
-                throw new ProcessException("至少指定平民的数量");
+                throw new ProcessException("必须指定平民的数量");
             }
             if (splitArr.Length > 0 && !int.TryParse(splitArr[0], out civNum))
             {
@@ -197,7 +197,11 @@ namespace TheresaBot.Main.Handler
             }
             if (civNum < 2)
             {
-                throw new ProcessException("平民数量至少在2人以上");
+                throw new ProcessException("平民数量至少需要在2个及以上");
+            }
+            if (ucNum < 1)
+            {
+                throw new ProcessException("卧底数量至少需要在1个及以上");
             }
             if (civNum + ucNum + wbNum < 3)
             {

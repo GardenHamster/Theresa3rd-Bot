@@ -47,10 +47,20 @@ namespace TheresaBot.Main.Game
         /// <returns></returns>
         public abstract Task GameCreatedAsync(GroupCommand command);
         /// <summary>
-        /// 玩家匹配完毕钩子
+        /// 已指定游戏人数并且已经有足够的数量后触发的事件
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task PlayerMatchingCompletedAsync();
+        /// <summary>
+        /// 未指定游戏人数但是等待匹配时间结束后触发的事件
         /// </summary>
         /// <returns></returns>
         public abstract Task PlayerWaitingCompletedAsync();
+        /// <summary>
+        /// 游戏准备开始钩子
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task GameStartingAsync();
         /// <summary>
         /// 游戏进行中钩子
         /// </summary>
@@ -103,10 +113,12 @@ namespace TheresaBot.Main.Game
                     else
                     {
                         await PlayerMatchingAsync();
+                        await CheckEnded();
+                        await PlayerMatchingCompletedAsync();
                     }
                     await CheckEnded();
-                    await Session.SendGroupMessageAsync(GroupId, $"玩家集结完毕，游戏将在5秒后开始...");
-                    await CheckEndedAndDelay(5000);
+                    await GameStartingAsync();
+                    await CheckEnded();
                     IsStarted = true;
                     await GameProcessingAsync();
                     throw new GameFinishedException();
@@ -175,7 +187,7 @@ namespace TheresaBot.Main.Game
             remindContents.Add(new PlainContent($"正在等待玩家加入，游戏匹配时长为 {MatchSecond} 秒，最低玩家人数为 {MinPlayer} 人"));
             remindContents.Add(new PlainContent($"发送群指令 【{joinCommandStr}】 可以加入该游戏"));
             await Session.SendGroupMessageAsync(GroupId, remindContents);
-            while (Players.Count < MinPlayer)
+            while (waitSeconds > 0)
             {
                 await CheckEnded();
                 waitSeconds = waitSeconds - 1;
@@ -228,6 +240,27 @@ namespace TheresaBot.Main.Game
         {
             player.SetPlayerId(Players.Count + 1);
             Players.Add(player);
+        }
+
+        /// <summary>
+        /// 玩家随机排序,并且改变原有的id顺序
+        /// </summary>
+        protected void RandomSortPlayers()
+        {
+            var playerList = Players.ToList();
+            var randomList = new List<T>();
+            while (playerList.Count > 0)
+            {
+                int index = new Random().Next(playerList.Count);
+                randomList.Add(playerList[index]);
+                playerList.RemoveAt(index);
+            }
+            for (int i = 0; i < randomList.Count; i++)
+            {
+                randomList[i].SetPlayerId(i + 1);
+            }
+            Players.Clear();
+            Players.AddRange(randomList);
         }
 
         /// <summary>

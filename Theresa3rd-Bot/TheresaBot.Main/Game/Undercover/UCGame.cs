@@ -111,7 +111,7 @@ namespace TheresaBot.Main.Game.Undercover
             UcAmount = 1;
             WbAmount = 0;
             MinPlayer = CivAmount + UcAmount + WbAmount;
-            InitGame();
+            CheckAndInit();
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace TheresaBot.Main.Game.Undercover
             UcAmount = ucNum >= 0 ? ucNum : 0;
             WbAmount = wbNum >= 0 ? wbNum : 0;
             MinPlayer = CivAmount + UcAmount + WbAmount;
-            InitGame();
+            CheckAndInit();
         }
 
         /// <summary>
@@ -139,14 +139,13 @@ namespace TheresaBot.Main.Game.Undercover
         {
             MinPlayer = 4;
             CampScales = campScales;
-            InitGame();
         }
 
         /// <summary>
         /// 初始化
         /// </summary>
         /// <exception cref="GameException"></exception>
-        private void InitGame()
+        protected override void CheckAndInit()
         {
             MatchSecond = BotConfig.GameConfig.Undercover.MatchSeconds;
             if (MinPlayer < 4) throw new GameException("游戏创建失败，游戏至少需要4名玩家");
@@ -260,7 +259,7 @@ namespace TheresaBot.Main.Game.Undercover
             if (similarSpeechs.Count > 0)
             {
                 List<BaseContent> remindContents = new List<BaseContent>();
-                remindContents.Add(new PlainContent($"存在相似的历史发言，请重新发言~"));
+                remindContents.Add(new PlainContent($"存在相似度高于{UCConfig.MaxSimilarity}%的历史发言，请重新发言~"));
                 remindContents.Add(new PlainContent(GetSimilarContent(similarSpeechs)));
                 await Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, remindContents);
                 return true;
@@ -312,7 +311,7 @@ namespace TheresaBot.Main.Game.Undercover
         }
 
         /// <summary>
-        /// 玩家匹配完毕事件
+        /// 未指定游戏人数但是等待匹配时间结束后触发的事件
         /// </summary>
         /// <returns></returns>
         public override async Task PlayerWaitingCompletedAsync()
@@ -329,7 +328,29 @@ namespace TheresaBot.Main.Game.Undercover
             CivAmount = groups * civScale + players % sumScale;
             UcAmount = groups * ucScale;
             WbAmount = groups * wbScale;
+            CheckAndInit();
+            RandomSortPlayers();
             await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 已指定游戏人数并且已经有足够的数量后触发的事件
+        /// </summary>
+        /// <returns></returns>
+        public override async Task PlayerMatchingCompletedAsync()
+        {
+            RandomSortPlayers();
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 游戏准备开始事件
+        /// </summary>
+        /// <returns></returns>
+        public override async Task GameStartingAsync()
+        {
+            await Session.SendGroupMessageAsync(GroupId, $"玩家集结完毕，游戏将在5秒后开始...");
+            await CheckEndedAndDelay(5000);
         }
 
         /// <summary>
@@ -347,7 +368,9 @@ namespace TheresaBot.Main.Game.Undercover
             await CheckEnded();
             await SendWords();//私聊发送词条
             await CheckEnded();
-            await Session.SendGroupMessageAsync(GroupId, $"词条派发完毕，请各位查看私聊\r\n如未收到私聊，请尝试添加本Bot为好友，然后在群内发送 {UCConfig.SendWordCommands.JoinCommands()} 重新私发词条。\r\n请各位组织语言，发言环节将在{UCConfig.PrepareSeconds}秒后开始...");
+            await Session.SendGroupMessageAsync(GroupId, $"词条派发完毕，请各位查看私聊\r\n如未收到私聊，请尝试添加本Bot为好友，然后在群内发送 {UCConfig.SendWordCommands.JoinCommands()} 重新私发词条。");
+            await CheckEndedAndDelay(1000);
+            await Session.SendGroupMessageAsync(GroupId, $"本次游戏中共有 平民：{CivAmount}个，卧底：{UcAmount}个，白板：{WbAmount}个\r\n请各位组织语言，发言环节将在{UCConfig.PrepareSeconds}秒后开始...");
             await Task.Delay(UCConfig.PrepareSeconds * 1000);
             await CheckEnded();
             while (true)
@@ -370,8 +393,8 @@ namespace TheresaBot.Main.Game.Undercover
                     await CheckEnded();
                     var subPlayers = voteResults.Select(o => o.Player).ToList();
                     CurrentRound = CurrentRound.CreateSubRound(subPlayers, LivePlayers);
-                    var subMemberIds = CurrentRound.VotePlayers.Select(o => o.MemberId).ToList();
-                    await Session.SendGroupMessageWithAtAsync(GroupId, subMemberIds, $"投票后仍有{subMemberIds.Count}位玩家票数相同，请{subMemberIds.Count}位玩家按照提示继续发言...");
+                    var subMemberIds = subPlayers.Select(o => o.MemberId).ToList();
+                    await Session.SendGroupMessageWithAtAsync(GroupId, subMemberIds, $"投票后仍有{voteResults.Count}位玩家票数相同，请{voteResults.Count}位玩家按照提示继续发言...");
                     await CheckEndedAndDelay(1000);
                     await PlayersSpeech(CurrentRound);//发言环节
                     await CheckEndedAndDelay(1000);
@@ -583,7 +606,7 @@ namespace TheresaBot.Main.Game.Undercover
             foreach (var speech in round.Speechs)
             {
                 var player = speech.Player;
-                var content = new ForwardContent(player.MemberId, player.MemberName, speech.Content);
+                var content = new ForwardContent(player.MemberId, $"No.{player.PlayerId} {player.MemberName}", $"{speech.Content}");
                 contents.Add(content);
             }
             await Session.SendGroupForwardAsync(GroupId, contents);
@@ -626,9 +649,9 @@ namespace TheresaBot.Main.Game.Undercover
             var cvPlayer = Players.Where(o => o.PlayerCamp == UCCamp.Civilian).ToList();
             var ucPlayer = Players.Where(o => o.PlayerCamp == UCCamp.Undercover).ToList();
             var wbPlayer = Players.Where(o => o.PlayerCamp == UCCamp.Whiteboard).ToList();
-            string cvInfo = GetCampInfo(cvPlayer, "平民");
-            string ucInfo = GetCampInfo(ucPlayer, "卧底");
-            string wbInfo = GetCampInfo(wbPlayer, "白板");
+            string cvInfo = GetCampInfo(cvPlayer, "平民", CivWords);
+            string ucInfo = GetCampInfo(ucPlayer, "卧底", UCWords);
+            string wbInfo = GetCampInfo(wbPlayer, "白板", string.Empty);
             if (!string.IsNullOrEmpty(cvInfo)) builder.AppendLine(cvInfo);
             if (!string.IsNullOrEmpty(ucInfo)) builder.AppendLine(ucInfo);
             if (!string.IsNullOrEmpty(wbInfo)) builder.Append(wbInfo);
@@ -641,11 +664,11 @@ namespace TheresaBot.Main.Game.Undercover
         /// <param name="players"></param>
         /// <param name="campName"></param>
         /// <returns></returns>
-        private string GetCampInfo(List<UCPlayer> players, string campName)
+        private string GetCampInfo(List<UCPlayer> players, string campName, string word)
         {
             if (players.Count == 0) return string.Empty;
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine($"{campName}：");
+            builder.AppendLine(string.IsNullOrEmpty(word) ? $"{campName}" : $"{campName}：({word})");
             for (int i = 0; i < players.Count; i++)
             {
                 if (i > 0) builder.AppendLine();

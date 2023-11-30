@@ -240,13 +240,9 @@ namespace TheresaBot.Main.Handler
             {
                 throw new ProcessException("卧底比例至少在1及以上");
             }
-            if (ucNum > civNum)
+            if (civNum + ucNum + wbNum < 3)
             {
-                throw new ProcessException("卧底比例不能大于平民的比例");
-            }
-            if (wbNum > civNum)
-            {
-                throw new ProcessException("白板比例不能大于平民的比例");
+                throw new ProcessException("平民+卧底+白板比例必须在3及以上");
             }
             return await Task.FromResult(new int[] { civNum, ucNum, wbNum });
         }

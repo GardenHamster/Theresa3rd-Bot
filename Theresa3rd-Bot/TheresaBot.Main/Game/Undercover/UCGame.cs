@@ -137,8 +137,10 @@ namespace TheresaBot.Main.Game.Undercover
         /// <param name="wbNum"></param>
         public UCGame(GroupCommand command, BaseSession session, BaseReporter reporter, int[] campScales) : base(command, session, reporter, true)
         {
-            MinPlayer = 3;
             CampScales = campScales;
+            MinPlayer = campScales.Sum();
+            if (MinPlayer < 3) throw new GameException("游戏创建失败，总比例至少为3");
+            if (MinPlayer < 5 && WbAmount > 0) throw new GameException("游戏创建失败，总比例达到5及以上才可以加入白板");
         }
 
         /// <summary>

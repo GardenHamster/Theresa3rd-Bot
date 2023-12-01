@@ -1,2 +1,2 @@
-Password:                '123456'       #后台密码
-SecretKey:               ''       #密钥，随机生成
+Password:                ''				#密码，空值将随机生成
+SecretKey:               ''				#密钥，空值将随机生成

@@ -38,7 +38,7 @@
 
         public int MatchSeconds { get; set; } = 120;
 
-        public int PrepareSeconds { get; set; } = 1;
+        public int PrepareSeconds { get; set; } = 5;
 
         public int SpeakingSeconds { get; set; } = 120;
 

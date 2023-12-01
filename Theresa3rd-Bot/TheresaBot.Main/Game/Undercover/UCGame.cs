@@ -245,7 +245,7 @@ namespace TheresaBot.Main.Game.Undercover
             if (relay.IsQuote && WaitingQuote is not null && relay.QuoteMsgId != 0 && relay.QuoteMsgId != WaitingQuote.MessageId) return false;
             if (CurrentRound.IsPlayerSpeeched(relay.MemberId)) return false;
             var similarSpeechs = GetSimilarSpeech(relay, UCConfig.MaxSimilarity / 100);
-            if (similarSpeechs.Count > 0)
+            if (UCConfig.MaxSimilarity > 0 && similarSpeechs.Count > 0)
             {
                 List<BaseContent> remindContents = new List<BaseContent>();
                 remindContents.Add(new PlainContent($"存在相似度高于{UCConfig.MaxSimilarity}%的历史发言，请重新发言~"));
@@ -360,7 +360,7 @@ namespace TheresaBot.Main.Game.Undercover
             await Session.SendGroupMessageAsync(GroupId, $"词条派发完毕，请各位查看私聊\r\n如未收到私聊，请尝试添加本Bot为好友，然后在群内发送 {UCConfig.SendWordCommands.JoinCommands()} 重新私发词条。");
             await CheckEndedAndDelay(1000);
             await Session.SendGroupMessageAsync(GroupId, $"本次游戏中共有 平民：{CivAmount}个，卧底：{UcAmount}个，白板：{WbAmount}个\r\n请各位组织语言，发言环节将在{UCConfig.PrepareSeconds}秒后开始...");
-            await Task.Delay(UCConfig.PrepareSeconds * 1000);
+            await Task.Delay(UCConfig.PrepareSeconds);
             await CheckEnded();
             while (true)
             {

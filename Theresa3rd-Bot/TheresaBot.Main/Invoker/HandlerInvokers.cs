@@ -496,6 +496,7 @@ namespace TheresaBot.Main.Invoker
             new(BotConfig.GameConfig?.StartCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
             {
                 GameHandler handler = new GameHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 await handler.ForceStart(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
@@ -504,6 +505,7 @@ namespace TheresaBot.Main.Invoker
             new(BotConfig.GameConfig?.StopCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
             {
                 GameHandler handler = new GameHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 await handler.ForceStop(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;

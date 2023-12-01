@@ -13,6 +13,7 @@
         public override GameConfig FormatConfig()
         {
             if (JoinCommands is null) JoinCommands = new();
+            if (StartCommands is null) StartCommands = new();
             if (StopCommands is null) StopCommands = new();
             Undercover?.FormatConfig();
             return this;
@@ -27,7 +28,9 @@
 
         public List<string> SendWordCommands { get; set; } = new();
 
-        public bool SendIdentity { get; set; }
+        public int AddWordLimits { get; set; } = 10;
+
+        public bool SendIdentity { get; set; } = false;
 
         public int FirstRoundNonVoting { get; set; } = 3;
 
@@ -50,6 +53,7 @@
             if (CreateCommands is null) CreateCommands = new();
             if (AddWordCommands is null) AddWordCommands = new();
             if (SendWordCommands is null) SendWordCommands = new();
+            if (AddWordLimits < 0) AddWordLimits = 0;
             if (MatchSeconds < 30) MatchSeconds = 30;
             if (PrepareSeconds < 5) PrepareSeconds = 5;
             if (SpeakingSeconds < 10) SpeakingSeconds = 10;

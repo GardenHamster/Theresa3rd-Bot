@@ -92,19 +92,24 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                var maxCount = 5;//非超级管理员限制添加词条数量
                 var memberId = command.MemberId;
                 var isManager = memberId.IsSuperManager();
-                var unauthCount = ucWordService.GetUnauthorizedCount(command.MemberId);
-                if (isManager == false && unauthCount >= maxCount)
+                var limitCount = BotConfig.GameConfig.Undercover.AddWordLimits;
+                if (isManager == false && limitCount <= 0)
                 {
-                    await command.ReplyFriendMessageAsync($"已添加{unauthCount}个未经审核的词条，请等待超级管理员审核完毕后继续添加");
+                    await command.ReplyFriendMessageAsync($"超级管理员已关闭添加词条功能，请联系超级管理员~");
+                    return;
+                }
+                var unauthCount = ucWordService.GetUnauthorizedCount(command.MemberId);
+                if (isManager == false && unauthCount >= limitCount)
+                {
+                    await command.ReplyFriendMessageAsync($"已添加{unauthCount}个未经审核的词条，请等待超级管理员审核后再继续添加~");
                     return;
                 }
                 var newWords = await AskNewWords(command);
-                if (isManager == false && unauthCount + newWords.Count > maxCount)
+                if (isManager == false && unauthCount + newWords.Count > limitCount)
                 {
-                    await command.ReplyFriendMessageAsync($"非超级管理员限制添加词条个数为{maxCount}个，剩余可添加词条{newWords.Count}个，等待管理员审核后可以添加更多词条");
+                    await command.ReplyFriendMessageAsync($"非超级管理员限制添加词条个数为{limitCount}个，剩余可添加词条{limitCount - unauthCount}个，等待管理员审核后可以添加更多词条");
                     return;
                 }
                 foreach (var item in newWords)
@@ -114,7 +119,7 @@ namespace TheresaBot.Main.Handler
                 }
                 if (isManager)
                 {
-                    await command.ReplyFriendMessageAsync("添加完毕");
+                    await command.ReplyFriendMessageAsync("添加完毕~");
                 }
                 else
                 {

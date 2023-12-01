@@ -28,6 +28,10 @@ namespace TheresaBot.Main.Model.Saucenao
             {
                 builder.Append($"，PixivId：{SourceId}");
             }
+            else
+            {
+                builder.Append($"，Id：{SourceId}");
+            }
             return new PlainContent(builder.ToString());
         }
 

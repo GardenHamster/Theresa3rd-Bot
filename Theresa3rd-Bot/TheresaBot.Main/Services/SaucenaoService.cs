@@ -14,7 +14,7 @@ namespace TheresaBot.Main.Services
 {
     internal class SaucenaoService
     {
-        public async Task<SaucenaoResult> Request(string imgHttpUrl)
+        public async Task<SaucenaoResult> SearchResultAsync(string imgHttpUrl)
         {
             DateTime startTime = DateTime.Now;
             HtmlParser htmlParser = new HtmlParser();
@@ -38,8 +38,7 @@ namespace TheresaBot.Main.Services
                 if (string.IsNullOrWhiteSpace(similarityStr)) similarityStr = "00.00";
                 similarityStr = similarityStr.Replace("%", "");
                 decimal.TryParse(similarityStr, out similarity);
-                if (similarity > 0 && similarity < BotConfig.SaucenaoConfig.MinSimilarity) continue;
-
+                
                 foreach (IElement linkifyElement in linkifyList)
                 {
                     SaucenaoItem saucenaoItem = ToSaucenaoItem(linkifyElement, similarity);
@@ -96,7 +95,7 @@ namespace TheresaBot.Main.Services
             //https://gelbooru.com/index.php?page=post&s=view&id=4639560
             if (hrefLower.Contains("gelbooru.com"))
             {
-                return new SaucenaoItem(SetuSourceType.Gelbooru, href, href.TakeHttpLast(), similarity);
+                return new SaucenaoItem(SetuSourceType.Gelbooru, href, href.TakeHttpParam("id"), similarity);
             }
             //https://konachan.com/post/show/279886
             if (hrefLower.Contains("konachan.com"))
@@ -233,7 +232,9 @@ namespace TheresaBot.Main.Services
         /// <returns></returns>
         public bool IsFilter(SaucenaoItem saucenaoItem)
         {
-            int pixivId = 0;
+            var pixivId = 0;
+            var minSimilarity = BotConfig.SaucenaoConfig.MinSimilarity;
+            if (saucenaoItem.Similarity < minSimilarity) return true;
             if (saucenaoItem.SourceType != SetuSourceType.Pixiv) return false;
             if (int.TryParse(saucenaoItem.SourceId, out pixivId) == false) return true;
             if (pixivId < 40000000) return true;
@@ -247,7 +248,7 @@ namespace TheresaBot.Main.Services
         /// <returns></returns>
         public List<SaucenaoItem> SortItems(List<SaucenaoItem> itemList)
         {
-            if (itemList is null) return new List<SaucenaoItem>();
+            if (itemList.Count == 0) return new List<SaucenaoItem>();
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();
             List<SaucenaoItem> selectList = itemList.OrderByDescending(o => o.Similarity).Take(20).ToList();
             sortList.AddRange(selectList.Where(o => o.SourceType == SetuSourceType.Pixiv && o.Similarity >= BotConfig.SaucenaoConfig.PixivPriority).ToList());

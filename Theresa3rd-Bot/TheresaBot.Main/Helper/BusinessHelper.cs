@@ -199,6 +199,7 @@ namespace TheresaBot.Main.Helper
             {
                 Console.WriteLine($"{address}");
             }
+            Console.WriteLine($"你也可以通过公网Ip:端口的方式访问后台");
             Console.WriteLine("----------------------------------------------------------------------------------------");
         }
 

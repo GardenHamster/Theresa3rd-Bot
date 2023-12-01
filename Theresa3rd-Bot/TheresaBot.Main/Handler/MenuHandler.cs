@@ -42,6 +42,7 @@ namespace TheresaBot.Main.Handler
         private string GetMemberMenu()
         {
             StringBuilder menuBuilder = new StringBuilder();
+            menuBuilder.AppendLine();
             menuBuilder.AppendLine($"【{JoinCommands(BotConfig.SetuConfig?.Pixiv?.Commands)}】获取pixiv涩图");
             menuBuilder.AppendLine($"【{JoinCommands(BotConfig.SetuConfig?.Lolicon?.Commands)}】获取Lolicon涩图");
             menuBuilder.AppendLine($"【{JoinCommands(BotConfig.SetuConfig?.Lolisuki?.Commands)}】获取Lolisuki涩图");
@@ -57,6 +58,7 @@ namespace TheresaBot.Main.Handler
         private string GetManagerMenu()
         {
             StringBuilder menuBuilder = new StringBuilder();
+            menuBuilder.AppendLine();
             menuBuilder.AppendLine($"超级管理员的功能如下：");
             menuBuilder.AppendLine($"【{JoinCommands(BotConfig.SubscribeConfig?.Miyoushe?.AddCommands)}】订阅米游社用户");
             menuBuilder.AppendLine($"【{JoinCommands(BotConfig.SubscribeConfig?.PixivUser?.AddCommands)}】订阅P站画师");

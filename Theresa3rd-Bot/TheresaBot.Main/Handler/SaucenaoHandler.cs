@@ -143,9 +143,9 @@ namespace TheresaBot.Main.Handler
             try
             {
                 var readCount = BotConfig.SaucenaoConfig.SaucenaoReadCount;
-                var saucenaoResult = await saucenaoService.Request(imgUrl);
+                var saucenaoResult = await saucenaoService.SearchResultAsync(imgUrl);
                 var filterList = saucenaoService.FilterItems(saucenaoResult.Items);
-                if (saucenaoResult.Items.Count == 0) return false;
+                if (filterList.Count == 0) return false;
 
                 var sortList = saucenaoService.SortItems(filterList);
                 var maxSimilarity = sortList.Max(o => o.Similarity);
@@ -210,7 +210,7 @@ namespace TheresaBot.Main.Handler
                 setuFiles = await GetSetuFilesAsync(pixivWorkInfo, groupId);
             }
             var workMsgs = new List<BaseContent>();
-            workMsgs.Add(saucenaoItem.GetSimpleContent());
+            workMsgs.Add(saucenaoItem.GetSourceContent());
             workMsgs.AddRange(GetPixivMessageAsync(saucenaoItem));
             return new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
         }

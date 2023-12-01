@@ -5,6 +5,6 @@
         Default = 0,
         Standard = 1,
         Customize = 2,
-        Free=3,
+        Free = 3,
     }
 }

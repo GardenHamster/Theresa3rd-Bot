@@ -27,9 +27,9 @@ namespace TheresaBot.Main.Model.Config
 
         public override PixivConfig FormatConfig()
         {
-            HttpProxy = StringHelper.FormatHttpUrl(HttpProxy, defaultHttps: false);
-            ImgProxy = StringHelper.FormatHttpUrl(ImgProxy, defaultHttps: true);
-            OriginUrlProxy = StringHelper.FormatHttpUrl(OriginUrlProxy, defaultHttps: true);
+            HttpProxy = UrlHelper.FormatHttpUrl(HttpProxy, defaultHttps: false);
+            ImgProxy = UrlHelper.FormatHttpUrl(ImgProxy, defaultHttps: true);
+            OriginUrlProxy = UrlHelper.FormatHttpUrl(OriginUrlProxy, defaultHttps: true);
             if (R18ImgBlur < 5) R18ImgBlur = 5;
             if (R18ImgBlur > 100) R18ImgBlur = 100;
             return this;

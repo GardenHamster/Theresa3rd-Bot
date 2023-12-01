@@ -7,7 +7,6 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Type;
 
@@ -15,12 +14,11 @@ namespace TheresaBot.Main.Services
 {
     internal class SaucenaoService
     {
-        public async Task<SaucenaoResult> getSaucenaoResultAsync(string imgHttpUrl)
+        public async Task<SaucenaoResult> Request(string imgHttpUrl)
         {
             DateTime startTime = DateTime.Now;
-            string saucenaoHtml = await SearchResultAsync(imgHttpUrl);
-
             HtmlParser htmlParser = new HtmlParser();
+            string saucenaoHtml = await RequestHtmlAsync(imgHttpUrl);
             IHtmlDocument document = await htmlParser.ParseDocumentAsync(saucenaoHtml);
             IEnumerable<IElement> domList = document.All.Where(m => m.ClassList.Contains("result"));
 
@@ -44,7 +42,7 @@ namespace TheresaBot.Main.Services
 
                 foreach (IElement linkifyElement in linkifyList)
                 {
-                    SaucenaoItem saucenaoItem = getSaucenaoItem(linkifyElement, similarity);
+                    SaucenaoItem saucenaoItem = ToSaucenaoItem(linkifyElement, similarity);
                     if (saucenaoItem is null) continue;
                     if (itemList.Any(o => o.SourceUrl == saucenaoItem.SourceUrl)) continue;
                     itemList.Add(saucenaoItem);
@@ -53,116 +51,133 @@ namespace TheresaBot.Main.Services
             return new SaucenaoResult(itemList, startTime, domList.Count());
         }
 
-
-        public SaucenaoItem getSaucenaoItem(IElement linkElement, decimal similarity)
+        /// <summary>
+        /// 封装成为Saucenao数据对象
+        /// </summary>
+        /// <param name="linkElement"></param>
+        /// <param name="similarity"></param>
+        /// <returns></returns>
+        public SaucenaoItem ToSaucenaoItem(IElement linkElement, decimal similarity)
         {
-            string href = linkElement.GetAttribute("href");
+            string href = linkElement.GetAttribute("href")?.Trim();
             if (string.IsNullOrWhiteSpace(href)) return null;
-
-            href = href.Trim();
             string hrefLower = href.ToLower();
-            Dictionary<string, string> paramDic = href.SplitHttpParams();
 
             //https://www.pixiv.net/member_illust.php?mode=medium&illust_id=73572009
             if (hrefLower.Contains("www.pixiv.net/member_illust"))
             {
-                string illustId = paramDic["illust_id"].Trim();
-                return new SaucenaoItem(SetuSourceType.Pixiv, href, illustId, similarity);
+                return new SaucenaoItem(SetuSourceType.Pixiv, href, href.TakeHttpParam("illust_id"), similarity);
             }
-
             //https://szcb911.fanbox.cc/posts/4045588
             if (hrefLower.Contains("fanbox.cc"))
             {
-                return new SaucenaoItem(SetuSourceType.FanBox, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.FanBox, href, href.TakeHttpLast(), similarity);
             }
-
             //https://www.pixiv.net/fanbox/creator/705370
             if (hrefLower.Contains("www.pixiv.net/fanbox"))
             {
-                return new SaucenaoItem(SetuSourceType.FanBox, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.FanBox, href, href.TakeHttpLast(), similarity);
             }
-
             //https://yande.re/post/show/523988
             if (hrefLower.Contains("yande.re"))
             {
-                return new SaucenaoItem(SetuSourceType.Yande, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Yande, href, href.TakeHttpLast(), similarity);
             }
-
             //https://twitter.com/i/web/status/1007548268048416769
             if (hrefLower.Contains("twitter.com"))
             {
-                return new SaucenaoItem(SetuSourceType.Twitter, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Twitter, href, href.TakeHttpLast(), similarity);
             }
-
             //https://danbooru.donmai.us/post/show/3438512
             if (hrefLower.Contains("danbooru.donmai.us"))
             {
-                return new SaucenaoItem(SetuSourceType.Danbooru, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Danbooru, href, href.TakeHttpLast(), similarity);
             }
-
             //https://gelbooru.com/index.php?page=post&s=view&id=4639560
             if (hrefLower.Contains("gelbooru.com"))
             {
-                return new SaucenaoItem(SetuSourceType.Gelbooru, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Gelbooru, href, href.TakeHttpLast(), similarity);
             }
-
             //https://konachan.com/post/show/279886
             if (hrefLower.Contains("konachan.com"))
             {
-                return new SaucenaoItem(SetuSourceType.Konachan, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.Konachan, href, href.TakeHttpLast(), similarity);
             }
-
             //https://anime-pictures.net/pictures/view_post/602645
             if (hrefLower.Contains("anime-pictures.net"))
             {
-                return new SaucenaoItem(SetuSourceType.AnimePictures, href, "", similarity);
+                return new SaucenaoItem(SetuSourceType.AnimePictures, href, href.TakeHttpLast(), similarity);
             }
 
             //https://anidb.net/anime/4427
             //https://bcy.net/illust/detail/120185/1519032
             //https://mangadex.org/chapter/07c706d9-e575-4498-b504-dd85014c555b
             //https://www.mangaupdates.com/series.html?id=13582
-            //https://myanimelist.net/manga/5255/
-            //https://www.imdb.com/title/tt2402101/
+            //https://myanimelist.net/manga/5255
+            //https://www.imdb.com/title/tt2402101
 
             return null;
         }
 
-        public async Task<List<SaucenaoItem>> getBestMatchAsync(List<SaucenaoItem> sortList, int count)
+        /// <summary>
+        /// 拉取源信息
+        /// </summary>
+        /// <param name="itemList"></param>
+        /// <returns></returns>
+        public async Task FetchOrigin(List<SaucenaoItem> itemList)
         {
-            List<SaucenaoItem> resultList = new List<SaucenaoItem>();
-            for (int i = 0; i < sortList.Count && resultList.Count < count; i++)
+            foreach (var item in itemList)
             {
-                SaucenaoItem saucenaoItem = sortList[i];
-                if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
-                {
-                    int pixivId = 0;
-                    if (int.TryParse(saucenaoItem.SourceId, out pixivId) == false) continue;
-                    if (pixivId < 40000000) continue;
-                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivId.ToString());
-                    if (pixivWorkInfo is null) continue;
-                    saucenaoItem.PixivWorkInfo = pixivWorkInfo;
-                    resultList.Add(saucenaoItem);
-                }
-                else if (saucenaoItem.SourceType == SetuSourceType.Twitter)
-                {
-                    //ToDo
-                    resultList.Add(saucenaoItem);
-                }
-                else if (saucenaoItem.SourceType == SetuSourceType.FanBox)
-                {
-                    //ToDo
-                    resultList.Add(saucenaoItem);
-                }
-                else
-                {
-                    resultList.Add(saucenaoItem);
-                }
+                await FetchOrigin(item);
             }
-            return resultList;
         }
 
-        public string getDefaultRemindMessage(SaucenaoResult saucenaoResult, long todayLeft)
+        /// <summary>
+        /// 拉取源信息
+        /// </summary>
+        /// <param name="saucenaoItem"></param>
+        /// <returns></returns>
+        public async Task FetchOrigin(SaucenaoItem saucenaoItem)
+        {
+            try
+            {
+                if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
+                {
+                    saucenaoItem.PixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(saucenaoItem.SourceId);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "获取Saucenao返回的Pixiv作品信息失败");
+            }
+        }
+
+        /// <summary>
+        /// 获取提示消息
+        /// </summary>
+        /// <param name="saucenaoResult"></param>
+        /// <param name="todayLeft"></param>
+        /// <returns></returns>
+        public string GetRemindMessage(SaucenaoResult saucenaoResult, long todayLeft)
+        {
+            string remindTemplate = BotConfig.SaucenaoConfig.Template;
+            if (string.IsNullOrWhiteSpace(remindTemplate))
+            {
+                return GetDefaultRemindMessage(saucenaoResult, todayLeft);
+            }
+            else
+            {
+                return GetTemplateRemindMessage(saucenaoResult, remindTemplate, todayLeft);
+            }
+        }
+
+        /// <summary>
+        /// 获取默认提示消息
+        /// </summary>
+        /// <param name="saucenaoResult"></param>
+        /// <param name="todayLeft"></param>
+        /// <returns></returns>
+        private string GetDefaultRemindMessage(SaucenaoResult saucenaoResult, long todayLeft)
         {
             StringBuilder warnBuilder = new StringBuilder();
             warnBuilder.Append($"共找到 {saucenaoResult.MatchCount} 条匹配信息");
@@ -184,7 +199,14 @@ namespace TheresaBot.Main.Services
             return warnBuilder.ToString();
         }
 
-        public string getSaucenaoRemindMessage(SaucenaoResult saucenaoResult, string template, long todayLeft)
+        /// <summary>
+        /// 根据模版返回提示消息
+        /// </summary>
+        /// <param name="saucenaoResult"></param>
+        /// <param name="template"></param>
+        /// <param name="todayLeft"></param>
+        /// <returns></returns>
+        private string GetTemplateRemindMessage(SaucenaoResult saucenaoResult, string template, long todayLeft)
         {
             template = template?.Trim()?.TrimLine();
             template = template.Replace("{MatchCount}", saucenaoResult.MatchCount.ToString());
@@ -195,11 +217,35 @@ namespace TheresaBot.Main.Services
         }
 
         /// <summary>
+        /// 过滤结果
+        /// </summary>
+        /// <param name="itemList"></param>
+        /// <returns></returns>
+        public List<SaucenaoItem> FilterItems(List<SaucenaoItem> itemList)
+        {
+            return itemList.Where(o => IsFilter(o) == false).ToList();
+        }
+
+        /// <summary>
+        /// 是否过滤掉一个结果
+        /// </summary>
+        /// <param name="saucenaoItem"></param>
+        /// <returns></returns>
+        public bool IsFilter(SaucenaoItem saucenaoItem)
+        {
+            int pixivId = 0;
+            if (saucenaoItem.SourceType != SetuSourceType.Pixiv) return false;
+            if (int.TryParse(saucenaoItem.SourceId, out pixivId) == false) return true;
+            if (pixivId < 40000000) return true;
+            return false;
+        }
+
+        /// <summary>
         /// 对搜索结果进行优先级排序
         /// </summary>
         /// <param name="itemList"></param>
         /// <returns></returns>
-        public List<SaucenaoItem> sortSaucenaoItem(List<SaucenaoItem> itemList)
+        public List<SaucenaoItem> SortItems(List<SaucenaoItem> itemList)
         {
             if (itemList is null) return new List<SaucenaoItem>();
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();
@@ -216,7 +262,7 @@ namespace TheresaBot.Main.Services
         /// <param name="imgHttpUrl"></param>
         /// <returns></returns>
         /// <exception cref="PixivException"></exception>
-        private async static Task<string> SearchResultAsync(string imgHttpUrl)
+        private async static Task<string> RequestHtmlAsync(string imgHttpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "url", imgHttpUrl } };
             Dictionary<string, string> headerDic = getSaucenaoHeader();

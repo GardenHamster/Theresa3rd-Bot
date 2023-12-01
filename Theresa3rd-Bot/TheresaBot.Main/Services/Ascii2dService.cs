@@ -6,17 +6,21 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Ascii2d;
-using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Services
 {
     internal class Ascii2dService
     {
-        public async Task<Ascii2dResult> getAscii2dResultAsync(string imgHttpUrl)
+        /// <summary>
+        /// 从Ascii2d中搜索结果
+        /// </summary>
+        /// <param name="imgHttpUrl"></param>
+        /// <returns></returns>
+        public async Task<Ascii2dResult> SearchResultAsync(string imgHttpUrl)
         {
             DateTime startTime = DateTime.Now;
-            string colorUrl = await GetColorUrlAsync(imgHttpUrl);
+            string colorUrl = await ToColorUrlAsync(imgHttpUrl);
             string bovwUrl = colorUrl.Replace("/color/", "/bovw/");
             var headerDic = new Dictionary<string, string>() { { "User-Agent", "Mozilla/5.0" } };
             string ascii2dHtml = await HttpHelper.GetHtmlAsync(bovwUrl, headerDic);
@@ -32,7 +36,7 @@ namespace TheresaBot.Main.Services
                 if (linkList is null || linkList.Length == 0) continue;
                 foreach (IElement linkElement in linkList)
                 {
-                    Ascii2dItem saucenaoItem = getAscii2dItem(linkElement);
+                    Ascii2dItem saucenaoItem = ToAscii2dItem(linkElement);
                     if (saucenaoItem is null) continue;
                     if (itemList.Any(o => o.SourceUrl == saucenaoItem.SourceUrl)) continue;
                     itemList.Add(saucenaoItem);
@@ -41,57 +45,62 @@ namespace TheresaBot.Main.Services
             return new Ascii2dResult(itemList, startTime, domList.Count());
         }
 
-
-        public Ascii2dItem getAscii2dItem(IElement linkElement)
+        /// <summary>
+        /// 封装成为Ascii2d数据对象
+        /// </summary>
+        /// <param name="linkElement"></param>
+        /// <returns></returns>
+        private Ascii2dItem ToAscii2dItem(IElement linkElement)
         {
-            string href = linkElement.GetAttribute("href");
+            string href = linkElement.GetAttribute("href")?.Trim();
             if (string.IsNullOrWhiteSpace(href)) return null;
-
-            href = href.Trim();
             string hrefLower = href.ToLower();
 
             //https://www.pixiv.net/artworks/100378274
             if (hrefLower.Contains("www.pixiv.net/artworks"))
             {
-                string illustId = href.SplitHttpUrl().LastOrDefault() ?? string.Empty;
-                return new Ascii2dItem(SetuSourceType.Pixiv, href, illustId);
+                return new Ascii2dItem(SetuSourceType.Pixiv, href, href.TakeHttpLast());
             }
-
             //https://twitter.com/1_tri_pic/status/1560897111624802304
             if (hrefLower.Contains("twitter.com") && hrefLower.Contains("/status/"))
             {
-                string illustId = href.SplitHttpUrl().LastOrDefault() ?? string.Empty;
-                return new Ascii2dItem(SetuSourceType.Twitter, href, illustId);
+                return new Ascii2dItem(SetuSourceType.Twitter, href, href.TakeHttpLast());
             }
+
             return null;
         }
 
-        public async Task<List<Ascii2dItem>> getBestMatchAsync(List<Ascii2dItem> itemList)
+        /// <summary>
+        /// 拉取源信息
+        /// </summary>
+        /// <param name="itemList"></param>
+        /// <returns></returns>
+        public async Task FetchOrigin(List<Ascii2dItem> itemList)
         {
-            if (itemList is null || itemList.Count == 0) return null;
-            List<Ascii2dItem> matchList = new List<Ascii2dItem>();
-            for (int i = 0; i < itemList.Count; i++)
+            foreach (var item in itemList)
             {
-                try
+                await FetchOrigin(item);
+            }
+        }
+
+        /// <summary>
+        /// 拉取源信息
+        /// </summary>
+        /// <param name="ascii2dItem"></param>
+        /// <returns></returns>
+        public async Task FetchOrigin(Ascii2dItem ascii2dItem)
+        {
+            try
+            {
+                if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
                 {
-                    Ascii2dItem ascii2dItem = itemList[i];
-                    if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
-                    {
-                        PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(ascii2dItem.SourceId);
-                        if (pixivWorkInfo is null) continue;
-                        ascii2dItem.PixivWorkInfo = pixivWorkInfo;
-                    }
-                    if (ascii2dItem.SourceType == SetuSourceType.Twitter)
-                    {
-                        //TODO
-                    }
-                    matchList.Add(ascii2dItem);
-                }
-                catch (Exception)
-                {
+                    ascii2dItem.PixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(ascii2dItem.SourceId);
                 }
             }
-            return matchList;
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "获取Ascii2d返回的Pixiv作品信息失败");
+            }
         }
 
         /// <summary>
@@ -100,7 +109,7 @@ namespace TheresaBot.Main.Services
         /// <param name="imgHttpUrl"></param>
         /// <returns></returns>
         /// <exception cref="PixivException"></exception>
-        private async static Task<string> GetColorUrlAsync(string imgHttpUrl)
+        private async static Task<string> ToColorUrlAsync(string imgHttpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "uri", imgHttpUrl } };
             Dictionary<string, string> headerDic = new Dictionary<string, string>() { { "User-Agent", "Mozilla/5.0" } };

@@ -99,7 +99,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// <summary>
         /// 组队时间
         /// </summary>
-        public override int MatchSecond { get; protected set; } = 120;
+        public override int MatchSecond => UCConfig.MatchSeconds;
 
         /// <summary>
         /// 创建一个标准游戏

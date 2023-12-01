@@ -40,7 +40,7 @@ namespace TheresaBot.Main.Game
         /// <summary>
         /// 组队时间
         /// </summary>
-        public abstract int MatchSecond { get; protected set; }
+        public abstract int MatchSecond { get; }
         /// <summary>
         /// 玩家列表
         /// </summary>

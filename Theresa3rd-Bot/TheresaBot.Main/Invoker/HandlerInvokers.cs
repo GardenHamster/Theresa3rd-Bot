@@ -492,11 +492,19 @@ namespace TheresaBot.Main.Invoker
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
-            //结束游戏
+            //强制开始游戏
+            new(BotConfig.GameConfig?.StartCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                GameHandler handler = new GameHandler(session, reporter);
+                await handler.ForceStart(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //强制结束游戏
             new(BotConfig.GameConfig?.StopCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
             {
                 GameHandler handler = new GameHandler(session, reporter);
-                await handler.StopGame(botCommand);
+                await handler.ForceStop(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),

@@ -42,7 +42,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task StopGame(GroupCommand command)
+        public async Task ForceStop(GroupCommand command)
         {
             try
             {
@@ -53,7 +53,31 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    game.Stop();
+                    await game.ForceStop(command);
+                }
+            }
+            catch (GameException ex)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync(ex.RemindMessage);
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, "加入Undercover游戏异常");
+            }
+        }
+
+        public async Task ForceStart(GroupCommand command)
+        {
+            try
+            {
+                var game = GameCahce.GetGameByGroup(command.GroupId);
+                if (game is null || game.IsEnded)
+                {
+                    await command.ReplyGroupMessageWithQuoteAsync("当前群目前没有可以正在进行中的游戏");
+                }
+                else
+                {
+                    await game.ForceStart(command);
                 }
             }
             catch (GameException ex)

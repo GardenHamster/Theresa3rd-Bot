@@ -12,12 +12,10 @@ namespace TheresaBot.Main.Game
         protected BaseSession Session { get; set; }
 
         protected BaseReporter Reporter { get; set; }
-
         /// <summary>
         /// 是否已经结束
         /// </summary>
         public bool IsStarted { get; protected set; }
-
         /// <summary>
         /// 是否已经结束
         /// </summary>
@@ -51,18 +49,26 @@ namespace TheresaBot.Main.Game
         /// <param name="memberId"></param>
         /// <returns></returns>
         public abstract bool IsMemberJoined(long memberId);
-
+        /// <summary>
+        /// 强制开始游戏
+        /// </summary>
+        public abstract Task ForceStart(GroupCommand command);
+        /// <summary>
+        /// 强制终止游戏
+        /// </summary>
+        public abstract Task ForceStop(GroupCommand command);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="session"></param>
+        /// <param name="reporter"></param>
         public BaseGame(GroupCommand command, BaseSession session, BaseReporter reporter)
         {
             Command = command;
             Session = session;
             Reporter = reporter;
             GroupId = command.GroupId;
-        }
-
-        public void Stop()
-        {
-            IsEnded = true;
         }
 
     }

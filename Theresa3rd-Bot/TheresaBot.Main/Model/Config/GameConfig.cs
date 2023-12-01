@@ -4,6 +4,8 @@
     {
         public List<string> JoinCommands { get; set; } = new();
 
+        public List<string> StartCommands { get; set; } = new();
+
         public List<string> StopCommands { get; set; } = new();
 
         public UndercoverConfig Undercover { get; set; }

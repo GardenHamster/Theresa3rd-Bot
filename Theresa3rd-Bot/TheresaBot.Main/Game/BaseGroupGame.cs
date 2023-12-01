@@ -22,6 +22,14 @@ namespace TheresaBot.Main.Game
         /// </summary>
         public DateTime? EndTime { get; private set; }
         /// <summary>
+        /// 是否强制开始游戏
+        /// </summary>
+        public bool IsForceStart { get; private set; }
+        /// <summary>
+        /// 是否强制结束游戏
+        /// </summary>
+        public bool IsForceEnd { get; private set; }
+        /// <summary>
         /// 自由加入模式
         /// </summary>
         public bool FreeToJoin { get; private set; }
@@ -90,6 +98,51 @@ namespace TheresaBot.Main.Game
         public BaseGroupGame(GroupCommand command, BaseSession session, BaseReporter reporter, bool freeToJoin) : base(command, session, reporter)
         {
             FreeToJoin = freeToJoin;
+        }
+
+        /// <summary>
+        /// 强制开始游戏
+        /// </summary>
+        public override async Task ForceStop(GroupCommand command)
+        {
+            if (IsEnded)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync("游戏已经结束了~");
+                return;
+            }
+            IsForceEnd = true;
+            await command.ReplyGroupMessageWithQuoteAsync("正在尝试结束游戏~");
+            await Task.Delay(1000);
+        }
+
+        /// <summary>
+        /// 强制开始游戏
+        /// </summary>
+        public override async Task ForceStart(GroupCommand command)
+        {
+            if (IsEnded)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync("游戏已经结束了~");
+                return;
+            }
+            if (IsStarted)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync("游戏已经开始了~");
+                return;
+            }
+            if (FreeToJoin == false)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync("只有自由加入模式下才可以强制开始游戏~");
+                return;
+            }
+            if (Players.Count < MinPlayer)
+            {
+                await command.ReplyGroupMessageWithQuoteAsync($"当前加入人数低于最低人数{MinPlayer}人，无法开始游戏~");
+                return;
+            }
+            IsForceStart = true;
+            await command.ReplyGroupMessageWithQuoteAsync("正在尝试开始游戏~");
+            await Task.Delay(1000);
         }
 
         /// <summary>
@@ -190,6 +243,7 @@ namespace TheresaBot.Main.Game
             while (waitSeconds > 0)
             {
                 await CheckEnded();
+                if (IsForceStart) break;
                 waitSeconds = waitSeconds - 1;
                 await Task.Delay(1000);
             }
@@ -243,6 +297,39 @@ namespace TheresaBot.Main.Game
         }
 
         /// <summary>
+        /// 根据QQ号获取已经加入游戏的成员
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public T GetPlayer(long memberId)
+        {
+            return Players.FirstOrDefault(o => o.MemberId == memberId);
+        }
+
+        /// <summary>
+        /// 判断游戏是否已经被停止，如果已停止则跳出线程
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="GameStopedException"></exception>
+        public async Task CheckEnded()
+        {
+            if (IsForceEnd) throw new GameStopedException();
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 判断游戏是否已经被停止并且睡眠，如果已停止则跳出线程
+        /// </summary>
+        /// <param name="delay">延时毫秒</param>
+        /// <returns></returns>
+        /// <exception cref="GameStopedException"></exception>
+        public async Task CheckEndedAndDelay(int delay = 0)
+        {
+            if (IsForceEnd) throw new GameStopedException();
+            if (delay > 0) await Task.Delay(delay);
+        }
+
+        /// <summary>
         /// 玩家随机排序,并且改变原有的id顺序
         /// </summary>
         protected void RandomSortPlayers()
@@ -262,30 +349,6 @@ namespace TheresaBot.Main.Game
             Players.Clear();
             Players.AddRange(randomList);
         }
-
-        /// <summary>
-        /// 判断游戏是否已经被停止，如果已停止则跳出线程
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="GameStopedException"></exception>
-        public async Task CheckEnded()
-        {
-            if (IsEnded) throw new GameStopedException();
-            await Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// 判断游戏是否已经被停止并且睡眠，如果已停止则跳出线程
-        /// </summary>
-        /// <param name="daily"></param>
-        /// <returns></returns>
-        /// <exception cref="GameStopedException"></exception>
-        public async Task CheckEndedAndDelay(int daily = 0)
-        {
-            if (IsEnded) throw new GameStopedException();
-            if (daily > 0) await Task.Delay(daily);
-        }
-
 
     }
 }

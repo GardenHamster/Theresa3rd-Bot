@@ -68,7 +68,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithQuoteAsync("游戏未开始，无法获取词条");
                 return;
             }
-            var player = ucGame.Players?.FirstOrDefault(o => o.MemberId == command.MemberId);
+            var player = ucGame.GetPlayer(command.MemberId);
             if (player is null)
             {
                 await command.ReplyGroupMessageWithQuoteAsync("你还未加入游戏，无法获取词条");

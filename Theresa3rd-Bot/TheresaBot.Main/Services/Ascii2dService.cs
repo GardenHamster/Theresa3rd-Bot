@@ -66,7 +66,6 @@ namespace TheresaBot.Main.Services
             {
                 return new Ascii2dItem(SetuSourceType.Twitter, href, href.TakeHttpLast());
             }
-
             return null;
         }
 

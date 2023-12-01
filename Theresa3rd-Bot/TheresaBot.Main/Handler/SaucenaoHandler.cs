@@ -44,7 +44,6 @@ namespace TheresaBot.Main.Handler
                     imgList = imgStep.Relay.GetImageUrls();
                     revokeMsgId = imgStep.Relay.MsgId;
                 }
-
                 if (imgList.Count == 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync($"没有接收到图片，请重新发送指令进行操作");

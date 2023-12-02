@@ -250,7 +250,7 @@ namespace TheresaBot.Main.Game.Undercover
                 List<BaseContent> remindContents = new List<BaseContent>();
                 remindContents.Add(new PlainContent($"存在相似度高于{UCConfig.MaxSimilarity}%的历史发言，请重新发言~"));
                 remindContents.Add(new PlainContent(GetSimilarContent(similarSpeechs)));
-                await Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, remindContents);
+                await Session.SendGroupMessageWithQuoteAsync(GroupId, relay.MemberId, relay.MsgId, remindContents);
                 return true;
             }
             CurrentRound.AddPlayerSpeech(SpeakingPlayer, relay);
@@ -272,7 +272,7 @@ namespace TheresaBot.Main.Game.Undercover
             if (target.IsOut) return false;
             if (voter.MemberId == target.MemberId)
             {
-                await Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, "不能对自己进行投票，请重新投票");
+                await Session.SendGroupMessageWithQuoteAsync(GroupId, relay.MemberId, relay.MsgId, "不能对自己进行投票，请重新投票");
                 return true;
             }
             var vote = CurrentRound.AddPlayerVote(voter, target);
@@ -281,7 +281,7 @@ namespace TheresaBot.Main.Game.Undercover
                 List<BaseContent> contents = new List<BaseContent>();
                 contents.Add(new PlainContent("投票成功！当前票数为："));
                 contents.Add(new PlainContent(CurrentRound.ListVotedCount()));
-                await Session.SendGroupMessageWithAtAsync(GroupId, relay.MemberId, contents);
+                await Session.SendGroupMessageWithQuoteAsync(GroupId, relay.MemberId, relay.MsgId, contents);
                 return true;
             }
             return false;

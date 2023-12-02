@@ -27,7 +27,7 @@ namespace TheresaBot.Main.Handler
                 if (game is UCGame ucGame)
                 {
                     UCPlayer player = new UCPlayer(command.MemberId, command.MemberNick);
-                    await ucGame.PlayerJoinAsync(player);
+                    await ucGame.PlayerJoinAsync(command, player);
                     return;
                 }
                 throw new Exception("加入失败，未定义游戏加入方法");

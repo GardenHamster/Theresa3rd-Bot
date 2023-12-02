@@ -254,7 +254,7 @@ namespace TheresaBot.Main.Game
         /// </summary>
         /// <param name="player"></param>
         /// <exception cref="GameException"></exception>
-        public async Task PlayerJoinAsync(T player)
+        public async Task PlayerJoinAsync(GroupCommand command, T player)
         {
             lock (Players)
             {
@@ -278,11 +278,11 @@ namespace TheresaBot.Main.Game
             }
             if (FreeToJoin)
             {
-                await Session.SendGroupMessageWithAtAsync(GroupId, player.MemberId, $"加入成功！当前加入人数为 {Players.Count}/{MinPlayer} 人，请耐心等待游戏开始~");
+                await command.ReplyGroupMessageWithQuoteAsync($"加入成功！当前加入人数为 {Players.Count}/{MinPlayer} 人，请耐心等待游戏开始~");
             }
             else
             {
-                await Session.SendGroupMessageWithAtAsync(GroupId, player.MemberId, $"加入成功！当前加入人数为 {Players.Count}/{MinPlayer} 人");
+                await command.ReplyGroupMessageWithQuoteAsync($"加入成功！当前加入人数为 {Players.Count}/{MinPlayer} 人");
             }
         }
 
@@ -292,8 +292,11 @@ namespace TheresaBot.Main.Game
         /// <param name="player"></param>
         public void AddPlayer(T player)
         {
-            player.SetPlayerId(Players.Count + 1);
-            Players.Add(player);
+            lock (Players)
+            {
+                player.SetPlayerId(Players.Count + 1);
+                Players.Add(player);
+            }
         }
 
         /// <summary>

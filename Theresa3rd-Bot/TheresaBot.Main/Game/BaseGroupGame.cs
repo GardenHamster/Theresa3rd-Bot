@@ -78,7 +78,13 @@ namespace TheresaBot.Main.Game
         /// 游戏结束钩子
         /// </summary>
         /// <returns></returns>
-        public abstract Task GameFinishingAsync();
+        public abstract Task GameFinishedAsync();
+        /// <summary>
+        /// 游戏失败钩子
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task GameFailedAsync(GameFailedException ex);
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -182,13 +188,15 @@ namespace TheresaBot.Main.Game
                 }
                 catch (GameFinishedException)
                 {
-                    await GameFinishingAsync();
+                    await GameFinishedAsync();
                     await Task.Delay(1000);
                     await Session.SendGroupMessageAsync(GroupId, $"游戏已结束...");
                 }
                 catch (GameFailedException ex)
                 {
                     await Session.SendGroupMessageAsync(GroupId, ex.RemindMessage);
+                    await Task.Delay(1000);
+                    await GameFailedAsync(ex);
                     await Task.Delay(1000);
                     await Session.SendGroupMessageAsync(GroupId, $"游戏已结束...");
                 }

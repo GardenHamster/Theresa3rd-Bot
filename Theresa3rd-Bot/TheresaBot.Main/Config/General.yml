@@ -11,4 +11,5 @@ DisableMsg:                 '该功能未开启'                                      
 NoPermissionsMsg:           '该功能未授权'                                      #功能未授权时返回的消息
 ManagersRequiredMsg:        '该功能需要管理员执行'                              #需要管理员权限时返回的消息
 SetuCustomDisableMsg:       '自定义功能已关闭'                                  #禁用自定义时返回的消息
-SendRelevantCommands:       true                                                #接收到的指令不存在时，提示类似的可执行指令
+SendRelevantCommands:       false                                              #接收到的指令不存在时，提示类似的可执行指令
+AcceptFriendRequest:        false                                              #自动接受好友请求

@@ -44,7 +44,9 @@
 
         public int VotingSeconds { get; set; } = 60;
 
-        public int MuteSeconds { get; set; } = 0;
+        public int FailedMuteSeconds { get; set; } = 0;
+
+        public int ViolatedMuteSeconds { get; set; } = 0;
 
         public string RuleMsg { get; set; }
 
@@ -58,7 +60,8 @@
             if (PrepareSeconds < 5) PrepareSeconds = 5;
             if (SpeakingSeconds < 10) SpeakingSeconds = 10;
             if (VotingSeconds < 10) VotingSeconds = 10;
-            if (MuteSeconds < 0) MuteSeconds = 0;
+            if (FailedMuteSeconds < 0) FailedMuteSeconds = 0;
+            if (ViolatedMuteSeconds < 0) ViolatedMuteSeconds = 0;
             return this;
         }
     }

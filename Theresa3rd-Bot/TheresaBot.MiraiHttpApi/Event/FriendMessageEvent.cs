@@ -17,7 +17,6 @@ namespace TheresaBot.MiraiHttpApi.Event
     [RegisterMiraiHttpParser(typeof(DefaultMappableMiraiHttpMessageParser<IFriendMessageEventArgs, FriendMessageEventArgs>))]
     public class FriendMessageEvent : BaseEvent, IMiraiHttpMessageHandler<IFriendMessageEventArgs>
     {
-
         public async Task HandleMessageAsync(IMiraiHttpSession session, IFriendMessageEventArgs args)
         {
             try

@@ -29,6 +29,8 @@ namespace TheresaBot.Main.Model.Config
 
         public bool SendRelevantCommands { get; set; }
 
+        public bool AcceptFriendRequest { get; set; }
+
         [YamlIgnore]
         public string DefaultPrefix => Prefixs?.FirstOrDefault() ?? string.Empty;
 

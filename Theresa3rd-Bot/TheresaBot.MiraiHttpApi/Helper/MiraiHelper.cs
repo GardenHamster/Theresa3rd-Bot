@@ -32,6 +32,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
                                                                .Services
                                                                .AddDefaultMiraiHttpFramework()
                                                                .AddInvoker<MiraiHttpMessageHandlerInvoker>()
+                                                               .AddHandler<FriendApplyEvent>()
                                                                .AddHandler<FriendMessageEvent>()
                                                                .AddHandler<GroupMessageEvent>()
                                                                .AddHandler<GroupMemberJoinedEvent>()

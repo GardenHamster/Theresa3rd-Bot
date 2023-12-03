@@ -414,18 +414,36 @@ namespace TheresaBot.Main.Game.Undercover
         /// 游戏结束阶段事件
         /// </summary>
         /// <returns></returns>
-        public override async Task GameFinishingAsync()
+        public override async Task GameFinishedAsync()
         {
             if (WinedCamp == UCCamp.None) throw new GameException("游戏异常，未指定获胜阵营");
             await Session.SendGroupMessageAsync(GroupId, GetCampInfos());
             await Task.Delay(1000);
-            if (UCConfig.MuteSeconds > 0)
+            if (UCConfig.FailedMuteSeconds > 0)
             {
                 var failPlayers = Players.Where(o => o.PlayerCamp != WinedCamp).ToList();
                 var failMemberIds = failPlayers.Select(o => o.MemberId).ToList();
-                await Session.SendGroupMessageAsync(GroupId, $"非获胜阵营将自动禁言{UCConfig.MuteSeconds}秒");
+                await Session.SendGroupMessageAsync(GroupId, $"非获胜阵营将自动禁言{UCConfig.FailedMuteSeconds}秒");
                 await Task.Delay(1000);
-                await Session.MuteGroupMemberAsync(GroupId, failMemberIds, UCConfig.MuteSeconds);
+                await Session.MuteGroupMemberAsync(GroupId, failMemberIds, UCConfig.FailedMuteSeconds);
+            }
+        }
+
+        /// <summary>
+        /// 游戏失败事件
+        /// </summary>
+        /// <returns></returns>
+        public override async Task GameFailedAsync(GameFailedException ex)
+        {
+            await Session.SendGroupMessageAsync(GroupId, GetCampInfos());
+            await Task.Delay(1000);
+            if (UCConfig.ViolatedMuteSeconds > 0)
+            {
+                var violateMemberIds = ex.FailedPlayers.Select(o => o.MemberId).ToList();
+                var violateMemberNames = ex.FailedPlayers.Select(o => o.NameAndQQ).ToList().JoinToString();
+                await Session.SendGroupMessageAsync(GroupId, $"玩家{violateMemberNames}将被禁言{UCConfig.ViolatedMuteSeconds}秒");
+                await Task.Delay(1000);
+                await Session.MuteGroupMemberAsync(GroupId, violateMemberIds, UCConfig.ViolatedMuteSeconds);
             }
         }
 
@@ -539,13 +557,13 @@ namespace TheresaBot.Main.Game.Undercover
         public async Task<bool> CheckSpeech(UCSpeech speech)
         {
             var player = speech.Player;
-            if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.EqualsIgnoreCase(CivWords))
+            if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.Contains(CivWords))
             {
                 WinedCamp = UCCamp.Whiteboard;
                 await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了词条");
                 throw new GameFinishedException();
             }
-            if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.EqualsIgnoreCase(UCWords))
+            if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.Contains(UCWords))
             {
                 WinedCamp = UCCamp.Whiteboard;
                 await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了词条");
@@ -553,7 +571,7 @@ namespace TheresaBot.Main.Game.Undercover
             }
             if (player.PlayerCamp != UCCamp.Whiteboard && speech.Content.Contains(player.PlayerWord))
             {
-                throw new GameFailedException($"玩家{player.NameAndQQ}的发言中包含了自己的词条，游戏结束");
+                throw new GameFailedException(player, $"玩家{player.NameAndQQ}的发言中包含了自己的词条，游戏结束");
             }
             return true;
         }

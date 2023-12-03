@@ -1,4 +1,5 @@
 ﻿using SqlSugar;
+using System.Numerics;
 using System.Text;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
@@ -115,7 +116,7 @@ namespace TheresaBot.Main.Game.Undercover
                 if (speech is null) continue;
                 if (await game.CheckSpeech(speech)) return;
             }
-            throw new GameFailedException($"玩家{player.MemberName}未能在指定时间内发言，游戏结束");
+            throw new GameFailedException(player, $"玩家{player.MemberName}未能在指定时间内发言，游戏结束");
         }
 
         /// <summary>
@@ -131,7 +132,8 @@ namespace TheresaBot.Main.Game.Undercover
                 await game.CheckEndedAndDelay(1000);
                 if (Votes.Count >= votePlayers.Count) return;
             }
-            throw new GameFailedException($"部分玩家在指定时间内未进行投票，游戏结束");
+            var failedPlayers = votePlayers.Where(p => !Votes.Any(v => v.Voter == p)).OfType<BasePlayer>().ToList();
+            throw new GameFailedException(failedPlayers, $"部分玩家未在指定时间内进行投票，游戏结束");
         }
 
         /// <summary>

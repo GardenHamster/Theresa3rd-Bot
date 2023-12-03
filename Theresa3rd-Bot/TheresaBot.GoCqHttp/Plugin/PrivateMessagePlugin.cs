@@ -14,11 +14,11 @@ namespace TheresaBot.GoCqHttp.Plugin
 
         public override async void OnPrivateMessageReceived(CqPrivateMessagePostContext args)
         {
-            Task task = HandlemessageAsync(args);
+            Task task = HandleMessageAsync(args);
             await Task.CompletedTask;
         }
 
-        public async Task HandlemessageAsync(CqPrivateMessagePostContext args)
+        public async Task HandleMessageAsync(CqPrivateMessagePostContext args)
         {
             try
             {

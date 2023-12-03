@@ -61,7 +61,7 @@ namespace TheresaBot.Main.Datas
         {
             try
             {
-                string xmlPath = DataPath.GetCountPath();
+                string xmlPath = DataPath.GetRunningPath();
                 if (File.Exists(xmlPath) == false) return;
                 var doc = XDocument.Load(xmlPath);
                 LastStartAt = doc.Root?.Element("LastStartAt")?.Value?.ToInt() ?? 0;
@@ -80,7 +80,7 @@ namespace TheresaBot.Main.Datas
         {
             try
             {
-                string xmlPath = DataPath.GetCountPath();
+                string xmlPath = DataPath.GetRunningPath();
                 XmlWriterSettings setting = new XmlWriterSettings() { Indent = true };
                 using XmlWriter writer = XmlWriter.Create(xmlPath, setting);
                 XDocument doc = new XDocument(

@@ -25,6 +25,15 @@
             return Path.Combine(dirPath, "Count.xml");
         }
 
+        /// <summary>
+        /// Count.xml目录
+        /// </summary>
+        /// <returns></returns>
+        public static string GetRunningPath()
+        {
+            string dirPath = GetDataDirectory();
+            return Path.Combine(dirPath, "Running.xml");
+        }
 
     }
 }

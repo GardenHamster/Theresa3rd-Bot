@@ -29,10 +29,10 @@ namespace TheresaBot.GoCqHttp.Plugin
                 long msgId = args.MessageId;
                 long memberId = args.Sender.UserId;
                 long groupId = args.GroupId;
-                if (args.Session is not ICqActionSession session) return;
                 if (groupId.IsAuthorized() == false) return;
                 if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
+                if (args.Session is not ICqActionSession session) return;
 
                 var message = args.Message.Text;
                 var plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text?.Trim() ?? string.Empty).ToList();

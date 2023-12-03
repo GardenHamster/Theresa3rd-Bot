@@ -24,8 +24,9 @@ namespace TheresaBot.GoCqHttp.Plugin
             {
                 long msgId = args.MessageId;
                 long memberId = args.Sender.UserId;
-                if (args.Session is not ICqActionSession session) return;
                 if (memberId == BotConfig.BotQQ) return;
+                if (memberId.IsBanMember()) return; //黑名单成员
+                if (args.Session is not ICqActionSession session) return;
 
                 List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
                 if (plainList is null || plainList.Count == 0) return;

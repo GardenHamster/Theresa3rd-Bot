@@ -42,17 +42,14 @@ namespace TheresaBot.Main.Services
 
         public async Task<List<LolisukiData>> getLolisukiDataListAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
         {
-            List<LolisukiData> setuList = new();
+            var setuList = new List<LolisukiData>();
             while (quantity > 0)
             {
                 int num = quantity >= eachPage ? eachPage : quantity;
                 quantity = quantity - eachPage;
                 LolisukiResult lolisukiResult = await getLolisukiResultAsync(r18Mode, aiMode, level, num, tags);
                 if (lolisukiResult?.data is null) continue;
-                foreach (var setuInfo in lolisukiResult.data)
-                {
-                    setuList.Add(setuInfo);
-                }
+                setuList.AddRange(lolisukiResult.data);
             }
             return setuList;
         }

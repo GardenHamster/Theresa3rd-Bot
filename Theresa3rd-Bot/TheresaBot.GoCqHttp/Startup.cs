@@ -71,7 +71,7 @@ namespace TheresaBot.GoCqHttp
                 TimerManager.InitTimers(session, reporter);
                 SchedulerManager.InitSchedulers(session, reporter);
                 LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£ºv{BotConfig.BotVersion}");
-                if (RunningDatas.RunningSeconds > 60 * 60)
+                if (RunningDatas.IsSendStartupMessage())
                 {
                     Task welcomeTask = CQHelper.SendStartUpMessageAsync();
                 }

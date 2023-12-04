@@ -55,6 +55,17 @@ namespace TheresaBot.Main.Datas
         }
 
         /// <summary>
+        /// 是否发送启动消息
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsSendStartupMessage()
+        {
+            if (LastStartAt <= 0) return true;
+            int diff = DateTime.Now.SecondDiff(LastStartTime);
+            return diff > 60 * 60;
+        }
+
+        /// <summary>
         /// 从本地文件中加载统计数据
         /// </summary>
         public static void LoadDatas()

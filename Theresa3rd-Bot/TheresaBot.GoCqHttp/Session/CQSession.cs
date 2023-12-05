@@ -4,6 +4,7 @@ using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.GoCqHttp.Result;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.Infos;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
@@ -13,6 +14,11 @@ namespace TheresaBot.GoCqHttp.Session
     public class CQSession : BaseSession
     {
         public override PlatformType PlatformType => PlatformType.GoCQHttp;
+
+        public override async Task<GroupInfos[]> LoadGroupInfosAsync()
+        {
+            return await CQHelper.LoadGroupInfosAsync();
+        }
 
         public override async Task<BaseResult> SendGroupMessageAsync(long groupId, string message)
         {

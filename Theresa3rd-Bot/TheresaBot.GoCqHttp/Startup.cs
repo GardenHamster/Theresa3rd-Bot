@@ -44,7 +44,7 @@ namespace TheresaBot.GoCqHttp
 
                 CQHelper.ConnectGoCqHttp().Wait();
                 CQHelper.LoadBotProfileAsync().Wait();
-                CQHelper.LoadGroupAsync().Wait();
+                CQHelper.LoadGroupInfosAsync().Wait();
 
                 LogHelper.Info($"开始初始化数据库...");
                 services.AddSqlSugar(new IocConfig()//注入Sqlsuger

@@ -2,6 +2,7 @@
 using Mirai.CSharp.Models;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.Infos;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
@@ -13,6 +14,11 @@ namespace TheresaBot.MiraiHttpApi.Session
     public class MiraiSession : BaseSession
     {
         public override PlatformType PlatformType => PlatformType.Mirai;
+
+        public override async Task<GroupInfos[]> LoadGroupInfosAsync()
+        {
+            return await MiraiHelper.LoadGroupInfosAsync();
+        }
 
         public override async Task<BaseResult> SendGroupMessageAsync(long groupId, string message)
         {

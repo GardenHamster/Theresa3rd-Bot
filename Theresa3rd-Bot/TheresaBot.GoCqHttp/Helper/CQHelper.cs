@@ -69,26 +69,29 @@ namespace TheresaBot.GoCqHttp.Helper
         }
 
         /// <summary>
-        /// 获取群列表
+        /// 获取群列表并缓存到BotConfig中，如果获取失败则返回null
         /// </summary>
         /// <returns></returns>
-        public static async Task LoadGroupAsync()
+        public static async Task<GroupInfos[]> LoadGroupInfosAsync()
         {
             try
             {
-                var groupInfos = await Session.GetGroupListAsync();
-                if (groupInfos?.Groups is null) throw new Exception("群列表获取失败");
-                BotConfig.GroupInfos = groupInfos.Groups.Select(o => new GroupInfos(o.GroupId, o.GroupName)).ToList();
-                var availableIds = groupInfos.Groups.Select(o => o.GroupId).ToList();
+                var groupResult = await Session.GetGroupListAsync();
+                if (groupResult?.Groups is null) throw new Exception("群列表获取失败");
+                var groupInfos = groupResult.Groups.Select(o => new GroupInfos(o.GroupId, o.GroupName)).ToArray();
+                BotConfig.GroupInfos = groupInfos.ToList();
+                var availableIds = groupInfos.Select(o => o.GroupId).ToList();
                 var acceptIds = BotConfig.PermissionsConfig.AcceptGroups;
                 var groupCount = BotConfig.GroupInfos.Count;
                 var acceptCount = acceptIds.Where(o => availableIds.Contains(o)).Count();
                 var availablCount = acceptIds.Contains(0) ? groupCount : acceptCount;
-                LogHelper.Info($"群列表获取完毕，共获取群号 {groupCount} 个，其中已启用群号 {availablCount} 个");
+                LogHelper.Info($"群列表加载完毕，共获取群号 {groupCount} 个，其中已启用群号 {availablCount} 个");
+                return groupInfos;
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "群列表获取失败");
+                return null;
             }
         }
 
@@ -175,7 +178,6 @@ namespace TheresaBot.GoCqHttp.Helper
             using FileStream fileStream = File.OpenRead(fileInfo.FullName);
             return CqImageMsg.FromStream(fileStream);
         }
-
 
     }
 }

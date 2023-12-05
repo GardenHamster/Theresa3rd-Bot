@@ -22,6 +22,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Controller\GroupController.cs~RF5d29ffda.TMP" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AngleSharp" Version="0.17.1" />
 		<PackageReference Include="jieba.NET" Version="0.42.2" />
 		<PackageReference Include="log4net" Version="2.0.15" />

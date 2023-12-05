@@ -38,7 +38,7 @@ namespace TheresaBot.Main.Services
                 if (string.IsNullOrWhiteSpace(similarityStr)) similarityStr = "00.00";
                 similarityStr = similarityStr.Replace("%", "");
                 decimal.TryParse(similarityStr, out similarity);
-                
+
                 foreach (IElement linkifyElement in linkifyList)
                 {
                     SaucenaoItem saucenaoItem = ToSaucenaoItem(linkifyElement, similarity);

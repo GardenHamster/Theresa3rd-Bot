@@ -1,5 +1,4 @@
 ﻿using SqlSugar;
-using System.Numerics;
 using System.Text;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
@@ -248,7 +247,7 @@ namespace TheresaBot.Main.Game.Undercover
             {
                 if (builder.Length > 0) builder.AppendLine();
                 var count = Votes.Where(o => o.Target.MemberId == player.MemberId).Count();
-                builder.Append($"{player.MemberName}：{count}票");
+                builder.Append($"{player.PlayerId}：{player.MemberName}：{count}票");
             }
             return builder.ToString();
         }

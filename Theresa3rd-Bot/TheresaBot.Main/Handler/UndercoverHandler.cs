@@ -56,36 +56,43 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReplyError(command, ex, "Undercover游戏异常");
+                await LogAndReplyError(command, ex, "Undercover游戏创建异常");
             }
         }
 
         public async Task SendPrivateWords(GroupCommand command)
         {
-            var game = GameCahce.GetGameByGroup(command.GroupId);
-            if (game is null || game.IsEnded || game is not UCGame ucGame)
+            try
             {
-                await command.ReplyGroupMessageWithQuoteAsync("游戏未开始，无法获取词条");
-                return;
+                var game = GameCahce.GetGameByGroup(command.GroupId);
+                if (game is null || game.IsEnded || game is not UCGame ucGame)
+                {
+                    await command.ReplyGroupMessageWithQuoteAsync("游戏未开始，无法获取词条");
+                    return;
+                }
+                var player = ucGame.GetPlayer(command.MemberId);
+                if (player is null)
+                {
+                    await command.ReplyGroupMessageWithQuoteAsync("你还未加入游戏，无法获取词条");
+                    return;
+                }
+                if (player.PlayerCamp == UCCamp.None)
+                {
+                    await command.ReplyGroupMessageWithQuoteAsync("词条还未派发，请耐心等待...");
+                    return;
+                }
+                var ucConfig = BotConfig.GameConfig.Undercover;
+                var contents = new List<BaseContent> {
+                    new PlainContent(player.GetWordMessage(ucConfig.SendIdentity))
+                };
+                await command.SendTempMessageAsync(contents);
+                await Task.Delay(1000);
+                await command.ReplyGroupMessageWithQuoteAsync("词条已私发，请查看私聊消息");
             }
-            var player = ucGame.GetPlayer(command.MemberId);
-            if (player is null)
+            catch (Exception ex)
             {
-                await command.ReplyGroupMessageWithQuoteAsync("你还未加入游戏，无法获取词条");
-                return;
+                await LogAndReplyError(command, ex, "获取词条异常");
             }
-            if (player.PlayerCamp == UCCamp.None)
-            {
-                await command.ReplyGroupMessageWithQuoteAsync("词条还未派发，请耐心等待...");
-                return;
-            }
-            var ucConfig = BotConfig.GameConfig.Undercover;
-            var contents = new List<BaseContent> {
-                new PlainContent(player.GetWordMessage(ucConfig.SendIdentity))
-            };
-            await command.SendTempMessageAsync(contents);
-            await Task.Delay(1000);
-            await command.ReplyGroupMessageWithQuoteAsync("词条已私发，请查看私聊消息");
         }
 
         public async Task CreateWords(FriendCommand command)
@@ -126,13 +133,13 @@ namespace TheresaBot.Main.Handler
                     await command.ReplyFriendMessageAsync("添加完毕，请等待超级管理员审核~");
                 }
             }
-            catch (HandlerException ex)
+            catch (ProcessException ex)
             {
-                await command.ReplyFriendMessageAsync(ex.Message);
+                await command.ReplyFriendMessageAsync(ex.RemindMessage);
             }
             catch (Exception ex)
             {
-                await LogAndReplyError(command, ex, "Undercover游戏异常");
+                await LogAndReplyError(command, ex, "词条添加异常");
             }
         }
 
@@ -163,7 +170,7 @@ namespace TheresaBot.Main.Handler
         private async Task<List<string[]>> AskNewWords(FriendCommand command)
         {
             var processInfo = ProcessCache.CreateProcess(command);
-            var modeStep = processInfo.CreateStep($"请在60秒内发送词条，每个词条之间用空格隔开，多个词组之间换行隔开，比如：牛奶 豆浆\r\n苹果 雪梨", CheckNewWordsAsync);
+            var modeStep = processInfo.CreateStep($"请在60秒内发送词条，每个词条之间用空格隔开，多个词组之间换行隔开，比如：\r\n牛奶 豆浆\r\n苹果 雪梨", CheckNewWordsAsync);
             await processInfo.StartProcessing();
             return modeStep.Answer;
         }

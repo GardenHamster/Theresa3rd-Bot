@@ -1,6 +1,5 @@
 ﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
-using TheresaBot.Main.Model.Config;
 
 namespace TheresaBot.Main.Helper
 {

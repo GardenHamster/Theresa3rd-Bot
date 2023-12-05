@@ -138,8 +138,9 @@ namespace TheresaBot.Main.Game.Undercover
         {
             CampScales = campScales;
             MinPlayer = campScales.Sum();
+            if (campScales.Length != 3) throw new GameException("游戏创建失败，必须指定每个阵营的人数比例");
             if (MinPlayer < 3) throw new GameException("游戏创建失败，总比例至少为3");
-            if (MinPlayer < 5 && WbAmount > 0) throw new GameException("游戏创建失败，总比例达到5及以上才可以加入白板");
+            if (MinPlayer < 5 && campScales[2] > 0) throw new GameException("游戏创建失败，总比例达到5及以上才可以加入白板");
         }
 
         /// <summary>
@@ -560,13 +561,13 @@ namespace TheresaBot.Main.Game.Undercover
             if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.Contains(CivWords))
             {
                 WinedCamp = UCCamp.Whiteboard;
-                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了词条");
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了词条，白板获胜~");
                 throw new GameFinishedException();
             }
             if (player.PlayerCamp == UCCamp.Whiteboard && speech.Content.Contains(UCWords))
             {
                 WinedCamp = UCCamp.Whiteboard;
-                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了词条");
+                await Session.SendGroupMessageWithAtAsync(GroupId, MemberIds, $"白板成功猜出了词条，白板获胜~");
                 throw new GameFinishedException();
             }
             if (player.PlayerCamp != UCCamp.Whiteboard && speech.Content.Contains(player.PlayerWord))

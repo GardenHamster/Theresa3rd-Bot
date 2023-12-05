@@ -148,7 +148,7 @@ namespace TheresaBot.Main.Game
             }
             IsForceStart = true;
             await command.ReplyGroupMessageWithQuoteAsync("正在尝试开始游戏~");
-            await Task.Delay(1000);
+            await Task.Delay(2000);
         }
 
         /// <summary>

@@ -25,6 +25,7 @@ namespace TheresaBot.GoCqHttp.Helper
                     UseEventEndPoint = true,
                 };
                 Session = new CqWsSession(options);
+                Session.UsePlugin(new FriendApplyPlugin());
                 Session.UsePlugin(new GroupMessagePlugin());
                 Session.UsePlugin(new PrivateMessagePlugin());
                 Session.UsePlugin(new GroupMemberIncreasePlugin());

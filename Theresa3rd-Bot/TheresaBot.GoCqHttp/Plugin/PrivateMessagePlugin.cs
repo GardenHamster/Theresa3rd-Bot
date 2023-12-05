@@ -46,14 +46,14 @@ namespace TheresaBot.GoCqHttp.Plugin
                 CQFriendCommand botCommand = GetFriendCommand(args, instruction, prefix);
                 if (botCommand is not null)
                 {
-                    await botCommand.InvokeAsync(baseSession, baseReporter);
+                    await botCommand.InvokeAsync(BaseSession, baseReporter);
                     return;
                 }
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "私聊指令异常");
-                await baseSession.ReplyFriendErrorAsync(ex, args.Sender.UserId);
+                await BaseSession.ReplyFriendErrorAsync(ex, args.Sender.UserId);
                 await Task.Delay(1000);
                 await baseReporter.SendError(ex, "私聊指令异常");
             }

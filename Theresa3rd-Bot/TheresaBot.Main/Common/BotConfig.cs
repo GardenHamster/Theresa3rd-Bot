@@ -29,7 +29,8 @@ namespace TheresaBot.Main.Common
         public static GameConfig GameConfig = new GameConfig();
 
         public static string DefaultPrefix => GeneralConfig.DefaultPrefix;
-        public static List<long> ErrorPushGroups => GeneralConfig.ErrorGroups;
+        public static List<long> ErrorPushGroups => GeneralConfig.ErrorGroups ?? new();
+        public static List<long> SuperManagers => PermissionsConfig.SuperManagers ?? new();
 
     }
 }

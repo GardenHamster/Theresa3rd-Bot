@@ -134,7 +134,7 @@ namespace TheresaBot.Main.Handler
             {
                 await Session.SendGroupMessageAsync(groupId, warnMessage);
             }
-            foreach (long memberId in BotConfig.PermissionsConfig.SuperManagers)
+            foreach (long memberId in BotConfig.SuperManagers)
             {
                 await Session.SendFriendMessageAsync(memberId, warnMessage);
             }

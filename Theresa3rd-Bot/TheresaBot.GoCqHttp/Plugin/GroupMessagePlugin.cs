@@ -50,7 +50,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (args.Message.Any(v => v is CqReplyMsg))//引用指令
                 {
                     GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(args, instruction, prefix);
-                    if (quoteCommand is not null) await quoteCommand.InvokeAsync(baseSession, baseReporter);
+                    if (quoteCommand is not null) await quoteCommand.InvokeAsync(BaseSession, baseReporter);
                     return;
                 }
 
@@ -72,7 +72,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 CQGroupCommand command = GetGroupCommand(args, instruction, prefix);
                 if (command is not null)
                 {
-                    await command.InvokeAsync(baseSession, baseReporter);
+                    await command.InvokeAsync(BaseSession, baseReporter);
                     return;
                 }
 
@@ -85,7 +85,7 @@ namespace TheresaBot.GoCqHttp.Plugin
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "群指令异常");
-                await baseSession.ReplyGroupErrorAsync(ex, args.GroupId);
+                await BaseSession.ReplyGroupErrorAsync(ex, args.GroupId);
                 await Task.Delay(1000);
                 await baseReporter.SendError(ex, "群指令异常");
             }

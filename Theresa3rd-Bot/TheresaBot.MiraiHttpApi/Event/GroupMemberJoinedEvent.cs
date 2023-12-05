@@ -39,7 +39,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "入群事件异常");
-                await baseReporter.SendError(ex, "入群事件异常");
+                await BaseReporter.SendError(ex, "入群事件异常");
             }
         }
 

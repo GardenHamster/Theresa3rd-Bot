@@ -100,7 +100,7 @@ namespace TheresaBot.GoCqHttp.Helper
             await Task.Delay(3000);
             LogHelper.Console("正在发送启动消息...");
             CqMessage welcomeMessage = new CqMessage(BusinessHelper.GetStartUpMessage());
-            foreach (var memberId in BotConfig.PermissionsConfig.SuperManagers)
+            foreach (var memberId in BotConfig.SuperManagers)
             {
                 if (memberId <= 0) continue;
                 Session.SendPrivateMessage(memberId, welcomeMessage);

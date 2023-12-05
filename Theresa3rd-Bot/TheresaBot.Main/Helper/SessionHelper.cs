@@ -66,6 +66,22 @@ namespace TheresaBot.Main.Helper
             }
         }
 
+        public static async Task SendFriendMessageAsync(this BaseSession session, List<long> memberIds, string message)
+        {
+            foreach (var memberId in memberIds)
+            {
+                try
+                {
+                    await Task.Delay(1000);
+                    await session.SendFriendMessageAsync(memberId, message);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex, "SendFriendMessageAsync异常");
+                }
+            }
+        }
+
         public static async Task ReplyFriendErrorAsync(this BaseSession session, Exception exception, long memberId)
         {
             try

@@ -124,7 +124,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
             await Task.Delay(3000);
             LogHelper.Console("正在发送启动消息...");
             IChatMessage welcomeMessage = new PlainMessage(BusinessHelper.GetStartUpMessage());
-            foreach (var memberId in BotConfig.PermissionsConfig.SuperManagers)
+            foreach (var memberId in BotConfig.SuperManagers)
             {
                 if (memberId <= 0) continue;
                 await Session.SendFriendMessageAsync(memberId, welcomeMessage);

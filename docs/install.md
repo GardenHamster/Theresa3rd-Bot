@@ -10,7 +10,7 @@
 ## 安装机器人库
 在下面两个机器人库中选择一个安装，你可以两个都安装，但是同一时间只能运行其中一个，**推荐安装Mirai**
 
-- **安装Mirai(二选一)：**参照 [mirai-console-loader](https://github.com/iTXTech/mirai-console-loader) 文档进行安装，参考 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 文档配置`mirai-api-http`插件，然后配置bot账号密码，你可以 [点击这里查看新手教程](miraiInstall.md)
+- **安装Mirai(二选一)：**参照 [mirai-console-loader](https://github.com/iTXTech/mirai-console-loader) 文档进行安装，然后参考 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 文档配置`mirai-api-http`插件，然后配置bot账号密码，你可以 [点击这里查看新手教程](miraiInstall.md)
 
 - **安装GoCQ(二选一)：**参照 [go-cqhttp 帮助中心](https://docs.go-cqhttp.org/guide/quick_start.html#%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B) 进行安装，并配置bot账号密码。如果你需要使用私聊相关功能，记得把配置 `allow-temp-session` 设置为true
 
@@ -49,7 +49,7 @@ GoCQ正常启动结果如下
 
 ## 部署签名服务(可选)
 
-如果你在登录bot账号的过程中出现了 `code=45` 等无法无法登录的问题，可以考虑部署签名服务，但是由于使用签名服务可能会存在账号被 `冻结/封号`的风险，请在考虑清楚后再决定是否使用，**你在使用该服务过程中出现的任何风险和问题都和本人无关，**
+如果你在登录bot账号的过程中出现了 `code=45` 等无法登录的问题，可以考虑部署签名服务，但是由于使用签名服务可能会存在账号被 `冻结/封号`的风险，请在考虑清楚后再决定是否使用，**你在使用该服务过程中出现的任何风险和问题都和本人无关，**
 
 你可以参考 [unidbg-fetch-qsign/wiki](https://github.com/fuqiuluo/unidbg-fetch-qsign/wiki) 自行搭建签名服务
 
@@ -80,13 +80,8 @@ Gocq库 参考 [签名服务器相关问题](https://github.com/Mrs4s/go-cqhttp/
 }
 ```
 
-## 修改配置
-根据自己的需要修改根目录下的配置文件`botsettings.yml`，修改完成后需要重新启动，[点击这里查看配置说明](setting.md)
-
-!> 注：各版本之间的`botsettings.yml`可能会有较大差异，升级版本后请注意对比并修改该文件
-
 ## Linux下部署
-1. 安装 ASP.NET Core 6.0 运行环境
+1. 安装 ASP.NET Core 8.0 运行环境
 
 ?> 这里以 CentOS7 为例，其他Linux版本请参考 [微软官方文档](https://learn.microsoft.com/zh-cn/dotnet/core/install/linux)
 
@@ -95,7 +90,7 @@ sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-
 ```
 
 ```bash
-sudo yum install aspnetcore-runtime-6.0
+sudo yum install aspnetcore-runtime-8.0
 ```
 
 2. 升级CA证书
@@ -110,7 +105,7 @@ yum update ca-certificates -y
 cd TheresaBot.MiraiHttpApi.dll所在目录
 ```
 
-4. 后台运行dll，这里的端口可以随意填，但是不要填 mirai-http-api 的端口
+4. 后台运行dll，这里的端口为前端页面端口，可以随意填，但是不要使用 mirai-http-api 或 go-cqhttp 的端口
 
 - 使用Mirai
 
@@ -126,11 +121,11 @@ nohup dotnet TheresaBot.GoCqHttp.dll --launch-profile Production --urls http://0
 
 
 ## Windows下部署
-1. 下载并安装 [ASP.NET Core Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)，推荐下载页面中的 [Hosting Bundle](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-6.0.8-windows-hosting-bundle-installer)
+1. 下载并安装 [ASP.NET Core Runtime 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)，推荐下载页面中的 [Hosting Bundle](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.0-windows-hosting-bundle-installer)
 
 2. 启动 powershell 并将路径切换到`TheresaBot.MiraiHttpApi.dll`所在目录下
 
-3. 运行dll，这里的端口可以随意填，但是不要填mirai-http-api或go-cqhttp的端口
+3. 运行dll，这里的端口为前端页面端口，可以随意填，但是不要使用 mirai-http-api 或 go-cqhttp 的端口
 
 - 使用Mirai
 
@@ -149,7 +144,7 @@ dotnet TheresaBot.GoCqHttp.dll --launch-profile Production --urls http://0.0.0.0
 - 使用Mirai
 
 ```powershell
-$host.ui.RawUI.WindowTitle="Theresa3rd-Bot-Mirai"
+$host.ui.RawUI.WindowTitle="Theresa-Bot-Mirai-8088"
 cd C:\Theresa3rd-Bot            #这里修改为你的解压目录。如果把脚本放在解压目录下，这行可以不写
 dotnet TheresaBot.MiraiHttpApi.dll --launch-profile Production --urls http://0.0.0.0:8088
 pause
@@ -158,7 +153,7 @@ pause
 - 使用GoCQ
 
 ```powershell
-$host.ui.RawUI.WindowTitle="Theresa3rd-Bot-GoCQHttp"
+$host.ui.RawUI.WindowTitle="Theresa-Bot-GoCQHttp-8088"
 cd C:\Theresa3rd-Bot            #这里修改为你的解压目录。如果把脚本放在解压目录下，这行可以不写
 dotnet TheresaBot.GoCqHttp.dll --launch-profile Production --urls http://0.0.0.0:8088
 pause
@@ -166,51 +161,66 @@ pause
 
 ### 正常运行结果如下
 ```powershell
-2023-08-05 23:07:42,349 INFO  - 日志配置完毕...
-2023-08-05 23:07:42,534 INFO  - 配置文件加载完毕...
-2023-08-05 23:07:42,549 INFO  - 尝试连接到mirai-console...
-2023-08-05 23:07:42,871 INFO  - 已成功连接到mirai-console...
-2023-08-05 23:07:42,871 INFO  - 尝试读取Bot名片...
-2023-08-05 23:07:44,019 INFO  - Bot名片获取完毕，QQNumber=123456789，Nickname=学园长
-2023-08-05 23:07:44,019 INFO  - 开始初始化数据库...
-2023-08-05 23:07:45,123 INFO  - 数据库初始化完毕...
-2023-08-05 23:07:45,205 INFO  - 网站cookie加载完成...
-2023-08-05 23:07:45,214 INFO  - 订阅任务加载完成...
-2023-08-05 23:07:45,218 INFO  - 加载屏蔽标签列表完毕...
-2023-08-05 23:07:45,220 INFO  - 加载屏蔽用户列表完毕...
-2023-08-05 23:07:45,225 INFO  - pixiv用户订阅任务启动完毕...
-2023-08-05 23:07:45,225 INFO  - pixiv标签订阅任务启动完毕...
-2023-08-05 23:07:45,225 INFO  - 米游社订阅任务启动完毕...
-2023-08-05 23:07:45,379 INFO  - 词云推送任务[每日词云]启动完毕...
-2023-08-05 23:07:45,385 INFO  - 词云推送任务[每周词云]启动完毕...
-2023-08-05 23:07:45,386 INFO  - 词云推送任务[每月词云]启动完毕...
-2023-08-05 23:07:45,388 INFO  - Cookie检查定时器启动完毕...
-2023-08-05 23:07:45,391 INFO  - 定时清理任务初始化完毕...
-2023-08-05 23:07:45,391 INFO  - Theresa3rd-Bot启动完毕，版本：v0.10.0
+2023-12-06 11:04:18,898 INFO  - 日志配置完毕...
+2023-12-06 11:04:19,149 INFO  - 配置文件加载完毕...
+2023-12-06 11:04:19,239 INFO  - 后台初始化完毕...
+2023-12-06 11:04:19,249 INFO  - 尝试连接到mirai-console...
+2023-12-06 11:04:19,555 INFO  - 已成功连接到mirai-console...
+2023-12-06 11:04:19,708 INFO  - Bot名片获取完毕，QQNumber=123456789，Nickname=略略略
+2023-12-06 11:04:19,733 INFO  - 群列表加载完毕，共获取群号 3 个，其中已启用群号 3 个
+2023-12-06 11:04:19,735 INFO  - 开始初始化数据库...
+2023-12-06 11:04:25,309 INFO  - 数据库初始化完毕...
+2023-12-06 11:04:25,604 INFO  - 网站cookie加载完成...
+2023-12-06 11:04:25,712 INFO  - 订阅任务加载完成...
+2023-12-06 11:04:25,780 INFO  - 加载屏蔽标签列表完毕...
+2023-12-06 11:04:25,844 INFO  - 加载屏蔽用户列表完毕...
+2023-12-06 11:04:25,911 INFO  - pixiv用户订阅任务启动完毕...
+2023-12-06 11:04:25,912 INFO  - pixiv标签订阅任务启动完毕...
+2023-12-06 11:04:25,912 INFO  - 米游社订阅任务启动完毕...
+2023-12-06 11:04:26,034 INFO  - 定时清理任务启动完毕...
+2023-12-06 11:04:26,037 INFO  - Cookie检查定时器启动完毕...
+2023-12-06 11:04:26,044 INFO  - 定时提醒任务[深渊结算提醒]启动完毕...
+2023-12-06 11:04:26,050 INFO  - 定时涩图任务[下午茶]启动完毕...
+2023-12-06 11:04:26,053 INFO  - 定时日榜推送任务[Daily,DailyAI]启动完毕...
+2023-12-06 11:04:26,057 INFO  - 词云推送任务[早安词云]启动完毕...
+2023-12-06 11:04:26,061 INFO  - Theresa3rd-Bot启动完毕，版本：v0.11.0
+----------------------------------------------------------------------------------------
+后台密码：123456
+你可以在配置文件【Config/Backstage.yml】中修改后台密码(Password)
+----------------------------------------------------------------------------------------
+访问下列地址配置Bot相关功能：
+http://127.0.0.1:8088
+你也可以通过公网Ip:端口的方式访问后台
+----------------------------------------------------------------------------------------
 info: Microsoft.Hosting.Lifetime[14]
-      Now listening on: https://localhost:5001
-info: Microsoft.Hosting.Lifetime[14]
-      Now listening on: http://localhost:5000
+      Now listening on: http://0.0.0.0:8088
 info: Microsoft.Hosting.Lifetime[0]
       Application started. Press Ctrl+C to shut down.
 info: Microsoft.Hosting.Lifetime[0]
-      Hosting environment: Development
+      Hosting environment: Production
 info: Microsoft.Hosting.Lifetime[0]
-      Content root path: D:\project\Theresa3rd-Bot\Theresa3rd-Bot\TheresaBot.MiraiHttpApi
+      Content root path: C:\Theresa3rd-Bot
 ```
 
+## 配置Bot
+访问插件启动后列出的后台地址，比如上面列出的地址：http://127.0.0.1:8088，根据自己的需要修改配置，配置保存后将会立即生效
+
+你也可以手动修改[插件目录/Config]目录下的配置文件，但是这种方式修改后需要手动重启插件
+
 ## 开启VPN
-Pixiv需要一个可以访问外网的环境，你需要自行购买机场。建议`Clash`等代理客户端选择`Rule`代理模式，节点选择`JP`节点。如果你的主机/服务器不在大陆范围内，可以不使用VPN，你也可以使用香港的云服务器。
+Pixiv需要一个可以访问外网的环境，你需要自行购买机场。
+
+建议`Clash`等代理客户端选择`Rule`代理模式，节点选择`JP`节点。
+
+如果你的主机/服务器不在大陆范围内，可以不使用VPN，你也可以使用香港云服务器。
 
 ![image](/img/install/2023-05-08-02-31-47-624.jpg)
 
-你也可以购买[自由鲸](https://www.freewhale.us/auth/register?code=sQAT)，邀请码为sQAT。需要邀请次数可以在群内艾特我，~~你购买套餐的同时我可以获得一部分返利~~
-
 从v0.4.0版本开始加入了免代理，通过修改SNI的方式访问pixiv，然后通过pixiv.re代理下载图片。
 
-你可以在`botsettings.yml`中开启该功能，但不建议在有梯子的情况下启用它。
+你可以在配置中开启该功能，但不建议在有梯子的情况下启用它。
 
-最后在你运行这个插件的机器上登录 [pixiv](https://www.pixiv.net)，确保机器可以正常访问P站
+最后在你运行这个插件的机器上登录[https://www.pixiv.net](https://www.pixiv.net)，确保机器可以正常访问Pixiv
 
 ## 配置 cookie
 - 如果想要正常使用pixiv相关功能，你需要为插件配置PixivCookie
@@ -223,20 +233,18 @@ Pixiv需要一个可以访问外网的环境，你需要自行购买机场。建
 
 1. 关掉正在运行的powershell脚本
 
-2. 备份`botsettings.yml`
-
-3. 替换掉除了以下几个以外的文件
-
+2. 替换掉除了以下以外的目录/文件
+* `Config`
 * `appsettings.json`
 * `appsettings.Production.json`
 
-4. 对照备份的`botsettings.yml`，修改新版本的`botsettings.yml`
-
-5. 重启插件
+3. 重启插件
 
 ## pixiv图片代理
-* 配置文件中的默认代理`https://i.pixiv.re`被tx标记为危险链接，推荐你修改配置`Pixiv.OriginUrlProxy`到其他代理降低触发风控的风险
+* 配置文件中的默认代理`https://i.pixiv.re`被tx标记为危险链接，发送这类红链容易导致Bot被冻结/封号
 
-* [或者可以参考这里配置一个自己的图片代理](imgProxy.md)
+* 推荐你修改配置文件`Config/Pixiv.yml`中的`OriginUrlProxy`到其他代理地址降低这类风险
+
+* [推荐参考这里配置一个自己的图片代理](imgProxy.md)
 
 ![image](/img/install/2023-03-02-18-58-03-758.jpg)

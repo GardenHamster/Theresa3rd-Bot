@@ -81,12 +81,10 @@ Data Source=127.0.0.1;port=3306;Initial Catalog=theresa_bot;uid=root;pwd=123456;
 - 如果不是这个问题，百度一下关键的错误信息一般都能解决
 
 ### yml语法错误
-* 遇到类似 `YamlDotNet.Core.YamlException` 情况需要重新检查 `botsetting.yml` 文件
+* 遇到类似 `YamlDotNet.Core.YamlException` 情况需要重新检查Config目录下的文件
   
 * 对比源文件，检查文件中的键值是否被误改，或者设置了错误的值，或者值超出了上限等
   
-* 如果属性值为空时需要保留一对单引号，不能直接删除
-
 * 同时建议你使用vscode或者nodepad++等文本编辑器修改配置文件
 
 ```bash

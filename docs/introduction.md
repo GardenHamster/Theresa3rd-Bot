@@ -56,7 +56,7 @@ GoCQ 仓库：https://github.com/Mrs4s/go-cqhttp
 
 GoCQ 文档：https://docs.go-cqhttp.org
 
-### 提问
+### 关于提问
 **提问前请至少完整阅读一遍文档，文档范围内的问题不予解答，感谢配合**
 
 **提问前请至少完整阅读一遍文档，文档范围内的问题不予解答，感谢配合**

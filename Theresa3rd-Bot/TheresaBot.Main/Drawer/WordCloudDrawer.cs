@@ -9,18 +9,18 @@ namespace TheresaBot.Main.Drawer
         {
             var fontFile = GetWordCloudFontFile() ?? GetDefaultFont();
             if (fontFile is null) throw new Exception("未指定用于绘制词云的字体");
-            var wordCloud = new WordCloud.WordCloud(fontFile, true);
+            using var wordCloud = new WordCloud.WordCloud(fontFile, true);
             var fullImageSavePath = FilePath.GetWordCloudImgSavePath();
             var maskFile = GetMaskFile(maskItem);
             if (maskItem is null || maskFile is null)
             {
                 var width = BotConfig.WordCloudConfig.DefaultWidth;
-                var height = BotConfig.WordCloudConfig.DefaultHeitht;
-                return await wordCloud.Draw(words, width, height, fullImageSavePath);
+                var height = BotConfig.WordCloudConfig.DefaultHeight;
+                return await wordCloud.Draw(words, (ushort)width, (ushort)height, fullImageSavePath);
             }
             else
             {
-                return await wordCloud.Draw(words, maskFile, maskItem.Width, fullImageSavePath);
+                return await wordCloud.Draw(words, maskFile, (ushort)maskItem.Width, fullImageSavePath);
             }
         }
 

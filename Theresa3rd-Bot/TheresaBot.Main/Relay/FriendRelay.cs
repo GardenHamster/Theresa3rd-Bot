@@ -2,8 +2,11 @@
 {
     public abstract class FriendRelay : BaseRelay
     {
-        public FriendRelay(int msgId, string message, long memberId) : base(msgId, message, memberId)
+        public bool IsInstruct { get; init; }
+
+        public FriendRelay(long msgId, string message, long memberId, bool isInstruct) : base(msgId, message, memberId)
         {
+            IsInstruct = isInstruct;
         }
 
     }

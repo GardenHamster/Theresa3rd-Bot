@@ -7,7 +7,9 @@ namespace TheresaBot.Main.Cache
 {
     public static class ProcessCache
     {
-        private static Dictionary<long, List<ProcessInfo>> ProcessDic = new Dictionary<long, List<ProcessInfo>>();
+        private static Dictionary<long, FriendProcess> FriendProcessDic = new Dictionary<long, FriendProcess>();
+
+        private static Dictionary<long, List<GroupProcess>> GroupProcessDic = new Dictionary<long, List<GroupProcess>>();
 
         /// <summary>
         /// 创建一个流程
@@ -15,59 +17,108 @@ namespace TheresaBot.Main.Cache
         /// <param name="command"></param>
         /// <returns></returns>
         /// <exception cref="ProcessException"></exception>
-        public static ProcessInfo CreateProcess(GroupCommand command)
+        public static GroupProcess CreateProcess(GroupCommand command)
         {
-            lock (ProcessDic)
+            lock (GroupProcessDic)
             {
                 long memberId = command.MemberId;
                 long groupId = command.GroupId;
-                if (!ProcessDic.ContainsKey(groupId)) ProcessDic[groupId] = new List<ProcessInfo>();
-                ProcessInfo processInfo = ProcessDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
+                if (!GroupProcessDic.ContainsKey(groupId)) GroupProcessDic[groupId] = new List<GroupProcess>();
+                GroupProcess processInfo = GroupProcessDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
                 if (processInfo is null)
                 {
-                    processInfo = new ProcessInfo(command);
-                    ProcessDic[groupId].Add(processInfo);
+                    processInfo = new GroupProcess(command);
+                    GroupProcessDic[groupId].Add(processInfo);
                     return processInfo;
                 }
                 if (processInfo.IsFinish)
                 {
-                    ProcessDic[groupId].Remove(processInfo);
-                    processInfo = new ProcessInfo(command);
-                    ProcessDic[groupId].Add(processInfo);
+                    GroupProcessDic[groupId].Remove(processInfo);
+                    processInfo = new GroupProcess(command);
+                    GroupProcessDic[groupId].Add(processInfo);
                     return processInfo;
                 }
                 throw new ProcessException("你的另一个指令正在执行中");
             }
         }
 
+        /// <summary>
+        /// 创建一个流程
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        /// <exception cref="ProcessException"></exception>
+        public static FriendProcess CreateProcess(FriendCommand command)
+        {
+            lock (FriendProcessDic)
+            {
+                long memberId = command.MemberId;
+                FriendProcess processInfo = FriendProcessDic.ContainsKey(memberId) ? FriendProcessDic[memberId] : null;
+                if (processInfo is null || processInfo.IsFinish)
+                {
+                    processInfo = new FriendProcess(command);
+                    FriendProcessDic[memberId] = processInfo;
+                    return processInfo;
+                }
+                throw new ProcessException("你的另一个指令正在执行中");
+            }
+        }
 
         /// <summary>
         /// 处理一个步骤
         /// </summary>
         /// <param name="relay"></param>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
         /// <returns></returns>
-        public static bool HandleStep(GroupRelay relay, long groupId, long memberId)
+        public static bool HandleStep(GroupRelay relay)
         {
-            ProcessInfo processInfo;
-            lock (ProcessDic)
+            GroupProcess processInfo;
+            lock (GroupProcessDic)
             {
-                if (ProcessDic.ContainsKey(groupId) == false) return false;
-                List<ProcessInfo> stepInfos = ProcessDic[groupId];
+                long groupId = relay.GroupId;
+                long memberId = relay.MemberId;
+                if (GroupProcessDic.ContainsKey(groupId) == false) return false;
+                List<GroupProcess> stepInfos = GroupProcessDic[groupId];
                 if (stepInfos is null) return false;
-                processInfo = ProcessDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
+                processInfo = GroupProcessDic[groupId].Where(x => x.MemberId == memberId).FirstOrDefault();
                 if (processInfo is null) return false;
                 if (processInfo.IsFinish) return false;
             }
             lock (processInfo)
             {
-                List<StepInfo> stepInfos = processInfo.StepInfos;
+                List<BaseStep> stepInfos = processInfo.StepInfos;
                 if (stepInfos.Count == 0) return false;
-                StepInfo stepInfo = stepInfos.Where(x => x.IsFinish == false).FirstOrDefault();
+                BaseStep stepInfo = stepInfos.Where(x => x.IsFinish == false).FirstOrDefault();
                 if (stepInfo is null) return false;
                 if (stepInfo.CheckInputAsync(relay).Result == false) return true;
-                stepInfo.FinishStep(relay);
+                stepInfo.Finish(relay);
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// 处理一个步骤
+        /// </summary>
+        /// <param name="relay"></param>
+        /// <returns></returns>
+        public static bool HandleStep(FriendRelay relay)
+        {
+            FriendProcess processInfo;
+            lock (FriendProcessDic)
+            {
+                long memberId = relay.MemberId;
+                if (FriendProcessDic.ContainsKey(memberId) == false) return false;
+                processInfo = FriendProcessDic.ContainsKey(memberId) ? FriendProcessDic[memberId] : null;
+                if (processInfo is null) return false;
+                if (processInfo.IsFinish) return false;
+            }
+            lock (processInfo)
+            {
+                List<BaseStep> stepInfos = processInfo.StepInfos;
+                if (stepInfos.Count == 0) return false;
+                BaseStep stepInfo = stepInfos.Where(x => x.IsFinish == false).FirstOrDefault();
+                if (stepInfo is null) return false;
+                if (stepInfo.CheckInputAsync(relay).Result == false) return true;
+                stepInfo.Finish(relay);
                 return true;
             }
         }

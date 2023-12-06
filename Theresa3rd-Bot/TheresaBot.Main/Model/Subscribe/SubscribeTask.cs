@@ -1,24 +1,55 @@
-﻿using TheresaBot.Main.Type;
+﻿using TheresaBot.Main.Common;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Subscribe
 {
     public class SubscribeTask
     {
-        public int SubscribeId { get; set; }
-        public string SubscribeCode { get; set; }
-        public SubscribeType SubscribeType { get; set; }
-        public int SubscribeSubType { get; set; }
-        public string SubscribeName { get; set; }
-        public List<long> GroupIdList { get; set; }
+        public int SubscribeId { get; init; }
+        public string SubscribeCode { get; init; }
+        public SubscribeType SubscribeType { get; init; }
+        public int SubscribeSubType { get; init; }
+        public string SubscribeName { get; init; }
+        public List<long> SubscribeGroups => GetSubscribeGroups();
+        private List<long> GroupIds { get; init; }
 
         public SubscribeTask(SubscribeInfo subscribeInfo)
         {
-            this.SubscribeId = subscribeInfo.SubscribeId;
-            this.SubscribeCode = subscribeInfo.SubscribeCode;
-            this.SubscribeType = subscribeInfo.SubscribeType;
-            this.SubscribeSubType = subscribeInfo.SubscribeSubType;
-            this.SubscribeName = subscribeInfo.SubscribeName;
-            this.GroupIdList = new List<long>();
+            SubscribeId = subscribeInfo.SubscribeId;
+            SubscribeCode = subscribeInfo.SubscribeCode;
+            SubscribeType = subscribeInfo.SubscribeType;
+            SubscribeSubType = subscribeInfo.SubscribeSubType;
+            SubscribeName = subscribeInfo.SubscribeName;
+            GroupIds = new List<long>();
+        }
+
+        public void AddGroups(List<long> groupIds)
+        {
+            if (groupIds is null) return;
+            foreach (long groupId in groupIds)
+            {
+                AddGroup(groupId);
+            }
+        }
+
+        public void AddGroup(long groupId)
+        {
+            if (GroupIds.Contains(groupId) == false)
+            {
+                GroupIds.Add(groupId);
+            }
+        }
+
+        private List<long> GetSubscribeGroups()
+        {
+            if (GroupIds.Contains(0))
+            {
+                return BotConfig.GroupInfos.Select(o => o.GroupId).ToList();
+            }
+            else
+            {
+                return GroupIds.Distinct().ToList();
+            }
         }
 
     }

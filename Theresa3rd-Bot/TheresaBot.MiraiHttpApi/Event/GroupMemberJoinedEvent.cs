@@ -8,7 +8,6 @@ using Mirai.CSharp.Models;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Config;
-using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Event
@@ -22,13 +21,13 @@ namespace TheresaBot.MiraiHttpApi.Event
             {
                 long memberId = message.Member.Id;
                 long groupId = message.Member.Group.Id;
-                if (!BusinessHelper.IsHandleMessage(groupId)) return;
-                if (memberId == MiraiConfig.BotQQ) return;
+                if (groupId.IsAuthorized() == false) return;
+                if (memberId == BotConfig.BotQQ) return;
                 WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
                 if (welcomeConfig is null || welcomeConfig.Enable == false) return;
                 string template = welcomeConfig.Template;
-                WelcomeSpecial welcomeSpecial = welcomeConfig.Special?.Where(m => m.GroupId == groupId).FirstOrDefault();
-                if (welcomeSpecial != null) template = welcomeSpecial.Template;
+                WelcomeSpecial welcomeSpecial = welcomeConfig.GetSpecial(groupId);
+                if (welcomeSpecial is not null) template = welcomeSpecial.Template;
                 if (string.IsNullOrEmpty(template)) return;
                 List<IChatMessage> welcomeMsgs = new List<IChatMessage>();
                 welcomeMsgs.Add(new AtMessage(memberId));
@@ -40,7 +39,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "入群事件异常");
-                await baseReporter.SendError(ex, "入群事件异常");
+                await BaseReporter.SendError(ex, "入群事件异常");
             }
         }
 

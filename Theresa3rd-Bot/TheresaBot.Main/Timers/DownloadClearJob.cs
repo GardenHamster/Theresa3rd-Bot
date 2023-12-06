@@ -35,7 +35,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                lock (TimerManager.ClearLock)
+                lock (SchedulerManager.ClearLock)
                 {
                     string path = FilePath.GetDownloadDirectory();
                     if (Directory.Exists(path) == false) return;

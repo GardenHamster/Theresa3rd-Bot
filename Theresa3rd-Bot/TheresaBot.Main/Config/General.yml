@@ -1,0 +1,15 @@
+Prefixs:                    ['#','＃']                                          #指令前缀
+TempPath:                   'BotImg/download'                                   #下载文件的临时存放目录
+FontPath:                   'Font/simsun.ttc'                                   #默认字体文件路径
+ClearCron:                  '0 0 4 * * ?'                                       #下载目录清理定时器，Cron表达式，空值表示不清理，格式：0 0 4 * * ?
+ErrorImgPath:               'BotImg/face/error.jpg'                             #图片下载失败时的替代图片
+ErrorGroups:                []                                                  #错误日志群，发生错误时会将日志发送到这些群
+ErrorMsg:                   |                                                   #处理异常时返回的消息
+                            出了点小问题，稍后再试吧
+                            [image:BotImg/face/emmm.jpg]
+DisableMsg:                 '该功能未开启'                                      #功能未启用时返回的消息
+NoPermissionsMsg:           '该功能未授权'                                      #功能未授权时返回的消息
+ManagersRequiredMsg:        '该功能需要管理员执行'                              #需要管理员权限时返回的消息
+SetuCustomDisableMsg:       '自定义功能已关闭'                                  #禁用自定义时返回的消息
+SendRelevantCommands:       false                                              #接收到的指令不存在时，提示类似的可执行指令
+AcceptFriendRequest:        false                                              #自动接受好友请求

@@ -1,4 +1,5 @@
 ﻿using TheresaBot.Main.Common;
+using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Cache;
 using TheresaBot.Main.Type;
 
@@ -312,7 +313,7 @@ namespace TheresaBot.Main.Cache
         /// <returns></returns>
         private static bool IsNoCD(long groupId)
         {
-            if (BotConfig.PermissionsConfig.SetuNoneCDGroups.Contains(groupId)) return true;
+            if (groupId.IsSetuNoneCD()) return true;
             return false;
         }
 

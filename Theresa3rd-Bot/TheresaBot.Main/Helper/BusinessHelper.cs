@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
-using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 
@@ -34,30 +33,6 @@ namespace TheresaBot.Main.Helper
             message = message?.Trim() ?? string.Empty;
             var prefix = prefixs.Where(o => message.StartsWith(o)).FirstOrDefault();
             return string.IsNullOrWhiteSpace(prefix) ? string.Empty : prefix;
-        }
-
-        /// <summary>
-        /// 判断是否可以处理一个群的消息
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <returns></returns>
-        public static bool IsHandleMessage(long groupId)
-        {
-            PermissionsConfig permissionsConfig = BotConfig.PermissionsConfig;
-            if (permissionsConfig is null) return false;
-            List<long> acceptGroups = permissionsConfig.AcceptGroups;
-            if (acceptGroups is null) return false;
-            return acceptGroups.Contains(groupId);
-        }
-
-        /// <summary>
-        /// 判断一个成员是否黑名单成员
-        /// </summary>
-        /// <param name="MemberId"></param>
-        /// <returns></returns>
-        public static bool IsBanMember(this long MemberId)
-        {
-            return BanMemberDatas.IsBanMember(MemberId);
         }
 
         /// <summary>
@@ -213,6 +188,21 @@ namespace TheresaBot.Main.Helper
             return chatContents;
         }
 
+        public static void ShowBackstageInfos()
+        {
+            Console.WriteLine("----------------------------------------------------------------------------------------");
+            Console.WriteLine($"后台密码：{BotConfig.BackstageConfig.Password}");
+            Console.WriteLine($"你可以在配置文件【Config/Backstage.yml】中修改后台密码(Password)");
+            Console.WriteLine("----------------------------------------------------------------------------------------");
+            Console.WriteLine($"访问下列地址配置Bot相关功能：");
+            foreach (var address in IPAddressHelper.GetLocalBackstageUrls())
+            {
+                Console.WriteLine($"{address}");
+            }
+            Console.WriteLine($"你也可以通过公网Ip:端口的方式访问后台");
+            Console.WriteLine("----------------------------------------------------------------------------------------");
+        }
+
         /// <summary>
         /// 获取欢迎消息
         /// </summary>
@@ -221,7 +211,12 @@ namespace TheresaBot.Main.Helper
         {
             StringBuilder msgBuilder = new StringBuilder();
             msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot v{BotConfig.BotVersion}】");
-            msgBuilder.AppendLine($"群聊发送【#菜单】可以查看指令");
+            msgBuilder.AppendLine($"群聊发送【#菜单】可以查看所有指令");
+            msgBuilder.AppendLine($"局域网下访问下列地址进行Bot相关配置");
+            foreach (var item in IPAddressHelper.GetLocalBackstageUrls())
+            {
+                msgBuilder.AppendLine(item);
+            }
             msgBuilder.AppendLine($"部署或者使用教程请访问");
             msgBuilder.Append($"{BotConfig.BotHomepage}");
             return msgBuilder.ToString();
@@ -278,7 +273,6 @@ namespace TheresaBot.Main.Helper
         /// 拼接pixiv作品路径
         /// </summary>
         /// <param name="pixivWorkInfo"></param>
-        /// <param name="maxShowCount"></param>
         /// <returns></returns>
         public static string JoinPixivImgOriginUrls(PixivWorkInfo pixivWorkInfo)
         {
@@ -286,7 +280,7 @@ namespace TheresaBot.Main.Helper
             int maxCount = BotConfig.PixivConfig.UrlShowMaximum > 0 ? BotConfig.PixivConfig.UrlShowMaximum : pixivWorkInfo.pageCount;
             for (int i = 0; i < maxCount && i < pixivWorkInfo.pageCount; i++)
             {
-                string imgUrl = pixivWorkInfo.urls.original.ToOriginProxyUrl();
+                string imgUrl = pixivWorkInfo.urls.original.ToOpenProxyLink();
                 if (i > 0) imgUrl = imgUrl.Replace("_p0.", $"_p{i}.");
                 if (LinkBuilder.Length > 0) LinkBuilder.AppendLine();
                 LinkBuilder.Append(imgUrl);

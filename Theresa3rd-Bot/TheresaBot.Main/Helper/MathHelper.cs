@@ -55,5 +55,18 @@
             return (number * 100).ToString("0.00") + "%";
         }
 
+        /// <summary>
+        /// 将一个字符串转为Int,转换失败时返回默认值
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static int ToInt(this string value, int defaultValue = 0)
+        {
+            int intValue = 0;
+            if (int.TryParse(value, out intValue) == false) return defaultValue;
+            return intValue;
+        }
+
     }
 }

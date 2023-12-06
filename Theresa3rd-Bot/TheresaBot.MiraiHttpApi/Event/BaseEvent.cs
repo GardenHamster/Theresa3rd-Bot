@@ -11,14 +11,14 @@ namespace TheresaBot.MiraiHttpApi.Event
 {
     public abstract class BaseEvent
     {
-        protected MiraiSession baseSession { get; init; }
+        protected MiraiSession BaseSession { get; init; }
 
-        protected MiraiReporter baseReporter { get; init; }
+        protected MiraiReporter BaseReporter { get; init; }
 
         public BaseEvent()
         {
-            this.baseSession = new MiraiSession();
-            this.baseReporter = new MiraiReporter();
+            this.BaseSession = new MiraiSession();
+            this.BaseReporter = new MiraiReporter();
         }
 
         public MiraiGroupCommand GetGroupCommand(IGroupMessageEventArgs args, string instruction, string prefix)
@@ -27,7 +27,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new MiraiGroupCommand(baseSession, invoker, args, instruction, commandStr, prefix);
+                return new MiraiGroupCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }
@@ -38,7 +38,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new MiraiFriendCommand(baseSession, invoker, args, instruction, commandStr, prefix);
+                return new MiraiFriendCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }
@@ -49,7 +49,7 @@ namespace TheresaBot.MiraiHttpApi.Event
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new MiraiGroupQuoteCommand(baseSession, invoker, args, instruction, commandStr, prefix);
+                return new MiraiGroupQuoteCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }

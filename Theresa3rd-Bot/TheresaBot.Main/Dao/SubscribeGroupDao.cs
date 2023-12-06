@@ -29,6 +29,19 @@ namespace TheresaBot.Main.Dao
         }
 
         /// <summary>
+        /// 统计某个订阅的数量
+        /// </summary>
+        /// <param name="subscribeType"></param>
+        /// <returns></returns>
+        public int countSubscribes(SubscribeType subscribeType)
+        {
+            return Db.Queryable<SubscribeGroupPO>()
+            .InnerJoin<SubscribePO>((sg, s) => sg.SubscribeId == s.Id)
+            .Where((sg, s) => s.SubscribeType == subscribeType)
+            .Select(sg => sg.SubscribeId).Distinct().Count();
+        }
+
+        /// <summary>
         /// 查询某个群的某个订阅类型的列表
         /// </summary>
         /// <param name="groupId"></param>
@@ -41,11 +54,37 @@ namespace TheresaBot.Main.Dao
             .Where((sg, s) => s.SubscribeType == subscribeType && (sg.GroupId == 0 || sg.GroupId == groupId))
             .Select((sg, s) => new SubscribeInfo
             {
+                Id = sg.Id,
                 SubscribeId = sg.SubscribeId,
                 SubscribeCode = s.SubscribeCode,
                 SubscribeType = s.SubscribeType,
                 SubscribeSubType = s.SubscribeSubType,
                 SubscribeName = s.SubscribeName,
+                SubscribeDate = s.CreateDate,
+                GroupId = sg.GroupId
+            }).ToList();
+        }
+
+        /// <summary>
+        /// 查询某个订阅类型的列表
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="subscribeType"></param>
+        /// <returns></returns>
+        public List<SubscribeInfo> getSubscribes(SubscribeType subscribeType)
+        {
+            return Db.Queryable<SubscribeGroupPO>()
+            .InnerJoin<SubscribePO>((sg, s) => sg.SubscribeId == s.Id)
+            .Where((sg, s) => s.SubscribeType == subscribeType)
+            .Select((sg, s) => new SubscribeInfo
+            {
+                Id = sg.Id,
+                SubscribeId = sg.SubscribeId,
+                SubscribeCode = s.SubscribeCode,
+                SubscribeType = s.SubscribeType,
+                SubscribeSubType = s.SubscribeSubType,
+                SubscribeName = s.SubscribeName,
+                SubscribeDate = s.CreateDate,
                 GroupId = sg.GroupId
             }).ToList();
         }
@@ -53,9 +92,8 @@ namespace TheresaBot.Main.Dao
         /// <summary>
         /// 删除订阅
         /// </summary>
-        /// <param name="groupId"></param>
         /// <param name="subscribeId"></param>
-        public int delSubscribeGroup(int subscribeId)
+        public int delBySubscribeId(int subscribeId)
         {
             return Db.Deleteable<SubscribeGroupPO>().Where(o => o.SubscribeId == subscribeId).ExecuteCommand();
         }
@@ -65,12 +103,10 @@ namespace TheresaBot.Main.Dao
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="subscribeId"></param>
-        public int delSubscribeGroup(long groupId, int subscribeId)
+        public int delBySubscribeId(long groupId, int subscribeId)
         {
             return Db.Deleteable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).ExecuteCommand();
         }
-
-
 
     }
 }

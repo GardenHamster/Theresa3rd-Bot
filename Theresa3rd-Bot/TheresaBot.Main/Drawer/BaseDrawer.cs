@@ -4,7 +4,7 @@ using TheresaBot.Main.Helper;
 
 namespace TheresaBot.Main.Drawer
 {
-    internal abstract class BaseDrawer
+    internal abstract class BaseDrawer : IDisposable
     {
         protected const string FontDir = "Font";
 
@@ -61,7 +61,7 @@ namespace TheresaBot.Main.Drawer
         {
             try
             {
-                String fontPath = BotConfig.GeneralConfig.DefaultFontPath;
+                String fontPath = BotConfig.GeneralConfig.FontPath;
                 if (File.Exists(fontPath) == false) return null;
                 return new FileInfo(fontPath);
             }
@@ -96,6 +96,27 @@ namespace TheresaBot.Main.Drawer
         {
             using SKImage blurImage = bitmap.Blur(BotConfig.PixivConfig.R18ImgBlur);
             return SKBitmap.FromImage(blurImage);
+        }
+
+        public virtual void Dispose()
+        {
+            Dispose(DefaultTypeface);
+        }
+
+        protected void Dispose(SKTypeface typeface)
+        {
+            if (typeface is not null)
+            {
+                typeface.Dispose();
+            }
+        }
+
+        protected void Dispose(SKPaint paint)
+        {
+            if (paint is not null)
+            {
+                paint.Dispose();
+            }
         }
 
     }

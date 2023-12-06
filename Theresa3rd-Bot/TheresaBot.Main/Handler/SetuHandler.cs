@@ -1,5 +1,4 @@
 ﻿using SixLabors.ImageSharp;
-using TheresaBot.Main.Business;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
@@ -8,8 +7,9 @@ using TheresaBot.Main.Model.Base;
 using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
+using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Reporter;
-using TheresaBot.Main.Result;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -17,11 +17,11 @@ namespace TheresaBot.Main.Handler
 {
     internal abstract class SetuHandler : BaseHandler
     {
-        protected RecordBusiness recordBusiness;
+        protected RecordService recordService;
 
         public SetuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            recordBusiness = new RecordBusiness();
+            recordService = new RecordService();
         }
 
         protected async Task SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 10)
@@ -55,7 +55,7 @@ namespace TheresaBot.Main.Handler
                 results = await Session.SendGroupSetuAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
             }
             long[] msgIds = results.Select(o => o.MessageId).ToArray();
-            Task recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, groupId);
+            Task recordTask = recordService.AddPixivRecord(setuContent, Session.PlatformType, msgIds, groupId);
         }
 
         protected async Task SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent[]> headerContents, long groupId, int eachPage = 10)
@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Handler
             {
                 List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(eachPage).ToList();
                 BaseResult result = await SendGroupMergeSetuAsync(pageContents, headerContents, groupId);
-                Task recordTask = recordBusiness.AddPixivRecord(pageContents, Session.PlatformType, result.MessageId, groupId);
+                Task recordTask = recordService.AddPixivRecord(pageContents, Session.PlatformType, result.MessageId, groupId);
                 startIndex += eachPage;
             }
         }
@@ -79,6 +79,7 @@ namespace TheresaBot.Main.Handler
             {
                 await Task.Delay(1000);
                 List<SetuContent> resendContents = GetResendContent(setuContents);
+                if (resendContents.Count == 0) return result;
                 result = await Session.SendGroupMergeSetuAsync(resendContents, headerContents, groupId);
             }
             return result;
@@ -124,7 +125,7 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task<bool> CheckSetuCustomEnableAsync(GroupCommand command)
         {
-            if (BotConfig.PermissionsConfig.SetuCustomGroups.Contains(command.GroupId)) return true;
+            if (command.GroupId.IsSetuCustomAuthorized()) return true;
             await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.SetuCustomDisableMsg, "自定义功能已关闭");
             return false;
         }
@@ -138,7 +139,7 @@ namespace TheresaBot.Main.Handler
         public async Task<bool> CheckSetuTagEnableAsync(GroupCommand command, string tagName)
         {
             if (string.IsNullOrWhiteSpace(tagName)) return true;
-            if (tagName.IsR18() && command.GroupId.IsShowR18Setu() == false)
+            if (tagName.IsR18() && command.GroupId.IsShowR18() == false)
             {
                 await command.ReplyGroupMessageWithQuoteAsync("本群未设置R18权限，禁止搜索R18相关标签");
                 return false;
@@ -157,7 +158,6 @@ namespace TheresaBot.Main.Handler
         /// <param name="command"></param>
         /// <param name="setuInfo"></param>
         /// <param name="isShowR18"></param>
-        /// <param name="isShowAI"></param>
         /// <returns></returns>
         public async Task<bool> CheckSetuSendable(GroupCommand command, BaseWorkInfo setuInfo, bool isShowR18)
         {
@@ -228,8 +228,8 @@ namespace TheresaBot.Main.Handler
         public long GetSetuLeftToday(long groupId, long memberId)
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
-            if (BotConfig.PermissionsConfig.SetuLimitlessGroups.Contains(groupId)) return BotConfig.SetuConfig.MaxDaily;
-            int todayUseCount = requestRecordBusiness.getUsedCountToday(groupId, memberId, CommandType.Setu);
+            if (groupId.IsSetuLimitless()) return BotConfig.SetuConfig.MaxDaily;
+            int todayUseCount = requestRecordService.getUsedCountToday(groupId, memberId, CommandType.Setu);
             long leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
         }
@@ -243,7 +243,7 @@ namespace TheresaBot.Main.Handler
         public int GetSaucenaoLeftToday(long groupId, long memberId)
         {
             if (BotConfig.SaucenaoConfig.MaxDaily == 0) return 0;
-            int todayUseCount = requestRecordBusiness.getUsedCountToday(groupId, memberId, CommandType.Saucenao);
+            int todayUseCount = requestRecordService.getUsedCountToday(groupId, memberId, CommandType.Saucenao);
             int leftToday = BotConfig.SaucenaoConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
         }

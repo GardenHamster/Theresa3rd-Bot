@@ -1,6 +1,6 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Subscribe;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Datas
@@ -13,7 +13,7 @@ namespace TheresaBot.Main.Datas
         {
             try
             {
-                SubscribeTaskMap = new SubscribeBusiness().getSubscribeTask();
+                SubscribeTaskMap = new SubscribeService().getSubscribeTask();
                 LogHelper.Info("订阅任务加载完成...");
             }
             catch (Exception ex)
@@ -31,7 +31,7 @@ namespace TheresaBot.Main.Datas
         public static List<SubscribeTask> GetSubscribeTasks(SubscribeType subscribeType, long groupId)
         {
             if (SubscribeTaskMap.ContainsKey(subscribeType) == false) return new List<SubscribeTask>();
-            return SubscribeTaskMap[subscribeType].Where(m => m.GroupIdList.Contains(groupId)).ToList();
+            return SubscribeTaskMap[subscribeType].Where(m => m.SubscribeGroups.Contains(groupId)).ToList();
         }
 
 

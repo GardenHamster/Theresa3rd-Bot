@@ -63,11 +63,35 @@
         /// </summary>
         /// <param name="downTask"></param>
         /// <returns></returns>
-        public static FileInfo[] SearchFiles(string dirPath, string searchPattern)
+        public static FileInfo[] SearchFiles(string dirPath, string searchPattern = "*.*")
         {
-            if (Directory.Exists(dirPath) == false) return null;
+            if (Directory.Exists(dirPath) == false) return new FileInfo[0];
             DirectoryInfo searchFolder = new DirectoryInfo(dirPath);
             return searchFolder.GetFiles(searchPattern, SearchOption.AllDirectories);
+        }
+
+        /// <summary>
+        /// 返回一个file在path中的相对路径
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string GetRelativePath(this FileInfo file, string path)
+        {
+            Uri uri1 = new Uri(path);
+            Uri uri2 = new Uri(file.FullName);
+            return uri1.MakeRelativeUri(uri2).ToString().Replace(@"\", "/");
+        }
+
+        /// <summary>
+        /// 返回多个file在path中的相对路径
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string[] GetRelativePath(this FileInfo[] files, string path)
+        {
+            return files.Select(o => o.GetRelativePath(path)).ToArray();
         }
 
         /// <summary>

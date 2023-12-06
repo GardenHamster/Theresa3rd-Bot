@@ -30,7 +30,7 @@ namespace TheresaBot.Main.Drawer
 
             var imgInfo = new SKImageInfo(canvasWidth, canvasHeight);
             using SKSurface surface = SKSurface.Create(imgInfo);
-            SKCanvas canvas = surface.Canvas;
+            using SKCanvas canvas = surface.Canvas;
             canvas.Clear(SKColors.LightGray);
 
             startX = CellMargin;
@@ -45,14 +45,13 @@ namespace TheresaBot.Main.Drawer
 
             for (int i = 0; i < arrangeList.Count; i++)
             {
-                var drawing = arrangeList[i];
+                using var drawing = arrangeList[i];
                 int row = drawing.Row, column = drawing.Column;
                 bool isHorizontal = drawing.IsHorizontal;
-                SKBitmap originBitmap = drawing.OriginBitmap;
                 var detail = drawing.Detail;
                 startX = areaX + CellMargin * column + CellWidth * (column - 1);
                 startY = areaY + CellMargin * row + CellHeight * (row - 1);
-                DrawImage(canvas, originBitmap, startX, startY, detail.ProfileDetail.WorkInfo.IsR18, isHorizontal);
+                DrawImage(canvas, drawing.OriginBitmap, startX, startY, detail.ProfileDetail.WorkInfo.IsR18, isHorizontal);
                 DrawTitle(canvas, detail.ProfileDetail, startX, startY);
             }
             areaY += workAreaHeight;
@@ -106,8 +105,7 @@ namespace TheresaBot.Main.Drawer
             int imgWidth = (int)(bitmap.Width * scale);
             int imgHeight = (int)(bitmap.Height * scale);
             var imgInfo = new SKImageInfo(imgWidth, imgHeight);
-            using SKBitmap originBitmap = bitmap;
-            using SKBitmap resizeBitmap = originBitmap.Resize(imgInfo, SKFilterQuality.Low);
+            using SKBitmap resizeBitmap = bitmap.Resize(imgInfo, SKFilterQuality.Low);
             using SKBitmap drawBitmap = isR18 ? Blur(resizeBitmap) : resizeBitmap;
             var source = new SKRect(0, 0, drawWidth, drawHeight);
             var dest = new SKRect(x, y, x + drawWidth, y + drawHeight);

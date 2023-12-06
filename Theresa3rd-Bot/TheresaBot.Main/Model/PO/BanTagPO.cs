@@ -6,7 +6,7 @@ namespace TheresaBot.Main.Model.PO
     public record BanTagPO : BasePO
     {
         [SugarColumn(IsNullable = false, Length = 100, ColumnDescription = "关键词")]
-        public string KeyWord { get; set; }
+        public string Keyword { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDataType = "tinyint", ColumnDescription = "是否全词匹配")]
         public bool FullMatch { get; set; }

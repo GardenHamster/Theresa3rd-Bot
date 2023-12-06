@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Security.Authentication;
 using TheresaBot.Main.Common;
 
 namespace TheresaBot.Main.Helper
@@ -55,9 +54,9 @@ namespace TheresaBot.Main.Helper
             client.BaseAddress = new Uri(url);
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            HttpResponseMessage response = await client.GetAsync(url);
-            //response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            using var response = await client.GetAsync(url);
+            using var result = response.Content;
+            return await result.ReadAsStringAsync();
         }
 
         /// <summary>
@@ -73,9 +72,9 @@ namespace TheresaBot.Main.Helper
             client.BaseAddress = new Uri(url);
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            HttpResponseMessage response = await client.GetAsync(url);
-            //response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            using var response = await client.GetAsync(url);
+            using var result = response.Content;
+            return await result.ReadAsStringAsync();
         }
 
         /// <summary>
@@ -93,9 +92,9 @@ namespace TheresaBot.Main.Helper
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            HttpResponseMessage response = await client.PostAsync(url, content);
-            //response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            using var response = await client.PostAsync(url, content);
+            using var result = response.Content;
+            return await result.ReadAsStringAsync();
         }
 
         /// <summary>
@@ -127,15 +126,16 @@ namespace TheresaBot.Main.Helper
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            MultipartFormDataContent formData = new MultipartFormDataContent();//表单
-            StreamContent fileContent = new StreamContent(fs);//图片stream
+            using MultipartFormDataContent formData = new MultipartFormDataContent();//表单
+            using StreamContent fileContent = new StreamContent(fs);//图片stream
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
             fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
             fileContent.Headers.ContentDisposition.FileName = imageFile.Name;
             fileContent.Headers.ContentDisposition.Name = "file";
             formData.Add(fileContent);
-            HttpResponseMessage res = client.PostAsync(postUrl, formData).Result;
-            return await res.Content.ReadAsStringAsync();
+            using var response = await client.PostAsync(postUrl, formData);
+            using var result = response.Content;
+            return await result.ReadAsStringAsync();
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static async Task<FileInfo> DownImgAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
-            return await HttpHelper.DownFileAsync(imgUrl, fullImageSavePath, headerDic, timeout);
+            return await DownFileAsync(imgUrl, fullImageSavePath, headerDic, timeout);
         }
 
         /// <summary>
@@ -251,21 +251,6 @@ namespace TheresaBot.Main.Helper
                 return string.Empty;
             }
         }
-
-        /// <summary>
-        /// 创建一个忽略https证书验证的HttpClientHandler
-        /// </summary>
-        /// <returns></returns>
-        private static HttpClientHandler GetHttpClientHandler()
-        {
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
-            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-            clientHandler.SslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13 | SslProtocols.None;
-            clientHandler.AllowAutoRedirect = false;
-            return clientHandler;
-        }
-
 
     }
 }

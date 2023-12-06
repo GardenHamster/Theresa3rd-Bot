@@ -16,6 +16,10 @@ namespace TheresaBot.GoCqHttp.Command
 
         public override long MemberId => Args.Sender.UserId;
 
+        public override string MemberName => Args.Sender.Nickname;
+
+        public override string MemberNick => Args.Sender.Nickname;
+
         public CQGroupQuoteCommand(BaseSession baseSession, CommandHandler<GroupQuoteCommand> invoker, CqGroupMessagePostContext args, string instruction, string command, string prefix)
             : base(baseSession, invoker, instruction, command, prefix)
         {

@@ -1,19 +1,18 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Helper;
+﻿using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Services;
 
 namespace TheresaBot.Main.Datas
 {
     internal static class BanMemberDatas
     {
-        private static List<BanMemberPO> BanMemberList = new List<BanMemberPO>();
+        public static List<BanMemberPO> BanMemberList = new List<BanMemberPO>();
 
         public static void LoadDatas()
         {
             try
             {
-                BanMemberList = new BanMemberBusiness().getBanMembers();
-                LogHelper.Info("加载屏蔽用户列表完毕...");
+                BanMemberList = new BanMemberService().getBanMembers();
             }
             catch (Exception ex)
             {
@@ -26,7 +25,6 @@ namespace TheresaBot.Main.Datas
             if (MemberId <= 0) return false;
             return BanMemberList.Any(o => o.MemberId == MemberId);
         }
-
 
     }
 }

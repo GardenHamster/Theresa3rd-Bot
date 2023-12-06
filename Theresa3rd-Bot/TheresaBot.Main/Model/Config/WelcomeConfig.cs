@@ -1,22 +1,41 @@
-﻿namespace TheresaBot.Main.Model.Config
-{
-    public class WelcomeConfig : BasePluginConfig
-    {
-        public string Template { get; private set; }
+﻿using TheresaBot.Main.Helper;
+using YamlDotNet.Serialization;
 
-        public List<WelcomeSpecial> Special { get; private set; }
+namespace TheresaBot.Main.Model.Config
+{
+    public record WelcomeConfig : BasePluginConfig
+    {
+        public string Template { get; set; }
+
+        public List<WelcomeSpecial> Specials { get; set; } = new();
+
+        public WelcomeSpecial GetSpecial(long groupId)
+        {
+            return Specials?.Where(m => m.ContainGroups.Contains(groupId)).FirstOrDefault();
+        }
 
         public override WelcomeConfig FormatConfig()
         {
+            if (Specials is null) Specials = new();
+            foreach (var item in Specials) item?.FormatConfig();
             return this;
         }
     }
 
-    public class WelcomeSpecial
+    public record WelcomeSpecial : BaseConfig
     {
-        public long GroupId { get; private set; }
+        public List<long> Groups { get; set; } = new();
 
-        public string Template { get; private set; }
+        public string Template { get; set; }
+
+        [YamlIgnore]
+        public List<long> ContainGroups => Groups?.ToSendableGroups() ?? new();
+
+        public override BaseConfig FormatConfig()
+        {
+            if (Groups is null) Groups = new();
+            return this;
+        }
     }
 
 

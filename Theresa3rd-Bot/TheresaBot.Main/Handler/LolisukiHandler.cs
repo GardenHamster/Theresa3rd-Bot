@@ -1,5 +1,4 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Cache;
+﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
@@ -8,6 +7,7 @@ using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Lolisuki;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -15,11 +15,11 @@ namespace TheresaBot.Main.Handler
 {
     internal class LolisukiHandler : SetuHandler
     {
-        private LolisukiBusiness lolisukiBusiness;
+        private LolisukiService lolisukiService;
 
         public LolisukiHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            lolisukiBusiness = new LolisukiBusiness();
+            lolisukiService = new LolisukiService();
         }
 
         public async Task LolisukiSearchAsync(GroupCommand command)
@@ -29,7 +29,7 @@ namespace TheresaBot.Main.Handler
                 List<LolisukiData> dataList;
                 string tagStr = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
-                bool isShowR18 = command.GroupId.IsShowR18Setu();
+                bool isShowR18 = command.GroupId.IsShowR18();
                 int r18Mode = isShowR18 ? 2 : 0;
                 int aiMode = isShowAI ? 2 : 0;
 
@@ -40,12 +40,12 @@ namespace TheresaBot.Main.Handler
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1);
+                    dataList = await lolisukiService.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
+                    dataList = await lolisukiService.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 
                 if (dataList.Count == 0)
@@ -62,12 +62,12 @@ namespace TheresaBot.Main.Handler
 
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.Add(new PlainContent(lolisukiBusiness.getWorkInfo(lolisukiData, todayLeftCount, template)));
+                workMsgs.Add(new PlainContent(lolisukiService.getWorkInfo(lolisukiData, todayLeftCount, template)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, lolisukiData);
                 var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
-                var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
+                var recordTask = recordService.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
@@ -93,7 +93,7 @@ namespace TheresaBot.Main.Handler
             {
                 int margeEachPage = 5;
                 bool isShowAI = groupId.IsShowAISetu();
-                bool isShowR18 = groupId.IsShowR18Setu();
+                bool isShowR18 = groupId.IsShowR18();
                 string levelStr = GetLevelStr(isShowR18, BotConfig.TimingSetuConfig?.LolisukiLevel);
                 bool sendMerge = timingSetuTimer.SendMerge;
                 int aiMode = isShowAI ? 2 : 0;
@@ -101,7 +101,7 @@ namespace TheresaBot.Main.Handler
                 string tagStr = RandomHelper.RandomItem(timingSetuTimer.Tags);
                 string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : ToLoliconTagArr(tagStr);
                 int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
-                List<LolisukiData> dataList = await lolisukiBusiness.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, quantity, tagArr);
+                List<LolisukiData> dataList = await lolisukiService.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, quantity, tagArr);
                 List<SetuContent> setuContents = await GetSetuContent(dataList, groupId);
                 await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
                 await Task.Delay(2000);
@@ -123,7 +123,7 @@ namespace TheresaBot.Main.Handler
 
         private async Task<SetuContent> GetSetuContent(LolisukiData data, long groupId)
         {
-            string setuInfo = lolisukiBusiness.getDefaultWorkInfo(data);
+            string setuInfo = lolisukiService.getDefaultWorkInfo(data);
             List<FileInfo> setuFiles = await GetSetuFilesAsync(data, groupId);
             return new SetuContent(setuInfo, setuFiles);
         }

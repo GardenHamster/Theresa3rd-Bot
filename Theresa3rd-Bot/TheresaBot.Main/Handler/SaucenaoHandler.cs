@@ -1,6 +1,4 @@
-﻿using System.Text;
-using TheresaBot.Main.Business;
-using TheresaBot.Main.Cache;
+﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Exceptions;
@@ -9,9 +7,9 @@ using TheresaBot.Main.Model.Ascii2d;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -19,15 +17,15 @@ namespace TheresaBot.Main.Handler
 {
     internal class SaucenaoHandler : SetuHandler
     {
-        private PixivBusiness pixivBusiness;
-        private SaucenaoBusiness saucenaoBusiness;
-        private Ascii2dBusiness ascii2dBusiness;
+        private PixivService pixivService;
+        private SaucenaoService saucenaoService;
+        private Ascii2dService ascii2dService;
 
         public SaucenaoHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            pixivBusiness = new PixivBusiness();
-            saucenaoBusiness = new SaucenaoBusiness();
-            ascii2dBusiness = new Ascii2dBusiness();
+            pixivService = new PixivService();
+            saucenaoService = new SaucenaoService();
+            ascii2dService = new Ascii2dService();
         }
 
         public async Task SearchSource(GroupCommand command)
@@ -40,13 +38,12 @@ namespace TheresaBot.Main.Handler
 
                 if (imgList.Count == 0)
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo imgStep = processInfo.CreateStep("请在60秒内发送需要查找的图片", CheckImageAsync);
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var imgStep = processInfo.CreateStep("请在60秒内发送需要查找的图片", CheckImageAsync);
                     await processInfo.StartProcessing();
                     imgList = imgStep.Relay.GetImageUrls();
                     revokeMsgId = imgStep.Relay.MsgId;
                 }
-
                 if (imgList.Count == 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync($"没有接收到图片，请重新发送指令进行操作");
@@ -77,7 +74,7 @@ namespace TheresaBot.Main.Handler
                 DateTime startDateTime = DateTime.Now;
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
                 long quoteId = command.GetQuoteMessageId();
-                List<ImageRecordPO> imgRecords = quoteId > 0 ? recordBusiness.GetImageRecord(Session.PlatformType, quoteId, command.GroupId) : new();
+                List<ImageRecordPO> imgRecords = quoteId > 0 ? recordService.GetImageRecord(Session.PlatformType, quoteId, command.GroupId) : new();
                 List<string> imgList = imgRecords.Select(o => o.HttpUrl).ToList();
                 if (imgList.Count == 0)
                 {
@@ -108,7 +105,7 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.SaucenaoConfig.MaxReceive > 0 && imgList.Count > BotConfig.SaucenaoConfig.MaxReceive)
             {
                 imgList = imgList.Take(BotConfig.SaucenaoConfig.MaxReceive).ToList();
-                string remindMsg = $"总共接收到了{imgList.Count}张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~";
+                string remindMsg = $"总共接收到了 {imgList.Count} 张图片，只查找前{BotConfig.SaucenaoConfig.MaxReceive}张哦~";
                 await command.ReplyGroupMessageWithAtAsync(remindMsg);
                 await Task.Delay(1000);
             }
@@ -145,33 +142,35 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                SaucenaoResult saucenaoResult = await saucenaoBusiness.getSaucenaoResultAsync(imgUrl);
-                if (saucenaoResult is null || saucenaoResult.Items.Count == 0) return false;
-                List<SaucenaoItem> sortList = saucenaoBusiness.sortSaucenaoItem(saucenaoResult.Items);
+                var readCount = BotConfig.SaucenaoConfig.SaucenaoReadCount;
+                var saucenaoResult = await saucenaoService.SearchResultAsync(imgUrl);
+                var filterList = saucenaoService.FilterItems(saucenaoResult.Items);
+                if (filterList.Count == 0) return false;
+
+                var sortList = saucenaoService.SortItems(filterList);
+                var maxSimilarity = sortList.Max(o => o.Similarity);
+                var singlePriority = BotConfig.SaucenaoConfig.SinglePriority;
+                var showCount = maxSimilarity >= singlePriority ? 1 : readCount;
+                var sendList = sortList.Take(showCount).ToList();
 
                 if (BotConfig.SaucenaoConfig.PullOrigin == false)
                 {
                     List<BaseContent> workMsgs = new List<BaseContent>();
                     workMsgs.AddRange(GetRemindMessage(saucenaoResult, command.GroupId, command.MemberId));
-                    workMsgs.AddRange(GetSimpleMessage(sortList.Take(BotConfig.SaucenaoConfig.SaucenaoReadCount).ToList()));
+                    workMsgs.AddRange(sendList.Select(o => o.GetSimpleContent()));
                     Task sendSimpleTask = ReplyAndRevoke(command, workMsgs);
                     return true;
                 }
 
-                decimal maxSimilarity = sortList.Max(o => o.Similarity);
-                decimal singlePriority = BotConfig.SaucenaoConfig.SinglePriority;
-                int readCount = BotConfig.SaucenaoConfig.SaucenaoReadCount;
-                int maxShow = maxSimilarity >= singlePriority ? 1 : readCount;
-                var saucenaoItems = await saucenaoBusiness.getBestMatchAsync(sortList, maxShow);
-                if (saucenaoItems is null || saucenaoItems.Count == 0) return false;
-
-                List<SetuContent> setuContents = new List<SetuContent>();
-                setuContents.Add(new SetuContent(GetRemindMessage(saucenaoResult, command.GroupId, command.MemberId)));
-                for (int i = 0; i < saucenaoItems.Count; i++)
+                await saucenaoService.FetchOrigin(sortList);
+                var setuContents = new List<SetuContent>()
                 {
-                    setuContents.Add(await GetSaucenaoContentAsync(command, saucenaoItems[i]));
+                    new(GetRemindMessage(saucenaoResult, command.GroupId, command.MemberId))
+                };
+                for (int i = 0; i < sendList.Count; i++)
+                {
+                    setuContents.Add(await GetSaucenaoContentAsync(command, sendList[i]));
                 }
-
                 Task sendDetailTask = ReplyAndRevoke(command, setuContents);
                 return true;
             }
@@ -182,80 +181,52 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public List<BaseContent> GetSimpleMessage(List<Ascii2dItem> ascii2dItems)
-        {
-            return ascii2dItems.Select(o => GetSimpleMessage(o)).ToList();
-        }
-
-        public List<BaseContent> GetSimpleMessage(List<SaucenaoItem> saucenaoItems)
-        {
-            return saucenaoItems.Select(o => GetSimpleMessage(o)).ToList();
-        }
-
-        public BaseContent GetSourceMessage(SaucenaoItem saucenaoItem)
-        {
-            return new PlainContent($"相似度：{saucenaoItem.Similarity}%，来源：{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}");
-        }
-
-        public BaseContent GetSimpleMessage(SaucenaoItem saucenaoItem)
-        {
-            return new PlainContent($"相似度：{saucenaoItem.Similarity}%，来源:{Enum.GetName(typeof(SetuSourceType), saucenaoItem.SourceType)}，链接：{saucenaoItem.SourceUrl}");
-        }
-
-        public BaseContent GetSimpleMessage(Ascii2dItem ascii2dItem)
-        {
-            return new PlainContent($"来源:{Enum.GetName(typeof(SetuSourceType), ascii2dItem.SourceType)}，链接：{ascii2dItem.SourceUrl}");
-        }
-
         private async Task<SetuContent> GetSaucenaoContentAsync(GroupCommand command, SaucenaoItem saucenaoItem)
         {
-            decimal minSimilarity = BotConfig.SaucenaoConfig.ImagePriority;
             if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
             {
-                bool isShowR18 = command.GroupId.IsShowR18Saucenao();
-                PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
-                string notSendableMsg = IsSetuSendable(command, saucenaoItem.PixivWorkInfo, isShowR18);
-                if (string.IsNullOrWhiteSpace(notSendableMsg) == false)
-                {
-                    List<BaseContent> notSendableContent = new() { GetSourceMessage(saucenaoItem), new PlainContent(notSendableMsg) };
-                    return new(notSendableContent);
-                }
-                List<BaseContent> workMsgs = new List<BaseContent>();
-                List<FileInfo> setuFiles = saucenaoItem.Similarity < minSimilarity ? new() : await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
-                workMsgs.Add(GetSourceMessage(saucenaoItem));
-                workMsgs.AddRange(GetPixivMessageAsync(saucenaoItem));
-                return new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
+                return await GetPixivSetuContentAsync(command, saucenaoItem);
             }
             else
             {
-                List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.Add(GetSimpleMessage(saucenaoItem));
-                return new(workMsgs);
+                return new(saucenaoItem.GetSourceContent());
             }
         }
 
-        public List<BaseContent> GetPixivMessageAsync(SaucenaoItem saucenaoItem)
+        private async Task<SetuContent> GetPixivSetuContentAsync(GroupCommand command, SaucenaoItem saucenaoItem)
+        {
+            var groupId = command.GroupId;
+            var isShowR18 = command.GroupId.IsShowR18Saucenao();
+            var minSimilarity = BotConfig.SaucenaoConfig.ImagePriority;
+            var pixivWorkInfo = saucenaoItem.PixivWorkInfo;
+            var notSendableMsg = IsSetuSendable(command, saucenaoItem.PixivWorkInfo, isShowR18);
+            if (string.IsNullOrWhiteSpace(notSendableMsg) == false)
+            {
+                return new(saucenaoItem.GetSimpleContent(), new PlainContent(notSendableMsg));
+            }
+            var setuFiles = new List<FileInfo>();
+            if (saucenaoItem.Similarity >= minSimilarity)
+            {
+                setuFiles = await GetSetuFilesAsync(pixivWorkInfo, groupId);
+            }
+            var workMsgs = new List<BaseContent>();
+            workMsgs.Add(saucenaoItem.GetSourceContent());
+            workMsgs.AddRange(GetPixivMessageAsync(saucenaoItem));
+            return new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
+        }
+
+        private List<BaseContent> GetPixivMessageAsync(SaucenaoItem saucenaoItem)
         {
             List<BaseContent> msgList = new List<BaseContent>();
             PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
-            msgList.Add(new PlainContent(pixivBusiness.getWorkInfo(pixivWorkInfo)));
+            msgList.Add(new PlainContent(pixivService.getWorkInfo(pixivWorkInfo)));
             return msgList;
         }
 
-        public List<BaseContent> GetRemindMessage(SaucenaoResult saucenaoResult, long groupId, long memberId)
+        public BaseContent GetRemindMessage(SaucenaoResult saucenaoResult, long groupId, long memberId)
         {
-            List<BaseContent> msgList = new List<BaseContent>();
-            string remindTemplate = BotConfig.SaucenaoConfig.Template;
             long todayLeft = GetSaucenaoLeftToday(groupId, memberId);
-            if (string.IsNullOrWhiteSpace(remindTemplate))
-            {
-                msgList.Add(new PlainContent(saucenaoBusiness.getDefaultRemindMessage(saucenaoResult, todayLeft)));
-            }
-            else
-            {
-                msgList.Add(new PlainContent(saucenaoBusiness.getSaucenaoRemindMessage(saucenaoResult, remindTemplate, todayLeft)));
-            }
-            return msgList;
+            return new PlainContent(saucenaoService.GetRemindMessage(saucenaoResult, todayLeft));
         }
 
         private async Task SearchWithAscii2d(GroupCommand command, string imgUrl)
@@ -263,54 +234,29 @@ namespace TheresaBot.Main.Handler
             try
             {
                 DateTime startTime = DateTime.Now;
-                Ascii2dResult ascii2dResult = await ascii2dBusiness.getAscii2dResultAsync(imgUrl);
-                if (ascii2dResult is null || ascii2dResult.Items.Count == 0)
+                Ascii2dResult ascii2dResult = await ascii2dService.SearchResultAsync(imgUrl);
+                if (ascii2dResult.Items.Count == 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync("ascii2d中找不到相似的图片");
                     return;
                 }
-
-                int readCount = BotConfig.SaucenaoConfig.Ascii2dReadCount <= 0 ? ascii2dResult.Items.Count : BotConfig.SaucenaoConfig.Ascii2dReadCount;
-                List<Ascii2dItem> ascii2dItems = ascii2dResult.Items.Take(readCount).ToList();
-
-                if (BotConfig.SaucenaoConfig.PullOrigin == false)
+                var readCount = BotConfig.SaucenaoConfig.Ascii2dReadCount;
+                var sendItems = ascii2dResult.Items.Take(readCount).ToList();
+                if (BotConfig.SaucenaoConfig.PullOrigin)
                 {
-                    List<BaseContent> simpleList = new List<BaseContent>();
-                    simpleList.Add(new PlainContent($"ascii2d中搜索到的前{readCount}条结果如下："));
-                    simpleList.AddRange(GetSimpleMessage(ascii2dItems));
-                    Task sendSimpleTask = ReplyAndRevoke(command, simpleList);
-                    return;
+                    await ascii2dService.FetchOrigin(sendItems);
+                    List<BaseContent> contentList = new List<BaseContent>();
+                    contentList.Add(new PlainContent($"ascii2d中搜索到的前{readCount}条结果如下"));
+                    contentList.AddRange(sendItems.Select(o => o.GetSourceContent()));
+                    Task sendTask = ReplyAndRevoke(command, contentList);
                 }
-
-                List<Ascii2dItem> matchList = await ascii2dBusiness.getBestMatchAsync(ascii2dItems);
-                if (matchList is null || matchList.Count == 0)
+                else
                 {
-                    await command.ReplyGroupMessageWithAtAsync("ascii2d中找不到相似的图片");
-                    return;
+                    List<BaseContent> contentList = new List<BaseContent>();
+                    contentList.Add(new PlainContent($"ascii2d中搜索到的前{readCount}条结果如下："));
+                    contentList.AddRange(sendItems.Select(o => o.GetSimpleContent()));
+                    Task sendSimpleTask = ReplyAndRevoke(command, contentList);
                 }
-
-                StringBuilder resultBuilder = new StringBuilder();
-                resultBuilder.AppendLine($"ascii2d中搜索到的前{readCount}条结果如下");
-                foreach (Ascii2dItem ascii2dItem in matchList)
-                {
-                    if (ascii2dItem.SourceType == SetuSourceType.Pixiv)
-                    {
-                        PixivWorkInfo workInfo = ascii2dItem.PixivWorkInfo;
-                        resultBuilder.AppendLine($"来源：Pixiv，标题：{workInfo.illustTitle}，pid：{workInfo.illustId}，链接：{workInfo.urls.original.ToOriginProxyUrl()}");
-                    }
-                    else if (ascii2dItem.SourceType == SetuSourceType.Twitter)
-                    {
-                        resultBuilder.AppendLine($"来源：Twitter，链接：{ascii2dItem.SourceUrl}");
-                    }
-                    else
-                    {
-                        resultBuilder.AppendLine($"来源：其他，链接：{ascii2dItem.SourceUrl}");
-                    }
-                }
-
-                List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.Add(new PlainContent(resultBuilder.ToString()));
-                Task sendTask = ReplyAndRevoke(command, workMsgs);
             }
             catch (Exception ex)
             {
@@ -332,7 +278,7 @@ namespace TheresaBot.Main.Handler
         private async Task ReplyAndRevoke(GroupCommand command, List<SetuContent> setuContents)
         {
             var result = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval);
-            var recordTask = recordBusiness.AddPixivRecord(setuContents, Session.PlatformType, result.MessageId, command.GroupId);
+            var recordTask = recordService.AddPixivRecord(setuContents, Session.PlatformType, result.MessageId, command.GroupId);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);

@@ -1,13 +1,20 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class MysUserSubscribeConfig : BaseSubscribeConfig
+    public record MysUserSubscribeConfig : BaseSubscribeConfig
     {
-        public int ShelfLife { get; private set; }
+        public int ShelfLife { get; set; }
 
-        public MysUserSubscribeConfig()
+        public MysUserSubscribeConfig() : base()
         {
-            this.ShelfLife = 12 * 60 * 60;
-            this.ScanInterval = 60;
+            ShelfLife = 12 * 60 * 60;
+        }
+
+        public override BasePluginConfig FormatConfig()
+        {
+            base.FormatConfig();
+            if (ShelfLife < 300) ShelfLife = 300;
+            if (ScanInterval < 30) ScanInterval = 30;
+            return this;
         }
 
     }

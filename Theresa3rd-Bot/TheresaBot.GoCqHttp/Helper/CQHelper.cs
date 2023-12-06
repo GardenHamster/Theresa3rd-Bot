@@ -1,11 +1,11 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
-using System.IO;
 using TheresaBot.GoCqHttp.Common;
 using TheresaBot.GoCqHttp.Plugin;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.Infos;
 
 namespace TheresaBot.GoCqHttp.Helper
 {
@@ -25,6 +25,7 @@ namespace TheresaBot.GoCqHttp.Helper
                     UseEventEndPoint = true,
                 };
                 Session = new CqWsSession(options);
+                Session.UsePlugin(new FriendApplyPlugin());
                 Session.UsePlugin(new GroupMessagePlugin());
                 Session.UsePlugin(new PrivateMessagePlugin());
                 Session.UsePlugin(new GroupMemberIncreasePlugin());
@@ -58,9 +59,9 @@ namespace TheresaBot.GoCqHttp.Helper
             {
                 var result = await Session.GetLoginInformationAsync();
                 if (result is null) throw new Exception("Bot名片获取失败");
-                CQConfig.BotQQ = result?.UserId ?? 0;
-                CQConfig.BotName = result?.Nickname ?? "Bot";
-                LogHelper.Info($"Bot名片获取完毕，QQNumber={CQConfig.BotQQ}，Nickname={result?.Nickname ?? ""}");
+                BotConfig.BotQQ = result?.UserId ?? 0;
+                BotConfig.BotName = result?.Nickname ?? "Bot";
+                LogHelper.Info($"Bot名片获取完毕，QQNumber={BotConfig.BotQQ}，Nickname={result?.Nickname ?? ""}");
             }
             catch (Exception ex)
             {
@@ -68,12 +69,41 @@ namespace TheresaBot.GoCqHttp.Helper
             }
         }
 
+        /// <summary>
+        /// 获取群列表并缓存到BotConfig中，如果获取失败则返回null
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<GroupInfos[]> LoadGroupInfosAsync()
+        {
+            try
+            {
+                var groupResult = await Session.GetGroupListAsync();
+                if (groupResult?.Groups is null) throw new Exception("群列表获取失败");
+                var groupInfos = groupResult.Groups.Select(o => new GroupInfos(o.GroupId, o.GroupName)).ToArray();
+                BotConfig.GroupInfos = groupInfos.ToList();
+                var availableIds = groupInfos.Select(o => o.GroupId).ToList();
+                var acceptIds = BotConfig.PermissionsConfig.AcceptGroups;
+                var groupCount = BotConfig.GroupInfos.Count;
+                var acceptCount = acceptIds.Where(o => availableIds.Contains(o)).Count();
+                var availablCount = acceptIds.Contains(0) ? groupCount : acceptCount;
+                LogHelper.Info($"群列表加载完毕，共获取群号 {groupCount} 个，其中已启用群号 {availablCount} 个");
+                return groupInfos;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "群列表获取失败");
+                return null;
+            }
+        }
+
         public static async Task SendStartUpMessageAsync()
         {
             await Task.Delay(3000);
+            LogHelper.Console("正在发送启动消息...");
             CqMessage welcomeMessage = new CqMessage(BusinessHelper.GetStartUpMessage());
-            foreach (var memberId in BotConfig.PermissionsConfig.SuperManagers)
+            foreach (var memberId in BotConfig.SuperManagers)
             {
+                if (memberId <= 0) continue;
                 Session.SendPrivateMessage(memberId, welcomeMessage);
                 await Task.Delay(1000);
             }
@@ -149,7 +179,6 @@ namespace TheresaBot.GoCqHttp.Helper
             using FileStream fileStream = File.OpenRead(fileInfo.FullName);
             return CqImageMsg.FromStream(fileStream);
         }
-
 
     }
 }

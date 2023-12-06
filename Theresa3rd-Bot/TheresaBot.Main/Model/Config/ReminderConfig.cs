@@ -1,35 +1,57 @@
-﻿namespace TheresaBot.Main.Model.Config
+﻿using TheresaBot.Main.Helper;
+using YamlDotNet.Serialization;
+
+namespace TheresaBot.Main.Model.Config
 {
-    public class ReminderConfig : BasePluginConfig
+    public record ReminderConfig : BasePluginConfig
     {
-        public List<ReminderTimer> Timers { get; private set; }
+        public List<ReminderTimer> Timers { get; set; } = new();
 
         public override ReminderConfig FormatConfig()
         {
+            if (Timers is null) Timers = new();
+            foreach (var item in Timers) item?.FormatConfig();
             return this;
         }
     }
 
-    public class ReminderTimer
+    public record ReminderTimer : BaseConfig
     {
-        public bool Enable { get; private set; }
+        public bool Enable { get; set; }
 
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
-        public string Cron { get; private set; }
+        public string Cron { get; set; }
 
-        public List<long> Groups { get; private set; }
+        public List<long> Groups { get; set; } = new();
 
-        public bool AtAll { get; private set; }
+        public bool AtAll { get; set; }
 
-        public List<long> AtMembers { get; private set; }
+        public List<long> AtMembers { get; set; } = new();
 
-        public List<RemindTemplate> Templates { get; private set; }
+        public List<RemindTemplate> Templates { get; set; } = new();
+
+        [YamlIgnore]
+        public List<long> PushGroups => Groups?.ToSendableGroups() ?? new();
+
+        public override BaseConfig FormatConfig()
+        {
+            if (Groups is null) Groups = new();
+            if (AtMembers is null) AtMembers = new();
+            if (Templates is null) Templates = new();
+            foreach (var item in Templates) item?.FormatConfig();
+            return this;
+        }
     }
 
-    public class RemindTemplate
+    public record RemindTemplate : BaseConfig
     {
-        public string Template { get; private set; }
+        public string Template { get; set; }
+
+        public override BaseConfig FormatConfig()
+        {
+            return this;
+        }
     }
 
 }

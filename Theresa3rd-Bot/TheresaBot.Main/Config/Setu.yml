@@ -1,0 +1,54 @@
+﻿GroupCD:                    5                                                   #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
+MemberCD:                   30                                                  #独立CD(秒)，单个群员使用命令后需要等待的CD
+DisableTagsMsg:             '禁止查找这个类型的涩图'                            #标签被禁用时返回的消息
+NotFoundMsg:                '色图探测器毫无反应，找不到你要的色图'              #找不到相应色图时返回的消息
+ProcessingMsg:              '正在使用色图探测器探测你要的色图...'               #开始查找前返回的消息，值为空时不发送
+MaxDaily:                   20                                                  #每人每日最大使用次数，0表示无限制
+RevokeInterval:             0                                                   #N秒后撤回,0表示不撤回
+SendPrivate:                true                                                #同时私聊发送
+
+Pixiv:                                                                          #Pixiv图床https://www.pixiv.net
+    Enable:                 true                                                #是否启用
+    Commands:               ['涩图','pixiv']                                    #命令
+    RandomMode:             1                                                   #没有指定标签时获取图片的模式，1：随机一个RandomTags中标签进行搜索，2：随机获取一个已订阅画师的作品，3：随机获取一个关注中画师的作品，4：随机获取一个收藏中的作品
+    RandomTags:             ['德丽莎','テレサ・アポカリプス']                    #RandomMode=1时查找的标签
+    Template:               '本条数据来源于Pixiv，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回'
+    MaxScan:                60                                                  #根据标签搜索时,最多筛选N个作品,N个作品中不存在合格的涩图时,将返回NotFoundMsg
+    MinBookmark:            800                                                 #最低收藏数，用于判断涩图是否合格(标签搜索时适用)
+    MinBookRate:            0.08                                                #最低收藏率，收藏数/浏览数(标签搜索时适用)
+
+Lolicon:                                                                        #Lolicon图床 https://api.lolicon.app
+    Enable:                 true                                                #是否启用
+    Commands:               ['瑟图','lolicon']                                  #命令
+    Template:               |                                                   #消息模版，值为空时将使用默认模版
+                            本条数据来源于Lolicon Api，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回
+                            PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}
+                            标签：{Tags}，点击下方链接可以查看原图
+                            {Urls}
+    
+Lolisuki:                                                                       #Lolisuki图床 https://lolisuki.cn
+    Enable:                 true                                                #是否启用
+    Commands:               ['setu','lolisuki']                                 #命令
+    Level:                  '0-6'                                               #Level范围，数字越大表示越涩，最小为0，最大为6，5-6为R18
+    Template:               |                                                   #消息模版，值为空时将使用默认模版
+                            本条数据来源于Lolisuki Api，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回
+                            PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，Level：{Level}，分类：{Taste}
+                            标签：{Tags}，点击下方链接可以查看原图
+                            {Urls}
+
+Local:                                                                          #本地涩图
+    Enable:                 true                                                #是否启用
+    Commands:               ['本地涩图','群主珍藏']                             #命令
+    LocalPath:              'BotImg/localSetu'                                  #图片文件夹路径，该路径下需要包含存有涩图的子文件夹
+    Template:               |                                                   #消息模版，值为空时将使用默认模版
+                            本条数据来源于本地图库，{MemberCD}秒后再来哦，今天剩余使用次数{TodayLeft}次，本消息将在{RevokeInterval}秒后撤回
+                            文件名：{FileName}，大小：{SizeMB}MB
+
+PixivUser:                                                                      #画师作品一览
+    Enable:                 true                                                #是否启用
+    Commands:               ['画师']                                            #命令
+    ProcessingMsg:          '正在获取画师作品信息，需要亿点时间...'             #开始执行前返回的消息
+    Template:               '画师[{UserName}]作品合集，数据缓存{CacheSeconds}秒'
+    MaxScan:                120                                                 #最多扫描前N个作品
+    PreviewInPage:          30                                                  #合成一览图中，每张一览图最多显示多少个作品
+    CacheSeconds:           3600                                                #每个画师缓存时间

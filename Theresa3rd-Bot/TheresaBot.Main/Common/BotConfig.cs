@@ -1,11 +1,17 @@
 ﻿using TheresaBot.Main.Model.Config;
+using TheresaBot.Main.Model.Infos;
 
 namespace TheresaBot.Main.Common
 {
     public static class BotConfig
     {
-        public const string BotVersion = "0.10.3";
+        public static long BotQQ = 0;
+        public static string BotName = "Bot";
+        public const string BotVersion = "0.11.0";
         public const string BotHomepage = "https://www.theresa3rd.cn";
+        public static List<string> ServerAddress = new();
+        public static List<GroupInfos> GroupInfos = new();
+        public static BackstageConfig BackstageConfig = new BackstageConfig();
         public static GeneralConfig GeneralConfig = new GeneralConfig();
         public static PixivConfig PixivConfig = new PixivConfig();
         public static PermissionsConfig PermissionsConfig = new PermissionsConfig();
@@ -20,5 +26,11 @@ namespace TheresaBot.Main.Common
         public static TimingSetuConfig TimingSetuConfig = new TimingSetuConfig();
         public static PixivRankingConfig PixivRankingConfig = new PixivRankingConfig();
         public static WordCloudConfig WordCloudConfig = new WordCloudConfig();
+        public static GameConfig GameConfig = new GameConfig();
+
+        public static string DefaultPrefix => GeneralConfig.DefaultPrefix;
+        public static List<long> ErrorPushGroups => GeneralConfig.ErrorGroups ?? new();
+        public static List<long> SuperManagers => PermissionsConfig.SuperManagers ?? new();
+
     }
 }

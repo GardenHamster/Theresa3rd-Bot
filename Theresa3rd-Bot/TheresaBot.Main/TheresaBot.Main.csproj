@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
+		<NoWarn>$(NoWarn);NETSDK1206</NoWarn>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<BaseOutputPath></BaseOutputPath>
 		<Nullable>disable</Nullable>
@@ -15,9 +16,20 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Result\**" />
+	  <EmbeddedResource Remove="Result\**" />
+	  <None Remove="Result\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Controller\GroupController.cs~RF5d29ffda.TMP" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AngleSharp" Version="0.17.1" />
 		<PackageReference Include="jieba.NET" Version="0.42.2" />
 		<PackageReference Include="log4net" Version="2.0.15" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.22" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Quartz" Version="3.5.0" />
@@ -27,83 +39,33 @@
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
 		<PackageReference Include="SqlSugar.IOC" Version="2.0.0" />
 		<PackageReference Include="SqlSugarCore" Version="5.1.4.89" />
-		<PackageReference Include="WordCloud.NetCore" Version="1.0.0" />
+		<PackageReference Include="WordCloud.NetCore" Version="1.1.0" />
 		<PackageReference Include="YamlDotNet" Version="13.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="BotImg\face\emmm.jpg">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="BotImg\face\error.jpg">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="BotImg\face\shenyuanjiesuan.png">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="BotImg\face\welcome.gif">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="BotImg\localSetu\德丽莎\71421964_p1.jpg">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="BotImg\mask\mask01.png">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="BotImg\mask\mask02.png">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="BotImg\mask\mask03.png">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="BotImg\mask\mask04.png">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="botsettings.yml">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	    <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-	  </None>
-	  <None Update="Font\hywenhei85w.ttf">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Font\simsun.ttc">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="log4net.config">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-	    <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-	  </None>
-	  <None Update="Resources\char_state_tab.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\cn_synonym.txt">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\dict.txt">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\idf.txt">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\pos_prob_emit.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\pos_prob_start.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\pos_prob_trans.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\prob_emit.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\prob_trans.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\stopwords.txt">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
+		<None Update="BotImg\**\*.*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+		</None>
+		<None Update="Config\**\*.*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+		</None>
+		<None Update="Font\**\*.*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+		</None>
+		<None Update="Resources\**\*.*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+		</None>
+		<None Update="log4net.config">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+		</None>
 	</ItemGroup>
+
 
 </Project>

@@ -9,6 +9,7 @@ using Mirai.CSharp.Models;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
+using TheresaBot.Main.Model.Infos;
 using TheresaBot.MiraiHttpApi.Common;
 using TheresaBot.MiraiHttpApi.Event;
 
@@ -31,6 +32,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
                                                                .Services
                                                                .AddDefaultMiraiHttpFramework()
                                                                .AddInvoker<MiraiHttpMessageHandlerInvoker>()
+                                                               .AddHandler<FriendApplyEvent>()
                                                                .AddHandler<FriendMessageEvent>()
                                                                .AddHandler<GroupMessageEvent>()
                                                                .AddHandler<GroupMemberJoinedEvent>()
@@ -49,7 +51,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
                 Scope = Services.CreateAsyncScope();
                 Services = Scope.ServiceProvider;
                 Session = Services.GetRequiredService<IMiraiHttpSession>();
-                await Session.ConnectAsync(MiraiConfig.BotQQ);
+                await Session.ConnectAsync(BotConfig.BotQQ);
                 LogHelper.Info("已成功连接到mirai-console...");
             }
             catch (Exception ex)
@@ -68,7 +70,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
             MiraiConfig.Host = configuration["Mirai:host"];
             MiraiConfig.Port = Convert.ToInt32(configuration["Mirai:port"]);
             MiraiConfig.AuthKey = configuration["Mirai:authKey"];
-            MiraiConfig.BotQQ = Convert.ToInt64(configuration["Mirai:botQQ"]);
+            BotConfig.BotQQ = Convert.ToInt64(configuration["Mirai:botQQ"]);
         }
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace TheresaBot.MiraiHttpApi.Helper
             {
                 IBotProfile profile = await Session.GetBotProfileAsync();
                 if (profile is null) throw new Exception("Bot名片获取失败");
-                MiraiConfig.BotName = profile?.Nickname ?? "Bot";
+                BotConfig.BotName = profile?.Nickname ?? "Bot";
                 LogHelper.Info($"Bot名片获取完毕，QQNumber={Session.QQNumber}，Nickname={profile?.Nickname ?? ""}");
             }
             catch (Exception ex)
@@ -90,12 +92,41 @@ namespace TheresaBot.MiraiHttpApi.Helper
             }
         }
 
+        /// <summary>
+        /// 获取群列表
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<GroupInfos[]> LoadGroupInfosAsync()
+        {
+            try
+            {
+                var groupResult = await Session.GetGroupListAsync();
+                if (groupResult is null) throw new Exception("群列表获取失败");
+                var groupInfos = groupResult.Select(o => new GroupInfos(o.Id, o.Name)).ToArray();
+                BotConfig.GroupInfos = groupInfos.ToList();
+                var availableIds = groupInfos.Select(o => o.GroupId).ToList();
+                var acceptIds = BotConfig.PermissionsConfig.AcceptGroups;
+                var groupCount = BotConfig.GroupInfos.Count;
+                int acceptCount = acceptIds.Where(o => availableIds.Contains(o)).Count();
+                var availablCount = acceptIds.Contains(0) ? groupCount : acceptCount;
+                LogHelper.Info($"群列表加载完毕，共获取群号 {groupCount} 个，其中已启用群号 {availablCount} 个");
+                return groupInfos;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "群列表获取失败");
+                return null;
+            }
+        }
+
         public static async Task SendStartUpMessageAsync()
         {
             await Task.Delay(3000);
+            LogHelper.Console("正在发送启动消息...");
             IChatMessage welcomeMessage = new PlainMessage(BusinessHelper.GetStartUpMessage());
-            foreach (var memberId in BotConfig.PermissionsConfig.SuperManagers)
+            foreach (var memberId in BotConfig.SuperManagers)
             {
+                if (memberId <= 0) continue;
                 await Session.SendFriendMessageAsync(memberId, welcomeMessage);
                 await Task.Delay(1000);
             }

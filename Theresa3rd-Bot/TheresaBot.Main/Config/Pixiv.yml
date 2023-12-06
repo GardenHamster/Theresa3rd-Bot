@@ -1,0 +1,24 @@
+FreeProxy:                  false                                               #开启pixiv免代理模式，启用后将使用{ImgProxy}下载图片
+HttpProxy:                  ''                                                  #pixiv代理地址，值为空表示直连，FreeProxy启用后失效，格式：http://127.0.0.1:7890
+ImgProxy:                   ''                                                  #图片代理地址，值为空表示不使用代理，FreeProxy启用后使用该值下载图片，默认：https://i.pixiv.re
+ImgShowMaximum:             1                                                   #同一个作品最多显示N张图片，0表示无限制
+TagShowMaximum:             5                                                   #同一个作品最多显示N个标签，0表示无限制
+UrlShowMaximum:             3                                                   #同一个作品最多显示N条原图链接，0表示无限制
+ImgSize:                    'thumb'                                             #发送色图的尺寸：thumb，small，regular，original。默认为thumb
+ImgResend:                  1                                                   #涩图发送失败后：0:不重发，1:不带图片重发，2:旋转180°后重发，3:模糊处理后重发
+R18ImgBlur:                 10                                                  #R18图片高斯模糊处理程度，范围：5~100
+OriginUrlProxy:             ''                                                  #pixiv原图链接的代理地址，格式：https://i.pximg.net
+SendImgBehind:              false                                               #将涩图信息和图片分开发送，先发送作品信息，后发送图片，可以开启此项避免消息被吞
+ImgRetryTimes:              2                                                   #图片下载失败后重试次数，0表示不重试
+ErrRetryTimes:              2                                                   #读取作品失败后的重试次数，0表示不重试
+CookieExpire:               5184000                                             #cookie失效时间(秒)，超过该时间后需要使用命令更新cookie，建议cookie每60天更新一次
+CookieExpireMsg:            'emmmm,cookie过期了,请艾特管理员更新cookie'           #cookie过期时返回的消息
+Template:                   |                                                   #pixiv模版，值为空时将使用默认模版
+                            PixivId：{PixivId}，标题：{IllustTitle}，画师：{UserName}，画师id：{UserId}，
+                            收藏：{BookmarkCount}，赞：{LikeCount}，浏览：{ViewCount}，
+                            标签图片：{RelevantCount}张，作品图片:{PageCount}张
+                            标签：{Tags}，点击下方链接可以查看原图
+                            {Urls}
+GeneralTarget:              1.0                                                 #普通作品指标，比如：一张合格的涩图的最低收藏率需要达到(MinBookmark*GeneralTarget)，MinBookPerHour和MinBookRate同理
+AITarget:                   0.5                                                 #AI作品指标(同上)
+R18Target:                  1.2                                                 #R18作品指标(同上)

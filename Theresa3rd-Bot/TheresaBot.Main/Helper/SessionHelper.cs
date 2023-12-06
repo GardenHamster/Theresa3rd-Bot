@@ -1,11 +1,22 @@
 ﻿using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Result;
+using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Helper
 {
     public static class SessionHelper
     {
+        public static async Task<BaseResult> SendGroupMessageWithAtAsync(this BaseSession session, long groupId, List<long> atMembers, string message)
+        {
+            List<BaseContent> contents = new List<BaseContent> { new PlainContent(message) };
+            return await session.SendGroupMessageAsync(groupId, contents, atMembers);
+        }
+
+        public static async Task<BaseResult> SendGroupMessageWithAtAsync(this BaseSession session, long groupId, List<long> atMembers, List<BaseContent> contents)
+        {
+            return await session.SendGroupMessageAsync(groupId, contents, atMembers);
+        }
+
         public static async Task<BaseResult[]> SendGroupSetuAsync(this BaseSession session, long groupId, SetuContent setuContent, bool sendImgBehind)
         {
             List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
@@ -33,6 +44,15 @@ namespace TheresaBot.Main.Helper
             return await session.SendGroupMergeAsync(groupId, sendContents);
         }
 
+        public static async Task<BaseResult> SendGroupTemplateAsync(this BaseSession session, long groupId, string template, string defaultmsg = "")
+        {
+            template = template?.Trim()?.TrimLine();
+            if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
+            if (string.IsNullOrWhiteSpace(template)) return BaseResult.Undo;
+            if (template.StartsWith(" ") == false) template = " " + template;
+            return await session.SendGroupMessageAsync(groupId, template.SplitToChainAsync());
+        }
+
         public static async Task ReplyGroupErrorAsync(this BaseSession session, Exception exception, long groupId)
         {
             try
@@ -43,6 +63,22 @@ namespace TheresaBot.Main.Helper
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "ReplyGroupErrorAsync异常");
+            }
+        }
+
+        public static async Task SendFriendMessageAsync(this BaseSession session, List<long> memberIds, string message)
+        {
+            foreach (var memberId in memberIds)
+            {
+                try
+                {
+                    await Task.Delay(1000);
+                    await session.SendFriendMessageAsync(memberId, message);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error(ex, "SendFriendMessageAsync异常");
+                }
             }
         }
 
@@ -58,6 +94,24 @@ namespace TheresaBot.Main.Helper
                 LogHelper.Error(ex, "ReplyFriendErrorAsync异常");
             }
         }
+
+        public static async Task MuteGroupMemberAsync(this BaseSession session, long groupId, List<long> memberIds, int seconds)
+        {
+            try
+            {
+                foreach (var memberId in memberIds)
+                {
+                    await session.MuteGroupMemberAsync(groupId, memberId, seconds);
+                    await Task.Delay(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "ReplyFriendErrorAsync异常");
+            }
+        }
+
+
 
 
 

@@ -483,6 +483,55 @@ namespace TheresaBot.Main.Invoker
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
+            //加入游戏
+            new(BotConfig.GameConfig?.JoinCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                GameHandler handler = new GameHandler(session, reporter);
+                if (await handler.CheckGameEnableAsync(botCommand) == false) return false;
+                await handler.JoinGame(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //强制开始游戏
+            new(BotConfig.GameConfig?.StartCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                GameHandler handler = new GameHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.ForceStart(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //强制结束游戏
+            new(BotConfig.GameConfig?.StopCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                GameHandler handler = new GameHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.ForceStop(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //创建游戏谁是卧底
+            new(BotConfig.GameConfig?.Undercover?.CreateCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                var gameConfig = BotConfig.GameConfig?.Undercover;
+                UndercoverHandler handler = new UndercoverHandler(session, reporter);
+                if (await handler.CheckGameEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGameEnableAsync(botCommand, gameConfig) == false) return false;
+                if (await handler.CheckUCWordEnableAsync(botCommand) == false) return false;
+                if (await handler.CheckGamingAsync(botCommand) == false) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.CreateUndercover(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //谁是卧底重新获取词条
+            new(BotConfig.GameConfig?.Undercover?.SendWordCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                UndercoverHandler handler = new UndercoverHandler(session, reporter);
+                await handler.SendPrivateWords(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
             //version
             new(new List<string>() { "版本", "version" }, CommandType.Version, new(async (botCommand, session, reporter) =>
             {
@@ -516,7 +565,15 @@ namespace TheresaBot.Main.Invoker
                 await handler.UpdateSaucenaoCookieAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
-            }))
+            })),
+            //添加谁是卧底词条
+            new(BotConfig.GameConfig?.Undercover?.AddWordCommands, CommandType.Game, new(async (botCommand, session, reporter) =>
+            {
+                UndercoverHandler handler = new UndercoverHandler(session, reporter);
+                await handler.CreateWords(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
         };
 
         public readonly static List<CommandHandler<GroupQuoteCommand>> GroupQuoteCommands = new()

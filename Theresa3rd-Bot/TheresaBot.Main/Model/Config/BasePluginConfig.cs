@@ -1,7 +1,10 @@
-﻿namespace TheresaBot.Main.Model.Config
+﻿using YamlDotNet.Serialization;
+
+namespace TheresaBot.Main.Model.Config
 {
-    public abstract class BasePluginConfig : BaseConfig
+    public abstract record BasePluginConfig : BaseConfig
     {
-        public bool Enable { get; protected set; }
+        [YamlMember(Order = -100)]
+        public bool Enable { get; set; }
     }
 }

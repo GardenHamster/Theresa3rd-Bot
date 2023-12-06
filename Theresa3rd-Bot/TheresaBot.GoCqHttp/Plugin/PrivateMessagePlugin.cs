@@ -2,7 +2,8 @@
 using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
 using TheresaBot.GoCqHttp.Command;
-using TheresaBot.GoCqHttp.Common;
+using TheresaBot.GoCqHttp.Relay;
+using TheresaBot.Main.Cache;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
 
@@ -13,18 +14,19 @@ namespace TheresaBot.GoCqHttp.Plugin
 
         public override async void OnPrivateMessageReceived(CqPrivateMessagePostContext args)
         {
-            Task task = HandlemessageAsync(args);
+            Task task = HandleMessageAsync(args);
             await Task.CompletedTask;
         }
 
-        public async Task HandlemessageAsync(CqPrivateMessagePostContext args)
+        public async Task HandleMessageAsync(CqPrivateMessagePostContext args)
         {
             try
             {
                 long msgId = args.MessageId;
                 long memberId = args.Sender.UserId;
+                if (memberId == BotConfig.BotQQ) return;
+                if (memberId.IsBanMember()) return; //黑名单成员
                 if (args.Session is not ICqActionSession session) return;
-                if (memberId == CQConfig.BotQQ) return;
 
                 List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
                 if (plainList is null || plainList.Count == 0) return;
@@ -36,19 +38,22 @@ namespace TheresaBot.GoCqHttp.Plugin
 
                 string prefix = prefix = instruction.MatchPrefix();
                 bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
+                var relay = new CQFriendRelay(args, msgId, message, memberId, isInstruct);
+
                 if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
+                if (ProcessCache.HandleStep(relay)) return; //分步处理
 
                 CQFriendCommand botCommand = GetFriendCommand(args, instruction, prefix);
                 if (botCommand is not null)
                 {
-                    await botCommand.InvokeAsync(baseSession, baseReporter);
+                    await botCommand.InvokeAsync(BaseSession, baseReporter);
                     return;
                 }
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "私聊指令异常");
-                await baseSession.ReplyFriendErrorAsync(ex, args.Sender.UserId);
+                await BaseSession.ReplyFriendErrorAsync(ex, args.Sender.UserId);
                 await Task.Delay(1000);
                 await baseReporter.SendError(ex, "私聊指令异常");
             }

@@ -2,19 +2,26 @@
 
 namespace TheresaBot.Main.Model.Config
 {
-    public class PixivUserSubscribeConfig : BaseSubscribeConfig
+    public record PixivUserSubscribeConfig : BaseSubscribeConfig
     {
-        public PixivScanType ScanMode { get; private set; } = PixivScanType.Default;
+        public PixivUserScanType ScanMode { get; set; } = PixivUserScanType.Default;
 
-        public List<string> SyncCommands { get; private set; }
+        public List<string> SyncCommands { get; set; } = new();
 
-        public int ShelfLife { get; private set; } = 12 * 60 * 60;
+        public int ShelfLife { get; set; } = 12 * 60 * 60;
 
         public bool SendMerge { get; set; } = false;
 
         public PixivUserSubscribeConfig()
         {
             this.ScanInterval = 60 * 60;
+        }
+
+        public override BasePluginConfig FormatConfig()
+        {
+            base.FormatConfig();
+            if (SyncCommands is null) SyncCommands = new();
+            return this;
         }
 
     }

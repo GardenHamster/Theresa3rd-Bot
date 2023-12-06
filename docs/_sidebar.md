@@ -7,6 +7,7 @@
 * [管理指令](manage.md)
 * [cookie指令](cookie.md)
 * [其他指令](other.md)
+* [谁是卧底](undercover.md)
 * [安装Mysql](mysqlInstall.md)
 * [安装Mirai](miraiInstall.md)
 * [常见问题](problem.md)

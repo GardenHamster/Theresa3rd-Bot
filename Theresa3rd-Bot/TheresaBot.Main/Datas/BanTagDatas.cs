@@ -1,20 +1,19 @@
 ﻿using System.Text.RegularExpressions;
-using TheresaBot.Main.Business;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
+using TheresaBot.Main.Services;
 
 namespace TheresaBot.Main.Datas
 {
     internal static class BanTagDatas
     {
-        private static List<BanTagPO> BanTagList = new List<BanTagPO>();
+        public static List<BanTagPO> BanTagList = new List<BanTagPO>();
 
         public static void LoadDatas()
         {
             try
             {
-                BanTagList = new BanTagBusiness().GetBanTags();
-                LogHelper.Info("加载屏蔽标签列表完毕...");
+                BanTagList = new BanTagService().GetBanTags();
             }
             catch (Exception ex)
             {
@@ -59,15 +58,15 @@ namespace TheresaBot.Main.Datas
             }
             if (banTag.IsRegular)
             {
-                return Regex.Match(tag, banTag.KeyWord).Success;
+                return Regex.Match(tag, banTag.Keyword).Success;
             }
             if (banTag.FullMatch)
             {
-                return tag.EqualsIgnoreCase(banTag.KeyWord);
+                return tag.EqualsIgnoreCase(banTag.Keyword);
             }
             else
             {
-                return tag.ContainsIgnoreCase(banTag.KeyWord);
+                return tag.ContainsIgnoreCase(banTag.Keyword);
             }
         }
 

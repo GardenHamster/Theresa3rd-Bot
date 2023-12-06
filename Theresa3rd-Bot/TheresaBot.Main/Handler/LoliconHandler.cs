@@ -1,5 +1,4 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Cache;
+﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
@@ -8,17 +7,18 @@ using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Lolicon;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
 {
     internal class LoliconHandler : SetuHandler
     {
-        private LoliconBusiness loliconBusiness;
+        private LoliconService loliconService;
 
         public LoliconHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            loliconBusiness = new LoliconBusiness();
+            loliconService = new LoliconService();
         }
 
         public async Task LoliconSearchAsync(GroupCommand command)
@@ -28,7 +28,7 @@ namespace TheresaBot.Main.Handler
                 List<LoliconDataV2> dataList;
                 string tagStr = command.KeyWord;
                 bool isShowAI = command.GroupId.IsShowAISetu();
-                bool isShowR18 = command.GroupId.IsShowR18Setu();
+                bool isShowR18 = command.GroupId.IsShowR18();
                 int r18Mode = isShowR18 ? 2 : 0;
                 bool excludeAI = isShowAI == false;
 
@@ -38,13 +38,13 @@ namespace TheresaBot.Main.Handler
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1);
+                    dataList = await loliconService.getLoliconDataListAsync(r18Mode, excludeAI, 1);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
 
-                    dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
+                    dataList = await loliconService.getLoliconDataListAsync(r18Mode, excludeAI, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 
                 if (dataList.Count == 0)
@@ -61,12 +61,12 @@ namespace TheresaBot.Main.Handler
 
                 string template = BotConfig.SetuConfig.Lolicon.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.Add(new PlainContent(loliconBusiness.getWorkInfo(loliconData, todayLeftCount, template)));
+                workMsgs.Add(new PlainContent(loliconService.getWorkInfo(loliconData, todayLeftCount, template)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, loliconData);
                 var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
-                var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
+                var recordTask = recordService.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
@@ -91,12 +91,12 @@ namespace TheresaBot.Main.Handler
             {
                 int margeEachPage = 5;
                 bool sendMerge = timingSetuTimer.SendMerge;
-                int r18Mode = groupId.IsShowR18Setu() ? 2 : 0;
+                int r18Mode = groupId.IsShowR18() ? 2 : 0;
                 bool excludeAI = groupId.IsShowAISetu() == false;
                 string tagStr = RandomHelper.RandomItem(timingSetuTimer.Tags);
                 string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : ToLoliconTagArr(tagStr);
                 int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
-                List<LoliconDataV2> dataList = await loliconBusiness.getLoliconDataListAsync(r18Mode, excludeAI, quantity, tagArr);
+                List<LoliconDataV2> dataList = await loliconService.getLoliconDataListAsync(r18Mode, excludeAI, quantity, tagArr);
                 List<SetuContent> setuContents = await GetSetuContent(dataList, groupId);
                 await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
                 await Task.Delay(2000);
@@ -118,7 +118,7 @@ namespace TheresaBot.Main.Handler
 
         private async Task<SetuContent> GetSetuContent(LoliconDataV2 data, long groupId)
         {
-            string setuInfo = loliconBusiness.getDefaultWorkInfo(data);
+            string setuInfo = loliconService.getDefaultWorkInfo(data);
             List<FileInfo> setuFiles = await GetSetuFilesAsync(data, groupId);
             return new SetuContent(setuInfo, setuFiles);
         }

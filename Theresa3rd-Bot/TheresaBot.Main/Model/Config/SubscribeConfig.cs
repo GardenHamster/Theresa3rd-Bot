@@ -1,21 +1,20 @@
 ﻿namespace TheresaBot.Main.Model.Config
 {
-    public class SubscribeConfig : BaseConfig
+    public record SubscribeConfig : BaseConfig
     {
-        public PixivUserSubscribeConfig PixivUser { get; private set; }
+        public PixivUserSubscribeConfig PixivUser { get; set; }
 
-        public PixivTagSubscribeConfig PixivTag { get; private set; }
+        public PixivTagSubscribeConfig PixivTag { get; set; }
 
-        public MysUserSubscribeConfig Miyoushe { get; private set; }
+        public MysUserSubscribeConfig Miyoushe { get; set; }
 
         public override SubscribeConfig FormatConfig()
         {
-            PixivUser.FormatConfig();
-            PixivTag.FormatConfig();
-            Miyoushe.FormatConfig();
+            if (PixivUser is not null) PixivUser.FormatConfig();
+            if (PixivTag is not null) PixivTag.FormatConfig();
+            if (Miyoushe is not null) Miyoushe.FormatConfig();
             return this;
         }
 
     }
-
 }

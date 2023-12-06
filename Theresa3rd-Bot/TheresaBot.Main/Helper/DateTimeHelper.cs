@@ -5,11 +5,6 @@ namespace TheresaBot.Main.Helper
     public static class DateTimeHelper
     {
         /// <summary>
-        /// 时间戳计时开始时间
-        /// </summary>
-        private static readonly DateTime TimeStampStartTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        /// <summary>
         /// yyyy-MM-dd HH:mm:ss
         /// </summary>
         private static readonly DateTimeFormatInfo SimpleDateTimeFormat = new DateTimeFormatInfo()
@@ -182,7 +177,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="timeStart"></param>
         /// <param name="timeEnd"></param>
         /// <returns></returns>
-        public static int GetSecondDiff(DateTime timeStart, DateTime timeEnd)
+        public static int SecondDiff(this DateTime timeEnd, DateTime timeStart)
         {
             TimeSpan timeSpanStart = new TimeSpan(timeStart.Ticks);
             TimeSpan timeSpanEnd = new TimeSpan(timeEnd.Ticks);
@@ -228,54 +223,25 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// DateTime转换为10位时间戳（单位：秒）
+        /// DateTime转换为Unix时间戳(秒)
         /// </summary>
-        /// <param name="dateTime"> DateTime</param>
-        /// <returns>10位时间戳（单位：秒）</returns>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
         public static long ToTimeStamp(this DateTime dateTime)
         {
-            return (long)(dateTime.ToUniversalTime() - TimeStampStartTime).TotalSeconds;
+            DateTime startTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            return (long)(dateTime.ToUniversalTime() - startTime).TotalSeconds;
         }
 
         /// <summary>
-        /// DateTime转换为13位时间戳（单位：毫秒）
+        /// Unix时间戳(秒)转DateTime
         /// </summary>
-        /// <param name="dateTime"> DateTime</param>
-        /// <returns>13位时间戳（单位：毫秒）</returns>
-        public static long ToLongTimeStamp(this DateTime dateTime)
-        {
-            return (long)(dateTime.ToUniversalTime() - TimeStampStartTime).TotalMilliseconds;
-        }
-
-        /// <summary>
-        /// 10位时间戳（单位：秒）转换为DateTime
-        /// </summary>
-        /// <param name="timeStamp">10位时间戳（单位：秒）</param>
-        /// <returns>DateTime</returns>
-        public static DateTime TimeStampToDateTime(long timeStamp)
-        {
-            return TimeStampStartTime.AddSeconds(timeStamp).ToLocalTime();
-        }
-
-        /// <summary>
-        /// 13位时间戳（单位：毫秒）转换为DateTime
-        /// </summary>
-        /// <param name="longTimeStamp">13位时间戳（单位：毫秒）</param>
-        /// <returns>DateTime</returns>
-        public static DateTime LongTimeStampToDateTime(long longTimeStamp)
-        {
-            return TimeStampStartTime.AddMilliseconds(longTimeStamp).ToLocalTime();
-        }
-
-        /// <summary>
-        /// Unix时间戳转DateTime
-        /// </summary>
-        /// <param name="unixTimeStamp"></param>
+        /// <param name="timeStamp"></param>
         /// <returns></returns>
-        public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        public static DateTime ToDateTime(this long timeStamp)
         {
             DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            dateTime = dateTime.AddSeconds(timeStamp).ToLocalTime();
             return dateTime;
         }
 

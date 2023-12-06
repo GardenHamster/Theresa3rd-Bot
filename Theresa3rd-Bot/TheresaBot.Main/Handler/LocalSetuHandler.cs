@@ -1,5 +1,4 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Cache;
+﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
@@ -7,17 +6,18 @@ using TheresaBot.Main.Model.Config;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.LocalSetu;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Handler
 {
     internal class LocalSetuHandler : SetuHandler
     {
-        private LocalSetuBusiness localSetuBusiness;
+        private LocalSetuService localSetuService;
 
         public LocalSetuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            localSetuBusiness = new LocalSetuBusiness();
+            localSetuService = new LocalSetuService();
         }
 
         public async Task LocalSearchAsync(GroupCommand command)
@@ -34,12 +34,12 @@ namespace TheresaBot.Main.Handler
                 if (Directory.Exists(localPath) == false) throw new Exception($"本地涩图路径：{localPath}不存在");
                 if (string.IsNullOrEmpty(tagName))
                 {
-                    dataList = localSetuBusiness.loadRandomDir(localPath, 1, true);
+                    dataList = localSetuService.loadRandomDir(localPath, 1, true);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    dataList = localSetuBusiness.loadTargetDir(localPath, tagName, 1);
+                    dataList = localSetuService.loadTargetDir(localPath, tagName, 1);
                 }
 
                 if (dataList.Count == 0)
@@ -53,13 +53,13 @@ namespace TheresaBot.Main.Handler
 
                 LocalSetuInfo setuInfo = dataList.First();
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.Add(new PlainContent(localSetuBusiness.getSetuInfo(setuInfo, todayLeftCount, template)));
+                workMsgs.Add(new PlainContent(localSetuService.getSetuInfo(setuInfo, todayLeftCount, template)));
                 List<FileInfo> setuFiles = new() { setuInfo.FileInfo };
 
                 SetuContent setuContent = new SetuContent(workMsgs, setuFiles);
                 var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
-                var recordTask = recordBusiness.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
+                var recordTask = recordService.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
@@ -85,7 +85,7 @@ namespace TheresaBot.Main.Handler
             string localPath = BotConfig.TimingSetuConfig.LocalPath;
             if (string.IsNullOrWhiteSpace(localPath)) throw new Exception($"未配置LocalPath");
             if (Directory.Exists(localPath) == false) throw new Exception($"本地涩图路径：{localPath}不存在");
-            List<LocalSetuInfo> dataList = localSetuBusiness.loadRandomDir(localPath, timingSetuTimer.Quantity, fromOneDir);
+            List<LocalSetuInfo> dataList = localSetuService.loadRandomDir(localPath, timingSetuTimer.Quantity, fromOneDir);
             if (dataList is null || dataList.Count == 0) throw new Exception("未能在LocalPath中读取任何涩图");
             string tags = fromOneDir ? dataList[0].DirInfo.Name : "";
             List<SetuContent> setuContents = GetSetuContent(dataList);
@@ -103,7 +103,7 @@ namespace TheresaBot.Main.Handler
 
         private SetuContent GetSetuContent(LocalSetuInfo data)
         {
-            string setuInfo = localSetuBusiness.getDefaultSetuInfo(data);
+            string setuInfo = localSetuService.getDefaultSetuInfo(data);
             List<FileInfo> setuFiles = new List<FileInfo>() { data.FileInfo };
             return new SetuContent(setuInfo, setuFiles);
         }

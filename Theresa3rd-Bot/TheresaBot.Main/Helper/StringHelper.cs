@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using TheresaBot.Main.Common;
 
 namespace TheresaBot.Main.Helper
 {
@@ -47,6 +48,15 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 获取8长度的UUID
+        /// </summary>
+        /// <returns></returns>
+        public static string RandomUUID8()
+        {
+            return RandomUUID32().Substring(24, 8);
+        }
+
+        /// <summary>
         /// 截断字符串
         /// </summary>
         /// <param name="str"></param>
@@ -60,6 +70,21 @@ namespace TheresaBot.Main.Helper
             if (string.IsNullOrEmpty(endString)) return str.Substring(0, keepLength);
             string returnStr = str.Substring(0, keepLength - endString.Length);
             return returnStr + endString;
+        }
+
+        /// <summary>
+        /// 判断一个字符串是否与另外一个字符串相似
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="compare"></param>
+        /// <param name="similarity">0~1的小数</param>
+        /// <returns></returns>
+        public static bool IsSimilar(this string str, string compare, decimal similarity)
+        {
+            if (string.IsNullOrEmpty(str)) return false;
+            if (string.IsNullOrEmpty(compare)) return false;
+            var count = str.Where(o => compare.Contains(o)).Count();
+            return Convert.ToDecimal(count) / str.Length >= similarity;
         }
 
         /// <summary>
@@ -148,72 +173,6 @@ namespace TheresaBot.Main.Helper
             return cookieDic;
         }
 
-        //// <summary>
-        /// 拆分httpUrl,返回参数键值对
-        /// </summary>
-        /// <param name="httpUrl"></param>
-        /// <returns></returns>
-        public static Dictionary<string, string> SplitHttpParams(this string httpUrl)
-        {
-            Dictionary<string, string> paramDic = new Dictionary<string, string>();
-            if (string.IsNullOrEmpty(httpUrl)) return paramDic;
-            int questionIndex = httpUrl.IndexOf("?");
-            if (questionIndex < 0 || questionIndex == httpUrl.Length - 1) return paramDic;
-            string paramStr = httpUrl.Substring(questionIndex + 1).Trim();
-            string[] paramArr = paramStr.Split(new string[] { "&" }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string item in paramArr)
-            {
-                string[] paramKVArr = item.Trim().Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
-                if (paramKVArr.Length == 0) continue;
-                string key = paramKVArr[0].Trim();
-                string value = paramKVArr.Length > 1 ? paramKVArr[1].Trim() : "";
-                paramDic[key] = value;
-            }
-            return paramDic;
-        }
-
-        /// <summary>
-        /// 提取参数
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="commandStr"></param>
-        /// <returns></returns>
-        public static string[] SplitHttpUrl(this string value)
-        {
-            string urlStr = value.Split(new char[] { '?', '&' }, StringSplitOptions.RemoveEmptyEntries)[0];
-            return urlStr.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        /// <summary>
-        /// 格式化url
-        /// </summary>
-        /// <param name="httpUrl"></param>
-        /// <returns></returns>
-        public static string FormatHttpUrl(this string httpUrl, bool defaultHttps = true)
-        {
-            if (string.IsNullOrWhiteSpace(httpUrl)) return string.Empty;
-            httpUrl = httpUrl.Trim();
-            string lowerUrl = httpUrl.ToLower();
-            if (lowerUrl.StartsWith("//"))
-            {
-                string header = defaultHttps ? "https:" : "http:";
-                httpUrl = header + httpUrl;
-                lowerUrl = header + lowerUrl;
-            }
-            else if (!lowerUrl.StartsWith("http"))
-            {
-                string header = defaultHttps ? "https://" : "http://";
-                httpUrl = header + httpUrl;
-                lowerUrl = header + lowerUrl;
-            }
-            while (lowerUrl.EndsWith("/"))
-            {
-                httpUrl = httpUrl.Substring(0, httpUrl.Length - 1);
-                lowerUrl = lowerUrl.Substring(0, lowerUrl.Length - 1);
-            }
-            return httpUrl;
-        }
-
         /// <summary>
         /// 将键值对重新连接为cookie
         /// </summary>
@@ -253,7 +212,20 @@ namespace TheresaBot.Main.Helper
         /// <param name="strList"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        public static string JoinToString<T>(this List<T> strList, string separator = ",")
+        public static string JoinToString<T1, T2>(this Dictionary<T1, T2> dic, string connector = "：", string separator = "\r\n")
+        {
+            if (dic.Count == 0) return string.Empty;
+            var strList = dic.Select(o => $"{o.Key}{connector}{o.Value}").ToList();
+            return string.Join(separator, strList);
+        }
+
+        /// <summary>
+        /// 使用分隔符连接一个集合
+        /// </summary>
+        /// <param name="strList"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string JoinToString<T>(this List<T> strList, string separator = "，")
         {
             if (strList.Count == 0) return string.Empty;
             return string.Join(separator, strList);
@@ -265,10 +237,23 @@ namespace TheresaBot.Main.Helper
         /// <param name="strList"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        public static string JoinToString<T>(this T[] strList, string separator = ",")
+        public static string JoinToString<T>(this T[] strList, string separator = "，")
         {
             if (strList.Length == 0) return string.Empty;
             return string.Join(separator, strList);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="commands"></param>
+        /// <param name="prefix"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string JoinCommands(this List<string> commands, string prefix = "", string separator = "/")
+        {
+            if (string.IsNullOrEmpty(prefix)) prefix = BotConfig.DefaultPrefix;
+            return commands?.Select(o => $"{prefix}{o}")?.ToList()?.JoinToString(separator) ?? string.Empty;
         }
 
         /// <summary>
@@ -301,7 +286,7 @@ namespace TheresaBot.Main.Helper
         /// </summary>
         /// <param name="str">加密字符</param>
         /// <returns></returns>
-        public static string MD532bit(this string str)
+        public static string ToMD5(this string str)
         {
             MD5 md5 = MD5.Create();
             byte[] byteOld = Encoding.UTF8.GetBytes(str);

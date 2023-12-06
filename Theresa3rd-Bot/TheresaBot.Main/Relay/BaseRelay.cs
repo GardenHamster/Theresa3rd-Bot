@@ -4,14 +4,16 @@
     {
         public long MsgId { get; init; }
 
-        public string Answer { get; init; }
+        public string Message { get; init; }
 
         public long MemberId { get; init; }
 
-        public BaseRelay(long msgId, string answer, long memberId)
+        public abstract List<string> GetImageUrls();
+
+        public BaseRelay(long msgId, string message, long memberId)
         {
             this.MsgId = msgId;
-            this.Answer = answer?.Trim() ?? string.Empty;
+            this.Message = message?.Trim() ?? string.Empty;
             this.MemberId = memberId;
         }
 

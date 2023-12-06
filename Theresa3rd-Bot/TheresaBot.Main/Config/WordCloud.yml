@@ -1,0 +1,52 @@
+Enable:                     true                                                #是否启用
+GroupCD:                    300                                                 #共享CD(秒)，使用命令后全群需要CD才能重新使用该功能
+MaxWords:                   500                                                 #出现在词云中的最大词汇数量
+DefaultWidth:               1000                                                #矩形词云默认的宽度(像素)
+DefaultHeight:              1000                                                #矩形词云默认的高度(像素)
+FontPath:                   'Font/hywenhei85w.ttf'                              #绘制词云的字体文件路径
+ProcessingMsg:              '正在生成词云，需要亿点时间...'                     #开始执行前返回的消息
+BasicCommands:              ['词云']                                            #自定义范围词云命令
+DailyCommands:              ['本日词云','今日词云','今天词云','日词云']         #本日词云命令
+WeeklyCommands:             ['本周词云','周词云']                               #本周词云命令
+MonthlyCommands:            ['本月词云','月词云']                               #本月词云命令
+YearlyCommands:             ['本年词云','今年词云','年词云']                    #本年词云命令   
+YesterdayCommands:          ['昨日词云','昨天词云']                             #昨日词云命令
+LastWeekCommands:           ['上周词云']                                        #上周词云命令
+LastMonthCommands:          ['上月词云']                                        #上月词云命令
+AddWordCommands:            ['添加词汇','新增词汇']                             #添加新词命令
+HideWordCommands:           ['隐藏词汇']                                        #隐藏词汇命令
+DefaultMasks:               ['theresa']                                         #默认蒙版，对应下面Mask中配置的蒙版的Name
+
+Masks:                                                                          #蒙版配置
+    - Name:                 'theresa'                                           #蒙版名称，可随意命名，与DefaultMasks和Subscribes.Masks对应
+      Path:                 'BotImg/mask/mask01.png'                            #蒙版图片路径
+      Width:                1000                                                #生成词云的宽度(等比例缩放)
+
+    - Name:                 'fish'                                              #蒙版名称，可随意命名，与DefaultMasks和Subscribes.Masks对应
+      Path:                 'BotImg/mask/mask02.png'                            #蒙版图片路径
+      Width:                1000                                                #生成词云的宽度(等比例缩放)
+
+Subscribes:                                                                     #定时推送
+    - Enable:               true                                                #是否启用
+      Name:                 '每日词云'                                          #定时器名称(仅用于控制台显示)
+      Cron:                 '0 0 8 * * ?'                                       #cron表达式(需要自行百度cron格式)
+      Masks:                ['theresa']                                         #蒙版名称，对应上面配置的蒙版的Name
+      Groups:               [0]                                                 #推送群
+      HourRange:            24                                                  #读取触发时间至触发时间前N个小时内的聊天记录
+      Template:             '早上好，昨天的群词云如下'                          #模版消息
+                                
+    - Enable:               true                                                #是否启用
+      Name:                 '每周词云'                                          #定时器名称(仅用于控制台显示)
+      Cron:                 '0 30 22 ? * SUN'                                   #cron表达式(需要自行百度cron格式)
+      Masks:                ['theresa']                                         #蒙版名称，对应上面配置的蒙版的Name
+      Groups:               [0]                                                 #推送群
+      HourRange:            168                                                 #读取触发时间至触发时间前N个小时内的聊天记录
+      Template:             '晚安，本周的群词云如下'                            #模版消息
+                                
+    - Enable:               true                                                #是否启用
+      Name:                 '每月词云'                                          #定时器名称(仅用于控制台显示)
+      Cron:                 '0 0 12 L * ?'                                      #cron表达式(需要自行百度cron格式)
+      Masks:                ['theresa']                                         #蒙版名称，对应上面配置的蒙版的Name
+      Groups:               [0]                                                 #推送群
+      HourRange:            720                                                 #读取触发时间至触发时间前N个小时内的聊天记录
+      Template:             '中午好，本月的群词云如下'                          #模版消息

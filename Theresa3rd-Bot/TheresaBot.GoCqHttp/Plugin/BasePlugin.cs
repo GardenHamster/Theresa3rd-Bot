@@ -12,13 +12,13 @@ namespace TheresaBot.GoCqHttp.Plugin
 {
     public class BasePlugin : CqPostPlugin
     {
-        protected CQSession baseSession { get; init; }
+        protected CQSession BaseSession { get; init; }
 
         protected CQReporter baseReporter { get; init; }
 
         public BasePlugin()
         {
-            this.baseSession = new CQSession();
+            this.BaseSession = new CQSession();
             this.baseReporter = new CQReporter();
         }
 
@@ -28,7 +28,7 @@ namespace TheresaBot.GoCqHttp.Plugin
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new CQGroupCommand(baseSession, invoker, args, instruction, commandStr, prefix);
+                return new CQGroupCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }
@@ -39,7 +39,7 @@ namespace TheresaBot.GoCqHttp.Plugin
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new CQFriendCommand(baseSession, invoker, args, instruction, commandStr, prefix);
+                return new CQFriendCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }
@@ -50,7 +50,7 @@ namespace TheresaBot.GoCqHttp.Plugin
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new CQGroupQuoteCommand(baseSession, invoker, args, instruction, commandStr, prefix);
+                return new CQGroupQuoteCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }

@@ -1,7 +1,6 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
-using TheresaBot.GoCqHttp.Common;
 using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
@@ -25,12 +24,12 @@ namespace TheresaBot.GoCqHttp.Plugin
                 long memberId = args.UserId;
                 long groupId = args.GroupId;
                 if (args.Session is not ICqActionSession session) return;
-                if (!BusinessHelper.IsHandleMessage(groupId)) return;
-                if (memberId == CQConfig.BotQQ) return;
+                if (groupId.IsAuthorized() == false) return;
+                if (memberId == BotConfig.BotQQ) return;
                 WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
                 if (welcomeConfig is null || welcomeConfig.Enable == false) return;
                 string template = welcomeConfig.Template;
-                WelcomeSpecial welcomeSpecial = welcomeConfig.Special?.Where(m => m.GroupId == groupId).FirstOrDefault();
+                WelcomeSpecial welcomeSpecial = welcomeConfig.Specials?.Where(m => m.Groups.Contains(groupId)).FirstOrDefault();
                 if (welcomeSpecial != null) template = welcomeSpecial.Template;
                 if (string.IsNullOrEmpty(template)) return;
                 List<CqMsg> welcomeMsgs = new List<CqMsg>();

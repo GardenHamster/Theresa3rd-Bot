@@ -2,7 +2,7 @@
 
 namespace TheresaBot.Main.Model.Drawing
 {
-    public class PixivPreviewDrawing<T> where T : BasePixivDrawing
+    public class PixivPreviewDrawing<T> : IDisposable where T : BasePixivDrawing
     {
         public T Detail { get; set; }
         public SKBitmap OriginBitmap { get; set; }
@@ -18,6 +18,16 @@ namespace TheresaBot.Main.Model.Drawing
             Row = row;
             Column = column;
         }
+
+        public void Dispose()
+        {
+            if (OriginBitmap is not null)
+            {
+                OriginBitmap.Dispose();
+            }
+        }
+
+
 
 
 

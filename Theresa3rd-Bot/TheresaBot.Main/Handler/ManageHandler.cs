@@ -1,13 +1,11 @@
-﻿using TheresaBot.Main.Business;
-using TheresaBot.Main.Cache;
+﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
-using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Process;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Reporter;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
 
@@ -15,13 +13,13 @@ namespace TheresaBot.Main.Handler
 {
     internal class ManageHandler : BaseHandler
     {
-        private BanTagBusiness banTagBusiness;
-        private BanMemberBusiness banMemberBusiness;
+        private BanTagService banTagService;
+        private BanMemberService banMemberService;
 
         public ManageHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
-            banTagBusiness = new BanTagBusiness();
-            banMemberBusiness = new BanMemberBusiness();
+            banTagService = new BanTagService();
+            banMemberService = new BanMemberService();
         }
 
         public async Task DisableTagAsync(GroupCommand command)
@@ -37,16 +35,16 @@ namespace TheresaBot.Main.Handler
                 }
                 else
                 {
-                    ProcessInfo processInfo = ProcessCache.CreateProcess(command);
-                    StepInfo tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开", CheckTextAsync);
-                    StepInfo matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchOptions()}", CheckMatchTypeAsync);
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开", CheckTextAsync);
+                    var matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchOptions.JoinToString()}", CheckMatchTypeAsync);
                     await processInfo.StartProcessing();
-                    tagStr = tagStep.AnswerForString();
-                    matchType = matchStep.AnswerForEnum<TagMatchType>();
+                    tagStr = tagStep.Answer;
+                    matchType = matchStep.Answer;
                 }
                 var result = new ModifyResult();
                 var banTags = tagStr.SplitParams();
-                banTagBusiness.InsertOrUpdate(result, banTags, matchType);
+                banTagService.InsertOrUpdate(result, banTags, matchType);
                 BanTagDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync($"记录成功，新增记录{result.CreateCount}条，更新记录{result.UpdateCount}条");
             }
@@ -71,7 +69,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
                 var banTags = tagStr.SplitParams();
-                banTagBusiness.DelBanTags(banTags);
+                banTagService.DelBanTags(banTags);
                 BanTagDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
@@ -101,12 +99,12 @@ namespace TheresaBot.Main.Handler
                     await command.ReplyGroupMessageWithAtAsync("QQ号格式不正确");
                     return;
                 }
-                if (BotConfig.PermissionsConfig.SuperManagers.Contains(memberId))
+                if (memberId.IsSuperManager())
                 {
                     await command.ReplyGroupMessageWithAtAsync("无法拉黑超级管理员");
                     return;
                 }
-                banMemberBusiness.insertBanMembers(memberId);
+                banMemberService.insertBanMembers(memberId);
                 BanMemberDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
@@ -136,7 +134,7 @@ namespace TheresaBot.Main.Handler
                     await command.ReplyGroupMessageWithAtAsync("QQ号格式不正确");
                     return;
                 }
-                banMemberBusiness.DelBanMember(memberId);
+                banMemberService.DelBanMember(memberId);
                 BanMemberDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("解除成功");
             }

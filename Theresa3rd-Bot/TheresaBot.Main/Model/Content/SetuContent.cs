@@ -20,9 +20,21 @@
             this.SetuImages = new() { image };
         }
 
+        public SetuContent(BaseContent setuInfo)
+        {
+            this.SetuInfos = new() { setuInfo };
+            this.SetuImages = new();
+        }
+
         public SetuContent(List<BaseContent> setuInfos)
         {
             this.SetuInfos = setuInfos;
+            this.SetuImages = new();
+        }
+
+        public SetuContent(params BaseContent[] setuInfos)
+        {
+            this.SetuInfos = new(setuInfos);
             this.SetuImages = new();
         }
 

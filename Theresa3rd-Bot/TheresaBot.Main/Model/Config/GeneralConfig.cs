@@ -1,38 +1,48 @@
 ﻿using TheresaBot.Main.Helper;
+using YamlDotNet.Serialization;
 
 namespace TheresaBot.Main.Model.Config
 {
-    public class GeneralConfig : BaseConfig
+    public record GeneralConfig : BaseConfig
     {
-        public List<string> Prefixs { get; private set; }
+        public List<string> Prefixs { get; set; } = new();
 
-        public string DownloadPath { get; private set; }
+        public string TempPath { get; set; }
 
-        public string DefaultFontPath { get; private set; }
+        public string FontPath { get; set; }
 
-        public List<long> ErrorGroups { get; private set; }
+        public List<long> ErrorGroups { get; set; } = new();
 
-        public string ErrorMsg { get; private set; }
+        public string ErrorMsg { get; set; }
 
-        public string DownPathCleanCron { get; set; }
+        public string ClearCron { get; set; }
 
-        public string DownErrorImgPath { get; private set; }
+        public string ErrorImgPath { get; set; }
 
-        public string DisableMsg { get; private set; }
+        public string DisableMsg { get; set; }
 
-        public string NoPermissionsMsg { get; private set; }
+        public string NoPermissionsMsg { get; set; }
 
-        public string ManagersRequiredMsg { get; private set; }
+        public string ManagersRequiredMsg { get; set; }
 
-        public string SetuCustomDisableMsg { get; private set; }
+        public string SetuCustomDisableMsg { get; set; }
 
-        public bool SendRelevantCommands { get; private set; }
+        public bool SendRelevantCommands { get; set; }
 
-        public string DefaultPrefix => Prefixs.FirstOrDefault() ?? string.Empty;
+        public bool AcceptFriendRequest { get; set; }
+
+        [YamlIgnore]
+        public string DefaultPrefix => Prefixs?.FirstOrDefault() ?? string.Empty;
+
+        [YamlIgnore]
+        public List<long> ErrorPushGroups => ErrorGroups?.ToSendableGroups() ?? new();
 
         public override GeneralConfig FormatConfig()
         {
-            this.Prefixs = this.Prefixs?.Trim() ?? new();
+            if (Prefixs is null) Prefixs = new();
+            if (ErrorGroups is null) ErrorGroups = new();
+            if (string.IsNullOrWhiteSpace(ClearCron)) ClearCron = "0 0 4 * * ?";
+            Prefixs = Prefixs.Trim();
             return this;
         }
 

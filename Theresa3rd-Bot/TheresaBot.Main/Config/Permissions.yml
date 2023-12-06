@@ -1,0 +1,17 @@
+SuperManagers:              []										#超级管理员列表,可以使用管理指令
+LimitlessMembers:           []										#功能冷却时间和每日次数无限制的成员
+AcceptGroups:               [0]										#白名单，只处理这些群的消息
+SetuGroups:                 [0]                                     #拥有涩图权限的群
+SetuShowImgGroups:          [0]                                     #允许发送图片的群，否则只发送图片链接
+SetuShowAIGroups:           [0]                                     #允许发送AI图片的群
+SetuShowR18Groups:          []                                      #允许出现r18内容的群，图片将使用链接代替
+SetuShowR18ImgGroups:       []                                      #允许发送r18图片的群，图片经过压缩和高斯模糊后发送
+SetuCustomGroups:           [0]                                     #允许查找自定义涩图的群
+SetuNoneCDGroups:           []                                      #涩图没有CD的群
+SetuLimitlessGroups:        []                                      #涩图每日次数无限制的群
+SaucenaoGroups:             [0]                                     #拥有以图搜图权限的群
+SaucenaoR18Groups:          []                                      #以图搜图允许发送r18结果的群
+SubscribeGroups:            [0]                                     #拥有订阅权限的群
+PixivRankingGroups:         [0]                                     #拥有查询Pixiv日榜权限的群
+WordCloudGroups:            [0]                                     #拥有主动获取群词云权限的群
+GameGroups:					[0]                                     #拥有主动获取群词云权限的群

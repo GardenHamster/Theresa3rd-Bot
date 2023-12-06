@@ -26,6 +26,15 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
+        /// 输出日志到控制台
+        /// </summary>
+        /// <param name="message"></param>
+        public static void Console(string message)
+        {
+            ConsoleLog.Info(message);
+        }
+
+        /// <summary>
         /// 记录Info级别的日志
         /// </summary>
         /// <param name="message"></param>

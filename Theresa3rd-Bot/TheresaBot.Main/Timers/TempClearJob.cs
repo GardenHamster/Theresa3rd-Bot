@@ -37,7 +37,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                lock (TimerManager.ClearLock)
+                lock (SchedulerManager.ClearLock)
                 {
                     string path = FilePath.GetTempDirectory();
                     if (Directory.Exists(path) == false) return;
@@ -60,7 +60,7 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                lock (TimerManager.ClearLock)
+                lock (SchedulerManager.ClearLock)
                 {
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
@@ -84,7 +84,7 @@ namespace TheresaBot.Main.Timers
             string dirPath = System.IO.Path.GetTempPath();
             if (Directory.Exists(dirPath) == false) return;
             FileInfo[] fileList = FileHelper.SearchFiles(dirPath, "file-upload*.tmp");
-            if (fileList is null || fileList.Length == 0) return;
+            if (fileList.Length == 0) return;
             foreach (var item in fileList) FileHelper.DeleteFile(item);
             LogHelper.Info($"上传临时文件清理完毕，共计清理 {fileList.Length} 个临时文件...");
         }

@@ -1,17 +1,17 @@
 ﻿using System.Text.RegularExpressions;
-using TheresaBot.Main.Business;
+using TheresaBot.Main.Services;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Helper
 {
     public static class RecordHelper
     {
-        private static readonly RecordBusiness recordBusiness = new RecordBusiness();
+        private static readonly RecordService recordService = new RecordService();
 
         public static async Task AddImageRecords(List<string> imageUrls, PlatformType platformType, long msgId, long groupId, long memberId)
         {
             if (imageUrls is null || imageUrls.Count == 0) return;
-            await recordBusiness.AddImageRecord(imageUrls, platformType, msgId, groupId, memberId);
+            await recordService.AddImageRecord(imageUrls, platformType, msgId, groupId, memberId);
         }
 
         public static async Task AddMessageRecord(List<string> messageList, PlatformType platformType, long msgId, long groupId, long memberId)
@@ -20,7 +20,7 @@ namespace TheresaBot.Main.Helper
             if (filterList.Count == 0) return;
             string plainMessage = string.Join(' ', filterList);
             if (string.IsNullOrWhiteSpace(plainMessage)) return;
-            await recordBusiness.AddMessageRecord(platformType, plainMessage, msgId, groupId, memberId);
+            await recordService.AddMessageRecord(platformType, plainMessage, msgId, groupId, memberId);
         }
 
         private static List<string> FilterMessage(this List<string> messages)

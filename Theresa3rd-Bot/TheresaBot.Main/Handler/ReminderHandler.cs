@@ -14,9 +14,9 @@ namespace TheresaBot.Main.Handler
 
         public async Task SendRemindAsync(ReminderTimer reminderTimer)
         {
-            var randomTemplate = reminderTimer.Templates.RandomItem();
-            List<BaseContent> chainList = BusinessHelper.SplitToChainAsync(randomTemplate.Template);
-            foreach (var groupId in reminderTimer.Groups)
+            var randomTemplate = reminderTimer.Templates.RandomItem()?.Template ?? string.Empty;
+            List<BaseContent> chainList = BusinessHelper.SplitToChainAsync(randomTemplate);
+            foreach (var groupId in reminderTimer.PushGroups)
             {
                 await Session.SendGroupMessageAsync(groupId, chainList, reminderTimer.AtMembers, reminderTimer.AtAll);
                 await Task.Delay(1000);

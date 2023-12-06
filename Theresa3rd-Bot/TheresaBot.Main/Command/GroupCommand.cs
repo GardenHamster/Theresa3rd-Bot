@@ -1,4 +1,5 @@
-﻿using TheresaBot.Main.Model.Invoker;
+﻿using TheresaBot.Main.Datas;
+using TheresaBot.Main.Model.Invoker;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
@@ -8,6 +9,8 @@ namespace TheresaBot.Main.Command
     public abstract class GroupCommand : BaseCommand
     {
         public abstract long GroupId { get; }
+
+        public abstract string MemberNick { get; }
 
         private CommandHandler<GroupCommand> HandlerInvoker { get; init; }
 
@@ -30,6 +33,7 @@ namespace TheresaBot.Main.Command
 
         public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
         {
+            CountDatas.AddHandleTimes();
             return await HandlerInvoker.HandleMethod.Invoke(this, session, reporter);
         }
 

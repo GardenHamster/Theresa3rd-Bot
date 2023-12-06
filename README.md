@@ -3,7 +3,7 @@
 
 ## 简介
  - 某舰团长利用 ~~摸鱼时间~~ 写出来的自用的Bot
- - 基于 .net core 6.0，可以在 Windows 或 Linux 上运行
+ - 基于 .net core 8.0，可以在 Windows 或 Linux 上运行
  - 对接了 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) (使用SDK [Mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)) 
  - 对接了 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) (使用SDK [EleCho.GoCqHttpSdk](https://github.com/OrgEleCho/EleCho.GoCqHttpSdk))
  - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)，如果链接失效可以访问 [github-pages](https://gardenhamster.github.io/Theresa3rd-Bot)
@@ -12,12 +12,13 @@
 ## 声明
  - **本项目为个人自娱自乐写出来的项目，并没有任何收益，并不对使用本项目产生的任何问题负责，不得将项目用于任何商业用途**
 
-## 关于提问
+## 提问
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
  - **如果在部署或者使用过程中遇到问题时，请仔细阅读上面的文档后再来提问！！！**
- - Issuse请贴出相关的报错信息，mirai-http-api或go-cqhttp版本，本插件版本，botsettings.yml相关内容，必要的聊天记录截图
- - 只发一句`没有反应`，`无法运行`之类的Issuse不予解答
+ - 提问前请确保你现在所用的 签名/协议 没有问题
+ - Issuse请贴出相关的报错信息，mirai-http-api或go-cqhttp版本，本插件版本，config目录下的相关配置，必要的聊天记录截图
+ - 只发一句`没有反应`，`无法运行`之类的问题不予解答
 
 ## 功能和进度
 ### 消息提醒
@@ -26,37 +27,37 @@
 - [x] 自定义定时提醒功能
 
 ### 色图相关
+- [x] Pixiv免代理 
+- [x] Pixiv搜图/PID查询/动图转gif
 - [x] [Lolicon](https://api.lolicon.app) 随机涩图
 - [x] [Lolisuki](https://lolisuki.cc) 随机涩图
-- [x] 本地随机涩图 
-- [x] pixiv免代理 
-- [x] pixivid查询
-- [x] pixiv动图转gif
-- [x] pixiv标签搜索(根据标签获取随机的收藏度较高的色图，可多标签搜索)
-- [x] pixiv随机搜索(随机标签/随机关注画师的作品/随机收藏中的作品/随机订阅中的作品)
+- [x] 本地随机涩图
+- [x] Pixiv标签搜索(根据标签获取随机的收藏度较高的色图，可多标签搜索)
+- [x] Pixiv随机搜索(随机标签/随机关注画师的作品/随机收藏中的作品/随机订阅中的作品)
 - [x] Pixiv日榜/周榜/月榜/AI榜/男性向日榜预览图
-- [x] pixiv画师作品预览图
+- [x] Pixiv画师作品预览图
 - [x] saucenao搜图(如果图片来源于pixiv时，尝试下载并返回原图，并且优先返回来源于pixiv中的原图)
 - [x] ascii2d搜图(当saucenao中找不到来源时，继续使用ascii2d搜索)
 - [x] 每日/周/月/年词云，昨日/上周/上月/去年词云，词云蒙版自定义
 
 ### 订阅推送功能
-- [x] pixiv画师最新作品推送功能
-- [x] pixiv标签最新作品推送功能(收藏数较高且每小时新增一定收藏数的最新作品)
+- [x] Pixiv画师最新作品推送功能
+- [x] Pixiv标签最新作品推送功能(收藏数较高且每小时新增一定收藏数的最新作品)
 - [x] 米游社用户最新贴子推送功能
 - [x] Pixiv日榜/周榜/月榜/AI榜/男性向榜推送功能
-- [x] 定时涩图推送，包括本地色图，lolicon，lolisuki
+- [x] 定时涩图推送，包括本地色图，Lolicon，Lolisuki
+
+### 小游戏
+- [x] 小游戏 - 谁是卧底
+
+### WebUI
+- [x] 一个可以在浏览器中修改配置或管理数据的[前端页面](https://github.com/GardenHamster/Theresa3rd-Bot-Web)
 
 ### 模拟抽卡
 - [x] ~~原神模拟抽卡，在[GenshinGacha](https://github.com/GardenHamster/GenshinGacha)中实现了~~
 
 ### TODO
-- [ ] 写一个可在外网访问的 [Web UI](https://github.com/GardenHamster/Theresa3rd-Bot-Web)，用于查询和管理订阅列表和黑名单数据等
 - [ ] 做一个涩图收藏功能(包括添加到Pixiv收藏，记录到数据库，保存到本地文件夹)
-
-### 其他画饼中的功能
-- [ ] 小游戏 - 狼人杀
-- [ ] 小游戏 - 谁是卧底
 
 ## 致谢
 - [mamoe/mirai](https://github.com/mamoe/mirai)

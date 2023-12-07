@@ -11,7 +11,7 @@ namespace TheresaBot.Main.Model.Subscribe
         public int SubscribeSubType { get; init; }
         public string SubscribeName { get; init; }
         public List<long> SubscribeGroups => GetSubscribeGroups();
-        private List<long> GroupIds { get; init; }
+        private List<long> GroupIds { get; init; } = new();
 
         public SubscribeTask(SubscribeInfo subscribeInfo)
         {
@@ -20,7 +20,6 @@ namespace TheresaBot.Main.Model.Subscribe
             SubscribeType = subscribeInfo.SubscribeType;
             SubscribeSubType = subscribeInfo.SubscribeSubType;
             SubscribeName = subscribeInfo.SubscribeName;
-            GroupIds = new List<long>();
         }
 
         public void AddGroups(List<long> groupIds)
@@ -44,7 +43,7 @@ namespace TheresaBot.Main.Model.Subscribe
         {
             if (GroupIds.Contains(0))
             {
-                return BotConfig.GroupInfos.Select(o => o.GroupId).ToList();
+                return BotConfig.PermissionsConfig?.SubscribeGroups ?? new();
             }
             else
             {

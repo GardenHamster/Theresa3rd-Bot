@@ -34,6 +34,7 @@ namespace TheresaBot.Main.Handler
                 try
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
+                    if (subscribeTask.SubscribeGroups.Count == 0) continue;
                     scanReport.ScanTag++;
                     var workList = await pixivService.scanTagWorkAsync(subscribeTask, scanReport, pushAsync);
                     pushList.AddRange(workList);
@@ -67,6 +68,7 @@ namespace TheresaBot.Main.Handler
                 try
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
+                    if (subscribeTask.SubscribeGroups.Count == 0) continue;
                     scanReport.ScanUser++;
                     var workList = await pixivService.scanUserWorkAsync(subscribeTask, scanReport, pushAsync);
                     pushList.AddRange(workList);

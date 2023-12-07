@@ -148,12 +148,13 @@ namespace TheresaBot.Main.Handler
         {
             foreach (MysSubscribe mysSubscribe in mysSubscribeList)
             {
-                string coverUrl = mysSubscribe.SubscribeRecord.CoverUrl;
                 if (subscribeTask.SubscribeGroups.Count == 0) continue;
+                List<BaseContent> msgList = new List<BaseContent>()
+                {
+                    new PlainContent(miyousheService.getPostInfoAsync(mysSubscribe))
+                };
 
-                List<BaseContent> msgList = new List<BaseContent>();
-                msgList.Add(new PlainContent(miyousheService.getPostInfoAsync(mysSubscribe)));
-
+                string coverUrl = mysSubscribe.SubscribeRecord.CoverUrl;
                 if (string.IsNullOrWhiteSpace(coverUrl) == false)
                 {
                     string fullImgSavePath = FilePath.GetMiyousheImgSavePath(coverUrl);

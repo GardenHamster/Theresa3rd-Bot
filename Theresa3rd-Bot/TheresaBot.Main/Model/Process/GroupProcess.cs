@@ -1,5 +1,7 @@
 ﻿using TheresaBot.Main.Command;
+using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Relay;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Process
 {
@@ -14,7 +16,7 @@ namespace TheresaBot.Main.Model.Process
 
         public override GroupStep<string> CreateStep(string question, int waitSecond = 60)
         {
-            var stepInfo = new GroupStep<string>(GroupCommand, question, waitSecond);
+            var stepInfo = new GroupStep<string>(GroupCommand, question, waitSecond, o => Task.FromResult(o));
             StepInfos.Add(stepInfo);
             return stepInfo;
         }

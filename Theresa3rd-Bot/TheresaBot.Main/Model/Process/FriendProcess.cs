@@ -14,7 +14,7 @@ namespace TheresaBot.Main.Model.Process
 
         public override FriendStep<string> CreateStep(string question, int waitSecond = 60)
         {
-            var stepInfo = new FriendStep<string>(FriendCommand, question, waitSecond);
+            var stepInfo = new FriendStep<string>(FriendCommand, question, waitSecond, o => Task.FromResult(o));
             StepInfos.Add(stepInfo);
             return stepInfo;
         }

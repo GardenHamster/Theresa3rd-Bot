@@ -22,17 +22,7 @@ namespace TheresaBot.Main.Model.Saucenao
 
         public BaseContent GetSimpleContent()
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append($"相似度：{Similarity}%，来源：{SourceType}");
-            if (SourceType == SetuSourceType.Pixiv)
-            {
-                builder.Append($"，PixivId：{SourceId}");
-            }
-            else
-            {
-                builder.Append($"，Id：{SourceId}");
-            }
-            return new PlainContent(builder.ToString());
+            return new PlainContent($"相似度：{Similarity}%，来源：{SourceType}，Id：{SourceId}");
         }
 
         public BaseContent GetSourceContent()
@@ -46,6 +36,10 @@ namespace TheresaBot.Main.Model.Saucenao
             else if (SourceType == SetuSourceType.Pixiv)
             {
                 builder.Append($"，PixivId：{SourceId}");
+            }
+            else if (SourceType == SetuSourceType.Twitter)
+            {
+                builder.Append($"，Id：{SourceId}，链接：{SourceUrl}");
             }
             else
             {

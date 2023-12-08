@@ -15,11 +15,6 @@ namespace TheresaBot.Main.Model.Process
 
         public T Answer { get; private set; }
 
-        public FriendStep(FriendCommand command, string question, int waitSecond) : base(question, waitSecond)
-        {
-            FriendCommand = command;
-        }
-
         public FriendStep(FriendCommand command, string question, int waitSecond, Func<string, Task<T>> checkInput) : base(question, waitSecond)
         {
             FriendCommand = command;

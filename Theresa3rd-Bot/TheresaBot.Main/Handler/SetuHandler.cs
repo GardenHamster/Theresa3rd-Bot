@@ -161,7 +161,7 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task<bool> CheckSetuSendable(GroupCommand command, BaseWorkInfo setuInfo, bool isShowR18)
         {
-            string message = IsSetuSendable(command, setuInfo, isShowR18);
+            string message = CheckSendable(setuInfo, isShowR18);
             if (string.IsNullOrWhiteSpace(message)) return true;
             await command.ReplyGroupMessageWithQuoteAsync(message);
             return false;
@@ -170,11 +170,10 @@ namespace TheresaBot.Main.Handler
         /// <summary>
         /// 判断一张涩图是否可以发送，并且返回不可发送原因
         /// </summary>
-        /// <param name="command"></param>
         /// <param name="setuInfo"></param>
         /// <param name="isShowR18"></param>
         /// <returns></returns>
-        public string IsSetuSendable(GroupCommand command, BaseWorkInfo setuInfo, bool isShowR18)
+        public string CheckSendable(BaseWorkInfo setuInfo, bool isShowR18)
         {
             if (setuInfo.IsImproper)
             {

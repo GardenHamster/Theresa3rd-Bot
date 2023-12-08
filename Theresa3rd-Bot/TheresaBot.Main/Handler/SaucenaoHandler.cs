@@ -5,7 +5,6 @@ using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Ascii2d;
 using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Model.Pixiv;
 using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Reporter;
@@ -183,7 +182,7 @@ namespace TheresaBot.Main.Handler
 
         private async Task<SetuContent> GetSaucenaoContentAsync(GroupCommand command, SaucenaoItem saucenaoItem)
         {
-            if (saucenaoItem.SourceType == SetuSourceType.Pixiv)
+            if (saucenaoItem.SourceType == SetuSourceType.Pixiv && saucenaoItem.PixivWorkInfo is not null)
             {
                 return await GetPixivSetuContentAsync(command, saucenaoItem);
             }
@@ -199,7 +198,7 @@ namespace TheresaBot.Main.Handler
             var isShowR18 = command.GroupId.IsShowR18Saucenao();
             var minSimilarity = BotConfig.SaucenaoConfig.ImagePriority;
             var pixivWorkInfo = saucenaoItem.PixivWorkInfo;
-            var notSendableMsg = IsSetuSendable(command, saucenaoItem.PixivWorkInfo, isShowR18);
+            var notSendableMsg = CheckSendable(saucenaoItem.PixivWorkInfo, isShowR18);
             if (string.IsNullOrWhiteSpace(notSendableMsg) == false)
             {
                 return new(saucenaoItem.GetSimpleContent(), new PlainContent(notSendableMsg));
@@ -209,18 +208,11 @@ namespace TheresaBot.Main.Handler
             {
                 setuFiles = await GetSetuFilesAsync(pixivWorkInfo, groupId);
             }
-            var workMsgs = new List<BaseContent>();
-            workMsgs.Add(saucenaoItem.GetSourceContent());
-            workMsgs.AddRange(GetPixivMessageAsync(saucenaoItem));
+            var workInfo = pixivService.getWorkInfo(pixivWorkInfo);
+            var sourceContent = saucenaoItem.GetSourceContent();
+            var workInfoContent = new PlainContent(workInfo);
+            var workMsgs = new List<BaseContent>() { sourceContent, workInfoContent };
             return new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
-        }
-
-        private List<BaseContent> GetPixivMessageAsync(SaucenaoItem saucenaoItem)
-        {
-            List<BaseContent> msgList = new List<BaseContent>();
-            PixivWorkInfo pixivWorkInfo = saucenaoItem.PixivWorkInfo;
-            msgList.Add(new PlainContent(pixivService.getWorkInfo(pixivWorkInfo)));
-            return msgList;
         }
 
         public BaseContent GetRemindMessage(SaucenaoResult saucenaoResult, long groupId, long memberId)

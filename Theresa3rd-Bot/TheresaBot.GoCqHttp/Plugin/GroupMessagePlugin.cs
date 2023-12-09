@@ -27,8 +27,8 @@ namespace TheresaBot.GoCqHttp.Plugin
             try
             {
                 long msgId = args.MessageId;
-                long memberId = args.Sender.UserId;
                 long groupId = args.GroupId;
+                long memberId = args.Sender.UserId;
                 if (groupId.IsAuthorized() == false) return;
                 if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
@@ -38,15 +38,15 @@ namespace TheresaBot.GoCqHttp.Plugin
                 var plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text?.Trim() ?? string.Empty).ToList();
                 var instruction = plainList.FirstOrDefault()?.Trim() ?? string.Empty;
                 var prefix = instruction.MatchPrefix();
+                var isInstruct = prefix.Length > 0;
                 var isAt = args.Message.Any(v => v is CqAtMsg atMsg && atMsg.Target == BotConfig.BotQQ);
                 var isQuote = args.Message.Any(v => v is CqReplyMsg qtMsg && qtMsg.UserId == BotConfig.BotQQ);
-                var isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
-                var relay = new CQGroupRelay(args, msgId, message, groupId, memberId, isAt, isQuote, isInstruct);
+                if (prefix.Length > 0) instruction = instruction.Remove(0, prefix.Length).Trim();
+                if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 
-                if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
+                var relay = new CQGroupRelay(args, message, isAt, isQuote, isInstruct);
                 if (GameCahce.HandleGameMessage(relay)) return; //处理游戏消息
-                if (ProcessCache.HandleStep(relay)) return; //分步处理
-
+                
                 if (args.Message.Any(v => v is CqReplyMsg))//引用指令
                 {
                     GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(args, instruction, prefix);
@@ -56,6 +56,7 @@ namespace TheresaBot.GoCqHttp.Plugin
 
                 if (isAt == false && isInstruct == false)//复读,分步操作,保存消息记录
                 {
+                    if (ProcessCache.HandleStep(relay)) return; //分步处理
                     if (RepeatCache.CheckCanRepeat(groupId, BotConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Message.OfType<CqImageMsg>().Select(o => o.Url?.ToString()).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.GoCQHttp, msgId, groupId, memberId);
@@ -69,7 +70,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                     return;
                 }
 
-                CQGroupCommand command = GetGroupCommand(args, instruction, prefix);
+                var command = GetGroupCommand(args, instruction, prefix);
                 if (command is not null)
                 {
                     await command.InvokeAsync(BaseSession, baseReporter);

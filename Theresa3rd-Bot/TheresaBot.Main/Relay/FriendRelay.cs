@@ -4,7 +4,7 @@
     {
         public bool IsInstruct { get; init; }
 
-        public FriendRelay(long msgId, string message, long memberId, bool isInstruct) : base(msgId, message, memberId)
+        public FriendRelay(string message, bool isInstruct) : base(message)
         {
             IsInstruct = isInstruct;
         }

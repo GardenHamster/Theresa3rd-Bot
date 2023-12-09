@@ -25,24 +25,23 @@ namespace TheresaBot.MiraiHttpApi.Event
                 long memberId = args.Sender.Id;
                 if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
-                List<string> chainList = args.Chain.Select(m => m.ToString()).ToList();
-                List<string> plainList = args.Chain.Where(v => v is PlainMessage && v.ToString().Trim().Length > 0).Select(m => m.ToString().Trim()).ToList();
-                if (chainList is null || chainList.Count == 0) return;
-                if (plainList is null || plainList.Count == 0) return;
 
-                string instruction = plainList.FirstOrDefault()?.Trim() ?? "";
-                string message = chainList.Count > 0 ? string.Join(null, chainList.Skip(1).ToArray())?.Trim() : string.Empty;
-                if (string.IsNullOrWhiteSpace(message)) return;//空消息
-                if (string.IsNullOrWhiteSpace(instruction)) return;//空指令
+                var plainList = args.Chain.OfType<PlainMessage>().Select(m => m.Message?.Trim() ?? string.Empty).ToList();
+                var instruction = plainList.FirstOrDefault()?.Trim() ?? string.Empty;
+                var message = plainList.Count > 0 ? string.Join(null, plainList)?.Trim() : string.Empty;
+                var prefix = instruction.MatchPrefix();
+                var isInstruct = prefix.Length > 0;
+                if (prefix.Length > 0) instruction = instruction.Remove(0, prefix.Length).Trim();
+                if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 
-                string prefix = prefix = instruction.MatchPrefix();
-                bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
-                var relay = new MiraiFriendRelay(args, msgId, message, memberId, isInstruct);
-
-                if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
+                var relay = new MiraiFriendRelay(args, message, isInstruct);
                 if (ProcessCache.HandleStep(relay)) return; //分步处理
+                if (string.IsNullOrWhiteSpace(instruction))//空指令
+                {
+                    return;
+                }
 
-                MiraiFriendCommand botCommand = GetFriendCommand(args, instruction, prefix);
+                var botCommand = GetFriendCommand(args, instruction, prefix);
                 if (botCommand is not null)
                 {
                     args.BlockRemainingHandlers = await botCommand.InvokeAsync(BaseSession, BaseReporter);

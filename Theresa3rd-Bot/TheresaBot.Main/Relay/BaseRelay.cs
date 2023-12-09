@@ -2,19 +2,17 @@
 {
     public abstract class BaseRelay
     {
-        public long MsgId { get; init; }
-
         public string Message { get; init; }
 
-        public long MemberId { get; init; }
+        public abstract long MsgId { get; }
+
+        public abstract long MemberId { get; }
 
         public abstract List<string> GetImageUrls();
 
-        public BaseRelay(long msgId, string message, long memberId)
+        public BaseRelay(string message)
         {
-            this.MsgId = msgId;
-            this.Message = message?.Trim() ?? string.Empty;
-            this.MemberId = memberId;
+            Message = message?.Trim() ?? string.Empty;
         }
 
     }

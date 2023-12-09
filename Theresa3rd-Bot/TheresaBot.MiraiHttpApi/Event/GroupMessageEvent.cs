@@ -31,19 +31,18 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
 
-                var chainList = args.Chain.Select(m => m.ToString()).ToList();
                 var plainList = args.Chain.OfType<PlainMessage>().Select(m => m.Message?.Trim() ?? string.Empty).ToList();
                 var instruction = plainList.FirstOrDefault()?.Trim() ?? string.Empty;
-                var message = chainList.Count > 0 ? string.Join(null, plainList)?.Trim() : string.Empty;
+                var message = plainList.Count > 0 ? string.Join(null, plainList)?.Trim() : string.Empty;
                 var prefix = instruction.MatchPrefix();
+                var isInstruct = prefix.Length > 0;
                 var isAt = args.Chain.Any(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber);
                 var isQuote = args.Chain.Any(v => v is QuoteMessage qtMsg && qtMsg.TargetId == session.QQNumber);
-                var isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
-                var relay = new MiraiGroupRelay(args, msgId, message, groupId, memberId, isAt, isQuote, isInstruct);
+                if (prefix.Length > 0) instruction = instruction.Remove(0, prefix.Length).Trim();
+                if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 
-                if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
+                var relay = new MiraiGroupRelay(args, message, isAt, isQuote, isInstruct);
                 if (GameCahce.HandleGameMessage(relay)) return; //处理游戏
-                if (ProcessCache.HandleStep(relay)) return; //分步处理
 
                 if (args.Chain.Any(v => v is QuoteMessage))//引用指令
                 {
@@ -54,6 +53,7 @@ namespace TheresaBot.MiraiHttpApi.Event
 
                 if (isAt == false && isInstruct == false)//复读,分步操作,保存消息记录
                 {
+                    if (ProcessCache.HandleStep(relay)) return; //分步处理
                     if (RepeatCache.CheckCanRepeat(groupId, BotConfig.BotQQ, memberId, GetSimpleSendContent(args))) await SendRepeat(session, args);//复读机
                     List<string> imgUrls = args.Chain.Where(o => o is ImageMessage).Select(o => ((ImageMessage)o).Url).ToList();
                     Task task1 = RecordHelper.AddImageRecords(imgUrls, PlatformType.Mirai, msgId, groupId, memberId);
@@ -67,7 +67,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                     return;
                 }
 
-                MiraiGroupCommand command = GetGroupCommand(args, instruction, prefix);
+                var command = GetGroupCommand(args, instruction, prefix);
                 if (command is not null)
                 {
                     args.BlockRemainingHandlers = await command.InvokeAsync(BaseSession, BaseReporter);

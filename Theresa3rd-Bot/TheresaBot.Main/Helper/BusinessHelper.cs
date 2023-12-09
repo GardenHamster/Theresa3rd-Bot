@@ -32,7 +32,7 @@ namespace TheresaBot.Main.Helper
             if (prefixs is null || prefixs.Count == 0) return string.Empty;
             message = message?.Trim() ?? string.Empty;
             var prefix = prefixs.Where(o => message.StartsWith(o)).FirstOrDefault();
-            return string.IsNullOrWhiteSpace(prefix) ? string.Empty : prefix;
+            return string.IsNullOrWhiteSpace(prefix) ? string.Empty : prefix.Trim();
         }
 
         /// <summary>

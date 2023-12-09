@@ -28,22 +28,22 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (memberId.IsBanMember()) return; //黑名单成员
                 if (args.Session is not ICqActionSession session) return;
 
-                List<string> plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text.Trim()).Where(o => !string.IsNullOrEmpty(o)).ToList();
-                if (plainList is null || plainList.Count == 0) return;
+                var message = args.Message.Text;
+                var plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text?.Trim() ?? string.Empty).ToList();
+                var instruction = plainList.FirstOrDefault()?.Trim() ?? string.Empty;
+                var prefix = instruction.MatchPrefix();
+                var isInstruct = prefix.Length > 0;
+                if (prefix.Length > 0) instruction = instruction.Remove(0, prefix.Length).Trim();
+                if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 
-                string instruction = plainList.FirstOrDefault()?.Trim() ?? "";
-                string message = args.Message.Text;
-                if (string.IsNullOrWhiteSpace(message)) return;//空消息
-                if (string.IsNullOrWhiteSpace(instruction)) return;//空指令
-
-                string prefix = prefix = instruction.MatchPrefix();
-                bool isInstruct = prefix.Length > 0 || BotConfig.GeneralConfig.Prefixs.Count == 0;//可以不设置任何指令前缀
-                var relay = new CQFriendRelay(args, msgId, message, memberId, isInstruct);
-
-                if (isInstruct) instruction = instruction.Remove(0, prefix.Length).Trim();
+                var relay = new CQFriendRelay(args, message, isInstruct);
                 if (ProcessCache.HandleStep(relay)) return; //分步处理
+                if (string.IsNullOrWhiteSpace(instruction))//空指令
+                {
+                    return;
+                }
 
-                CQFriendCommand botCommand = GetFriendCommand(args, instruction, prefix);
+                var botCommand = GetFriendCommand(args, instruction, prefix);
                 if (botCommand is not null)
                 {
                     await botCommand.InvokeAsync(BaseSession, baseReporter);

@@ -8,7 +8,6 @@ using TheresaBot.Main.Cache;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
-using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Relay;
 
@@ -35,11 +34,8 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 
                 var relay = new MiraiFriendRelay(args, message, isInstruct);
-                if (ProcessCache.HandleStep(relay)) return; //分步处理
-                if (string.IsNullOrWhiteSpace(instruction))//空指令
-                {
-                    return;
-                }
+                if (isInstruct == false && ProcessCache.HandleStep(relay)) return; //分步处理
+                if (string.IsNullOrWhiteSpace(instruction)) return; //空指令
 
                 var botCommand = GetFriendCommand(args, instruction, prefix);
                 if (botCommand is not null)

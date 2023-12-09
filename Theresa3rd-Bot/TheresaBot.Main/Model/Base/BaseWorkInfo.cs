@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Helper;
-
-namespace TheresaBot.Main.Model.Base
+﻿namespace TheresaBot.Main.Model.Base
 {
     public abstract class BaseWorkInfo
     {

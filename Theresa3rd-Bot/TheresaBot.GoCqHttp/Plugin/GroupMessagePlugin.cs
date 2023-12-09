@@ -1,7 +1,6 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
-using TheresaBot.GoCqHttp.Command;
 using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.GoCqHttp.Relay;
 using TheresaBot.Main.Cache;
@@ -46,7 +45,7 @@ namespace TheresaBot.GoCqHttp.Plugin
 
                 var relay = new CQGroupRelay(args, message, isAt, isQuote, isInstruct);
                 if (GameCahce.HandleGameMessage(relay)) return; //处理游戏消息
-                
+
                 if (args.Message.Any(v => v is CqReplyMsg))//引用指令
                 {
                     GroupQuoteCommand quoteCommand = GetGroupQuoteCommand(args, instruction, prefix);

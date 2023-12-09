@@ -1,7 +1,5 @@
 ﻿using TheresaBot.Main.Command;
-using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Relay;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Model.Process
 {

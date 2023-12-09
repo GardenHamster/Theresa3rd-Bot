@@ -17,7 +17,7 @@ namespace TheresaBot.MiraiHttpApi.Relay
 
         public override long MemberId => Args.Sender.Id;
 
-        public MiraiGroupRelay(IGroupMessageEventArgs args,string message, bool isAt, bool isQuote, bool isInstruct) : base(message, isAt, isQuote, isInstruct)
+        public MiraiGroupRelay(IGroupMessageEventArgs args, string message, bool isAt, bool isQuote, bool isInstruct) : base(message, isAt, isQuote, isInstruct)
         {
             this.Args = args;
         }

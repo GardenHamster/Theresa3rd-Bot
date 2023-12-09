@@ -1,5 +1,4 @@
 ﻿using TheresaBot.Main.Helper;
-using YamlDotNet.Serialization;
 
 namespace TheresaBot.Main.Model.Config
 {

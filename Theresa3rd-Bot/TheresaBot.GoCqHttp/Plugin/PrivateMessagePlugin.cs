@@ -1,7 +1,6 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
-using TheresaBot.GoCqHttp.Command;
 using TheresaBot.GoCqHttp.Relay;
 using TheresaBot.Main.Cache;
 using TheresaBot.Main.Common;
@@ -37,11 +36,8 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 
                 var relay = new CQFriendRelay(args, message, isInstruct);
-                if (ProcessCache.HandleStep(relay)) return; //分步处理
-                if (string.IsNullOrWhiteSpace(instruction))//空指令
-                {
-                    return;
-                }
+                if (isInstruct == false && ProcessCache.HandleStep(relay)) return; //分步处理
+                if (string.IsNullOrWhiteSpace(instruction)) return; //空指令
 
                 var botCommand = GetFriendCommand(args, instruction, prefix);
                 if (botCommand is not null)

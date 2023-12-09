@@ -10,7 +10,6 @@ using TheresaBot.Main.Common;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Type;
-using TheresaBot.MiraiHttpApi.Command;
 using TheresaBot.MiraiHttpApi.Helper;
 using TheresaBot.MiraiHttpApi.Relay;
 

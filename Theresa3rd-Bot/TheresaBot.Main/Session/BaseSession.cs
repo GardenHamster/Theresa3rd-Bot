@@ -1,5 +1,5 @@
-﻿using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Model.Infos;
+﻿using TheresaBot.Main.Model.Bot;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Type;
 
@@ -9,7 +9,9 @@ namespace TheresaBot.Main.Session
     {
         public abstract PlatformType PlatformType { get; }
 
-        public abstract Task<GroupInfos[]> LoadGroupInfosAsync();
+        public abstract Task<BotInfos> GetBotInfosAsync();
+
+        public abstract Task<GroupInfos[]> GetGroupInfosAsync();
 
         public abstract Task<BaseResult> SendGroupMessageAsync(long groupId, string message);
 

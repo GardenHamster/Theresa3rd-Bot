@@ -46,7 +46,7 @@ namespace TheresaBot.Main.Services
                 }
                 if (subscribeInfo.GroupId == 0)
                 {
-                    subscribeTask.AddGroups(BotConfig.PermissionsConfig?.SubscribeGroups);
+                    subscribeTask.AddGroups(BotConfig.SubscribeGroups);
                 }
                 else
                 {
@@ -66,18 +66,22 @@ namespace TheresaBot.Main.Services
             return subscribeGroupDao.countSubscribes(subscribeType);
         }
 
-
+        /// <summary>
+        /// 获取某个群订阅某个类型的列表
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="subscribeType"></param>
+        /// <returns></returns>
         public List<SubscribeInfo> getSubscribes(long groupId, SubscribeType subscribeType)
         {
             var returnList = new List<SubscribeInfo>();
-            var subscribeList = subscribeGroupDao.getSubscribes(groupId, subscribeType);
-            if (BotConfig.PermissionsConfig.SubscribeGroups.Contains(groupId))
+            if (groupId > 0)
             {
-                returnList.AddRange(subscribeList.Where(o => o.GroupId == 0));
+                returnList.AddRange(subscribeGroupDao.getSubscribes(groupId, subscribeType));
             }
-            else
+            if (BotConfig.SubscribeGroups.Contains(groupId))
             {
-                returnList.AddRange(subscribeList.Where(o => o.GroupId == groupId));
+                returnList.AddRange(subscribeGroupDao.getSubscribes(0, subscribeType));
             }
             return returnList;
         }

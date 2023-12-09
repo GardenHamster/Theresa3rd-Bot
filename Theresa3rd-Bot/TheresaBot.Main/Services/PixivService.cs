@@ -571,15 +571,15 @@ namespace TheresaBot.Main.Services
         /// <returns></returns>
         public async Task<List<PixivSubscribe>> scanFollowWorkAsync(PixivScanReport scanReport, Func<PixivSubscribe, Task> pushAsync = null)
         {
-            int pageIndex = 1;
-            List<long> groupIds = BotConfig.PermissionsConfig.SubscribeGroups;
-            bool isShowAIs = groupIds.IsShowAISetu();
-            bool isShowR18s = groupIds.IsShowR18();
-            PixivFollowLatest pageOne = await PixivHelper.GetPixivFollowLatestAsync(pageIndex);
+            var pageIndex = 1;
+            var pageOne = await PixivHelper.GetPixivFollowLatestAsync(pageIndex);
             if (pageOne?.page?.ids is null) return new();
-            int shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
-            List<PixivSubscribe> pixivSubscribeList = new List<PixivSubscribe>();
-            List<int> wordIdList = pageOne.page.ids.OrderByDescending(o => o).ToList();
+            var groupIds = BotConfig.SubscribeGroups;
+            var isShowAIs = groupIds.IsShowAISetu();
+            var isShowR18s = groupIds.IsShowR18();
+            var shelfLife = BotConfig.SubscribeConfig.PixivTag.ShelfLife;
+            var pixivSubscribeList = new List<PixivSubscribe>();
+            var wordIdList = pageOne.page.ids.OrderByDescending(o => o).ToList();
             foreach (int workId in wordIdList)
             {
                 try

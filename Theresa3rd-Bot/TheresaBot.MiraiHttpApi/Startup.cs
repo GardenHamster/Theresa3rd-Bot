@@ -43,8 +43,8 @@ namespace TheresaBot.MiraiHttpApi
                 LogHelper.Info($"后台初始化完毕...");
 
                 MiraiHelper.ConnectMirai().Wait();
-                MiraiHelper.LoadBotProfileAsync().Wait();
-                MiraiHelper.LoadGroupInfosAsync().Wait();
+                BotHelper.LoadBotProfileAsync(new MiraiSession()).Wait();
+                BotHelper.LoadGroupInfosAsync(new MiraiSession()).Wait();
 
                 LogHelper.Info($"开始初始化数据库...");
                 services.AddSqlSugar(new IocConfig()//注入Sqlsuger

@@ -43,7 +43,7 @@ namespace TheresaBot.Main.Model.Subscribe
         {
             if (GroupIds.Contains(0))
             {
-                return BotConfig.PermissionsConfig?.SubscribeGroups ?? new();
+                return BotConfig.SubscribeGroups;
             }
             else
             {

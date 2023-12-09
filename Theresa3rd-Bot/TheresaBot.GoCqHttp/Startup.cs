@@ -43,8 +43,8 @@ namespace TheresaBot.GoCqHttp
                 LogHelper.Info($"后台初始化完毕...");
 
                 CQHelper.ConnectGoCqHttp().Wait();
-                CQHelper.LoadBotProfileAsync().Wait();
-                CQHelper.LoadGroupInfosAsync().Wait();
+                BotHelper.LoadBotProfileAsync(new CQSession()).Wait();
+                BotHelper.LoadGroupInfosAsync(new CQSession()).Wait();
 
                 LogHelper.Info($"开始初始化数据库...");
                 services.AddSqlSugar(new IocConfig()//注入Sqlsuger

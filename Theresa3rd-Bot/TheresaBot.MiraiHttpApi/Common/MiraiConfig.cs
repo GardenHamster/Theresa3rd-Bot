@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.MiraiHttpApi.Common
 {
-    public class MiraiConfig
+    public static class MiraiConfig
     {
         public static string ConnectionString = string.Empty;
 

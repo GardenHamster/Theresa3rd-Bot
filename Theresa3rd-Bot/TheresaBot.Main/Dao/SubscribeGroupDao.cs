@@ -51,7 +51,7 @@ namespace TheresaBot.Main.Dao
         {
             return Db.Queryable<SubscribeGroupPO>()
             .InnerJoin<SubscribePO>((sg, s) => sg.SubscribeId == s.Id)
-            .Where((sg, s) => s.SubscribeType == subscribeType && (sg.GroupId == 0 || sg.GroupId == groupId))
+            .Where((sg, s) => s.SubscribeType == subscribeType && sg.GroupId == groupId)
             .Select((sg, s) => new SubscribeInfo
             {
                 Id = sg.Id,

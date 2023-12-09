@@ -3,8 +3,8 @@ using EleCho.GoCqHttpSdk.Message;
 using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.GoCqHttp.Result;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Model.Bot;
 using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Model.Infos;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Session;
 using TheresaBot.Main.Type;
@@ -15,9 +15,14 @@ namespace TheresaBot.GoCqHttp.Session
     {
         public override PlatformType PlatformType => PlatformType.GoCQHttp;
 
-        public override async Task<GroupInfos[]> LoadGroupInfosAsync()
+        public override async Task<BotInfos> GetBotInfosAsync()
         {
-            return await CQHelper.LoadGroupInfosAsync();
+            return await CQHelper.GetBotInfosAsync();
+        }
+
+        public override async Task<GroupInfos[]> GetGroupInfosAsync()
+        {
+            return await CQHelper.GetGroupInfosAsync();
         }
 
         public override async Task<BaseResult> SendGroupMessageAsync(long groupId, string message)

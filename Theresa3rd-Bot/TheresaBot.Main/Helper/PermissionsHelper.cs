@@ -12,8 +12,7 @@ namespace TheresaBot.Main.Helper
         /// <returns></returns>
         public static bool IsAuthorized(this long groupId)
         {
-            List<long> acceptGroups = BotConfig.PermissionsConfig?.AcceptGroups;
-            if (acceptGroups is null || acceptGroups.Count == 0) return false;
+            List<long> acceptGroups = BotConfig.PermissionsConfig.AcceptGroups;
             return acceptGroups.Contains(0) || acceptGroups.Contains(groupId);
         }
 

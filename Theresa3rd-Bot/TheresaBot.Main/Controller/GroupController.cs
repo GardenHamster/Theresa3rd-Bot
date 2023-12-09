@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Bot;
 using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Model.VO;
 using TheresaBot.Main.Session;
@@ -36,9 +38,16 @@ namespace TheresaBot.Main.Controller
         [Route("load")]
         public async Task<ApiResult> LoadGroups()
         {
-            var groupInfos = await Session.LoadGroupInfosAsync();
-            if (groupInfos is null) return ApiResult.Fail("加载群列表失败");
-            return ApiResult.Success(groupInfos);
+            try
+            {
+                await BotHelper.LoadGroupInfosAsync(Session);
+                return ApiResult.Success(BotConfig.GroupInfos);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "群列表加载失败");
+                return ApiResult.Fail("群列表加载失败");
+            }
         }
 
 

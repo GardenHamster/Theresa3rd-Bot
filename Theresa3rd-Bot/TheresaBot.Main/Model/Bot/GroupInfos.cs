@@ -1,4 +1,4 @@
-﻿namespace TheresaBot.Main.Model.Infos
+﻿namespace TheresaBot.Main.Model.Bot
 {
     public record GroupInfos
     {

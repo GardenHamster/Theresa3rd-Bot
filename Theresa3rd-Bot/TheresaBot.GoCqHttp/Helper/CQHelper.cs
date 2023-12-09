@@ -4,8 +4,8 @@ using TheresaBot.GoCqHttp.Common;
 using TheresaBot.GoCqHttp.Plugin;
 using TheresaBot.Main.Common;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Bot;
 using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Model.Infos;
 
 namespace TheresaBot.GoCqHttp.Helper
 {
@@ -53,49 +53,26 @@ namespace TheresaBot.GoCqHttp.Helper
         /// 获取机器人信息
         /// </summary>
         /// <returns></returns>
-        public static async Task LoadBotProfileAsync()
+        public static async Task<BotInfos> GetBotInfosAsync()
         {
-            try
-            {
-                var result = await Session.GetLoginInformationAsync();
-                if (result is null) throw new Exception("Bot名片获取失败");
-                BotConfig.BotQQ = result?.UserId ?? 0;
-                BotConfig.BotName = result?.Nickname ?? "Bot";
-                LogHelper.Info($"Bot名片获取完毕，QQNumber={BotConfig.BotQQ}，Nickname={result?.Nickname ?? ""}");
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "Bot名片获取异常");
-            }
+            var result = await Session.GetLoginInformationAsync();
+            return new BotInfos(result.UserId, result.Nickname);
         }
 
         /// <summary>
         /// 获取群列表并缓存到BotConfig中，如果获取失败则返回null
         /// </summary>
         /// <returns></returns>
-        public static async Task<GroupInfos[]> LoadGroupInfosAsync()
+        public static async Task<GroupInfos[]> GetGroupInfosAsync()
         {
-            try
-            {
-                var groupResult = await Session.GetGroupListAsync();
-                if (groupResult?.Groups is null) throw new Exception("群列表获取失败");
-                var groupInfos = groupResult.Groups.Select(o => new GroupInfos(o.GroupId, o.GroupName)).ToArray();
-                BotConfig.GroupInfos = groupInfos.ToList();
-                var availableIds = groupInfos.Select(o => o.GroupId).ToList();
-                var acceptIds = BotConfig.PermissionsConfig.AcceptGroups;
-                var groupCount = BotConfig.GroupInfos.Count;
-                var acceptCount = acceptIds.Where(o => availableIds.Contains(o)).Count();
-                var availablCount = acceptIds.Contains(0) ? groupCount : acceptCount;
-                LogHelper.Info($"群列表加载完毕，共获取群号 {groupCount} 个，其中已启用群号 {availablCount} 个");
-                return groupInfos;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, "群列表获取失败");
-                return null;
-            }
+            var groupResult = await Session.GetGroupListAsync();
+            return groupResult.Groups.Select(o => new GroupInfos(o.GroupId, o.GroupName)).ToArray();
         }
 
+        /// <summary>
+        /// 发送启动消息
+        /// </summary>
+        /// <returns></returns>
         public static async Task SendStartUpMessageAsync()
         {
             await Task.Delay(3000);

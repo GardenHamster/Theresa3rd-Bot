@@ -319,14 +319,14 @@ namespace TheresaBot.Main.Handler
         public async Task<bool> CheckPixivRankingHandingAsync(GroupCommand command)
         {
             if (CoolingCache.IsPixivRankingHanding() == false) return false;
-            await command.ReplyGroupMessageWithQuoteAsync("一个日榜功能正在处理中，稍后再来吧");
+            await command.ReplyGroupMessageWithQuoteAsync("一个Pixiv榜单任务正在处理中，稍后再来吧");
             return true;
         }
 
         public async Task<bool> CheckWordCloudHandingAsync(GroupCommand command)
         {
             if (CoolingCache.IsWordCloudHanding(command.GroupId) == false) return false;
-            await command.ReplyGroupMessageWithQuoteAsync("一个词云功能正在处理中，稍后再来吧");
+            await command.ReplyGroupMessageWithQuoteAsync("一个词云任务正在处理中，稍后再来吧");
             return true;
         }
 

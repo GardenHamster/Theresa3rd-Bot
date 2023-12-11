@@ -26,7 +26,7 @@ namespace TheresaBot.Main.Timers
                 if (rankingTimer.Groups is null || rankingTimer.Groups.Count == 0) return;
                 foreach (var content in rankingTimer.Contents)
                 {
-                    LogHelper.Info($"开始执行【{content}】日榜推送任务...");
+                    LogHelper.Info($"开始执行【{content}】Pixiv榜单推送任务...");
                     await HandleTiming(session, reporter, rankingTimer, content);
                 }
             }

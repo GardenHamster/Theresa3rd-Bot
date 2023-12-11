@@ -472,10 +472,11 @@ namespace TheresaBot.Main.Services
                     if (isShowR18s == false && userWork.IsR18) continue;
                     if (shelfLife > 0 && userWork.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, userWork.id)) continue;
-                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(userWork.id, 0);
+                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(userWork.id);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;
                     if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
+                    scanReport.PushWork++;
                     SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
                     PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo, subscribeTask);
                     if (pushAsync is not null)
@@ -532,11 +533,12 @@ namespace TheresaBot.Main.Services
                     if (isShowR18s == false && illuts.IsR18) continue;
                     if (shelfLife > 0 && illuts.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, illuts.id)) continue;
-                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(illuts.id, 0);
+                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(illuts.id);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;
                     if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     if (checkTagWorkIsOk(pixivWorkInfo) == false) continue;
+                    scanReport.PushWork++;
                     SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, subscribeId);
                     PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo, subscribeTask);
                     if (pushAsync is not null)
@@ -587,13 +589,14 @@ namespace TheresaBot.Main.Services
                     scanReport.ScanWork++;
                     if (workId <= 0) continue;
                     if (subscribeRecordDao.checkExists(SubscribeType.P站画师, workId.ToString())) continue;
-                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString(), 0);
+                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString());
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.IsImproper) continue;
                     if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     if (isShowAIs == false && pixivWorkInfo.IsAI) continue;
                     if (isShowR18s == false && pixivWorkInfo.IsR18) continue;
                     if (shelfLife > 0 && pixivWorkInfo.createDate < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
+                    scanReport.PushWork++;
                     SubscribePO dbSubscribe = getOrInsertUserSubscribe(pixivWorkInfo);
                     SubscribeRecordPO subscribeRecord = toSubscribeRecord(pixivWorkInfo, dbSubscribe.Id);
                     PixivSubscribe pixivSubscribe = new PixivSubscribe(subscribeRecord, pixivWorkInfo, null);

@@ -1,5 +1,6 @@
 ﻿using System.Timers;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Handler;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Pixiv;
@@ -50,6 +51,8 @@ namespace TheresaBot.Main.Timers
                 }
                 LogHelper.Info($"开始扫描pixiv标签最新作品...");
                 PixivTagScanReport report = new PixivPushHandler(Session, Reporter).HandleTagPushAsync().Result;
+                CountDatas.AddPixivScanTimes(report);
+                CountDatas.AddPixivPushTimes(report);
                 LogHelper.Info($"pixiv标签扫描完毕，扫描标签/扫描作品/失败标签/失败作品={report.ScanTag}/{report.ScanWork}/{report.ErrorTag}/{report.ErrorWork}");
             }
             catch (Exception ex)

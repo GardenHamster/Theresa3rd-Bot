@@ -35,12 +35,12 @@ namespace TheresaBot.Main.Datas
         /// <summary>
         /// 累加Pixiv作品推送次数
         /// </summary>
-        public static void AddPixivPushTimes(int count = 1)
+        public static void AddPixivPushTimes(PixivScanReport report)
         {
             lock (TotalCount)
             {
-                SingleCount.PixivPushTimes += count;
-                TotalCount.PixivPushTimes += count;
+                SingleCount.PixivPushTimes += report.PushWork;
+                TotalCount.PixivPushTimes += report.PushWork;
                 SaveDatas();
             }
         }

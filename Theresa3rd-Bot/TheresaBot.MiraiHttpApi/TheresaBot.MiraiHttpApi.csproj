@@ -24,6 +24,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\TheresaBot.Main\TheresaBot.Main.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Remove="appsettings.Development.json" />
 	</ItemGroup>
 
@@ -31,10 +35,6 @@
 		<None Include="appsettings.Development.json">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\TheresaBot.Main\TheresaBot.Main.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

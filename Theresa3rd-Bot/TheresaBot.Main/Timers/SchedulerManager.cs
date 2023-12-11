@@ -161,7 +161,7 @@ namespace TheresaBot.Main.Timers
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"定时涩图任务启动失败");
+                LogHelper.Error(ex, $"涩图定时推送任务");
             }
         }
 
@@ -184,7 +184,7 @@ namespace TheresaBot.Main.Timers
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"定时涩图任务启动失败");
+                LogHelper.Error(ex, $"Pixiv榜单定时推送任务");
             }
         }
 
@@ -243,12 +243,12 @@ namespace TheresaBot.Main.Timers
                 jobDetail.JobDataMap.Put("BaseSession", session);
                 await scheduler.ScheduleJob(jobDetail, trigger);
                 await scheduler.Start();
-                LogHelper.Info($"定时涩图任务[{timer.Name}]启动完毕...");
+                LogHelper.Info($"涩图定时推送任务[{timer.Name}]启动完毕...");
                 return scheduler;
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"定时涩图任务[{timer.Name}]启动失败");
+                LogHelper.Error(ex, $"涩图定时推送任务[{timer.Name}]启动失败");
                 return null;
             }
         }
@@ -268,12 +268,12 @@ namespace TheresaBot.Main.Timers
                 jobDetail.JobDataMap.Put("BaseSession", session);
                 await scheduler.ScheduleJob(jobDetail, trigger);
                 await scheduler.Start();
-                LogHelper.Info($"定时日榜推送任务[{string.Join(',', timer.Contents)}]启动完毕...");
+                LogHelper.Info($"Pixiv榜单定时推送任务[{string.Join(',', timer.Contents)}]启动完毕...");
                 return scheduler;
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"定时日榜推送任务[{string.Join(',', timer.Contents)}]启动失败");
+                LogHelper.Error(ex, $"Pixiv榜单定时推送任务[{string.Join(',', timer.Contents)}]启动失败");
                 return null;
             }
         }
@@ -292,12 +292,12 @@ namespace TheresaBot.Main.Timers
                 jobDetail.JobDataMap.Put("BaseSession", session);
                 await scheduler.ScheduleJob(jobDetail, trigger);
                 await scheduler.Start();
-                LogHelper.Info($"词云推送任务[{timer.Name}]启动完毕...");
+                LogHelper.Info($"词云定时推送任务[{timer.Name}]启动完毕...");
                 return scheduler;
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"词云推送任务[{timer.Name}]启动失败");
+                LogHelper.Error(ex, $"词云定时推送任务[{timer.Name}]启动失败");
                 return null;
             }
         }

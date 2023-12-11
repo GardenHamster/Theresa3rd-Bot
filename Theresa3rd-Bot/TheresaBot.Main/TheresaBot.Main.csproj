@@ -16,23 +16,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Result\**" />
-	  <EmbeddedResource Remove="Result\**" />
-	  <None Remove="Result\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="Controller\GroupController.cs~RF5d29ffda.TMP" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="AngleSharp" Version="0.17.1" />
 		<PackageReference Include="jieba.NET" Version="0.42.2" />
 		<PackageReference Include="log4net" Version="2.0.15" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.22" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Quartz" Version="3.5.0" />
+		<PackageReference Include="Quartz" Version="3.6.3" />
 		<PackageReference Include="SharpZipLib" Version="1.4.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
 		<PackageReference Include="SkiaSharp" Version="2.88.6" />

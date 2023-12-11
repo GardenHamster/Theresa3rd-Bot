@@ -4,9 +4,11 @@ using AngleSharp.Html.Parser;
 using System.Net;
 using System.Text;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Dao;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
+using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Saucenao;
 using TheresaBot.Main.Type;
 
@@ -14,6 +16,13 @@ namespace TheresaBot.Main.Services
 {
     internal class SaucenaoService
     {
+        private RequestRecordDao requestRecordDao;
+
+        public SaucenaoService()
+        {
+            requestRecordDao = new RequestRecordDao();
+        }
+
         public async Task<SaucenaoResult> SearchResultAsync(string imgHttpUrl)
         {
             DateTime startTime = DateTime.Now;
@@ -152,6 +161,19 @@ namespace TheresaBot.Main.Services
         }
 
         /// <summary>
+        /// 获取提示内容
+        /// </summary>
+        /// <param name="saucenaoResult"></param>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public BaseContent GetRemindContent(SaucenaoResult saucenaoResult, long groupId, long memberId)
+        {
+            int leftToday = GetLeftToday(groupId, memberId);
+            return new PlainContent(GetRemindMessage(saucenaoResult, leftToday));
+        }
+
+        /// <summary>
         /// 获取提示消息
         /// </summary>
         /// <param name="saucenaoResult"></param>
@@ -213,6 +235,20 @@ namespace TheresaBot.Main.Services
             template = template.Replace("{RevokeInterval}", BotConfig.SaucenaoConfig.RevokeInterval.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             return template;
+        }
+
+        /// <summary>
+        /// 获取今日剩余可用次数
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        public int GetLeftToday(long groupId, long memberId)
+        {
+            if (BotConfig.SaucenaoConfig.MaxDaily == 0) return 0;
+            int todayUseCount = requestRecordDao.getUsedCountToday(groupId, memberId, CommandType.Saucenao);
+            int leftToday = BotConfig.SaucenaoConfig.MaxDaily - todayUseCount - 1;
+            return leftToday < 0 ? 0 : leftToday;
         }
 
         /// <summary>

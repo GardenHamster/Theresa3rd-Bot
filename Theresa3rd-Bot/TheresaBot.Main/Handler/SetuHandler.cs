@@ -234,20 +234,6 @@ namespace TheresaBot.Main.Handler
         }
 
         /// <summary>
-        /// 获取今日原图可用次数
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="memberId"></param>
-        /// <returns></returns>
-        public int GetSaucenaoLeftToday(long groupId, long memberId)
-        {
-            if (BotConfig.SaucenaoConfig.MaxDaily == 0) return 0;
-            int todayUseCount = requestRecordService.getUsedCountToday(groupId, memberId, CommandType.Saucenao);
-            int leftToday = BotConfig.SaucenaoConfig.MaxDaily - todayUseCount - 1;
-            return leftToday < 0 ? 0 : leftToday;
-        }
-
-        /// <summary>
         /// 将一个tag字符串拆分为LoliconApi的tag参数
         /// </summary>
         /// <param name="tagStr"></param>
@@ -258,7 +244,6 @@ namespace TheresaBot.Main.Handler
             tagStr = tagStr.Trim().Replace(",", "|").Replace("，", "|");
             return tagStr.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         }
-
 
         /// <summary>
         /// 根据配置使用代理或者直连下载图片

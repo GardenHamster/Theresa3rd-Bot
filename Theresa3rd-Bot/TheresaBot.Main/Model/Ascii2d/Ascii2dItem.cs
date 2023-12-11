@@ -24,11 +24,11 @@ namespace TheresaBot.Main.Model.Ascii2d
             builder.Append($"来源：{SourceType}");
             if (SourceType == SetuSourceType.Pixiv && PixivWorkInfo is not null)
             {
-                builder.Append($"，PixivId：{PixivWorkInfo?.illustId}");
+                builder.Append($"，Id：{PixivWorkInfo?.illustId}");
             }
             else if (SourceType == SetuSourceType.Pixiv)
             {
-                builder.Append($"，PixivId：{SourceId}");
+                builder.Append($"，Id：{SourceId}");
             }
             else
             {
@@ -42,19 +42,19 @@ namespace TheresaBot.Main.Model.Ascii2d
             StringBuilder builder = new StringBuilder();
             if (SourceType == SetuSourceType.Pixiv && PixivWorkInfo is not null)
             {
-                builder.AppendLine($"来源：Pixiv，标题：{PixivWorkInfo.illustTitle}，pid：{PixivWorkInfo.illustId}，链接：{PixivWorkInfo.urls.original.ToOpenProxyLink()}");
+                builder.AppendLine($"来源：Pixiv，Id：{PixivWorkInfo.illustId}，链接：{PixivWorkInfo.urls.original.ToOpenProxyLink()}");
             }
             else if (SourceType == SetuSourceType.Pixiv)
             {
-                builder.AppendLine($"来源：Pixiv，pid：{SourceId}");
+                builder.AppendLine($"来源：Pixiv，Id：{SourceId}，链接获取失败");
             }
             else if (SourceType == SetuSourceType.Twitter)
             {
-                builder.AppendLine($"来源：Twitter，链接：{SourceUrl}");
+                builder.AppendLine($"来源：Twitter，Id：{SourceId}，链接：{SourceUrl}");
             }
             else
             {
-                builder.AppendLine($"来源：{SourceType}，id：{SourceId}");
+                builder.AppendLine($"来源：{SourceType}，Id：{SourceId}");
             }
             return new PlainContent(builder.ToString());
         }

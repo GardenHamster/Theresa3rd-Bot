@@ -15,7 +15,7 @@ namespace TheresaBot.Main.Services
 
         public int getUsedCountToday(long groupId, long memberId, params CommandType[] commandTypeArr)
         {
-            lock (this) return requestRecordDao.getUsedCountToday(groupId, memberId, commandTypeArr);
+            return requestRecordDao.getUsedCountToday(groupId, memberId, commandTypeArr);
         }
 
         public RequestRecordPO addRecord(long groupId, long memberId, CommandType commandType, string sendWord)

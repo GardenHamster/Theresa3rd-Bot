@@ -27,15 +27,14 @@ namespace TheresaBot.Main.Model.Saucenao
 
         public BaseContent GetSourceContent()
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append($"相似度：{Similarity}%，来源：{SourceType}");
+            var builder = new StringBuilder($"相似度：{Similarity}%，来源：{SourceType}");
             if (SourceType == SetuSourceType.Pixiv && PixivWorkInfo is not null)
             {
-                builder.Append($"，PixivId：{PixivWorkInfo.illustId}");
+                builder.Append($"，Id：{PixivWorkInfo.illustId}");
             }
             else if (SourceType == SetuSourceType.Pixiv)
             {
-                builder.Append($"，PixivId：{SourceId}");
+                builder.Append($"，Id：{SourceId}");
             }
             else if (SourceType == SetuSourceType.Twitter)
             {

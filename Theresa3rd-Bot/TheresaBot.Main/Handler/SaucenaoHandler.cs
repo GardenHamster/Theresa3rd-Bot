@@ -155,7 +155,7 @@ namespace TheresaBot.Main.Handler
                 if (BotConfig.SaucenaoConfig.PullOrigin == false)
                 {
                     List<BaseContent> workMsgs = new List<BaseContent>();
-                    workMsgs.AddRange(GetRemindMessage(saucenaoResult, command.GroupId, command.MemberId));
+                    workMsgs.AddRange(saucenaoService.GetRemindContent(saucenaoResult, command.GroupId, command.MemberId));
                     workMsgs.AddRange(sendList.Select(o => o.GetSimpleContent()));
                     Task sendSimpleTask = ReplyAndRevoke(command, workMsgs);
                     return true;
@@ -164,11 +164,13 @@ namespace TheresaBot.Main.Handler
                 await saucenaoService.FetchOrigin(sortList);
                 var setuContents = new List<SetuContent>()
                 {
-                    new(GetRemindMessage(saucenaoResult, command.GroupId, command.MemberId))
+                    new(saucenaoService.GetRemindContent(saucenaoResult, command.GroupId, command.MemberId))
                 };
+
                 for (int i = 0; i < sendList.Count; i++)
                 {
-                    setuContents.Add(await GetSaucenaoContentAsync(command, sendList[i]));
+                    var content = await GetSaucenaoContentAsync(command, sendList[i]);
+                    setuContents.Add(content);
                 }
                 Task sendDetailTask = ReplyAndRevoke(command, setuContents);
                 return true;
@@ -196,29 +198,23 @@ namespace TheresaBot.Main.Handler
         {
             var groupId = command.GroupId;
             var isShowR18 = command.GroupId.IsShowR18Saucenao();
-            var minSimilarity = BotConfig.SaucenaoConfig.ImagePriority;
+            var imagePriority = BotConfig.SaucenaoConfig.ImagePriority;
             var pixivWorkInfo = saucenaoItem.PixivWorkInfo;
-            var notSendableMsg = CheckSendable(saucenaoItem.PixivWorkInfo, isShowR18);
+            var notSendableMsg = CheckSendable(pixivWorkInfo, isShowR18);
             if (string.IsNullOrWhiteSpace(notSendableMsg) == false)
             {
                 return new(saucenaoItem.GetSimpleContent(), new PlainContent(notSendableMsg));
             }
             var setuFiles = new List<FileInfo>();
-            if (saucenaoItem.Similarity >= minSimilarity)
+            if (saucenaoItem.Similarity >= imagePriority)
             {
                 setuFiles = await GetSetuFilesAsync(pixivWorkInfo, groupId);
             }
             var workInfo = pixivService.getWorkInfo(pixivWorkInfo);
-            var sourceContent = saucenaoItem.GetSourceContent();
             var workInfoContent = new PlainContent(workInfo);
+            var sourceContent = saucenaoItem.GetSimpleContent();
             var workMsgs = new List<BaseContent>() { sourceContent, workInfoContent };
             return new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
-        }
-
-        public BaseContent GetRemindMessage(SaucenaoResult saucenaoResult, long groupId, long memberId)
-        {
-            long todayLeft = GetSaucenaoLeftToday(groupId, memberId);
-            return new PlainContent(saucenaoService.GetRemindMessage(saucenaoResult, todayLeft));
         }
 
         private async Task SearchWithAscii2d(GroupCommand command, string imgUrl)
@@ -255,7 +251,6 @@ namespace TheresaBot.Main.Handler
                 await LogAndReplyError(command, ex, "SearchWithAscii2d异常");
             }
         }
-
 
         private async Task ReplyAndRevoke(GroupCommand command, List<BaseContent> contentList)
         {

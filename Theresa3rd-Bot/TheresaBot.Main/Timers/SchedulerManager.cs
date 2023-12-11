@@ -313,18 +313,18 @@ namespace TheresaBot.Main.Timers
             if (schedulers is null) return;
             foreach (IScheduler scheduler in schedulers)
             {
-                await scheduler.Destroy();
+                await scheduler.DestroyAsync();
             }
         }
 
-        private static async Task Destroy(this IScheduler scheduler)
+        private static async Task DestroyAsync(this IScheduler scheduler)
         {
             try
             {
                 if (scheduler is null) return;
                 if (scheduler.IsShutdown) return;
                 await scheduler.Shutdown(false);
-                await scheduler.Destroy();
+                await scheduler.DestroyAsync();
             }
             catch (Exception ex)
             {

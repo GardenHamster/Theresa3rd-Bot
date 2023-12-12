@@ -12,20 +12,9 @@ namespace TheresaBot.Main.Dao
         /// <param name="groupId"></param>
         /// <param name="subscribeId"></param>
         /// <returns></returns>
-        public bool isExistsSubscribeGroup(long groupId, int subscribeId)
+        public bool isExists(long groupId, int subscribeId)
         {
             return Db.Queryable<SubscribeGroupPO>().Any(o => o.GroupId == groupId && o.SubscribeId == subscribeId);
-        }
-
-        /// <summary>
-        /// 是否已订阅某个subscribeId
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="subscribeId"></param>
-        /// <returns></returns>
-        public bool isExistsSubscribeGroup(int subscribeId)
-        {
-            return Db.Queryable<SubscribeGroupPO>().Any(o => o.SubscribeId == subscribeId);
         }
 
         /// <summary>
@@ -33,12 +22,22 @@ namespace TheresaBot.Main.Dao
         /// </summary>
         /// <param name="subscribeType"></param>
         /// <returns></returns>
-        public int countSubscribes(SubscribeType subscribeType)
+        public int countByType(SubscribeType subscribeType)
         {
             return Db.Queryable<SubscribeGroupPO>()
             .InnerJoin<SubscribePO>((sg, s) => sg.SubscribeId == s.Id)
             .Where((sg, s) => s.SubscribeType == subscribeType)
             .Select(sg => sg.SubscribeId).Distinct().Count();
+        }
+
+        /// <summary>
+        /// 根据订阅Id获取订阅列表
+        /// </summary>
+        /// <param name="subscribeId"></param>
+        /// <returns></returns>
+        public List<SubscribeGroupPO> GetSubscribes(int subscribeId)
+        {
+            return Db.Queryable<SubscribeGroupPO>().Where(sg => sg.SubscribeId == subscribeId).ToList();
         }
 
         /// <summary>

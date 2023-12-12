@@ -21,6 +21,7 @@ namespace TheresaBot.Main.Model.Config
         {
             base.FormatConfig();
             if (SyncCommands is null) SyncCommands = new();
+            if (ShelfLife < 0) ShelfLife = 0;
             return this;
         }
 

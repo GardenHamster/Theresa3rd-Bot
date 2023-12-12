@@ -96,7 +96,7 @@ namespace TheresaBot.Main.Handler
                 }
 
                 long subscribeGroupId = pushType == GroupPushType.AllGroup ? 0 : command.GroupId;
-                if (subscribeService.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
+                if (subscribeService.isSubscribed(subscribeGroupId, dbSubscribe.Id))
                 {
                     //关联订阅
                     await command.ReplyGroupMessageWithAtAsync($"画师id[{userId}]已经被订阅了~");
@@ -277,7 +277,7 @@ namespace TheresaBot.Main.Handler
                 if (dbSubscribe is null) dbSubscribe = subscribeService.insertSurscribe(pixivTag);
 
                 long subscribeGroupId = pushType == GroupPushType.AllGroup ? 0 : command.GroupId;
-                if (subscribeService.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
+                if (subscribeService.isSubscribed(subscribeGroupId, dbSubscribe.Id))
                 {
                     await command.ReplyGroupMessageWithAtAsync($"这个标签已经被订阅了~");
                     return;

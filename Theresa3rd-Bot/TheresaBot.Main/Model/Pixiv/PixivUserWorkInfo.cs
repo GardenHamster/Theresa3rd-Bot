@@ -19,6 +19,7 @@ namespace TheresaBot.Main.Model.Pixiv
         public bool IsImproper => xRestrict > 1 || GetTags().IsImproper();
         public bool IsR18 => xRestrict > 0 || GetTags().IsR18();
         public bool IsAI => aiType > 1 || GetTags().IsAI();
+        public bool IsExpired(int shelfLife) => shelfLife > 0 && createDate.AddSeconds(shelfLife) < DateTime.Now;
         public List<string> GetTags() => tags ?? new List<string>();
         public List<string> HavingBanTags() => GetTags().HavingBanTags();
     }

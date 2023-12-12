@@ -6,7 +6,6 @@ using TheresaBot.Main.Drawer;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
-using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
@@ -31,13 +30,14 @@ namespace TheresaBot.Main.Handler
                 var miyousheSubList = subscribeService.getSubscribes(command.GroupId, SubscribeType.米游社用户);
                 var pixivUserSubList = subscribeService.getSubscribes(command.GroupId, SubscribeType.P站画师);
                 var pixivTagSubList = subscribeService.getSubscribes(command.GroupId, SubscribeType.P站标签).Select(o => o with { SubscribeCode = String.Empty }).ToList();
-                var drawTagList = pixivTagSubList.Select(o => o with { SubscribeCode = String.Empty });
                 var fullSavePath = FilePath.GetTempImgSavePath();
                 using var drawer = new SubscribeDrawer();
                 FileInfo fileInfo = drawer.DrawSubscribe(miyousheSubList, pixivUserSubList, pixivTagSubList, fullSavePath);
-                List<BaseContent> sendContents = new List<BaseContent>();
-                sendContents.Add(new PlainContent("当前群已订阅内容如下"));
-                sendContents.Add(new LocalImageContent(fileInfo));
+                var sendContents = new List<BaseContent>
+                {
+                    new PlainContent("当前群已订阅内容如下"),
+                    new LocalImageContent(fileInfo)
+                };
                 await command.ReplyGroupMessageWithQuoteAsync(sendContents);
             }
             catch (Exception ex)
@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Handler
                     subscribeId = tagStep.Answer;
                 }
 
-                SubscribePO dbSubscribe = subscribeService.getSubscribe(subscribeId);
+                var dbSubscribe = subscribeService.getSubscribe(subscribeId);
                 if (dbSubscribe is null)
                 {
                     await command.ReplyGroupMessageWithQuoteAsync($"退订失败，订阅Id{subscribeId}不存在");

@@ -145,14 +145,14 @@ namespace TheresaBot.Main.Handler
                 {
                     if (rankingMode.IsR18 && groupId.IsShowR18Img() == false) continue;
                     await Session.SendGroupMessageAsync(groupId, templateMsg);
-                    await Task.Delay(1000);
+                    await Task.Delay(2000);
                 }
 
                 foreach (var groupId in rankingTimer.PushGroups)
                 {
                     if (rankingMode.IsR18 && groupId.IsShowR18Img() == false) continue;
                     await SendGroupMergeSetuAsync(setuContents, new() { titleContents, tipContents }, groupId);
-                    await Task.Delay(1000);
+                    await Task.Delay(2000);
                 }
             }
             catch (Exception ex)
@@ -194,7 +194,7 @@ namespace TheresaBot.Main.Handler
                     bool isShowImg = groupId.IsShowSetuImg(false);
                     var sendContents = setuContents.Select(o => isShowImg ? o with { } : o with { SetuImages = new() }).ToList();
                     await SendGroupMergeSetuAsync(sendContents, new() { titleContents }, groupId, DetailEachPage);
-                    await Task.Delay(1000);
+                    await Task.Delay(2000);
                 }
             }
             catch (Exception ex)

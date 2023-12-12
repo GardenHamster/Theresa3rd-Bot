@@ -13,7 +13,7 @@ namespace TheresaBot.Main.Datas
         {
             try
             {
-                SubscribeTaskMap = new SubscribeService().getSubscribeTask();
+                SubscribeTaskMap = new SubscribeService().LoadSubscribeTasks();
                 LogHelper.Info("订阅任务加载完成...");
             }
             catch (Exception ex)

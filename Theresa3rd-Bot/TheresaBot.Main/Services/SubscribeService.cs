@@ -24,36 +24,41 @@ namespace TheresaBot.Main.Services
         /// 获取订阅任务
         /// </summary>
         /// <returns></returns>
-        public Dictionary<SubscribeType, List<SubscribeTask>> getSubscribeTask()
+        public Dictionary<SubscribeType, List<SubscribeTask>> LoadSubscribeTasks()
         {
-            Dictionary<SubscribeType, List<SubscribeTask>> subscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
-            List<SubscribeInfo> subscribeInfoList = subscribeDao.getSubscribeInfo();
+            var subscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
+            var subscribeInfoList = subscribeDao.getSubscribeInfo();
             foreach (SubscribeInfo subscribeInfo in subscribeInfoList)
             {
                 SubscribeType subscribeType = subscribeInfo.SubscribeType;
-
                 if (subscribeType == SubscribeType.米游社用户 && subscribeInfo.SubscribeSubType != 0) continue;
                 if (subscribeType == SubscribeType.P站画师 && subscribeInfo.SubscribeSubType != 0) continue;
                 if (subscribeType == SubscribeType.P站标签 && subscribeInfo.SubscribeSubType != 0) continue;
-
                 if (!subscribeTaskMap.ContainsKey(subscribeType)) subscribeTaskMap[subscribeType] = new List<SubscribeTask>();
-                List<SubscribeTask> subscribeTaskList = subscribeTaskMap[subscribeType];
-                SubscribeTask subscribeTask = subscribeTaskList.Where(o => o.SubscribeCode == subscribeInfo.SubscribeCode).FirstOrDefault();
+                var subscribeTaskList = subscribeTaskMap[subscribeType];
+                var subscribeTask = subscribeTaskList.Where(o => o.SubscribeCode == subscribeInfo.SubscribeCode).FirstOrDefault();
                 if (subscribeTask is null)
                 {
                     subscribeTask = new SubscribeTask(subscribeInfo);
                     subscribeTaskList.Add(subscribeTask);
                 }
-                if (subscribeInfo.GroupId == 0)
-                {
-                    subscribeTask.AddGroups(BotConfig.SubscribeGroups);
-                }
-                else
-                {
-                    subscribeTask.AddGroup(subscribeInfo.GroupId);
-                }
+                subscribeTask.AddGroup(subscribeInfo.GroupId);
             }
             return subscribeTaskMap;
+        }
+
+        /// <summary>
+        /// 判断是否已存在某个订阅
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="subscribeCode"></param>
+        /// <returns></returns>
+        public bool CheckExists(long groupId, string subscribeCode, SubscribeType subscribeType)
+        {
+            var subscribes = subscribeDao.getSubscribes(subscribeCode, subscribeType);
+            if (subscribes.Count == 0) return false;
+            var groupSubscribes = subscribeGroupDao.isExists()
+            return subscribeList;
         }
 
         /// <summary>
@@ -63,7 +68,7 @@ namespace TheresaBot.Main.Services
         /// <returns></returns>
         public int countSubscribes(SubscribeType subscribeType)
         {
-            return subscribeGroupDao.countSubscribes(subscribeType);
+            return subscribeGroupDao.countByType(subscribeType);
         }
 
         /// <summary>
@@ -178,14 +183,9 @@ namespace TheresaBot.Main.Services
             return subscribeDao.getSubscribes(subscribeType);
         }
 
-        public List<SubscribePO> getSubscribes(string subscribeCode, SubscribeType subscribeType)
+        public bool isSubscribed(long groupId, int subscribeId)
         {
-            return subscribeDao.getSubscribes(subscribeCode, subscribeType);
-        }
-
-        public bool isExistsSubscribeGroup(long groupId, int subscribeId)
-        {
-            return subscribeGroupDao.isExistsSubscribeGroup(groupId, subscribeId);
+            return subscribeGroupDao.isExists(groupId, subscribeId);
         }
 
         public int deleteSubscribe(int subscribeId)
@@ -204,11 +204,6 @@ namespace TheresaBot.Main.Services
         public int deleteSubscribe(long groupId, int subscribeId)
         {
             return subscribeGroupDao.delBySubscribeId(groupId, subscribeId);
-        }
-
-        public int deleteSubscribeGroup(int id)
-        {
-            return subscribeGroupDao.DeleteById(id);
         }
 
         public int deleteSubscribeGroup(List<int> ids)

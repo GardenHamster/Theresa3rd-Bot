@@ -32,7 +32,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 long userId = 0;
-                GroupPushType groupType = GroupPushType.CurrentGroup;
+                var groupType = GroupPushType.CurrentGroup;
                 if (command.Params.Length >= 2)
                 {
                     userId = await CheckUserIdAsync(command.Params[0]);
@@ -48,38 +48,41 @@ namespace TheresaBot.Main.Handler
                     groupType = groupStep.Answer;
                 }
 
-                MysResult<MysUserFullInfoDto> userInfoDto = await miyousheService.geMysUserFullInfoDtoAsync(userId.ToString());
+                var userInfoDto = await miyousheService.getUserFullInfoAsync(userId.ToString());
                 if (userInfoDto is null || userInfoDto.retcode != 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync("订阅失败，目标用户不存在");
                     return;
                 }
 
-                long subscribeGroupId = groupType == GroupPushType.AllGroup ? 0 : command.GroupId;
-                SubscribePO dbSubscribe = subscribeService.getSubscribe(userId.ToString(), SubscribeType.米游社用户);
+                var subscribeGroupId = groupType == GroupPushType.AllGroup ? 0 : command.GroupId;
+                var dbSubscribe = subscribeService.getSubscribe(userId.ToString(), SubscribeType.米游社用户);
                 if (dbSubscribe is null) dbSubscribe = subscribeService.insertSurscribe(userInfoDto.data.user_info, userId.ToString());
-                if (subscribeService.isExistsSubscribeGroup(subscribeGroupId, dbSubscribe.Id))
+                if (subscribeService.isSubscribed(subscribeGroupId, dbSubscribe.Id))
                 {
                     await command.ReplyGroupMessageWithAtAsync($"已订阅了该用户~");
                     return;
                 }
+
                 subscribeService.insertSubscribeGroup(subscribeGroupId, dbSubscribe.Id);
 
-                List<BaseContent> chailList = new List<BaseContent>();
-                chailList.Add(new PlainContent($"米游社用户[{dbSubscribe.SubscribeName}]订阅成功!"));
-                chailList.Add(new PlainContent($"目标群：{Enum.GetName(typeof(GroupPushType), groupType)}"));
-                chailList.Add(new PlainContent($"uid：{dbSubscribe.SubscribeCode}"));
-                chailList.Add(new PlainContent($"签名：{userInfoDto.data.user_info.introduce}"));
+                var contentList = new List<BaseContent>
+                {
+                    new PlainContent($"米游社用户[{dbSubscribe.SubscribeName}]订阅成功!"),
+                    new PlainContent($"目标群：{Enum.GetName(typeof(GroupPushType), groupType)}"),
+                    new PlainContent($"uid：{dbSubscribe.SubscribeCode}"),
+                    new PlainContent($"签名：{userInfoDto.data.user_info.introduce}")
+                };
 
-                string avatar_url = userInfoDto.data.user_info.avatar_url;
+                var avatar_url = userInfoDto.data.user_info.avatar_url;
                 if (string.IsNullOrWhiteSpace(avatar_url) == false)
                 {
-                    string fullImgSavePath = FilePath.GetMiyousheImgSavePath(avatar_url);
-                    FileInfo fileInfo = await HttpHelper.DownImgAsync(avatar_url, fullImgSavePath);
-                    chailList.Add(new LocalImageContent(fileInfo));
+                    var fullImgSavePath = FilePath.GetMiyousheImgSavePath(avatar_url);
+                    var fileInfo = await HttpHelper.DownImgAsync(avatar_url, fullImgSavePath);
+                    contentList.Add(new LocalImageContent(fileInfo));
                 }
 
-                await command.ReplyGroupMessageWithAtAsync(chailList);
+                await command.ReplyGroupMessageWithAtAsync(contentList);
                 SubscribeDatas.LoadSubscribeTask();
             }
             catch (ProcessException ex)
@@ -97,9 +100,10 @@ namespace TheresaBot.Main.Handler
             try
             {
                 long userId = await CheckUserIdAsync(command.KeyWord);
-                List<SubscribePO> subscribeList = miyousheService.getSubscribeList(userId.ToString());
+                var subscribeList = miyousheService.getSubscribeList(userId.ToString());
                 if (subscribeList.Count == 0)
                 {
+                    111
                     await command.ReplyGroupMessageWithAtAsync("并没有订阅这个用户哦~");
                     return;
                 }
@@ -120,7 +124,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task HandleSubscribeAsync()
+        public async Task HandlePushAsync()
         {
             var subscribeType = SubscribeType.米游社用户;
             var subscribeTaskList = SubscribeDatas.GetSubscribeTasks(subscribeType);
@@ -129,8 +133,8 @@ namespace TheresaBot.Main.Handler
                 try
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
-                    List<MysSubscribe> mysSubscribeList = await miyousheService.getMysUserSubscribeAsync(subscribeTask);
-                    if (mysSubscribeList is null || mysSubscribeList.Count == 0) continue;
+                    var mysSubscribeList = await miyousheService.scanPostAsync(subscribeTask);
+                    if (mysSubscribeList.Count == 0) continue;
                     await PushSubscribeAsync(subscribeTask, mysSubscribeList);
                 }
                 catch (Exception ex)
@@ -146,26 +150,24 @@ namespace TheresaBot.Main.Handler
 
         private async Task PushSubscribeAsync(SubscribeTask subscribeTask, List<MysSubscribe> mysSubscribeList)
         {
+            if (subscribeTask.SubscribeGroups.Count == 0) return;
             foreach (MysSubscribe mysSubscribe in mysSubscribeList)
             {
-                if (subscribeTask.SubscribeGroups.Count == 0) continue;
-                List<BaseContent> msgList = new List<BaseContent>()
+                var msgList = new List<BaseContent>()
                 {
                     new PlainContent(miyousheService.getPostInfoAsync(mysSubscribe))
                 };
-
-                string coverUrl = mysSubscribe.SubscribeRecord.CoverUrl;
+                var coverUrl = mysSubscribe.SubscribeRecord.CoverUrl;
                 if (string.IsNullOrWhiteSpace(coverUrl) == false)
                 {
-                    string fullImgSavePath = FilePath.GetMiyousheImgSavePath(coverUrl);
-                    FileInfo fileInfo = await HttpHelper.DownImgAsync(coverUrl, fullImgSavePath);
+                    var fullImgSavePath = FilePath.GetMiyousheImgSavePath(coverUrl);
+                    var fileInfo = await HttpHelper.DownImgAsync(coverUrl, fullImgSavePath);
                     msgList.Add(new LocalImageContent(fileInfo));
                 }
-
                 foreach (long groupId in subscribeTask.SubscribeGroups)
                 {
                     await Session.SendGroupMessageAsync(groupId, msgList);
-                    await Task.Delay(1000);
+                    await Task.Delay(2000);
                 }
             }
         }

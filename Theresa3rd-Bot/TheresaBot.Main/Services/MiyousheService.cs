@@ -23,84 +23,36 @@ namespace TheresaBot.Main.Services
             subscribeRecordDao = new SubscribeRecordDao();
         }
 
-        /// <summary>
-        /// 获取某个群已订阅的列表
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="subscribeCode"></param>
-        /// <returns></returns>
-        public List<SubscribePO> getSubscribeList(string subscribeCode)
+        public async Task<List<MysSubscribe>> scanPostAsync(SubscribeTask subscribeTask)
         {
-            List<SubscribePO> subscribeList = new List<SubscribePO>();
-            List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
-            if (dbSubscribes is null || dbSubscribes.Count == 0) return subscribeList;
-            foreach (var item in dbSubscribes)
-            {
-                if (subscribeGroupDao.isExistsSubscribeGroup(item.Id)) subscribeList.Add(item);
-            }
-            return subscribeList;
-        }
-
-        /// <summary>
-        /// 获取某个群已订阅的列表
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="subscribeCode"></param>
-        /// <returns></returns>
-        public List<SubscribePO> getSubscribeList(long groupId, string subscribeCode)
-        {
-            List<SubscribePO> subscribeList = new List<SubscribePO>();
-            List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
-            if (dbSubscribes is null || dbSubscribes.Count == 0) return subscribeList;
-            foreach (var item in dbSubscribes)
-            {
-                if (subscribeGroupDao.isExistsSubscribeGroup(groupId, item.Id)) subscribeList.Add(item);
-            }
-            return subscribeList;
-        }
-
-        /// <summary>
-        /// 删除一个订阅编码下的所有订阅
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="subscribeCode"></param>
-        public void delAllSubscribeGroup(long groupId, string subscribeCode)
-        {
-            List<SubscribePO> dbSubscribes = subscribeDao.getSubscribes(subscribeCode, SubscribeType.米游社用户);
-            foreach (var item in dbSubscribes) subscribeGroupDao.delBySubscribeId(groupId, item.Id);
-        }
-
-
-        public async Task<List<MysSubscribe>> getMysUserSubscribeAsync(SubscribeTask subscribeTask, int getCount = 5)
-        {
-            int index = 0;
-            int subscribeId = subscribeTask.SubscribeId;
-            List<MysSubscribe> mysSubscribeList = new List<MysSubscribe>();
-            MysResult<MysPostDataDto> mysPostDataDto = await getMysUserPostDtoAsync(subscribeTask.SubscribeCode, 10);
-            if (mysPostDataDto?.data?.list is null || mysPostDataDto.data.list.Count == 0) return mysSubscribeList;
+            var index = 0;
+            var maxScan = 10;
+            var subscribeId = subscribeTask.SubscribeId;
+            var mysPostList = new List<MysSubscribe>();
             int shelfLife = BotConfig.SubscribeConfig.Miyoushe.ShelfLife;
-            List<MysPostListDto> postList = mysPostDataDto.data.list.OrderByDescending(o => o.post.created_at).ToList();
+            var mysPostData = await getUserPostAsync(subscribeTask.SubscribeCode, 10);
+            if (mysPostData?.data?.list is null || mysPostData.data.list.Count == 0) return mysPostList;
+            var postList = mysPostData.data.list.OrderByDescending(o => o.post.created_at).ToList();
             foreach (var item in postList)
             {
                 try
                 {
-                    if (++index > getCount) break;
+                    if (++index > maxScan) break;
+                    if (item.post.IsExpired(shelfLife)) break;
                     string postId = item.post.post_id;
-                    DateTime createTime = DateTimeHelper.ToDateTime(item.post.created_at);
-                    if (shelfLife > 0 && createTime < DateTime.Now.AddSeconds(-1 * shelfLife)) break;
                     if (subscribeRecordDao.checkExists(subscribeTask.SubscribeType, postId)) continue;
                     SubscribeRecordPO subscribeRecord = new SubscribeRecordPO(subscribeId);
-                    subscribeRecord.Title = item.post.subject?.FilterEmoji().CutString(200);
-                    subscribeRecord.Content = item.post.content?.FilterEmoji().CutString(200);
-                    subscribeRecord.CoverUrl = item.post.images.Count > 0 ? item.post.images[0] : "";
+                    subscribeRecord.Title = item.post.subject?.FilterEmoji()?.CutString(200) ?? string.Empty;
+                    subscribeRecord.Content = item.post.content?.FilterEmoji()?.CutString(200) ?? string.Empty;
+                    subscribeRecord.CoverUrl = item.post.images.FirstOrDefault() ?? string.Empty;
                     subscribeRecord.LinkUrl = HttpUrl.getMysArticleUrl(postId);
-                    subscribeRecord.DynamicCode = postId;
                     subscribeRecord.DynamicType = SubscribeDynamicType.帖子;
+                    subscribeRecord.DynamicCode = postId;
                     MysSubscribe mysSubscribe = new MysSubscribe();
                     mysSubscribe.SubscribeRecord = subscribeRecordDao.Insert(subscribeRecord);
+                    mysSubscribe.CreateTime = item.post.CreateTime;
                     mysSubscribe.MysUserPostDto = item;
-                    mysSubscribe.CreateTime = createTime;
-                    mysSubscribeList.Add(mysSubscribe);
+                    mysPostList.Add(mysSubscribe);
                 }
                 catch (Exception ex)
                 {
@@ -111,7 +63,7 @@ namespace TheresaBot.Main.Services
                     await Task.Delay(1000);
                 }
             }
-            return mysSubscribeList;
+            return mysPostList;
         }
 
 
@@ -136,27 +88,25 @@ namespace TheresaBot.Main.Services
             return stringBuilder.ToString();
         }
 
-        /*-------------------------------------------------------------接口相关--------------------------------------------------------------------------*/
-
-        public async Task<MysResult<MysPostDataDto>> getMysUserPostDtoAsync(string userId, int size)
+        public async Task<MysResult<MysPostDataDto>> getUserPostAsync(string userId, int size)
         {
             string referer = HttpUrl.getMysPostListRefer(userId);
-            Dictionary<string, string> headerDic = GetMysHeader(referer);
+            Dictionary<string, string> headerDic = GetHeaders(referer);
             string getUrl = HttpUrl.getMysPostListUrl(userId, size);
             string json = await HttpHelper.GetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysPostDataDto>>(json);
         }
 
-        public async Task<MysResult<MysUserFullInfoDto>> geMysUserFullInfoDtoAsync(string userId)
+        public async Task<MysResult<MysUserFullInfoDto>> getUserFullInfoAsync(string userId)
         {
             string referer = HttpUrl.getMysUserInfoRefer(userId);
-            Dictionary<string, string> headerDic = GetMysHeader(referer);
+            Dictionary<string, string> headerDic = GetHeaders(referer);
             string getUrl = HttpUrl.getMysUserInfoUrl(userId);
             string json = await HttpHelper.GetAsync(getUrl, headerDic);
             return JsonConvert.DeserializeObject<MysResult<MysUserFullInfoDto>>(json);
         }
 
-        private static Dictionary<string, string> GetMysHeader(string referer)
+        private static Dictionary<string, string> GetHeaders(string referer)
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             headerDic.Add("referer", referer);

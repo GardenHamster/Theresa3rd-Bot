@@ -1,4 +1,6 @@
-﻿namespace TheresaBot.Main.Model.Mys
+﻿using TheresaBot.Main.Helper;
+
+namespace TheresaBot.Main.Model.Mys
 {
     public class MysPostDataDto
     {
@@ -20,6 +22,8 @@
         public string subject { get; set; }
         public string uid { get; set; }
         public string post_id { get; set; }
+        public DateTime CreateTime => DateTimeHelper.ToDateTime(created_at);
+        public bool IsExpired(int shelfLife) => shelfLife > 0 && CreateTime.AddSeconds(shelfLife) < DateTime.Now;
     }
 
     public class MysPostUserDto

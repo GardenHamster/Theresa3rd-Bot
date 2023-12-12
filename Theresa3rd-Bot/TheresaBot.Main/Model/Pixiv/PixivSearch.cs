@@ -42,5 +42,6 @@ namespace TheresaBot.Main.Model.Pixiv
         public bool IsImproper => xRestrict > 1 || GetTags().IsImproper();
         public List<string> GetTags() => tags ?? new List<string>();
         public List<string> HavingBanTag() => GetTags().HavingBanTags();
+        public bool IsExpired(int shelfLife) => shelfLife > 0 && createDate.AddSeconds(shelfLife) < DateTime.Now;
     }
 }

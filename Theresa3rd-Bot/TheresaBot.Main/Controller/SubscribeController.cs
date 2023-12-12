@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.DTO;
 using TheresaBot.Main.Model.Result;
@@ -59,6 +60,7 @@ namespace TheresaBot.Main.Controller
             if (idsDto.Ids is null) return ApiResult.ParamError;
             if (idsDto.Ids.Count == 0) return ApiResult.ParamError;
             subscribeService.deleteSubscribeGroup(idsDto.Ids);
+            SubscribeDatas.LoadSubscribeTask();
             return ApiResult.Success("退订成功");
         }
 

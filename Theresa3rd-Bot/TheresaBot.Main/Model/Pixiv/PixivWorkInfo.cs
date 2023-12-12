@@ -25,6 +25,7 @@ namespace TheresaBot.Main.Model.Pixiv
         public double likeRate => Convert.ToDouble(likeCount) / viewCount;
         public double bookmarkRate => Convert.ToDouble(bookmarkCount) / viewCount;
         public bool IsIllust => illustType == 0;
+        public bool IsExpired(int shelfLife) => shelfLife > 0 && createDate.AddSeconds(shelfLife) < DateTime.Now;
 
         public override bool IsR18 => xRestrict > 0 || GetTags().IsR18();
         public override bool IsGif => illustType == 2;
@@ -34,7 +35,6 @@ namespace TheresaBot.Main.Model.Pixiv
         public override int UserId => userId;
         public override string Title => illustTitle;
         public override string UserName => userName;
-
         public override List<string> GetTags() => tags?.getTags() ?? new List<string>();
         public override List<string> HavingBanTags() => GetTags().HavingBanTags();
         public override List<string> GetOriginalUrls()

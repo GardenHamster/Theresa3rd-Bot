@@ -19,6 +19,17 @@
             this.ScanInterval = 30 * 60;
         }
 
+        public override BasePluginConfig FormatConfig()
+        {
+            base.FormatConfig();
+            if (ShelfLife < 0) ShelfLife = 0;
+            if (MaxScan < 0) MaxScan = 0;
+            if (MinBookmark < 0) MinBookmark = 0;
+            if (MinBookPerHour < 0) MinBookPerHour = 0;
+            if (MinBookRate < 0) MinBookRate = 0;
+            return this;
+        }
+
 
     }
 }

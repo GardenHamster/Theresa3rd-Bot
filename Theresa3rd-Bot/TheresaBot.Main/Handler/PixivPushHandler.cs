@@ -57,7 +57,7 @@ namespace TheresaBot.Main.Handler
         {
             var subscribeType = SubscribeType.P站画师;
             var scanReport = new PixivUserScanReport();
-            var sendMerge = BotConfig.SubscribeConfig.PixivTag.SendMerge;
+            var sendMerge = BotConfig.SubscribeConfig.PixivUser.SendMerge;
             var subscribeTasks = SubscribeDatas.GetSubscribeTasks(subscribeType);
             if (subscribeTasks.Count == 0) return scanReport;
             Func<PixivSubscribe, Task> pushAsync = sendMerge ? null : PushUserWorkAsync;
@@ -89,7 +89,7 @@ namespace TheresaBot.Main.Handler
         public async Task<PixivScanReport> HandleFollowPushAsync()
         {
             var scanReport = new PixivScanReport();
-            bool sendMerge = BotConfig.SubscribeConfig.PixivTag.SendMerge;
+            var sendMerge = BotConfig.SubscribeConfig.PixivUser.SendMerge;
             Func<PixivSubscribe, Task> pushAsync = sendMerge ? null : PushFollowWorkAsync;
             var pushList = await pixivService.scanFollowWorkAsync(scanReport, pushAsync);
             if (pushList.Count == 0) return scanReport;
@@ -182,19 +182,19 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                PixivWorkInfo workInfo = pixivSubscribe.PixivWorkInfo;
-                bool isAISetu = workInfo.IsAI;
-                bool isR18Img = workInfo.IsR18;
+                var workInfo = pixivSubscribe.PixivWorkInfo;
+                var isAISetu = workInfo.IsAI;
+                var isR18Img = workInfo.IsR18;
                 if (isR18Img && groupId.IsShowR18() == false) return;
                 if (isAISetu && groupId.IsShowAISetu() == false) return;
-
-                var workMsgs = new List<BaseContent>();
-                workMsgs.Add(new PlainContent(remindMsg(pixivSubscribe)));
-                workMsgs.Add(new PlainContent(pixivService.getWorkInfo(workInfo)));
-
-                bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-                List<FileInfo> imgList = isShowImg ? await GetSetuFilesAsync(workInfo, groupId) : new();
-                PixivSetuContent setuContent = new PixivSetuContent(workMsgs, imgList, workInfo);
+                var workMsgs = new List<BaseContent>
+                {
+                    new PlainContent(remindMsg(pixivSubscribe)),
+                    new PlainContent(pixivService.getWorkInfo(workInfo))
+                };
+                var isShowImg = groupId.IsShowSetuImg(isR18Img);
+                var imgList = isShowImg ? await GetSetuFilesAsync(workInfo, groupId) : new();
+                var setuContent = new PixivSetuContent(workMsgs, imgList, workInfo);
                 await SendGroupSetuAsync(setuContent, groupId);
             }
             catch (Exception ex)
@@ -214,27 +214,27 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                int eachPage = 10;
+                var eachPage = 10;
                 if (pixivSubscribes.Count == 0) return;
                 var pixivContents = new List<PixivSetuContent>();
                 foreach (var pixivSubscribe in pixivSubscribes)
                 {
-                    PixivWorkInfo workInfo = pixivSubscribe.PixivWorkInfo;
-                    bool isAISetu = workInfo.IsAI;
-                    bool isR18Img = workInfo.IsR18;
+                    var workInfo = pixivSubscribe.PixivWorkInfo;
+                    var isAISetu = workInfo.IsAI;
+                    var isR18Img = workInfo.IsR18;
                     if (isR18Img && groupId.IsShowR18() == false) continue;
                     if (isAISetu && groupId.IsShowAISetu() == false) continue;
-                    string remindTemplate = BotConfig.SubscribeConfig.PixivUser.Template;
-                    string pixivTemplate = BotConfig.PixivConfig.Template;
-                    List<FileInfo> setuFiles = await GetSetuFilesAsync(workInfo, groupId);
-
-                    var workMsgs = new List<BaseContent>();
-                    workMsgs.Add(new PlainContent(remindMsg(pixivSubscribe)));
-                    workMsgs.Add(new PlainContent(pixivService.getWorkInfo(workInfo)));
-
-                    bool isShowImg = groupId.IsShowSetuImg(isR18Img);
-                    List<FileInfo> imgList = isShowImg ? setuFiles : new();
-                    PixivSetuContent setuContent = new PixivSetuContent(workMsgs, imgList, workInfo);
+                    var remindTemplate = BotConfig.SubscribeConfig.PixivUser.Template;
+                    var pixivTemplate = BotConfig.PixivConfig.Template;
+                    var setuFiles = await GetSetuFilesAsync(workInfo, groupId);
+                    var workMsgs = new List<BaseContent>
+                    {
+                        new PlainContent(remindMsg(pixivSubscribe)),
+                        new PlainContent(pixivService.getWorkInfo(workInfo))
+                    };
+                    var isShowImg = groupId.IsShowSetuImg(isR18Img);
+                    var imgList = isShowImg ? setuFiles : new();
+                    var setuContent = new PixivSetuContent(workMsgs, imgList, workInfo);
                     pixivContents.Add(setuContent);
                 }
                 var setuContents = pixivContents.Cast<SetuContent>().ToList();

@@ -47,6 +47,11 @@ namespace TheresaBot.Main.Model.Result
             return new ApiResult(false, code, message);
         }
 
+        public static ApiResult Fail(Exception ex)
+        {
+            return new ApiResult(false, ResultCode.Error, ex.Message);
+        }
+
         /// <summary>
         /// 未登录
         /// </summary>

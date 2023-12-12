@@ -34,12 +34,19 @@ namespace TheresaBot.Main.Controller
         [HttpPost]
         [Authorize]
         [Route("set/general")]
-        public ApiResult SetGeneral([FromBody] GeneralConfig config)
+        public async Task<ApiResult> SetGeneralAsync([FromBody] GeneralConfig config)
         {
-            BotConfig.GeneralConfig = config.FormatConfig();
-            ConfigHelper.GeneralOperater.SaveConfig(config);
-            Task task = SchedulerManager.InitDownClearJobAsync(Session, Reporter);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.GeneralConfig = config.FormatConfig();
+                ConfigHelper.GeneralOperater.SaveConfig(config);
+                await SchedulerManager.InitDownClearJobAsync(Session, Reporter);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -55,9 +62,16 @@ namespace TheresaBot.Main.Controller
         [Route("set/pixiv")]
         public ApiResult SetPixiv([FromBody] PixivConfig config)
         {
-            BotConfig.PixivConfig = config.FormatConfig();
-            ConfigHelper.PixivOperater.SaveConfig(config);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.PixivConfig = config.FormatConfig();
+                ConfigHelper.PixivOperater.SaveConfig(config);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -73,9 +87,16 @@ namespace TheresaBot.Main.Controller
         [Route("set/permissions")]
         public ApiResult SetPermissions([FromBody] PermissionsConfig config)
         {
-            BotConfig.PermissionsConfig = config.FormatConfig();
-            ConfigHelper.PermissionsOperater.SaveConfig(config);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.PermissionsConfig = config.FormatConfig();
+                ConfigHelper.PermissionsOperater.SaveConfig(config);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -91,9 +112,16 @@ namespace TheresaBot.Main.Controller
         [Route("set/manage")]
         public ApiResult SetManage([FromBody] ManageConfig config)
         {
-            BotConfig.ManageConfig = config.FormatConfig();
-            ConfigHelper.ManageOperater.SaveConfig(config);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.ManageConfig = config.FormatConfig();
+                ConfigHelper.ManageOperater.SaveConfig(config);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -109,9 +137,16 @@ namespace TheresaBot.Main.Controller
         [Route("set/menu")]
         public ApiResult SetMenu([FromBody] MenuConfig config)
         {
-            BotConfig.MenuConfig = config.FormatConfig();
-            ConfigHelper.MenuOperater.SaveConfig(config);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.MenuConfig = config.FormatConfig();
+                ConfigHelper.MenuOperater.SaveConfig(config);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -127,9 +162,16 @@ namespace TheresaBot.Main.Controller
         [Route("set/repeater")]
         public ApiResult SetRepeater([FromBody] RepeaterConfig config)
         {
-            BotConfig.RepeaterConfig = config.FormatConfig();
-            ConfigHelper.RepeaterOperater.SaveConfig(config);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.RepeaterConfig = config.FormatConfig();
+                ConfigHelper.RepeaterOperater.SaveConfig(config);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -145,9 +187,16 @@ namespace TheresaBot.Main.Controller
         [Route("set/welcome")]
         public ApiResult SetWelcome([FromBody] WelcomeConfig config)
         {
-            BotConfig.WelcomeConfig = config.FormatConfig();
-            ConfigHelper.WelcomeOperater.SaveConfig(config);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.WelcomeConfig = config.FormatConfig();
+                ConfigHelper.WelcomeOperater.SaveConfig(config);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -161,12 +210,19 @@ namespace TheresaBot.Main.Controller
         [HttpPost]
         [Authorize]
         [Route("set/reminder")]
-        public ApiResult SetReminder([FromBody] ReminderConfig config)
+        public async Task<ApiResult> SetReminderAsync([FromBody] ReminderConfig config)
         {
-            BotConfig.ReminderConfig = config.FormatConfig();
-            ConfigHelper.ReminderOperater.SaveConfig(config);
-            Task task = SchedulerManager.InitReminderJobAsync(Session, Reporter);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.ReminderConfig = config.FormatConfig();
+                ConfigHelper.ReminderOperater.SaveConfig(config);
+                await SchedulerManager.InitReminderJobAsync(Session, Reporter);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -182,9 +238,16 @@ namespace TheresaBot.Main.Controller
         [Route("set/setu")]
         public ApiResult SetSetu([FromBody] SetuConfig config)
         {
-            BotConfig.SetuConfig = config.FormatConfig();
-            ConfigHelper.SetuOperater.SaveConfig(config);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.SetuConfig = config.FormatConfig();
+                ConfigHelper.SetuOperater.SaveConfig(config);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -200,9 +263,16 @@ namespace TheresaBot.Main.Controller
         [Route("set/saucenao")]
         public ApiResult SetSaucenao([FromBody] SaucenaoConfig config)
         {
-            BotConfig.SaucenaoConfig = config.FormatConfig();
-            ConfigHelper.SaucenaoOperater.SaveConfig(config);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.SaucenaoConfig = config.FormatConfig();
+                ConfigHelper.SaucenaoOperater.SaveConfig(config);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -218,10 +288,17 @@ namespace TheresaBot.Main.Controller
         [Route("set/subscribe")]
         public ApiResult SetSubscribe([FromBody] SubscribeConfig config)
         {
-            BotConfig.SubscribeConfig = config.FormatConfig();
-            ConfigHelper.SubscribeOperater.SaveConfig(config);
-            TimerManager.InitTimers(Session, Reporter);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.SubscribeConfig = config.FormatConfig();
+                ConfigHelper.SubscribeOperater.SaveConfig(config);
+                TimerManager.InitTimers(Session, Reporter);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -235,12 +312,19 @@ namespace TheresaBot.Main.Controller
         [HttpPost]
         [Authorize]
         [Route("set/timing/setu")]
-        public ApiResult SetTimingSetu([FromBody] TimingSetuConfig config)
+        public async Task<ApiResult> SetTimingSetuAsync([FromBody] TimingSetuConfig config)
         {
-            BotConfig.TimingSetuConfig = config.FormatConfig();
-            ConfigHelper.TimingSetuOperater.SaveConfig(config);
-            Task task = SchedulerManager.InitTimingSetuJobAsync(Session, Reporter);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.TimingSetuConfig = config.FormatConfig();
+                ConfigHelper.TimingSetuOperater.SaveConfig(config);
+                await SchedulerManager.InitTimingSetuJobAsync(Session, Reporter);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -254,12 +338,19 @@ namespace TheresaBot.Main.Controller
         [HttpPost]
         [Authorize]
         [Route("set/pixiv/ranking")]
-        public ApiResult SetPixivRanking([FromBody] PixivRankingConfig config)
+        public async Task<ApiResult> SetPixivRankingAsync([FromBody] PixivRankingConfig config)
         {
-            BotConfig.PixivRankingConfig = config.FormatConfig();
-            ConfigHelper.PixivRankingOperater.SaveConfig(config);
-            Task task = SchedulerManager.InitPixivRankingJobAsync(Session, Reporter);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.PixivRankingConfig = config.FormatConfig();
+                ConfigHelper.PixivRankingOperater.SaveConfig(config);
+                await SchedulerManager.InitPixivRankingJobAsync(Session, Reporter);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -273,12 +364,19 @@ namespace TheresaBot.Main.Controller
         [HttpPost]
         [Authorize]
         [Route("set/wordcloud")]
-        public ApiResult SetWordCloud([FromBody] WordCloudConfig config)
+        public async Task<ApiResult> SetWordCloudAsync([FromBody] WordCloudConfig config)
         {
-            BotConfig.WordCloudConfig = config.FormatConfig();
-            ConfigHelper.WordCloudOperater.SaveConfig(config);
-            Task task = SchedulerManager.InitWordCloudJobAsync(Session, Reporter);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.WordCloudConfig = config.FormatConfig();
+                ConfigHelper.WordCloudOperater.SaveConfig(config);
+                await SchedulerManager.InitWordCloudJobAsync(Session, Reporter);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
         [HttpGet]
@@ -294,9 +392,16 @@ namespace TheresaBot.Main.Controller
         [Route("set/game")]
         public ApiResult SetGame([FromBody] GameConfig config)
         {
-            BotConfig.GameConfig = config.FormatConfig();
-            ConfigHelper.GameOperater.SaveConfig(config);
-            return ApiResult.Success(config);
+            try
+            {
+                BotConfig.GameConfig = config.FormatConfig();
+                ConfigHelper.GameOperater.SaveConfig(config);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
         }
 
     }

@@ -58,7 +58,8 @@ namespace TheresaBot.Main.Timers
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex);
+                LogHelper.Error(ex, $"定时清理任务启动失败");
+                throw;
             }
         }
 
@@ -85,6 +86,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"定时清理任务启动失败");
+                throw;
             }
         }
 
@@ -112,6 +114,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"Cookie检查定时器启动失败");
+                throw;
             }
         }
 
@@ -135,6 +138,31 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"定时提醒任务启动失败");
+                throw;
+            }
+        }
+
+        private static async Task<IScheduler> CreateReminderJobAsync(ReminderTimer timer, BaseSession session, BaseReporter reporter)
+        {
+            try
+            {
+                if (timer is null || timer.Enable == false) return null;
+                if (string.IsNullOrWhiteSpace(timer.Cron)) return null;
+                ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(timer.Cron).Build();
+                IJobDetail jobDetail = JobBuilder.Create<ReminderJob>().WithIdentity(timer.GetHashCode().ToString(), "ReminderJob").Build();
+                IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+                jobDetail.JobDataMap.Put("ReminderTimer", timer);
+                jobDetail.JobDataMap.Put("BaseSession", session);
+                jobDetail.JobDataMap.Put("BaseReporter", reporter);
+                await scheduler.ScheduleJob(jobDetail, trigger);
+                await scheduler.Start();
+                LogHelper.Info($"定时提醒任务[{timer.Name}]启动完毕...");
+                return scheduler;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"定时提醒任务[{timer.Name}]启动失败");
+                throw;
             }
         }
 
@@ -161,71 +189,8 @@ namespace TheresaBot.Main.Timers
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex, $"涩图定时推送任务");
-            }
-        }
-
-        public static async Task InitPixivRankingJobAsync(BaseSession session, BaseReporter reporter)
-        {
-            try
-            {
-                await TimingRankingSchedulers.DestroyAndClearAsync();
-                var rankingConfig = BotConfig.PixivRankingConfig;
-                if (rankingConfig is null) return;
-                if (rankingConfig.Enable == false) return;
-                if (rankingConfig.Subscribes is null) return;
-                if (rankingConfig.Subscribes.Count == 0) return;
-                List<PixivRankingTimer> timers = rankingConfig.Subscribes;
-                foreach (var item in timers)
-                {
-                    IScheduler scheduler = await CreateTimingRankingJobAsync(item, session, reporter);
-                    TimingRankingSchedulers.Add(scheduler);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, $"Pixiv榜单定时推送任务");
-            }
-        }
-
-        /// <summary>
-        /// 启动词云推送任务
-        /// </summary>
-        public static async Task InitWordCloudJobAsync(BaseSession session, BaseReporter reporter)
-        {
-            await WordCloudSchedulers.DestroyAndClearAsync();
-            var wordCloudConfig = BotConfig.WordCloudConfig;
-            var subscribes = wordCloudConfig?.Subscribes;
-            if (subscribes is null || subscribes.Count == 0) return;
-            foreach (var subscribe in subscribes)
-            {
-                if (subscribe.Enable == false) continue;
-                IScheduler scheduler = await CreateWordCloudJobAsync(subscribe, session, reporter);
-                WordCloudSchedulers.Add(scheduler);
-            }
-        }
-
-        private static async Task<IScheduler> CreateReminderJobAsync(ReminderTimer timer, BaseSession session, BaseReporter reporter)
-        {
-            try
-            {
-                if (timer is null || timer.Enable == false) return null;
-                if (string.IsNullOrWhiteSpace(timer.Cron)) return null;
-                ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(timer.Cron).Build();
-                IJobDetail jobDetail = JobBuilder.Create<ReminderJob>().WithIdentity(timer.GetHashCode().ToString(), "ReminderJob").Build();
-                IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
-                jobDetail.JobDataMap.Put("ReminderTimer", timer);
-                jobDetail.JobDataMap.Put("BaseSession", session);
-                jobDetail.JobDataMap.Put("BaseReporter", reporter);
-                await scheduler.ScheduleJob(jobDetail, trigger);
-                await scheduler.Start();
-                LogHelper.Info($"定时提醒任务[{timer.Name}]启动完毕...");
-                return scheduler;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex, $"定时提醒任务[{timer.Name}]启动失败");
-                return null;
+                LogHelper.Error(ex, $"涩图定时推送任务启动失败");
+                throw;
             }
         }
 
@@ -249,7 +214,31 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"涩图定时推送任务[{timer.Name}]启动失败");
-                return null;
+                throw;
+            }
+        }
+
+        public static async Task InitPixivRankingJobAsync(BaseSession session, BaseReporter reporter)
+        {
+            try
+            {
+                await TimingRankingSchedulers.DestroyAndClearAsync();
+                var rankingConfig = BotConfig.PixivRankingConfig;
+                if (rankingConfig is null) return;
+                if (rankingConfig.Enable == false) return;
+                if (rankingConfig.Subscribes is null) return;
+                if (rankingConfig.Subscribes.Count == 0) return;
+                List<PixivRankingTimer> timers = rankingConfig.Subscribes;
+                foreach (var item in timers)
+                {
+                    IScheduler scheduler = await CreateTimingRankingJobAsync(item, session, reporter);
+                    TimingRankingSchedulers.Add(scheduler);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"Pixiv榜单定时推送任务启动失败");
+                throw;
             }
         }
 
@@ -274,7 +263,32 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"Pixiv榜单定时推送任务[{string.Join(',', timer.Contents)}]启动失败");
-                return null;
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 启动词云推送任务
+        /// </summary>
+        public static async Task InitWordCloudJobAsync(BaseSession session, BaseReporter reporter)
+        {
+            try
+            {
+                await WordCloudSchedulers.DestroyAndClearAsync();
+                var wordCloudConfig = BotConfig.WordCloudConfig;
+                var subscribes = wordCloudConfig?.Subscribes;
+                if (subscribes is null || subscribes.Count == 0) return;
+                foreach (var subscribe in subscribes)
+                {
+                    if (subscribe.Enable == false) continue;
+                    IScheduler scheduler = await CreateWordCloudJobAsync(subscribe, session, reporter);
+                    WordCloudSchedulers.Add(scheduler);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, $"词云定时推送任务启动失败");
+                throw;
             }
         }
 
@@ -298,7 +312,7 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"词云定时推送任务[{timer.Name}]启动失败");
-                return null;
+                throw;
             }
         }
 
@@ -329,10 +343,9 @@ namespace TheresaBot.Main.Timers
             catch (Exception ex)
             {
                 LogHelper.Error(ex, $"任务调度{scheduler.SchedulerName}强制停止失败");
+                throw;
             }
         }
-
-
 
     }
 }

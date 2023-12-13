@@ -16,10 +16,12 @@ namespace TheresaBot.Main.Controller
     public class SubscribeController : BaseController
     {
         private SubscribeService subscribeService;
+        private SubscribeGroupService subscribeGroupService;
 
         public SubscribeController()
         {
             this.subscribeService = new SubscribeService();
+            this.subscribeGroupService = new SubscribeGroupService();
         }
 
         [HttpGet]
@@ -27,7 +29,7 @@ namespace TheresaBot.Main.Controller
         [Route("list/pixiv/user")]
         public ApiResult GetPixivUserList()
         {
-            var subscribeDatas = subscribeService.getSubscribeDatas(SubscribeType.P站画师);
+            var subscribeDatas = subscribeGroupService.GetSubscribeInfos(SubscribeType.P站画师);
             var subscribeList = subscribeDatas.Select(ToSubscribeVo).ToList();
             return ApiResult.Success(subscribeList);
         }
@@ -37,7 +39,7 @@ namespace TheresaBot.Main.Controller
         [Route("list/pixiv/tag")]
         public ApiResult GetPixivTagList()
         {
-            var subscribeDatas = subscribeService.getSubscribeDatas(SubscribeType.P站标签);
+            var subscribeDatas = subscribeGroupService.GetSubscribeInfos(SubscribeType.P站标签);
             var subscribeList = subscribeDatas.Select(ToSubscribeVo).ToList();
             return ApiResult.Success(subscribeList);
         }
@@ -47,7 +49,7 @@ namespace TheresaBot.Main.Controller
         [Route("list/miyoushe/user")]
         public ApiResult GetMiyousheUserList()
         {
-            var subscribeDatas = subscribeService.getSubscribeDatas(SubscribeType.米游社用户);
+            var subscribeDatas = subscribeGroupService.GetSubscribeInfos(SubscribeType.米游社用户);
             var subscribeList = subscribeDatas.Select(ToSubscribeVo).ToList();
             return ApiResult.Success(subscribeList);
         }
@@ -59,7 +61,7 @@ namespace TheresaBot.Main.Controller
         {
             if (idsDto.Ids is null) return ApiResult.ParamError;
             if (idsDto.Ids.Count == 0) return ApiResult.ParamError;
-            subscribeService.deleteSubscribeGroup(idsDto.Ids);
+            subscribeGroupService.DeleteById(idsDto.Ids);
             SubscribeDatas.LoadSubscribeTask();
             return ApiResult.Success("退订成功");
         }

@@ -1,8 +1,8 @@
 ﻿namespace TheresaBot.Main.Type.StepOptions
 {
-    public enum GroupPushType
+    public enum PushType
     {
-        AllGroup = 0,
+        SubscribableGroup = 0,
         CurrentGroup = 1
     }
 }

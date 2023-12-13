@@ -15,8 +15,8 @@ namespace TheresaBot.Main.Helper
 
         public static Dictionary<int, string> GroupPushOptions => new()
         {
-            {(int)GroupPushType.AllGroup, "所有拥有订阅权限的群"},
-            {(int)GroupPushType.CurrentGroup, "当前群"},
+            {(int)PushType.SubscribableGroup, "所有拥有订阅权限的群"},
+            {(int)PushType.CurrentGroup, "当前群"},
         };
 
         public static Dictionary<int, string> TagMatchOptions => new()
@@ -50,7 +50,7 @@ namespace TheresaBot.Main.Helper
 
         public static Dictionary<int, string> TimingSetuSourceOptions => new()
         {
-            {(int)TimingSetuSourceType.Local, "本地涩图"},
+            {(int)TimingSetuSourceType.Local, "本地图库"},
             {(int)TimingSetuSourceType.Lolicon, "Lolicon Api"},
             {(int)TimingSetuSourceType.Lolisuki, "Lolisuki Api"},
         };
@@ -70,20 +70,22 @@ namespace TheresaBot.Main.Helper
             {(int)UCGameMode.Free, "自由加入"},
         };
 
-        public static string GetTypeName(this TimingSetuSourceType sourceType)
+        public static List<OptionVo> ToOptionList(this Dictionary<int, string> options)
         {
-            return sourceType switch
-            {
-                TimingSetuSourceType.Local => "本地图库",
-                TimingSetuSourceType.Lolicon => "Lolicon Api",
-                TimingSetuSourceType.Lolisuki => "Lolisuki Api",
-                _ => string.Empty
-            };
+            return options.Select(o => new OptionVo(o.Key, o.Value)).ToList();
         }
 
-        public static List<OptionVo> ToOptionList(this Dictionary<int, string> dic)
+        public static string GetOptionName(this Dictionary<int, string> options, Enum value)
         {
-            return dic.Select(o => new OptionVo(o.Key, o.Value)).ToList();
+            int intValue = Convert.ToInt32(value);
+            if (options.ContainsKey(intValue))
+            {
+                return options[intValue];
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
     }

@@ -1,11 +1,11 @@
 ﻿namespace TheresaBot.Main.Model.Mys
 {
-    public class MysUserFullInfoDto
+    public class MysUserDataDto
     {
-        public MysUserFullInfo user_info { get; set; }
+        public MysUserInfo user_info { get; set; }
     }
 
-    public class MysUserFullInfo
+    public class MysUserInfo
     {
         public string nickname { get; set; }
 

@@ -41,11 +41,11 @@ namespace TheresaBot.Main.Common
         /// </summary>
         /// <param name="searchWord"></param>
         /// <returns></returns>
-        public static string getPixivSearchUrl(string searchWord, int pageNo, bool isMatchAll, bool includeR18)
+        public static string getPixivSearchUrl(string searchWord, int pageNo, bool fullMatch, bool includeR18)
         {
             string keyword = System.Web.HttpUtility.UrlEncode(searchWord).Replace("+", "%20");
             string mode = includeR18 ? "all" : "safe";//all,safe,r18;
-            string s_mode = isMatchAll ? "s_tag_full" : "s_tag";//s_tag_full,s_tag,s_tc
+            string s_mode = fullMatch ? "s_tag_full" : "s_tag";//s_tag_full,s_tag,s_tc
             return $"{PixivHomeUrl}/ajax/search/illustrations/{keyword}?word={keyword}&order=date_d&mode={mode}&p={pageNo}&s_mode={s_mode}&type=illust_and_ugoira&lang=zh";
         }
 

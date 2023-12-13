@@ -196,7 +196,6 @@ namespace TheresaBot.Main.Handler
         /// <summary>
         /// 发送定时涩图Message
         /// </summary>
-        /// <param name="session"></param>
         /// <param name="timingSetuTimer"></param>
         /// <param name="tags"></param>
         /// <param name="groupId"></param>
@@ -205,11 +204,12 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string template = timingSetuTimer.TimingMsg?.Trim()?.TrimLine();
+                var sourceType = timingSetuTimer.Source;
+                var template = timingSetuTimer.TimingMsg?.Trim()?.TrimLine();
                 if (string.IsNullOrWhiteSpace(template)) return;
                 template = template.Replace("{Tags}", tags);
-                template = template.Replace("{SourceName}", timingSetuTimer.Source.GetTypeName());
-                List<BaseContent> chainList = new List<BaseContent>(template.SplitToChainAsync());
+                template = template.Replace("{SourceName}", EnumHelper.TimingSetuSourceOptions.GetOptionName(sourceType));
+                var chainList = new List<BaseContent>(template.SplitToChainAsync());
                 await Session.SendGroupMessageAsync(groupId, chainList, new() { }, timingSetuTimer.AtAll);
             }
             catch (Exception ex)

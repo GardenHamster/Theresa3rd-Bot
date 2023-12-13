@@ -12,14 +12,10 @@ namespace TheresaBot.Main.Services
 {
     internal class MiyousheService
     {
-        private SubscribeDao subscribeDao;
-        private SubscribeGroupDao subscribeGroupDao;
         private SubscribeRecordDao subscribeRecordDao;
 
         public MiyousheService()
         {
-            subscribeDao = new SubscribeDao();
-            subscribeGroupDao = new SubscribeGroupDao();
             subscribeRecordDao = new SubscribeRecordDao();
         }
 
@@ -97,13 +93,13 @@ namespace TheresaBot.Main.Services
             return JsonConvert.DeserializeObject<MysResult<MysPostDataDto>>(json);
         }
 
-        public async Task<MysResult<MysUserFullInfoDto>> getUserFullInfoAsync(string userId)
+        public async Task<MysResult<MysUserDataDto>> getUserInfoAsync(string userId)
         {
             string referer = HttpUrl.getMysUserInfoRefer(userId);
             Dictionary<string, string> headerDic = GetHeaders(referer);
             string getUrl = HttpUrl.getMysUserInfoUrl(userId);
             string json = await HttpHelper.GetAsync(getUrl, headerDic);
-            return JsonConvert.DeserializeObject<MysResult<MysUserFullInfoDto>>(json);
+            return JsonConvert.DeserializeObject<MysResult<MysUserDataDto>>(json);
         }
 
         private static Dictionary<string, string> GetHeaders(string referer)

@@ -42,10 +42,5 @@ namespace TheresaBot.Main.Dao
             return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).OrderBy(o => o.SubscribeSubType).ToList();
         }
 
-        public SubscribeGroupPO getSubscribeGroup(long groupId, int subscribeId)
-        {
-            return Db.Queryable<SubscribeGroupPO>().Where(o => o.GroupId == groupId && o.SubscribeId == subscribeId).First();
-        }
-
     }
 }

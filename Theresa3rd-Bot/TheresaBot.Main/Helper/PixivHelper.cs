@@ -45,12 +45,12 @@ namespace TheresaBot.Main.Helper
             PixivHttpClientFactory = pixivServiceCollection.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
         }
 
-        public static async Task<PixivSearch> GetPixivSearchAsync(string keyword, int pageNo, bool isMatchAll, bool includeR18)
+        public static async Task<PixivSearch> GetPixivSearchAsync(string keyword, int pageNo, bool fullMatch, bool includeR18)
         {
             string operation = $"获取标签:{keyword}作品";
             string referer = HttpUrl.getPixivSearchReferer();
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, isMatchAll, includeR18);
+            string postUrl = HttpUrl.getPixivSearchUrl(keyword, pageNo, fullMatch, includeR18);
             return await GetPixivResultAsync<PixivSearch>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 

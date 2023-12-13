@@ -82,7 +82,7 @@ namespace TheresaBot.Main.Invoker
                 PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivUser) == false) return false;
-                await handler.CancleSubscribeUserAsync(botCommand);
+                await handler.UnsubscribeUserAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -103,7 +103,7 @@ namespace TheresaBot.Main.Invoker
                 PixivSubscribeHandler handler = new PixivSubscribeHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.PixivTag) == false) return false;
-                await handler.CancleSubscribeTagAsync(botCommand);
+                await handler.UnsubscribeTagAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -123,7 +123,7 @@ namespace TheresaBot.Main.Invoker
                 MiyousheHandler handler = new MiyousheHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.Miyoushe) == false) return false;
-                await handler.CancleSubscribeUserAsync(botCommand);
+                await handler.UnsubscribeUserAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),

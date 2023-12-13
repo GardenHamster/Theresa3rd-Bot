@@ -13,10 +13,12 @@ namespace TheresaBot.Main.Controller
     public class CountController : BaseController
     {
         private SubscribeService subscribeService;
+        private SubscribeGroupService subscribeGroupService;
 
         public CountController()
         {
             subscribeService = new SubscribeService();
+            subscribeGroupService = new SubscribeGroupService();
         }
 
         [HttpGet]
@@ -59,9 +61,9 @@ namespace TheresaBot.Main.Controller
         {
             SubscribeDataVo data = new SubscribeDataVo()
             {
-                PixivUserSubs = subscribeService.countSubscribes(SubscribeType.P站画师),
-                PixivTagSubs = subscribeService.countSubscribes(SubscribeType.P站标签),
-                MysUserSubs = subscribeService.countSubscribes(SubscribeType.米游社用户),
+                PixivUserSubs = subscribeGroupService.CountSubscribes(SubscribeType.P站画师),
+                PixivTagSubs = subscribeGroupService.CountSubscribes(SubscribeType.P站标签),
+                MysUserSubs = subscribeGroupService.CountSubscribes(SubscribeType.米游社用户),
             };
             return ApiResult.Success(data);
         }

@@ -16,10 +16,12 @@ namespace TheresaBot.Main.Handler
     internal class SubscribeHandler : BaseHandler
     {
         private SubscribeService subscribeService;
+        private SubscribeGroupService subscribeGroupService;
 
         public SubscribeHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             subscribeService = new SubscribeService();
+            subscribeGroupService = new SubscribeGroupService();
         }
 
         public async Task ListSubscribeAsync(GroupCommand command)
@@ -27,9 +29,9 @@ namespace TheresaBot.Main.Handler
             try
             {
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
-                var miyousheSubList = subscribeService.getSubscribes(command.GroupId, SubscribeType.米游社用户);
-                var pixivUserSubList = subscribeService.getSubscribes(command.GroupId, SubscribeType.P站画师);
-                var pixivTagSubList = subscribeService.getSubscribes(command.GroupId, SubscribeType.P站标签).Select(o => o with { SubscribeCode = String.Empty }).ToList();
+                var miyousheSubList = subscribeGroupService.GetSubscribeInfos(command.GroupId, SubscribeType.米游社用户);
+                var pixivUserSubList = subscribeGroupService.GetSubscribeInfos(command.GroupId, SubscribeType.P站画师);
+                var pixivTagSubList = subscribeGroupService.GetSubscribeInfos(command.GroupId, SubscribeType.P站标签).Select(o => o with { SubscribeCode = String.Empty }).ToList();
                 var fullSavePath = FilePath.GetTempImgSavePath();
                 using var drawer = new SubscribeDrawer();
                 FileInfo fileInfo = drawer.DrawSubscribe(miyousheSubList, pixivUserSubList, pixivTagSubList, fullSavePath);
@@ -67,14 +69,14 @@ namespace TheresaBot.Main.Handler
                     subscribeId = tagStep.Answer;
                 }
 
-                var dbSubscribe = subscribeService.getSubscribe(subscribeId);
+                var dbSubscribe = subscribeService.GetSubscribe(subscribeId);
                 if (dbSubscribe is null)
                 {
                     await command.ReplyGroupMessageWithQuoteAsync($"退订失败，订阅Id{subscribeId}不存在");
                     return;
                 }
 
-                subscribeService.deleteSubscribe(dbSubscribe.Id);
+                subscribeGroupService.DeleteBySubscribeId(dbSubscribe.Id);
                 await command.ReplyGroupMessageWithQuoteAsync($"已为所有群退订了{dbSubscribe.SubscribeType}[{dbSubscribe.SubscribeName}]~");
                 SubscribeDatas.LoadSubscribeTask();
             }

@@ -96,7 +96,7 @@ namespace TheresaBot.Main.Handler
                     subscribe = subscribeService.AddSurscribe(pixivUserInfo, userId);
                 }
 
-                if (subscribeGroupService.IsSubscribed(subscribe.Id,command.GroupId))
+                if (subscribeGroupService.IsSubscribed(subscribe.Id, command.GroupId))
                 {
                     await command.ReplyGroupMessageWithQuoteAsync($"画师【{userId}】已经被订阅了~");
                     return;
@@ -159,7 +159,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public void SyncUserAsync(List<PixivFollowUser> followUsers, PixivSyncType syncType, PushType pushType,long groupId)
+        public void SyncUserAsync(List<PixivFollowUser> followUsers, PixivSyncType syncType, PushType pushType, long groupId)
         {
             try
             {
@@ -281,7 +281,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                subscribeGroupService.AddGroupSubscribe(subscribe.Id, pushType,command.GroupId );
+                subscribeGroupService.AddGroupSubscribe(subscribe.Id, pushType, command.GroupId);
                 SubscribeDatas.LoadSubscribeTask();
                 await command.ReplyGroupMessageWithQuoteAsync($"标签[{pixivTag}]订阅成功，标签作品总数为:{pageOne.illust.total}");
             }

@@ -64,7 +64,7 @@ namespace TheresaBot.Main.Handler
                     subscribe = subscribeService.AddSubscribe(userInfo, userId.ToString());
                 }
 
-                if (subscribeGroupService.IsSubscribed(subscribe.Id,command.GroupId))
+                if (subscribeGroupService.IsSubscribed(subscribe.Id, command.GroupId))
                 {
                     await command.ReplyGroupMessageWithAtAsync($"已订阅这个用户了~");
                     return;

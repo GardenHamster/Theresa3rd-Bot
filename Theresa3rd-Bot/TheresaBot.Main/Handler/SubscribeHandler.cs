@@ -52,33 +52,30 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task CancleSubscribeAsync(GroupCommand command)
+        public async Task DeleteSubscribeAsync(GroupCommand command)
         {
             try
             {
-                int subscribeId = 0;
+                var subscribeIds = new int[0];
                 if (command.KeyWord.Length > 0)
                 {
-                    subscribeId = await CheckSubscribeIdAsync(command.KeyWord);
+                    subscribeIds = await CheckSubscribeIdsAsync(command.KeyWord);
                 }
                 else
                 {
                     var processInfo = ProcessCache.CreateProcess(command);
-                    var tagStep = processInfo.CreateStep("请在60秒内发送要退订的Id", CheckSubscribeIdAsync);
+                    var idStep = processInfo.CreateStep("请在60秒内发送要退订的ID，多个ID之间可以用逗号或者换行隔开", CheckSubscribeIdsAsync);
                     await processInfo.StartProcessing();
-                    subscribeId = tagStep.Answer;
+                    subscribeIds = idStep.Answer;
                 }
 
-                var dbSubscribe = subscribeService.GetSubscribe(subscribeId);
-                if (dbSubscribe is null)
+                foreach (var subscribeId in subscribeIds)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync($"退订失败，订阅Id{subscribeId}不存在");
-                    return;
+                    await DeleteSubscribeAsync(command, subscribeId);
                 }
 
-                subscribeGroupService.DeleteBySubscribeId(dbSubscribe.Id);
-                await command.ReplyGroupMessageWithQuoteAsync($"已为所有群退订了{dbSubscribe.SubscribeType}[{dbSubscribe.SubscribeName}]~");
                 SubscribeDatas.LoadSubscribeTask();
+                await command.ReplyGroupMessageWithQuoteAsync($"退订完毕~");
             }
             catch (ProcessException ex)
             {
@@ -86,19 +83,66 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReplyError(command, ex, "取消订阅失败");
+                await LogAndReplyError(command, ex, "订阅取消失败");
             }
+        }
+
+        private async Task DeleteSubscribeAsync(GroupCommand command, int subscribeId)
+        {
+            try
+            {
+                var subscribe = subscribeService.GetSubscribe(subscribeId);
+                if (subscribe is null)
+                {
+                    await command.ReplyGroupMessageWithQuoteAsync($"订阅ID【{subscribeId}】退订失败，ID不存在");
+                    await Task.Delay(1000);
+                }
+                else
+                {
+                    subscribeGroupService.DeleteBySubscribeId(subscribeId);
+                }
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, $"订阅ID【{subscribeId}】退订失败");
+                await Task.Delay(1000);
+            }
+        }
+
+        private async Task<int[]> CheckSubscribeIdsAsync(string value)
+        {
+            var ids = new List<int>();
+            var splitArr = value.SplitParams();
+            if (splitArr.Length == 0)
+            {
+                throw new ProcessException("没有检测到用户id");
+            }
+            foreach (var idStr in splitArr)
+            {
+                ids.Add(await CheckSubscribeIdAsync(idStr));
+            }
+            return await Task.FromResult(ids.ToArray());
         }
 
         private async Task<int> CheckSubscribeIdAsync(string value)
         {
-            int subscribeId = 0;
-            if (int.TryParse(value, out subscribeId) == false)
+            int id = 0;
+            if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ProcessException("id必须为数字");
+                throw new ProcessException("没有检测到订阅ID");
             }
-            return await Task.FromResult(subscribeId);
+            if (int.TryParse(value, out id) == false)
+            {
+                throw new ProcessException($"订阅ID{value}必须为数字");
+            }
+            if (id <= 0)
+            {
+                throw new ProcessException($"订阅ID{value}无效");
+            }
+            return await Task.FromResult(id);
         }
+
+
 
     }
 }

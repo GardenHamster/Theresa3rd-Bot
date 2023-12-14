@@ -37,14 +37,14 @@ namespace TheresaBot.Main.Handler
                 FileInfo fileInfo = drawer.DrawSubscribe(miyousheSubList, pixivUserSubList, pixivTagSubList, fullSavePath);
                 var sendContents = new List<BaseContent>
                 {
-                    new PlainContent("当前群已订阅内容如下"),
+                    new PlainContent("本群的订阅内容如下："),
                     new LocalImageContent(fileInfo)
                 };
                 await command.ReplyGroupMessageWithQuoteAsync(sendContents);
             }
             catch (Exception ex)
             {
-                await LogAndReplyError(command, ex, "查询订阅列表异常");
+                await LogAndReplyError(command, ex, "订阅列表查询异常");
             }
             finally
             {
@@ -64,7 +64,7 @@ namespace TheresaBot.Main.Handler
                 else
                 {
                     var processInfo = ProcessCache.CreateProcess(command);
-                    var idStep = processInfo.CreateStep("请在60秒内发送要退订的ID，多个ID之间可以用逗号或者换行隔开", CheckSubscribeIdsAsync);
+                    var idStep = processInfo.CreateStep("请在60秒内发送要退订的ID，多个ID之间可以用逗号或者换行隔开，订阅ID可以通过订阅列表指令获取", CheckSubscribeIdsAsync);
                     await processInfo.StartProcessing();
                     subscribeIds = idStep.Answer;
                 }

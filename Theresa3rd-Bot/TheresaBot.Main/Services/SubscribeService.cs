@@ -11,12 +11,10 @@ namespace TheresaBot.Main.Services
     internal class SubscribeService
     {
         private SubscribeDao subscribeDao;
-        private SubscribeGroupDao subscribeGroupDao;
 
         public SubscribeService()
         {
             subscribeDao = new SubscribeDao();
-            subscribeGroupDao = new SubscribeGroupDao();
         }
 
         /// <summary>

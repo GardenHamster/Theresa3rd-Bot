@@ -62,33 +62,6 @@ namespace TheresaBot.Main.Services
         }
 
         /// <summary>
-        /// 判断某个群是否已存在某个订阅
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="subscribeCode"></param>
-        /// <param name="subscribeType"></param>
-        /// <returns></returns>
-        public bool IsSubscribed(string subscribeCode, SubscribeType subscribeType, long groupId)
-        {
-            var subscribes = subscribeGroupDao.GetSubscribeInfos(subscribeCode, subscribeType);
-            if (subscribes.Any(o => o.GroupId == 0) && BotConfig.SubscribeGroups.Contains(groupId)) return true;
-            if (subscribes.Any(o => o.GroupId == groupId)) return true;
-            return false;
-        }
-
-        /// <summary>
-        /// 判断某个群是否已存在某个订阅
-        /// </summary>
-        /// <param name="subscribeCode"></param>
-        /// <param name="subscribeType"></param>
-        /// <returns></returns>
-        public bool IsSubscribed(string subscribeCode, SubscribeType subscribeType)
-        {
-            var subscribes = subscribeGroupDao.GetSubscribeInfos(subscribeCode, subscribeType);
-            return subscribes.Count > 0;
-        }
-
-        /// <summary>
         /// 获取某个群订阅某个类型的列表
         /// </summary>
         /// <param name="groupId"></param>
@@ -149,17 +122,10 @@ namespace TheresaBot.Main.Services
             subscribeGroupDao.DelBySubscribeId(subscribeIds);
         }
 
-        public int DeleteBySubscribeId(int subscribeId, long groupId)
-        {
-            return subscribeGroupDao.DelBySubscribeId(subscribeId, groupId);
-        }
-
         public int DeleteById(List<int> ids)
         {
             return subscribeGroupDao.DeleteByIds(ids);
         }
-
-
 
     }
 }

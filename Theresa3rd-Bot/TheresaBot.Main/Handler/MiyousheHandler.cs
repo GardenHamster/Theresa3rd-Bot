@@ -6,7 +6,6 @@ using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Content;
 using TheresaBot.Main.Model.Mys;
-using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Model.Subscribe;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
@@ -34,20 +33,20 @@ namespace TheresaBot.Main.Handler
             try
             {
                 var userId = 0L;
-                var groupType = PushType.CurrentGroup;
+                var pushType = PushType.CurrentGroup;
                 if (command.Params.Length >= 2)
                 {
                     userId = await CheckUserIdAsync(command.Params[0]);
-                    groupType = await CheckPushTypeAsync(command.Params[1]);
+                    pushType = await CheckPushTypeAsync(command.Params[1]);
                 }
                 else
                 {
                     var processInfo = ProcessCache.CreateProcess(command);
-                    var uidStep = processInfo.CreateStep("请在60秒内发送要订阅用户的id", CheckUserIdAsync);
+                    var uidStep = processInfo.CreateStep("请在60秒内发送要订阅的用户ID", CheckUserIdAsync);
                     var groupStep = processInfo.CreateStep($"请在60秒内发送数字选择目标群：\r\n{EnumHelper.GroupPushOptions.JoinToString()}", CheckPushTypeAsync);
                     await processInfo.StartProcessing();
                     userId = uidStep.Answer;
-                    groupType = groupStep.Answer;
+                    pushType = groupStep.Answer;
                 }
 
                 var userData = await miyousheService.getUserInfoAsync(userId.ToString());
@@ -70,9 +69,11 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                subscribeGroupService.AddGroupSubscribe(subscribe.Id, groupType, command.GroupId);
+                subscribeGroupService.AddGroupSubscribe(subscribe.Id, pushType, command.GroupId);
                 SubscribeDatas.LoadSubscribeTask();
-                await ReplySubscribeMessage(command, subscribe, userInfo, groupType);
+                await command.ReplyGroupMessageWithAtAsync($"米游社用户【{subscribe.SubscribeName}】订阅成功!");
+                await Task.Delay(1000);
+                await SendSubscribeMessage(userInfo, pushType, command.GroupId);
             }
             catch (ProcessException ex)
             {
@@ -80,34 +81,45 @@ namespace TheresaBot.Main.Handler
             }
             catch (Exception ex)
             {
-                await LogAndReplyError(command, ex, "订阅米游社用户异常");
+                await LogAndReplyError(command, ex, "米游社用户订阅异常");
             }
         }
 
-        private async Task ReplySubscribeMessage(GroupCommand command, SubscribePO subscribe, MysUserInfo userInfo, PushType pushType)
+        private async Task SendSubscribeMessage(MysUserInfo userInfo, PushType pushType, long groupId)
         {
-            var avatarUrl = userInfo.avatar_url;
             var contentList = new List<BaseContent>
             {
-                new PlainContent($"米游社用户[{subscribe.SubscribeName}]订阅成功!"),
+                new PlainContent($"UID：{userInfo.uid}"),
+                new PlainContent($"昵称：{userInfo.nickname}"),
                 new PlainContent($"目标群：{EnumHelper.GroupPushOptions.GetOptionName(pushType)}"),
-                new PlainContent($"uid：{subscribe.SubscribeCode}"),
                 new PlainContent($"签名：{userInfo.introduce}")
             };
+            var avatarUrl = userInfo.avatar_url;
             if (string.IsNullOrWhiteSpace(avatarUrl) == false)
             {
                 var fullImgSavePath = FilePath.GetMiyousheImgSavePath(avatarUrl);
                 var fileInfo = await HttpHelper.DownImgAsync(avatarUrl, fullImgSavePath);
                 contentList.Add(new LocalImageContent(fileInfo));
             }
-            await command.ReplyGroupMessageWithAtAsync(contentList);
+            await Session.SendGroupMessageAsync(groupId, contentList);
         }
 
         public async Task UnsubscribeUserAsync(GroupCommand command)
         {
             try
             {
-                var userId = await CheckUserIdAsync(command.KeyWord);
+                var userId = 0L;
+                if (command.Params.Length >= 1)
+                {
+                    userId = await CheckUserIdAsync(command.Params[0]);
+                }
+                else
+                {
+                    var processInfo = ProcessCache.CreateProcess(command);
+                    var uidStep = processInfo.CreateStep("请在60秒内发送要退订的用户ID", CheckUserIdAsync);
+                    await processInfo.StartProcessing();
+                    userId = uidStep.Answer;
+                }
                 var subscribeInfos = subscribeGroupService.GetSubscribes(userId.ToString(), SubscribeType.米游社用户);
                 if (subscribeInfos.Count == 0)
                 {
@@ -116,7 +128,7 @@ namespace TheresaBot.Main.Handler
                 }
                 var subscribeIds = subscribeInfos.Select(o => o.SubscribeId).Distinct().ToList();
                 subscribeGroupService.DeleteBySubscribeId(subscribeIds);
-                await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了ID为{userId}的米游社用户~");
+                await command.ReplyGroupMessageWithAtAsync($"已为所有群退订了ID为【{userId}】的米游社用户~");
                 SubscribeDatas.LoadSubscribeTask();
             }
             catch (ProcessException ex)

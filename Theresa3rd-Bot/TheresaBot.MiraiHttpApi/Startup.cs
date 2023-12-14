@@ -69,7 +69,7 @@ namespace TheresaBot.MiraiHttpApi
                 MiraiSession session = new MiraiSession();
                 MiraiReporter reporter = new MiraiReporter();
                 TimerManager.InitTimers(session, reporter);
-                SchedulerManager.InitSchedulers(session, reporter);
+                SchedulerManager.InitSchedulers(session, reporter).Wait();
                 LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£ºv{BotConfig.BotVersion}");
                 if (RunningDatas.IsSendStartupMessage())
                 {

@@ -27,7 +27,7 @@ namespace TheresaBot.Main.Timers
         /// </summary>
         /// <param name="session"></param>
         /// <param name="reporter"></param>
-        public static async void InitSchedulers(BaseSession session, BaseReporter reporter)
+        public static async Task InitSchedulers(BaseSession session, BaseReporter reporter)
         {
             await InitTempClearJobAsync(session, reporter);
             await InitDownClearJobAsync(session, reporter);

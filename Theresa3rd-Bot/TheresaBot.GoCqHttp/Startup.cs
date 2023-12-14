@@ -69,7 +69,7 @@ namespace TheresaBot.GoCqHttp
                 CQSession session = new CQSession();
                 CQReporter reporter = new CQReporter();
                 TimerManager.InitTimers(session, reporter);
-                SchedulerManager.InitSchedulers(session, reporter);
+                SchedulerManager.InitSchedulers(session, reporter).Wait();
                 LogHelper.Info($"Theresa3rd-BotÆô¶¯Íê±Ï£¬°æ±¾£ºv{BotConfig.BotVersion}");
                 if (RunningDatas.IsSendStartupMessage())
                 {

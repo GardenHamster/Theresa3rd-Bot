@@ -19,20 +19,6 @@ namespace TheresaBot.Main.Services
         /// <summary>
         /// 添加关联数据
         /// </summary>
-        /// <param name="subscribeIds"></param>
-        /// <param name="groupId"></param>
-        /// <param name="pushType"></param>
-        public void AddGroupSubscribe(List<int> subscribeIds, PushType pushType, long groupId)
-        {
-            foreach (var subscribeId in subscribeIds)
-            {
-                AddGroupSubscribe(subscribeId, pushType, groupId);
-            }
-        }
-
-        /// <summary>
-        /// 添加关联数据
-        /// </summary>
         /// <param name="subscribeId"></param>
         /// <param name="groupId"></param>
         /// <param name="pushType"></param>

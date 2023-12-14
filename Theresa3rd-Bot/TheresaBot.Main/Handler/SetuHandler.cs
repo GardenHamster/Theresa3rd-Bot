@@ -177,20 +177,21 @@ namespace TheresaBot.Main.Handler
         {
             if (setuInfo.IsImproper)
             {
-                return "该作品含有R18G等内容，不显示相关内容";
+                return $"PixivId【{setuInfo.PixivId}】包含R18G等标签，不显示相关内容";
             }
 
             var banTags = setuInfo.HavingBanTags();
             if (banTags.Count > 0)
             {
-                return $"该作品含有被屏蔽的标签【{banTags.JoinToString()}】，不显示相关内容";
+                return $"PixivId【{setuInfo.PixivId}】包含被屏蔽的标签【{banTags.JoinToString()}】，不显示相关内容";
             }
 
             if (setuInfo.IsR18 && isShowR18 == false)
             {
-                return "该作品为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限";
+                return $"PixivId【{setuInfo.PixivId}】为R-18作品，不显示相关内容，如需显示请在配置文件中修改权限";
             }
-            return null;
+
+            return string.Empty;
         }
 
         /// <summary>

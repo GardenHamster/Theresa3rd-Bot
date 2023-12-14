@@ -108,7 +108,7 @@ namespace TheresaBot.Main.Drawer
             SKPaint paint = index % 2 == 1 ? DetailPaint1 : DetailPaint2;
             canvas.DrawText(subInfo.SubscribeId.ToString(), new SKPoint(startX, startY), paint);
             startX += subIdWidth;
-            canvas.DrawText(subInfo.GroupId == 0 ? "所有群" : "当前群", new SKPoint(startX, startY), paint);
+            canvas.DrawText(subInfo.GroupId == 0 ? "订阅群" : "当前群", new SKPoint(startX, startY), paint);
             startX += subGroupWidth;
             canvas.DrawText(subInfo.SubscribeCode, new SKPoint(startX, startY), paint);
             startX += subCodeWidth;

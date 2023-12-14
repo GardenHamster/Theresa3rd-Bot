@@ -34,7 +34,7 @@ namespace TheresaBot.Main.Handler
             {
                 var userId = 0L;
                 var pushType = PushType.CurrentGroup;
-                if (command.Params.Length >= 2)
+                if (command.Params.Length == 2)
                 {
                     userId = await CheckUserIdAsync(command.Params[0]);
                     pushType = await CheckPushTypeAsync(command.Params[1]);

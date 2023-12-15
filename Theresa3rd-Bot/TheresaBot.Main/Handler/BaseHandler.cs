@@ -330,17 +330,38 @@ namespace TheresaBot.Main.Handler
             return true;
         }
 
-        protected async Task<string> CheckTextAsync(BaseRelay relay)
+        protected async Task<string> WaitAnswerAsync(BaseRelay relay)
         {
             string value = relay.Message;
-            if (string.IsNullOrWhiteSpace(value)) throw new NoAnswerException();
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new NoAnswerException();
+            }
             return await Task.FromResult(value);
         }
 
-        protected async Task<string[]> CheckImageAsync(BaseRelay relay)
+        protected async Task<string[]> WaitParamsAsync(BaseRelay relay)
         {
-            List<string> imgList = relay.GetImageUrls();
-            if (imgList.Count == 0) throw new NoAnswerException();
+            var value = relay.Message;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new NoAnswerException();
+            }
+            var keywords = value.SplitParams();
+            if (keywords.Length == 0)
+            {
+                throw new NoAnswerException();
+            }
+            return await Task.FromResult(keywords);
+        }
+
+        protected async Task<string[]> WaitImageAsync(BaseRelay relay)
+        {
+            var imgList = relay.GetImageUrls();
+            if (imgList.Count == 0)
+            {
+                throw new NoAnswerException();
+            }
             return await Task.FromResult(imgList.ToArray());
         }
 

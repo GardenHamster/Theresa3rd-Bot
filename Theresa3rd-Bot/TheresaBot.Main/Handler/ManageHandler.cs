@@ -26,27 +26,25 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                var tagStr = string.Empty;
+                var banTags = new string[0];
                 var matchType = TagMatchType.Contain;
-                if (command.Params.Length >= 2)
+                if (command.Params.Length == 2)
                 {
-                    tagStr = command.Params[0];
+                    banTags = await CheckBanTagsAsync(command.Params[0]);
                     matchType = await CheckMatchTypeAsync(command.Params[1]);
                 }
                 else
                 {
                     var processInfo = ProcessCache.CreateProcess(command);
-                    var tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开", CheckTextAsync);
+                    var tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开", WaitParamsAsync);
                     var matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchOptions.JoinToString()}", CheckMatchTypeAsync);
                     await processInfo.StartProcessing();
-                    tagStr = tagStep.Answer;
+                    banTags = tagStep.Answer;
                     matchType = matchStep.Answer;
                 }
-                var result = new ModifyResult();
-                var banTags = tagStr.SplitParams();
-                banTagService.InsertOrUpdate(result, banTags, matchType);
+                banTagService.InsertOrUpdate(banTags, matchType);
                 BanTagDatas.LoadDatas();
-                await command.ReplyGroupMessageWithAtAsync($"记录成功，新增记录{result.CreateCount}条，更新记录{result.UpdateCount}条");
+                await command.ReplyGroupMessageWithAtAsync($"记录成功~");
             }
             catch (ProcessException ex)
             {
@@ -148,6 +146,20 @@ namespace TheresaBot.Main.Handler
             }
         }
 
+        private async Task<string[]> CheckBanTagsAsync(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ProcessException("没有检测到需要屏蔽的标签");
+            }
+            var banTags = value.SplitParams();
+            if (banTags.Length == 0)
+            {
+                throw new ProcessException("没有检测到需要屏蔽的标签");
+            }
+            return await Task.FromResult(banTags);
+        }
+
         private async Task<TagMatchType> CheckMatchTypeAsync(string value)
         {
             int typeId = 0;
@@ -161,6 +173,8 @@ namespace TheresaBot.Main.Handler
             }
             return await Task.FromResult((TagMatchType)typeId);
         }
+
+
 
     }
 }

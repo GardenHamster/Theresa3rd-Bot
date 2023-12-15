@@ -1,6 +1,5 @@
 ﻿using TheresaBot.Main.Dao;
 using TheresaBot.Main.Model.PO;
-using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Services
@@ -24,26 +23,24 @@ namespace TheresaBot.Main.Services
             return banTagDao.getBanTag(keyword.Trim().ToUpper());
         }
 
-        public void InsertOrUpdate(ModifyResult result, string[] keywords, TagMatchType tagMatchType)
+        public void InsertOrUpdate(string[] keywords, TagMatchType tagMatchType)
         {
             foreach (string keyword in keywords)
             {
-                InsertOrUpdate(result, keyword, tagMatchType);
+                InsertOrUpdate(keyword, tagMatchType);
             }
         }
 
-        public void InsertOrUpdate(ModifyResult result, string keyword, TagMatchType tagMatchType)
+        public void InsertOrUpdate(string keyword, TagMatchType tagMatchType)
         {
             var banTag = GetBanTag(keyword);
             if (banTag is null)
             {
                 InsertBanTag(keyword, tagMatchType);
-                result.CreateCount++;
             }
             else
             {
                 UpdateBanTag(banTag, tagMatchType);
-                result.UpdateCount++;
             }
         }
 

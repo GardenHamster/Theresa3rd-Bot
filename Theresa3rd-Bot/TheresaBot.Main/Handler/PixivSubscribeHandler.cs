@@ -315,10 +315,10 @@ namespace TheresaBot.Main.Handler
             try
             {
                 var pixivTag = command.KeyWord;
-                if (command.KeyWord.Length == 0)
+                if (string.IsNullOrWhiteSpace(pixivTag))
                 {
                     var processInfo = ProcessCache.CreateProcess(command);
-                    var tagStep = processInfo.CreateStep("请在60秒内发送要退订的标签", CheckTextAsync);
+                    var tagStep = processInfo.CreateStep("请在60秒内发送要退订的标签", WaitAnswerAsync);
                     await processInfo.StartProcessing();
                     pixivTag = tagStep.Answer;
                 }

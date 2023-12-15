@@ -5,13 +5,13 @@ namespace TheresaBot.Main.Datas
 {
     internal static class SugarTagDatas
     {
-        private static Dictionary<string, string> SugarTagDic = new Dictionary<string, string>();
+        public static Dictionary<string, string> SugarTagDic = new Dictionary<string, string>();
 
         public static void LoadDatas()
         {
             try
             {
-                SugarTagDic = new SugarTagService().GetSugarTags();
+                SugarTagDic = new SugarTagService().LoadSugarTags();
             }
             catch (Exception ex)
             {

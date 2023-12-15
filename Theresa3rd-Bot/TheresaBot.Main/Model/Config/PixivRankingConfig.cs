@@ -92,7 +92,6 @@ namespace TheresaBot.Main.Model.Config
         public List<string> Contents { get; set; } = new();
         public string Cron { get; set; }
         public int SendDetail { get; set; }
-
         [YamlIgnore]
         public List<long> PushGroups => Groups?.ToSendableGroups() ?? new();
 

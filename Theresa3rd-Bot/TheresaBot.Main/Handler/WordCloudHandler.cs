@@ -235,10 +235,9 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task PushWordCloudAsync(WordCloudTimer timer)
         {
-            var groupList = timer.PushGroups;
-            foreach (var groupId in groupList)
+            foreach (var groupId in timer.PushGroups)
             {
-                Task task = PushWordCloudAsync(timer, groupId);
+                await PushWordCloudAsync(timer, groupId);
                 await Task.Delay(1000);
             }
         }

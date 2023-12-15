@@ -237,15 +237,20 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 根据配置文件中的一组群号，返回一组可发送消息的群号
+        /// 返回一组可发送消息的群号
         /// </summary>
         /// <param name="groupIds"></param>
         /// <returns></returns>
         public static List<long> ToSendableGroups(this List<long> groupIds)
         {
-            var fullGroups = BotConfig.GroupInfos.Select(o => o.GroupId).ToList();
-            var sendableGroups = groupIds.Where(o => fullGroups.Contains(o)).ToList();
-            return groupIds.Contains(0) ? fullGroups : sendableGroups;
+            if (groupIds.Contains(0))
+            {
+                return BotConfig.AcceptGroups;
+            }
+            else
+            {
+                return groupIds.Where(BotConfig.AcceptGroups.Contains).Distinct().ToList();
+            }
         }
 
     }

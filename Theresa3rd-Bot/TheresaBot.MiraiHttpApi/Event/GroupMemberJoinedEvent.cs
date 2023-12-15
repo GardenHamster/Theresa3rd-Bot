@@ -19,19 +19,21 @@ namespace TheresaBot.MiraiHttpApi.Event
         {
             try
             {
-                long memberId = message.Member.Id;
-                long groupId = message.Member.Group.Id;
+                var memberId = message.Member.Id;
+                var groupId = message.Member.Group.Id;
                 if (groupId.IsAuthorized() == false) return;
                 if (memberId == BotConfig.BotQQ) return;
-                WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
-                if (welcomeConfig is null || welcomeConfig.Enable == false) return;
+                var welcomeConfig = BotConfig.WelcomeConfig;
+                if (welcomeConfig.Enable == false) return;
                 string template = welcomeConfig.Template;
-                WelcomeSpecial welcomeSpecial = welcomeConfig.GetSpecial(groupId);
+                var welcomeSpecial = welcomeConfig.GetSpecial(groupId);
                 if (welcomeSpecial is not null) template = welcomeSpecial.Template;
-                if (string.IsNullOrEmpty(template)) return;
-                List<IChatMessage> welcomeMsgs = new List<IChatMessage>();
-                welcomeMsgs.Add(new AtMessage(memberId));
-                welcomeMsgs.Add(new PlainMessage("\r\n"));
+                if (string.IsNullOrWhiteSpace(template)) return;
+                var welcomeMsgs = new List<IChatMessage>
+                {
+                    new AtMessage(memberId),
+                    new PlainMessage("\r\n")
+                };
                 welcomeMsgs.AddRange(await template.SplitToChainAsync().ToMiraiMessageAsync(UploadTarget.Group));
                 await session.SendGroupMessageAsync(groupId, welcomeMsgs.ToArray());
                 message.BlockRemainingHandlers = true;

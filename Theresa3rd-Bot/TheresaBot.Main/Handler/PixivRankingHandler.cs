@@ -94,7 +94,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 CoolingCache.SetPixivRankingHanding();
-                if (rankingMode.IsR18 && rankingTimer.Groups.IsShowR18Img() == false) return;
+                if (rankingMode.IsR18 && rankingTimer.PushGroups.IsShowR18Img() == false) return;
                 PixivRankingInfo rankingInfo = await rankingService.getRankingInfo(rankingItem, rankingMode, String.Empty);
                 PixivRankingCache.AddCache(rankingMode, rankingInfo, String.Empty);
                 if (rankingInfo.RankingDetails.Count == 0) return;

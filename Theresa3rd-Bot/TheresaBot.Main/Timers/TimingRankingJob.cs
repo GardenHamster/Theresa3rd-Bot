@@ -12,35 +12,35 @@ namespace TheresaBot.Main.Timers
     [DisallowConcurrentExecution]
     internal class TimingRankingJob : IJob
     {
-        private BaseReporter reporter;
+        private BaseReporter Reporter;
 
         public async Task Execute(IJobExecutionContext context)
         {
             try
             {
-                JobDataMap dataMap = context.MergedJobDataMap;
-                reporter = (BaseReporter)dataMap["BaseReporter"];
-                BaseSession session = (BaseSession)dataMap["BaseSession"];
-                PixivRankingTimer rankingTimer = (PixivRankingTimer)dataMap["PixivRankingTimer"];
+                var dataMap = context.MergedJobDataMap;
+                var session = (BaseSession)dataMap["BaseSession"];
+                var rankingTimer = (PixivRankingTimer)dataMap["PixivRankingTimer"];
+                Reporter = (BaseReporter)dataMap["BaseReporter"];
                 if (rankingTimer is null) return;
-                if (rankingTimer.Groups is null || rankingTimer.Groups.Count == 0) return;
+                if (rankingTimer.PushGroups.Count == 0) return;
                 foreach (var content in rankingTimer.Contents)
                 {
                     LogHelper.Info($"开始执行【{content}】Pixiv榜单推送任务...");
-                    await HandleTiming(session, reporter, rankingTimer, content);
+                    await HandleTiming(session, Reporter, rankingTimer, content);
                 }
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "TimingRankingJob异常");
-                await reporter.SendError(ex, "TimingRankingJob异常");
+                await Reporter.SendError(ex, "TimingRankingJob异常");
             }
         }
 
         private async Task HandleTiming(BaseSession session, BaseReporter reporter, PixivRankingTimer rankingTimer, string content)
         {
-            string rankingName = content.Trim().ToLower();
-            PixivRankingHandler rankingHandler = new PixivRankingHandler(session, reporter);
+            var rankingName = content.Trim().ToLower();
+            var rankingHandler = new PixivRankingHandler(session, reporter);
             if (rankingName == "daily")
             {
                 await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Daily, PixivRankingMode.Daily);
@@ -86,7 +86,6 @@ namespace TheresaBot.Main.Timers
                 await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Weekly, PixivRankingMode.Weekly_R18);
                 return;
             }
-
         }
 
     }

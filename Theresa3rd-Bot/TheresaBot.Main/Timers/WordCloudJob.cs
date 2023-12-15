@@ -10,26 +10,25 @@ namespace TheresaBot.Main.Timers
     [DisallowConcurrentExecution]
     internal class WordCloudJob : IJob
     {
-        private BaseReporter reporter;
+        private BaseReporter Reporter;
 
         public async Task Execute(IJobExecutionContext context)
         {
             try
             {
-                JobDataMap dataMap = context.MergedJobDataMap;
-                reporter = (BaseReporter)dataMap["BaseReporter"];
-                BaseSession session = (BaseSession)dataMap["BaseSession"];
-                WordCloudTimer wordCloudTimer = (WordCloudTimer)dataMap["WordCloudTimer"];
+                var dataMap = context.MergedJobDataMap;
+                var session = (BaseSession)dataMap["BaseSession"];
+                var wordCloudTimer = (WordCloudTimer)dataMap["WordCloudTimer"];
+                Reporter = (BaseReporter)dataMap["BaseReporter"];
                 if (wordCloudTimer is null) return;
                 if (wordCloudTimer.Enable == false) return;
-                if (wordCloudTimer.Groups is null) return;
-                if (wordCloudTimer.Groups.Count == 0) return;
-                await new WordCloudHandler(session, reporter).PushWordCloudAsync(wordCloudTimer);
+                if (wordCloudTimer.PushGroups.Count == 0) return;
+                await new WordCloudHandler(session, Reporter).PushWordCloudAsync(wordCloudTimer);
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex, "WordCloudJob异常");
-                await reporter.SendError(ex, "WordCloudJob异常");
+                await Reporter.SendError(ex, "WordCloudJob异常");
             }
         }
 

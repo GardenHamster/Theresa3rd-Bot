@@ -11,7 +11,7 @@ namespace TheresaBot.Main.Model.Config
 
         public WelcomeSpecial GetSpecial(long groupId)
         {
-            return Specials?.Where(m => m.ContainGroups.Contains(groupId)).FirstOrDefault();
+            return Specials.Where(m => m.SpecialGroups.Contains(groupId)).FirstOrDefault();
         }
 
         public override WelcomeConfig FormatConfig()
@@ -29,7 +29,7 @@ namespace TheresaBot.Main.Model.Config
         public string Template { get; set; }
 
         [YamlIgnore]
-        public List<long> ContainGroups => Groups?.ToSendableGroups() ?? new();
+        public List<long> SpecialGroups => Groups.ToSendableGroups();
 
         public override BaseConfig FormatConfig()
         {

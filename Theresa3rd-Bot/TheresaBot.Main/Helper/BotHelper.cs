@@ -36,7 +36,7 @@ namespace TheresaBot.Main.Helper
                 var usableGroups = groupInfos.Select(o => o.GroupId).ToList();
                 var acceptGroups = config.AcceptGroups.Contains(0) ? usableGroups : config.AcceptGroups;
                 BotConfig.GroupInfos = groupInfos.ToList();
-                BotConfig.AcceptGroups = acceptGroups.ToList();
+                BotConfig.AcceptGroups = acceptGroups.Distinct().ToList();
                 LogHelper.Info($"群列表加载完毕，共加载群号 {usableGroups.Count} 个，其中已启用群号 {acceptGroups.Count} 个");
             }
             catch (Exception ex)

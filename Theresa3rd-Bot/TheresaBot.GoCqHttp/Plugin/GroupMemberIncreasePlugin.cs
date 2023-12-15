@@ -26,15 +26,17 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (args.Session is not ICqActionSession session) return;
                 if (groupId.IsAuthorized() == false) return;
                 if (memberId == BotConfig.BotQQ) return;
-                WelcomeConfig welcomeConfig = BotConfig.WelcomeConfig;
-                if (welcomeConfig is null || welcomeConfig.Enable == false) return;
-                string template = welcomeConfig.Template;
-                WelcomeSpecial welcomeSpecial = welcomeConfig.Specials?.Where(m => m.Groups.Contains(groupId)).FirstOrDefault();
-                if (welcomeSpecial != null) template = welcomeSpecial.Template;
-                if (string.IsNullOrEmpty(template)) return;
-                List<CqMsg> welcomeMsgs = new List<CqMsg>();
-                welcomeMsgs.Add(new CqAtMsg(memberId));
-                welcomeMsgs.Add(new CqTextMsg("\r\n"));
+                var welcomeConfig = BotConfig.WelcomeConfig;
+                if (welcomeConfig.Enable == false) return;
+                var template = welcomeConfig.Template;
+                var welcomeSpecial = welcomeConfig.GetSpecial(groupId);
+                if (welcomeSpecial is not null) template = welcomeSpecial.Template;
+                if (string.IsNullOrWhiteSpace(template)) return;
+                var welcomeMsgs = new List<CqMsg>
+                {
+                    new CqAtMsg(memberId),
+                    new CqTextMsg("\r\n")
+                };
                 welcomeMsgs.AddRange(template.SplitToChainAsync().ToCQMessageAsync());
                 await session.SendGroupMessageAsync(groupId, new CqMessage(welcomeMsgs));
             }

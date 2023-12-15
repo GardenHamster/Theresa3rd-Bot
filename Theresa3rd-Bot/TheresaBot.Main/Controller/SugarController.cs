@@ -11,19 +11,19 @@ namespace TheresaBot.Main.Controller
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class SugarTagController : BaseController
+    public class SugarController : BaseController
     {
         private SugarTagService sugarTagService;
 
-        public SugarTagController()
+        public SugarController()
         {
             sugarTagService = new SugarTagService();
         }
 
         [HttpGet]
         [Authorize]
-        [Route("list")]
-        public ApiResult GetSugars()
+        [Route("list/tag")]
+        public ApiResult GetTags()
         {
             var sugars = sugarTagService.GetList();
             var sugarInfos = sugars.Select(o => new SugarTagVo
@@ -37,8 +37,8 @@ namespace TheresaBot.Main.Controller
 
         [HttpPost]
         [Authorize]
-        [Route("add")]
-        public ApiResult AddSugars([FromBody] AddSugarTagDto sugar)
+        [Route("add/tag")]
+        public ApiResult AddTags([FromBody] AddSugarTagDto sugar)
         {
             var bingTags = sugar.BindTags;
             var keyWords = sugar.Keyword.SplitParams();
@@ -51,8 +51,8 @@ namespace TheresaBot.Main.Controller
 
         [HttpPost]
         [Authorize]
-        [Route("del")]
-        public ApiResult DelSugar(int[] ids)
+        [Route("del/tag")]
+        public ApiResult DelTag(int[] ids)
         {
             sugarTagService.DelById(ids);
             SugarTagDatas.LoadDatas();

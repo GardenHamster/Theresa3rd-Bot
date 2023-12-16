@@ -1,6 +1,7 @@
 ﻿using TheresaBot.Main.Cache;
 using TheresaBot.Main.Command;
 using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Drawer;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Cache;
@@ -114,6 +115,11 @@ namespace TheresaBot.Main.Handler
                 if (StringHelper.IsPureNumber(userId) == false)
                 {
                     await command.ReplyGroupMessageWithQuoteAsync("请指定一个画师id~");
+                    return;
+                }
+                if (userId.IsBanPixiver())
+                {
+                    await command.ReplyGroupMessageWithQuoteAsync("这个画师ID已被屏蔽~");
                     return;
                 }
 

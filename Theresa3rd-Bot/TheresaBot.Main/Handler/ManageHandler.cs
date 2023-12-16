@@ -3,7 +3,6 @@ using TheresaBot.Main.Command;
 using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
-using TheresaBot.Main.Model.Result;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
@@ -15,11 +14,13 @@ namespace TheresaBot.Main.Handler
     {
         private BanTagService banTagService;
         private BanMemberService banMemberService;
+        private BanPixiverService banPixiverService;
 
         public ManageHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             banTagService = new BanTagService();
             banMemberService = new BanMemberService();
+            banPixiverService = new BanPixiverService();
         }
 
         public async Task DisableTagAsync(GroupCommand command)
@@ -85,18 +86,7 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string memberCode = command.KeyWord;
-                if (string.IsNullOrWhiteSpace(memberCode))
-                {
-                    await command.ReplyGroupMessageWithAtAsync("没有检测到要屏蔽的QQ号，请确保指令格式正确");
-                    return;
-                }
-                long memberId = 0;
-                if (long.TryParse(memberCode, out memberId) == false || memberId <= 0)
-                {
-                    await command.ReplyGroupMessageWithAtAsync("QQ号格式不正确");
-                    return;
-                }
+                long memberId = await CheckMemberIdAsync(command.KeyWord);
                 if (memberId.IsSuperManager())
                 {
                     await command.ReplyGroupMessageWithAtAsync("无法拉黑超级管理员");
@@ -120,18 +110,7 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                string memberCode = command.KeyWord;
-                if (string.IsNullOrWhiteSpace(memberCode))
-                {
-                    await command.ReplyGroupMessageWithAtAsync("没有检测到要解除屏蔽的QQ号，请确保指令格式正确");
-                    return;
-                }
-                long memberId = 0;
-                if (long.TryParse(memberCode, out memberId) == false || memberId <= 0)
-                {
-                    await command.ReplyGroupMessageWithAtAsync("QQ号格式不正确");
-                    return;
-                }
+                long memberId = await CheckMemberIdAsync(command.KeyWord);
                 banMemberService.DelBanMember(memberId);
                 BanMemberDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("解除成功");
@@ -145,6 +124,45 @@ namespace TheresaBot.Main.Handler
                 await LogAndReplyError(command, ex, "解除成员屏蔽异常");
             }
         }
+
+        public async Task DisablePixiverAsync(GroupCommand command)
+        {
+            try
+            {
+                long pixiverId = await CheckPixiverIdAsync(command.KeyWord);
+                banPixiverService.insertBanPixivers(pixiverId);
+                BanPixiverDatas.LoadDatas();
+                await command.ReplyGroupMessageWithAtAsync("记录成功");
+            }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, "屏蔽成员异常");
+            }
+        }
+
+        public async Task EnablePixiverAsync(GroupCommand command)
+        {
+            try
+            {
+                long pixiverId = await CheckPixiverIdAsync(command.KeyWord);
+                banPixiverService.DelBanPixiver(pixiverId);
+                BanPixiverDatas.LoadDatas();
+                await command.ReplyGroupMessageWithAtAsync("解除成功");
+            }
+            catch (ProcessException ex)
+            {
+                await command.ReplyGroupMessageWithAtAsync(ex.RemindMessage);
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, "解除成员屏蔽异常");
+            }
+        }
+
 
         private async Task<string[]> CheckBanTagsAsync(string value)
         {
@@ -174,7 +192,33 @@ namespace TheresaBot.Main.Handler
             return await Task.FromResult((TagMatchType)typeId);
         }
 
+        private async Task<long> CheckMemberIdAsync(string value)
+        {
+            long memberId = 0;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ProcessException("没有检测到要解除屏蔽的QQ号");
+            }
+            if (long.TryParse(value, out memberId) == false || memberId <= 1000)
+            {
+                throw new ProcessException("QQ号格式错误");
+            }
+            return await Task.FromResult(memberId);
+        }
 
+        private async Task<long> CheckPixiverIdAsync(string value)
+        {
+            long pixiverId = 0;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ProcessException("没有检测到要解除屏蔽的画师ID");
+            }
+            if (long.TryParse(value, out pixiverId) == false || pixiverId <= 10)
+            {
+                throw new ProcessException("画师ID格式错误");
+            }
+            return await Task.FromResult(pixiverId);
+        }
 
     }
 }

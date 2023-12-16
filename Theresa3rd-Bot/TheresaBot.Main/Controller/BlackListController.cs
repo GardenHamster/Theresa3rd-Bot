@@ -15,11 +15,13 @@ namespace TheresaBot.Main.Controller
     {
         private BanTagService banTagService;
         private BanMemberService banMemberService;
+        private BanPixiverService banPixiverService;
 
         public BlackListController()
         {
             banTagService = new BanTagService();
             banMemberService = new BanMemberService();
+            banPixiverService = new BanPixiverService();
         }
 
         [HttpGet]
@@ -95,6 +97,43 @@ namespace TheresaBot.Main.Controller
         {
             banTagService.DelByIds(ids);
             BanTagDatas.LoadDatas();
+            return ApiResult.Success();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("list/pixiver")]
+        public ApiResult GetPixivers()
+        {
+            BanPixiverDatas.LoadDatas();
+            var banList = BanPixiverDatas.BanPixiverList;
+            var banInfos = banList.Select(o => new BanPixiverVo
+            {
+                Id = o.Id,
+                PixiverId = o.PixiverId,
+                CreateAt = o.CreateDate.ToTimeStamp(),
+                CreateDate = o.CreateDate.ToSimpleString()
+            }).ToList();
+            return ApiResult.Success(banInfos);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("add/pixiver")]
+        public ApiResult AddPixiver([FromBody] AddBanPixiverDto pixiver)
+        {
+            banPixiverService.insertBanPixivers(pixiver.PixiverId);
+            BanPixiverDatas.LoadDatas();
+            return ApiResult.Success();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("del/pixiver")]
+        public ApiResult DelPixiver(int[] ids)
+        {
+            banPixiverService.DelByIds(ids);
+            BanPixiverDatas.LoadDatas();
             return ApiResult.Success();
         }
 

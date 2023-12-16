@@ -18,7 +18,7 @@ namespace TheresaBot.Main.Invoker
                 await new MenuHandler(session, reporter).SendMenuAsync(botCommand);
                 return true;
             })),
-            //拉黑成员
+            //屏蔽成员
             new(BotConfig.ManageConfig?.DisableMemberCommands, CommandType.BanMember, new(async (botCommand, session, reporter) =>
             {
                 ManageHandler handler = new ManageHandler(session, reporter);
@@ -33,6 +33,42 @@ namespace TheresaBot.Main.Invoker
                 ManageHandler handler = new ManageHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 await handler.EnableMemberAsync(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //屏蔽画师
+            new(BotConfig.ManageConfig?.DisablePixiverCommands, CommandType.BanPixiver, new(async (botCommand, session, reporter) =>
+            {
+                ManageHandler handler = new ManageHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.DisablePixiverAsync(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //解禁画师
+            new(BotConfig.ManageConfig?.EnablePixiverCommands, CommandType.BanPixiver, new(async (botCommand, session, reporter) =>
+            {
+                ManageHandler handler = new ManageHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.EnablePixiverAsync(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //屏蔽色图标签
+            new(BotConfig.ManageConfig?.DisableTagCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
+            {
+                ManageHandler handler = new ManageHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.DisableTagAsync(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //解禁色图标签
+            new(BotConfig.ManageConfig?.EnableTagCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
+            {
+                ManageHandler handler = new ManageHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.EnableTagAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
@@ -124,24 +160,6 @@ namespace TheresaBot.Main.Invoker
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 if (await handler.CheckSubscribeEnableAsync(botCommand, BotConfig.SubscribeConfig?.Miyoushe) == false) return false;
                 await handler.UnsubscribeUserAsync(botCommand);
-                await handler.InsertRecord(botCommand);
-                return true;
-            })),
-            //禁止色图标签
-            new(BotConfig.ManageConfig?.DisableTagCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
-            {
-                ManageHandler handler = new ManageHandler(session, reporter);
-                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.DisableTagAsync(botCommand);
-                await handler.InsertRecord(botCommand);
-                return true;
-            })),
-            //解禁色图标签
-            new(BotConfig.ManageConfig?.EnableTagCommands, CommandType.Manage, new(async (botCommand, session, reporter) =>
-            {
-                ManageHandler handler = new ManageHandler(session, reporter);
-                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
-                await handler.EnableTagAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),

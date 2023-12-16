@@ -22,6 +22,10 @@
 
         public List<string> UnBindTagCommands { get; set; } = new();
 
+        public List<string> DisablePixiverCommands { get; set; } = new();
+
+        public List<string> EnablePixiverCommands { get; set; } = new();
+
         public override ManageConfig FormatConfig()
         {
             if (PixivCookieCommands is null) PixivCookieCommands = new();
@@ -34,6 +38,8 @@
             if (RemoveSubCommands is null) RemoveSubCommands = new();
             if (BindTagCommands is null) BindTagCommands = new();
             if (UnBindTagCommands is null) UnBindTagCommands = new();
+            if (DisablePixiverCommands is null) DisablePixiverCommands = new();
+            if (EnablePixiverCommands is null) EnablePixiverCommands = new();
             return this;
         }
 

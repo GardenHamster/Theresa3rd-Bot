@@ -175,6 +175,10 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public string CheckSendable(BaseWorkInfo setuInfo, bool isShowR18)
         {
+            if (setuInfo.UserId.IsBanPixiver())
+            {
+                return $"画师【{setuInfo.UserId}】已设置为屏蔽，不显示相关内容";
+            }
             if (setuInfo.IsImproper)
             {
                 return $"PixivId【{setuInfo.PixivId}】包含R18G等标签，不显示相关内容";

@@ -36,7 +36,6 @@ namespace TheresaBot.Main.Model.Pixiv
         public DateTime updateDate { get; set; }
         public List<string> tags { get; set; }
         public int xRestrict { get; set; }
-
         public bool IsAI => aiType > 1 || GetTags().IsAI();
         public bool IsR18 => xRestrict > 0 || GetTags().IsR18();
         public bool IsImproper => xRestrict > 1 || GetTags().IsImproper();

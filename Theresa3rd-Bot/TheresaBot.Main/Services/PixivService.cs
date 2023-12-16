@@ -88,6 +88,7 @@ namespace TheresaBot.Main.Services
                 {
                     PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper) continue;
+                    if (pixivUserWorkInfo.userId.IsBanPixiver()) continue;
                     if (pixivUserWorkInfo.HavingBanTags().Count > 0) continue;
                     if (pixivUserWorkInfo.IsR18 && includeR18 == false) continue;
                     if (pixivUserWorkInfo.IsAI && includeAI == false) continue;
@@ -107,42 +108,41 @@ namespace TheresaBot.Main.Services
         /// <returns></returns>
         public async Task<PixivWorkInfo> getRandomWorkInFollowAsync(bool includeR18, bool includeAI)
         {
-            int eachPage = 24;
-            int loopUserTimes = 3;
-            int loopWorkTimes = 5;
-            long userId = WebsiteDatas.Pixiv.UserId;
-            PixivFollow firstFollowDto = await PixivHelper.GetPixivFollowAsync(userId, 0, eachPage);
-            int total = firstFollowDto.total;
-            int page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
-
-            int randomPage = new Random().Next(page);
-            PixivFollow randomFollow = randomPage == 0 ? firstFollowDto : await PixivHelper.GetPixivFollowAsync(userId, randomPage * eachPage, eachPage);
+            var eachPage = 24;
+            var loopUserTimes = 3;
+            var loopWorkTimes = 5;
+            var userId = WebsiteDatas.Pixiv.UserId;
+            var firstFollowDto = await PixivHelper.GetPixivFollowAsync(userId, 0, eachPage);
+            var total = firstFollowDto.total;
+            var page = (int)Math.Ceiling(Convert.ToDecimal(total) / eachPage);
+            var randomPage = new Random().Next(page);
+            var randomFollow = randomPage == 0 ? firstFollowDto : await PixivHelper.GetPixivFollowAsync(userId, randomPage * eachPage, eachPage);
             if (randomFollow.users is null || randomFollow.users.Count == 0) return null;
-            List<PixivFollowUser> followUserList = randomFollow.users;
-            List<PixivFollowUser> randomUserList = new List<PixivFollowUser>();
+            var followUserList = randomFollow.users.Where(o => o.userId.IsBanPixiver() == false).ToList();
+            if (followUserList.Count == 0) return null;
+            var randomUserList = new List<PixivFollowUser>();
             for (int i = 0; i < loopUserTimes; i++)
             {
                 if (followUserList.Count == 0) break;
-                PixivFollowUser randomUser = followUserList[new Random().Next(followUserList.Count)];
+                var randomUser = followUserList[new Random().Next(followUserList.Count)];
                 randomUserList.Add(randomUser);
                 followUserList.Remove(randomUser);
             }
-
-            foreach (PixivFollowUser user in randomUserList)
+            foreach (var user in randomUserList)
             {
-                PixivUserProfileTop pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(user.userId);
+                var pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(user.userId);
                 if (pixivUserInfo is null) continue;
-                Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo.illusts;
+                var illusts = pixivUserInfo.illusts;
                 if (illusts is null || illusts.Count == 0) continue;
-                List<PixivUserWorkInfo> workList = illusts.Select(o => o.Value).ToList();
+                var workList = illusts.Select(o => o.Value).ToList();
                 for (int i = 0; i < loopWorkTimes; i++)
                 {
-                    PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
+                    var pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper) continue;
                     if (pixivUserWorkInfo.HavingBanTags().Count > 0) continue;
                     if (pixivUserWorkInfo.IsR18 && includeR18 == false) continue;
                     if (pixivUserWorkInfo.IsAI && includeAI == false) continue;
-                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
+                    var pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.bookmarkCount < 100) continue;
                     return pixivWorkInfo;
@@ -177,6 +177,7 @@ namespace TheresaBot.Main.Services
                 {
                     PixivBookmarksWork randomWork = workList[new Random().Next(0, workList.Count)];
                     if (randomWork.IsImproper()) continue;
+                    if (randomWork.userId.IsBanPixiver()) continue;
                     if (randomWork.HavingBanTags().Count > 0) continue;
                     if (randomWork.IsR18() && includeR18 == false) continue;
                     if (randomWork.IsAI() && includeAI == false) continue;
@@ -270,6 +271,7 @@ namespace TheresaBot.Main.Services
                 {
                     if (bookUpList.Count > 0) return;
                     PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivIllustList[i].id, 0);
+                    if (pixivWorkInfo.userId.IsBanPixiver()) continue;
                     if (pixivWorkInfo.IsImproper) continue;
                     if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     if (pixivWorkInfo.IsR18 && includeR18 == false) continue;
@@ -462,10 +464,10 @@ namespace TheresaBot.Main.Services
             {
                 try
                 {
-
                     if (++index > maxScan) break;
                     if (userWork is null) continue;
                     if (string.IsNullOrWhiteSpace(userWork.id)) continue;
+                    if (userWork.id.IsBanPixiver()) continue;
                     if (userWork.IsImproper) continue;
                     if (userWork.HavingBanTags().Count > 0) continue;
                     if (isShowAIs == false && userWork.IsAI) continue;
@@ -527,6 +529,7 @@ namespace TheresaBot.Main.Services
                 {
                     if (illust is null) continue;
                     if (string.IsNullOrWhiteSpace(illust.id)) continue;
+                    if (illust.userId.IsBanPixiver()) continue;
                     if (illust.IsImproper) continue;
                     if (illust.HavingBanTag().Count > 0) continue;
                     if (isShowAIs == false && illust.IsAI) continue;
@@ -592,6 +595,7 @@ namespace TheresaBot.Main.Services
                     scanReport.ScanWork++;
                     var pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(workId.ToString());
                     if (pixivWorkInfo is null) continue;
+                    if (pixivWorkInfo.userId.IsBanPixiver()) continue;
                     if (pixivWorkInfo.IsImproper) continue;
                     if (pixivWorkInfo.HavingBanTags().Count > 0) continue;
                     if (isShowAIs == false && pixivWorkInfo.IsAI) continue;

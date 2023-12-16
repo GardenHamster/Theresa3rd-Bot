@@ -14,5 +14,6 @@
         PixivRanking = 9,
         WordCloud = 10,
         Game = 11,
+        BanPixiver = 12
     }
 }

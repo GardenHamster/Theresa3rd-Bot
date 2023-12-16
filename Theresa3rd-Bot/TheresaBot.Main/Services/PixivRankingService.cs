@@ -1,4 +1,5 @@
 ﻿using TheresaBot.Main.Common;
+using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Mode;
@@ -155,6 +156,7 @@ namespace TheresaBot.Main.Services
         private bool checkContentIsOk(PixivRankingItem rankingItem, PixivRankingContent rankingContent, PixivRankingMode rankingMode)
         {
             if (rankingContent.IsImproper()) return false;
+            if (rankingContent.user_id.IsBanPixiver()) return false;
             if (rankingContent.HavingBanTags().Count() > 0) return false;
             if (rankingContent.IsIllust() == false) return false;
             if (rankingContent.rating_count < rankingItem.MinRatingCount) return false;
@@ -171,6 +173,7 @@ namespace TheresaBot.Main.Services
         private bool checkWorkIsOk(PixivRankingItem rankingItem, PixivWorkInfo workInfo)
         {
             if (workInfo.IsImproper) return false;
+            if (workInfo.userId.IsBanPixiver()) return false;
             if (workInfo.HavingBanTags().Count > 0) return false;
             if (workInfo.IsIllust == false) return false;
             bool isRatingCountOk, isRatingRateOk, isBookmarkCountOk, isBookmarkRateOk;

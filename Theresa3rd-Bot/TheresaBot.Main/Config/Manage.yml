@@ -8,3 +8,5 @@ ListSubCommands:            ['订阅列表','已订列表']                             
 RemoveSubCommands:          ['移除订阅','取消订阅']                             #通过订阅Id移除一个订阅
 BindTagCommands:            ['绑定标签','标签糖']                               #将一个或多个pixiv标签绑定到一个或多个关键词中
 UnBindTagCommands:          ['解绑标签']                                        #解除关键词绑定
+DisablePixiverCommands:     ['屏蔽画师','拉黑画师']                             #将一个画师拉入黑名单，所有群生效
+EnablePixiverCommands:      ['解禁画师']                                        #将一个画师从黑名单移除，所有群生效

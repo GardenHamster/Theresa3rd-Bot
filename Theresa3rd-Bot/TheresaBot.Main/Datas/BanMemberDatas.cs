@@ -20,10 +20,10 @@ namespace TheresaBot.Main.Datas
             }
         }
 
-        public static bool IsBanMember(this long MemberId)
+        public static bool IsBanMember(this long memberId)
         {
-            if (MemberId <= 0) return false;
-            return BanMemberList.Any(o => o.MemberId == MemberId);
+            if (memberId <= 0) return false;
+            return BanMemberList.Any(o => o.MemberId == memberId);
         }
 
     }

@@ -39,28 +39,28 @@ namespace TheresaBot.Main.Handler
                 if (BusinessHelper.IsPixivId(keyword))
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    pixivWorkInfo = await pixivService.getPixivWorkInfoAsync(keyword);//根据作品id获取作品
+                    pixivWorkInfo = await pixivService.FetchWorkInfoAsync(keyword);//根据作品id获取作品
                 }
                 else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomType.RandomSubscribe)
                 {
-                    pixivWorkInfo = await pixivService.getRandomWorkInSubscribeAsync(command.GroupId, isShowR18, isShowAI);//获取随机一个订阅中的画师的作品
+                    pixivWorkInfo = await pixivService.FetchRandomWorkInSubscribeAsync(command.GroupId, isShowR18, isShowAI);//获取随机一个订阅中的画师的作品
                 }
                 else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomType.RandomFollow)
                 {
-                    pixivWorkInfo = await pixivService.getRandomWorkInFollowAsync(isShowR18, isShowAI);//获取随机一个关注中的画师的作品
+                    pixivWorkInfo = await pixivService.FetchRandomWorkInFollowAsync(isShowR18, isShowAI);//获取随机一个关注中的画师的作品
                 }
                 else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomType.RandomBookmark)
                 {
-                    pixivWorkInfo = await pixivService.getRandomWorkInBookmarkAsync(isShowR18, isShowAI);//获取随机一个收藏中的作品
+                    pixivWorkInfo = await pixivService.FetchRandomWorkInBookmarkAsync(isShowR18, isShowAI);//获取随机一个收藏中的作品
                 }
                 else if (string.IsNullOrEmpty(keyword))
                 {
-                    pixivWorkInfo = await pixivService.getRandomWorkInTagsAsync(isShowR18, isShowAI);//获取随机一个标签中的作品
+                    pixivWorkInfo = await pixivService.FetchRandomWorkInTagsAsync(isShowR18, isShowAI);//获取随机一个标签中的作品
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    pixivWorkInfo = await pixivService.getRandomWorkAsync(keyword, isShowR18, isShowAI);//获取随机一个作品
+                    pixivWorkInfo = await pixivService.FetchRandomWorkAsync(keyword, isShowR18, isShowAI);//获取随机一个作品
                 }
 
                 if (pixivWorkInfo is null)
@@ -79,15 +79,15 @@ namespace TheresaBot.Main.Handler
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 if (string.IsNullOrWhiteSpace(remindTemplate) == false)
                 {
-                    workMsgs.Add(new PlainContent(pixivService.getSetuRemindMsg(remindTemplate, todayLeft)));
+                    workMsgs.Add(new PlainContent(pixivService.GetSetuRemind(remindTemplate, todayLeft)));
                 }
 
-                workMsgs.Add(new PlainContent(pixivService.getWorkInfo(pixivWorkInfo)));
+                workMsgs.Add(new PlainContent(pixivService.GetWorkInfo(pixivWorkInfo)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
                 var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
-                var recordTask = recordService.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
+                var recordTask = recordService.InsertPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
@@ -129,12 +129,12 @@ namespace TheresaBot.Main.Handler
                 PixivUserProfileInfo profileInfo = PixivUserProfileCache.GetCache(userId);
                 if (profileInfo == null)
                 {
-                    profileInfo = await pixivService.getUserProfileInfoAsync(userId, command.GroupId);
+                    profileInfo = await pixivService.FetchUserProfileAsync(userId, command.GroupId);
                     PixivUserProfileCache.AddCache(userId, profileInfo);
                 }
 
                 string template = BotConfig.SetuConfig.PixivUser.Template;
-                string templateMsg = pixivService.getUserProfileMsg(profileInfo.UserName, template);
+                string templateMsg = pixivService.GetUserProfileMessage(profileInfo.UserName, template);
 
                 List<string> PreviewFilePaths = profileInfo.PreviewFilePaths;
                 if (PreviewFilePaths is null || PreviewFilePaths.IsFilesExists() == false)
@@ -147,7 +147,7 @@ namespace TheresaBot.Main.Handler
 
                 List<SetuContent> setuContents = new List<SetuContent>();
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
-                setuContents.AddRange(pixivService.getNumAndPids(profileInfo, 10));
+                setuContents.AddRange(pixivService.GetNoAndPids(profileInfo, 10));
 
                 await command.ReplyGroupMessageWithQuoteAsync(templateMsg);
                 await Task.Delay(1000);

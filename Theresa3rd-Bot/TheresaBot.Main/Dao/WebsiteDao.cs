@@ -4,7 +4,7 @@ namespace TheresaBot.Main.Dao
 {
     public class WebsiteDao : DbContext<WebsitePO>
     {
-        public WebsitePO getByCode(string code)
+        public WebsitePO GetByCode(string code)
         {
             return Db.Queryable<WebsitePO>().Where(o => o.Code == code).Single();
         }

@@ -12,9 +12,9 @@ namespace TheresaBot.Main.Services
             websiteDao = new WebsiteDao();
         }
 
-        public WebsitePO updateWebsite(string code, string cookie, long userid, int expireSeconds)
+        public WebsitePO UpdateWebsite(string code, string cookie, long userid, int expireSeconds)
         {
-            WebsitePO website = getOrInsertWebsite(code);
+            WebsitePO website = GetOrInsert(code);
             website.Cookie = cookie;
             website.UserId = userid;
             website.UpdateDate = DateTime.Now;
@@ -23,9 +23,9 @@ namespace TheresaBot.Main.Services
             return website;
         }
 
-        public WebsitePO updateWebsite(string code, string cookie, long userid, DateTime expireDate)
+        public WebsitePO UpdateWebsite(string code, string cookie, long userid, DateTime expireDate)
         {
-            WebsitePO website = getOrInsertWebsite(code);
+            WebsitePO website = GetOrInsert(code);
             website.Cookie = cookie;
             website.UserId = userid;
             website.UpdateDate = DateTime.Now;
@@ -34,9 +34,9 @@ namespace TheresaBot.Main.Services
             return website;
         }
 
-        public WebsitePO getOrInsertWebsite(string code)
+        public WebsitePO GetOrInsert(string code)
         {
-            WebsitePO website = websiteDao.getByCode(code);
+            WebsitePO website = websiteDao.GetByCode(code);
             if (website != null) return website;
             website = new WebsitePO();
             website.Code = code;

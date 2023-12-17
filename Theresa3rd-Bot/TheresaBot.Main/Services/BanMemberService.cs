@@ -12,27 +12,51 @@ namespace TheresaBot.Main.Services
             banMemberDao = new BanMemberDao();
         }
 
-        public List<BanMemberPO> getBanMembers()
+        public List<BanMemberPO> GetBanMembers()
         {
-            return banMemberDao.getBanMembers();
+            return banMemberDao.GetBanMembers();
         }
 
-        public BanMemberPO getBanMember(long memberId)
+        public BanMemberPO GetBanMember(long memberId)
         {
-            return banMemberDao.getBanMember(memberId);
+            return banMemberDao.GetBanMember(memberId);
         }
 
-        public BanMemberPO insertBanMembers(long memberId)
+        public void InsertBanMember(long[] memberIds)
         {
-            BanMemberPO banMember = new BanMemberPO();
-            banMember.MemberId = memberId;
-            banMember.CreateDate = DateTime.Now;
-            return banMemberDao.Insert(banMember);
+            foreach (var memberId in memberIds)
+            {
+                InsertBanMember(memberId);
+            }
+        }
+
+        public BanMemberPO InsertBanMember(long memberId)
+        {
+            var banMember = banMemberDao.GetBanMember(memberId);
+            if (banMember is not null)
+            {
+                return banMember;
+            }
+            else
+            {
+                banMember = new BanMemberPO();
+                banMember.MemberId = memberId;
+                banMember.CreateDate = DateTime.Now;
+                return banMemberDao.Insert(banMember);
+            }
+        }
+
+        public void DelBanMember(long[] memberIds)
+        {
+            foreach (var memberId in memberIds)
+            {
+                DelBanMember(memberId);
+            }
         }
 
         public int DelBanMember(long memberId)
         {
-            return banMemberDao.delBanMember(memberId);
+            return banMemberDao.DeleteBanMember(memberId);
         }
 
         public int DelById(int id)

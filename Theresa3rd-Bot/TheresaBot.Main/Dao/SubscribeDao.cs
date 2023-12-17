@@ -7,7 +7,7 @@ namespace TheresaBot.Main.Dao
 {
     public class SubscribeDao : DbContext<SubscribePO>
     {
-        public List<SubscribeInfo> getSubscribeInfo()
+        public List<SubscribeInfo> GetSubscribeInfo()
         {
             StringBuilder sqlBuilder = new StringBuilder();
             sqlBuilder.Append(" select s.id as subscribeId,s.subscribeCode,s.subscribeType,s.subscribeSubType,");
@@ -17,17 +17,17 @@ namespace TheresaBot.Main.Dao
             return Db.Ado.SqlQuery<SubscribeInfo>(sqlBuilder.ToString());
         }
 
-        public SubscribePO getSubscribe(int subscribeId)
+        public SubscribePO GetSubscribe(int subscribeId)
         {
             return Db.Queryable<SubscribePO>().Where(o => o.Id == subscribeId).First();
         }
 
-        public SubscribePO getSubscribe(string subscribeCode, SubscribeType subscribeType)
+        public SubscribePO GetSubscribe(string subscribeCode, SubscribeType subscribeType)
         {
             return Db.Queryable<SubscribePO>().Where(o => o.SubscribeCode == subscribeCode && o.SubscribeType == subscribeType).First();
         }
 
-        public List<SubscribePO> getSubscribes(SubscribeType subscribeType)
+        public List<SubscribePO> GetSubscribes(SubscribeType subscribeType)
         {
             return Db.Queryable<SubscribePO>().Where(o => o.SubscribeType == subscribeType).OrderBy(o => o.SubscribeSubType).ToList();
         }

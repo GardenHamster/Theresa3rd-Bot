@@ -55,7 +55,7 @@ namespace TheresaBot.Main.Handler
                 results = await Session.SendGroupSetuAsync(groupId, resendContent, BotConfig.PixivConfig.SendImgBehind);
             }
             long[] msgIds = results.Select(o => o.MessageId).ToArray();
-            Task recordTask = recordService.AddPixivRecord(setuContent, Session.PlatformType, msgIds, groupId);
+            Task recordTask = recordService.InsertPixivRecord(setuContent, Session.PlatformType, msgIds, groupId);
         }
 
         protected async Task SendGroupMergeSetuAsync(List<SetuContent> setuContents, List<BaseContent[]> headerContents, long groupId, int eachPage = 10)
@@ -67,7 +67,7 @@ namespace TheresaBot.Main.Handler
             {
                 List<SetuContent> pageContents = setuContents.Skip(startIndex).Take(eachPage).ToList();
                 BaseResult result = await SendGroupMergeSetuAsync(pageContents, headerContents, groupId);
-                Task recordTask = recordService.AddPixivRecord(pageContents, Session.PlatformType, result.MessageId, groupId);
+                Task recordTask = recordService.InsertPixivRecord(pageContents, Session.PlatformType, result.MessageId, groupId);
                 startIndex += eachPage;
             }
         }
@@ -233,7 +233,7 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.SetuConfig.MaxDaily == 0) return 0;
             if (groupId.IsSetuLimitless()) return BotConfig.SetuConfig.MaxDaily;
-            int todayUseCount = requestRecordService.getUsedCountToday(groupId, memberId, CommandType.Setu);
+            int todayUseCount = requestRecordService.GetUsedCountToday(groupId, memberId, CommandType.Setu);
             long leftToday = BotConfig.SetuConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
         }

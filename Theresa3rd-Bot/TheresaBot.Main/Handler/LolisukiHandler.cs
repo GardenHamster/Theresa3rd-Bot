@@ -40,12 +40,12 @@ namespace TheresaBot.Main.Handler
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
-                    dataList = await lolisukiService.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1);
+                    dataList = await lolisukiService.FetchDatasAsync(r18Mode, aiMode, levelStr, 1);
                 }
                 else
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
-                    dataList = await lolisukiService.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
+                    dataList = await lolisukiService.FetchDatasAsync(r18Mode, aiMode, levelStr, 1, ToLoliconTagArr(tagStr.ToActualPixivTags()));
                 }
 
                 if (dataList.Count == 0)
@@ -62,12 +62,12 @@ namespace TheresaBot.Main.Handler
 
                 string template = BotConfig.SetuConfig.Lolisuki.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
-                workMsgs.Add(new PlainContent(lolisukiService.getWorkInfo(lolisukiData, todayLeftCount, template)));
+                workMsgs.Add(new PlainContent(lolisukiService.GetWorkInfo(lolisukiData, todayLeftCount, template)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, lolisukiData);
                 var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
-                var recordTask = recordService.AddPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
+                var recordTask = recordService.InsertPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
@@ -101,7 +101,7 @@ namespace TheresaBot.Main.Handler
                 string tagStr = RandomHelper.RandomItem(timingSetuTimer.Tags);
                 string[] tagArr = string.IsNullOrWhiteSpace(tagStr) ? new string[0] : ToLoliconTagArr(tagStr);
                 int quantity = timingSetuTimer.Quantity > 20 ? 20 : timingSetuTimer.Quantity;
-                List<LolisukiData> dataList = await lolisukiService.getLolisukiDataListAsync(r18Mode, aiMode, levelStr, quantity, tagArr);
+                List<LolisukiData> dataList = await lolisukiService.FetchDatasAsync(r18Mode, aiMode, levelStr, quantity, tagArr);
                 List<SetuContent> setuContents = await GetSetuContent(dataList, groupId);
                 await sendTimingSetuMessageAsync(timingSetuTimer, tagStr, groupId);
                 await Task.Delay(2000);
@@ -123,7 +123,7 @@ namespace TheresaBot.Main.Handler
 
         private async Task<SetuContent> GetSetuContent(LolisukiData data, long groupId)
         {
-            string setuInfo = lolisukiService.getDefaultWorkInfo(data);
+            string setuInfo = lolisukiService.GetDefaultWorkInfo(data);
             List<FileInfo> setuFiles = await GetSetuFilesAsync(data, groupId);
             return new SetuContent(setuInfo, setuFiles);
         }

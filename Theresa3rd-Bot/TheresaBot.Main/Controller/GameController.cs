@@ -38,7 +38,7 @@ namespace TheresaBot.Main.Controller
             if (wordDto is null) return ApiResult.ParamError;
             if (string.IsNullOrWhiteSpace(wordDto.Word1)) return ApiResult.ParamError;
             if (string.IsNullOrWhiteSpace(wordDto.Word2)) return ApiResult.ParamError;
-            wordService.AddWords(wordDto.Word1, wordDto.Word2);
+            wordService.InsertWords(wordDto.Word1, wordDto.Word2);
             return ApiResult.Success();
         }
 
@@ -60,7 +60,7 @@ namespace TheresaBot.Main.Controller
         {
             if (idsDto.Ids is null) return ApiResult.ParamError;
             if (idsDto.Ids.Count == 0) return ApiResult.ParamError;
-            wordService.deleteWords(idsDto.Ids);
+            wordService.DeleteWords(idsDto.Ids);
             return ApiResult.Success();
         }
 

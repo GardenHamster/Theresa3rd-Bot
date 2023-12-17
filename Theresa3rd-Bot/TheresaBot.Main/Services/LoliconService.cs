@@ -11,10 +11,10 @@ namespace TheresaBot.Main.Services
     {
         private const int eachPage = 5;
 
-        public string getWorkInfo(LoliconDataV2 loliconData, long todayLeft, string template = "")
+        public string GetWorkInfo(LoliconDataV2 loliconData, long todayLeft, string template = "")
         {
             template = template?.Trim()?.TrimLine();
-            if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(loliconData);
+            if (string.IsNullOrWhiteSpace(template)) return GetDefaultWorkInfo(loliconData);
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
@@ -28,7 +28,7 @@ namespace TheresaBot.Main.Services
             return template;
         }
 
-        public string getDefaultWorkInfo(LoliconDataV2 loliconData)
+        public string GetDefaultWorkInfo(LoliconDataV2 loliconData)
         {
             StringBuilder workInfoStr = new StringBuilder();
             workInfoStr.AppendLine($"本条数据来源于Lolicon Api~");
@@ -38,14 +38,14 @@ namespace TheresaBot.Main.Services
             return workInfoStr.ToString();
         }
 
-        public async Task<List<LoliconDataV2>> getLoliconDataListAsync(int r18Mode, bool excludeAI, int quantity = 1, string[] tags = null)
+        public async Task<List<LoliconDataV2>> FetchDatasAsync(int r18Mode, bool excludeAI, int quantity = 1, string[] tags = null)
         {
             List<LoliconDataV2> setuList = new();
             while (quantity > 0)
             {
                 int num = quantity >= eachPage ? eachPage : quantity;
                 quantity = quantity - eachPage;
-                LoliconResultV2 loliconResult = await getLoliconResultAsync(r18Mode, excludeAI, num, tags);
+                LoliconResultV2 loliconResult = await FetchResultAsync(r18Mode, excludeAI, num, tags);
                 if (loliconResult?.data is null) continue;
                 foreach (var setuInfo in loliconResult.data)
                 {
@@ -55,7 +55,7 @@ namespace TheresaBot.Main.Services
             return setuList;
         }
 
-        private async Task<LoliconResultV2> getLoliconResultAsync(int r18Mode, bool excludeAI, int quantity = 1, string[] tags = null)
+        private async Task<LoliconResultV2> FetchResultAsync(int r18Mode, bool excludeAI, int quantity = 1, string[] tags = null)
         {
             string[] postTags = tags is null || tags.Length == 0 ? new string[0] : tags;
             LoliconParamV2 param = new LoliconParamV2(r18Mode, excludeAI, quantity, HttpUrl.DefaultPixivImgProxyHost, postTags);

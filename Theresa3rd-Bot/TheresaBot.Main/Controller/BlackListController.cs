@@ -46,7 +46,7 @@ namespace TheresaBot.Main.Controller
         [Route("add/member")]
         public ApiResult AddMember([FromBody] AddBanMemberDto member)
         {
-            banMemberService.insertBanMembers(member.MemberId);
+            banMemberService.InsertBanMember(member.MemberId);
             BanMemberDatas.LoadDatas();
             return ApiResult.Success();
         }
@@ -122,7 +122,7 @@ namespace TheresaBot.Main.Controller
         [Route("add/pixiver")]
         public ApiResult AddPixiver([FromBody] AddBanPixiverDto pixiver)
         {
-            banPixiverService.insertBanPixivers(pixiver.PixiverId);
+            banPixiverService.InsertBanPixivers(pixiver.PixiverId);
             BanPixiverDatas.LoadDatas();
             return ApiResult.Success();
         }

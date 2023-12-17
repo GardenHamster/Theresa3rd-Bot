@@ -1,6 +1,4 @@
-﻿using TheresaBot.Main.Type;
-
-namespace TheresaBot.Main.Model.DTO
+﻿namespace TheresaBot.Main.Model.DTO
 {
     public record AddSugarTagDto
     {

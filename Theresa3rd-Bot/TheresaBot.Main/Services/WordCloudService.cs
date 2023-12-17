@@ -16,14 +16,14 @@ namespace TheresaBot.Main.Services
             messageRecordDao = new MessageRecordDao();
         }
 
-        public List<string> getCloudWords(long groupId, DateTime startTime, DateTime endTime)
+        public List<string> GetWords(long groupId, DateTime startTime, DateTime endTime)
         {
             int wordCount = BotConfig.WordCloudConfig.MaxWords;
-            var messageRecords = messageRecordDao.getRecords(groupId, startTime, endTime);
+            var messageRecords = messageRecordDao.GetRecords(groupId, startTime, endTime);
             var messageList = messageRecords.Select(o => o.MessageText).ToList();
             var messagesString = string.Join(",", messageList);
-            var newWords = LoadWordCloudNewWords();
-            var hidWords = LoadWordCloudHiddenWords();
+            var newWords = LoadNewWords();
+            var hidWords = LoadHiddenWords();
             var hidWordUppers = hidWords.Select(o => o.ToUpper().Trim());
             var jiebaSegmenter = new JiebaSegmenter();
             foreach (var word in newWords) jiebaSegmenter.AddWord(word);
@@ -33,15 +33,15 @@ namespace TheresaBot.Main.Services
             return returnWords;
         }
 
-        public List<string> LoadWordCloudNewWords()
+        public List<string> LoadNewWords()
         {
-            var dicList = dictionaryDao.getDictionary(WordType.WordCloud, (int)WordCloudSubType.NewWord);
+            var dicList = dictionaryDao.GetDictionary(WordType.WordCloud, (int)WordCloudSubType.NewWord);
             return dicList.Select(o => o.Words).ToList();
         }
 
-        public List<string> LoadWordCloudHiddenWords()
+        public List<string> LoadHiddenWords()
         {
-            var dicList = dictionaryDao.getDictionary(WordType.WordCloud, (int)WordCloudSubType.HiddenWord);
+            var dicList = dictionaryDao.GetDictionary(WordType.WordCloud, (int)WordCloudSubType.HiddenWord);
             return dicList.Select(o => o.Words).ToList();
         }
 

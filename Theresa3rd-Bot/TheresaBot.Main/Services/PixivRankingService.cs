@@ -15,15 +15,15 @@ namespace TheresaBot.Main.Services
     {
         private const int eachPage = 50;
 
-        public async Task<PixivRankingInfo> getRankingInfo(PixivRankingItem rankingItem, PixivRankingMode rankingMode, string search_date, int retryTimes = 2)
+        public async Task<PixivRankingInfo> FetchRankingInfo(PixivRankingItem rankingItem, PixivRankingMode rankingMode, string search_date, int retryTimes = 2)
         {
             if (retryTimes < 0) retryTimes = 0;
             while (retryTimes >= 0)
             {
                 try
                 {
-                    (List<PixivRankingContent> rankingContents, string ranking_date) = await getRankingDatas(rankingMode, search_date);
-                    List<PixivRankingDetail> rankingDetails = await filterContents(rankingItem, rankingContents, rankingMode);
+                    (List<PixivRankingContent> rankingContents, string ranking_date) = await FetchRankingDatas(rankingMode, search_date);
+                    List<PixivRankingDetail> rankingDetails = await FilterContents(rankingItem, rankingContents, rankingMode);
                     return new PixivRankingInfo(rankingDetails, rankingMode, ranking_date, BotConfig.PixivRankingConfig.CacheSeconds);
                 }
                 catch (NoRankingException)
@@ -39,7 +39,7 @@ namespace TheresaBot.Main.Services
             return null;
         }
 
-        public async Task<(List<PixivRankingContent>, string)> getRankingDatas(PixivRankingMode rankingMode, string search_date)
+        public async Task<(List<PixivRankingContent>, string)> FetchRankingDatas(PixivRankingMode rankingMode, string search_date)
         {
             string mode = rankingMode.Code;
             PixivRankingData firstpage = await PixivHelper.GetPixivRankingData(mode, 1, search_date);
@@ -60,17 +60,17 @@ namespace TheresaBot.Main.Services
             return (rankingContents, ranking_date);
         }
 
-        public async Task<List<PixivRankingDetail>> filterContents(PixivRankingItem rankingItem, List<PixivRankingContent> rankingContents, PixivRankingMode rankingMode)
+        public async Task<List<PixivRankingDetail>> FilterContents(PixivRankingItem rankingItem, List<PixivRankingContent> rankingContents, PixivRankingMode rankingMode)
         {
             var rankingDetails = new List<PixivRankingDetail>();
             foreach (var rankingContent in rankingContents)
             {
                 try
                 {
-                    if (checkContentIsOk(rankingItem, rankingContent, rankingMode) == false) continue;
-                    PixivWorkInfo pixivWorkInfo = await getRankingWork(rankingContent);
+                    if (CheckContentIsOk(rankingItem, rankingContent, rankingMode) == false) continue;
+                    PixivWorkInfo pixivWorkInfo = await GetRankingWork(rankingContent);
                     if (pixivWorkInfo is null) continue;
-                    if (checkWorkIsOk(rankingItem, pixivWorkInfo) == false) continue;
+                    if (CheckWorkIsOk(rankingItem, pixivWorkInfo) == false) continue;
                     PixivRankingDetail rankingDetail = new PixivRankingDetail(rankingContent, pixivWorkInfo);
                     rankingDetails.Add(rankingDetail);
                 }
@@ -79,10 +79,10 @@ namespace TheresaBot.Main.Services
                     LogHelper.Error(ex);
                 }
             }
-            return sortDetails(rankingDetails, BotConfig.PixivRankingConfig.SortType);
+            return SortDetails(rankingDetails, BotConfig.PixivRankingConfig.SortType);
         }
 
-        private List<PixivRankingDetail> sortDetails(List<PixivRankingDetail> details, PixivRankingSortType sortType)
+        private List<PixivRankingDetail> SortDetails(List<PixivRankingDetail> details, PixivRankingSortType sortType)
         {
             if (sortType == PixivRankingSortType.BookMark)
             {
@@ -103,7 +103,7 @@ namespace TheresaBot.Main.Services
             return details.ToList();
         }
 
-        private async Task<PixivWorkInfo> getRankingWork(PixivRankingContent content)
+        private async Task<PixivWorkInfo> GetRankingWork(PixivRankingContent content)
         {
             try
             {
@@ -116,22 +116,22 @@ namespace TheresaBot.Main.Services
             }
         }
 
-        public string getRankingMsg(string date, string rankingName, string template)
+        public string GetRankingMessage(string date, string rankingName, string template)
         {
             template = template?.Trim()?.TrimLine();
-            if (string.IsNullOrWhiteSpace(template)) return getDefaultRankingMsg(date, rankingName);
+            if (string.IsNullOrWhiteSpace(template)) return GetDefaultRankingMessage(date, rankingName);
             template = template.Replace("{Date}", date);
             template = template.Replace("{Ranking}", rankingName);
             template = template.Replace("{CacheSeconds}", BotConfig.PixivRankingConfig.CacheSeconds.ToString());
             return template;
         }
 
-        public string getDefaultRankingMsg(string date, string rankingName)
+        public string GetDefaultRankingMessage(string date, string rankingName)
         {
             return $"{date}{rankingName}精选，数据缓存{BotConfig.PixivRankingConfig.CacheSeconds.ToString()}秒";
         }
 
-        public List<SetuContent> getRankAndPids(PixivRankingInfo pixivRankingInfo, int eachPage)
+        public List<SetuContent> GetRankingAndPids(PixivRankingInfo pixivRankingInfo, int eachPage)
         {
             int startIndex = 0;
             if (eachPage <= 0) return new();
@@ -153,7 +153,7 @@ namespace TheresaBot.Main.Services
         /// <param name="rankingItem"></param>
         /// <param name="rankingContent"></param>
         /// <returns></returns>
-        private bool checkContentIsOk(PixivRankingItem rankingItem, PixivRankingContent rankingContent, PixivRankingMode rankingMode)
+        private bool CheckContentIsOk(PixivRankingItem rankingItem, PixivRankingContent rankingContent, PixivRankingMode rankingMode)
         {
             if (rankingContent.IsImproper()) return false;
             if (rankingContent.user_id.IsBanPixiver()) return false;
@@ -170,7 +170,7 @@ namespace TheresaBot.Main.Services
         /// <param name="rankingItem"></param>
         /// <param name="rankingContent"></param>
         /// <returns></returns>
-        private bool checkWorkIsOk(PixivRankingItem rankingItem, PixivWorkInfo workInfo)
+        private bool CheckWorkIsOk(PixivRankingItem rankingItem, PixivWorkInfo workInfo)
         {
             if (workInfo.IsImproper) return false;
             if (workInfo.userId.IsBanPixiver()) return false;

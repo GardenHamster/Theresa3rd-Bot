@@ -15,12 +15,12 @@ namespace TheresaBot.Main.Services
 
         public List<BanTagPO> GetBanTags()
         {
-            return banTagDao.getBanTags();
+            return banTagDao.GetBanTags();
         }
 
         public BanTagPO GetBanTag(string keyword)
         {
-            return banTagDao.getBanTag(keyword.Trim().ToUpper());
+            return banTagDao.GetBanTag(keyword.Trim().ToUpper());
         }
 
         public void InsertOrUpdate(string[] keywords, TagMatchType tagMatchType)
@@ -61,19 +61,17 @@ namespace TheresaBot.Main.Services
             return banTagDao.Update(banTag);
         }
 
-        public int DelBanTags(string[] keywords)
+        public void DelBanTags(string[] keywords)
         {
-            int count = 0;
             foreach (string keyword in keywords)
             {
-                count += banTagDao.delBanTag(keyword);
+                banTagDao.DeleteBanTag(keyword);
             }
-            return count;
         }
 
         public int DelBanTag(string keyword)
         {
-            return banTagDao.delBanTag(keyword.Trim().ToUpper());
+            return banTagDao.DeleteBanTag(keyword.Trim().ToUpper());
         }
 
         public int DelById(int id)

@@ -49,7 +49,7 @@ namespace TheresaBot.Main.Handler
                     pushType = groupStep.Answer;
                 }
 
-                var userData = await miyousheService.getUserInfoAsync(userId.ToString());
+                var userData = await miyousheService.FetchUserInfoAsync(userId.ToString());
                 if (userData is null || userData.retcode != 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync("订阅失败，目标用户不存在");
@@ -60,7 +60,7 @@ namespace TheresaBot.Main.Handler
                 var subscribe = subscribeService.GetSubscribe(userId.ToString(), SubscribeType.米游社用户);
                 if (subscribe is null)
                 {
-                    subscribe = subscribeService.AddSubscribe(userInfo, userId.ToString());
+                    subscribe = subscribeService.InsertSubscribe(userInfo, userId.ToString());
                 }
 
                 if (subscribeGroupService.IsSubscribed(subscribe.Id, command.GroupId))
@@ -69,7 +69,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                subscribeGroupService.AddGroupSubscribe(subscribe.Id, pushType, command.GroupId);
+                subscribeGroupService.InsertGroupSubscribe(subscribe.Id, pushType, command.GroupId);
                 SubscribeDatas.LoadSubscribeTask();
                 await command.ReplyGroupMessageWithAtAsync($"米游社用户【{subscribe.SubscribeName}】订阅成功!");
                 await Task.Delay(1000);
@@ -150,7 +150,7 @@ namespace TheresaBot.Main.Handler
                 try
                 {
                     if (subscribeTask.SubscribeSubType != 0) continue;
-                    var postList = await miyousheService.scanPostAsync(subscribeTask);
+                    var postList = await miyousheService.ScanPostsAsync(subscribeTask);
                     await PushSubscribeAsync(subscribeTask, postList);
                 }
                 catch (Exception ex)
@@ -177,7 +177,7 @@ namespace TheresaBot.Main.Handler
         {
             var msgList = new List<BaseContent>()
             {
-                new PlainContent(miyousheService.getPostInfoAsync(mysSubscribe))
+                new PlainContent(miyousheService.GetPostInfoAsync(mysSubscribe))
             };
             var coverUrl = mysSubscribe.SubscribeRecord.CoverUrl;
             if (string.IsNullOrWhiteSpace(coverUrl) == false)

@@ -51,17 +51,17 @@ namespace TheresaBot.Main.Handler
 
         public async Task<int> GetUsedCountToday(long groupId, long memberId, params CommandType[] commandTypeArr)
         {
-            return await Task.FromResult(requestRecordService.getUsedCountToday(groupId, memberId, commandTypeArr));
+            return await Task.FromResult(requestRecordService.GetUsedCountToday(groupId, memberId, commandTypeArr));
         }
 
         public async Task<RequestRecordPO> InsertRecord(GroupCommand command)
         {
-            return await Task.FromResult(requestRecordService.addRecord(command.GroupId, command.MemberId, command.CommandType, command.Instruction));
+            return await Task.FromResult(requestRecordService.InsertRecord(command.GroupId, command.MemberId, command.CommandType, command.Instruction));
         }
 
         public async Task<RequestRecordPO> InsertRecord(FriendCommand command)
         {
-            return await Task.FromResult(requestRecordService.addRecord(0, command.MemberId, command.CommandType, command.Instruction));
+            return await Task.FromResult(requestRecordService.InsertRecord(0, command.MemberId, command.CommandType, command.Instruction));
         }
 
         public async Task<bool> CheckPixivCookieAvailableAsync(GroupCommand command)
@@ -283,7 +283,7 @@ namespace TheresaBot.Main.Handler
             if (command.GroupId.IsSetuLimitless()) return false;
             if (command.MemberId.IsLimitlessMember()) return false;
             if (BotConfig.SetuConfig.MaxDaily == 0) return false;
-            int useCount = new RequestRecordService().getUsedCountToday(command.GroupId, command.MemberId, CommandType.Setu);
+            int useCount = new RequestRecordService().GetUsedCountToday(command.GroupId, command.MemberId, CommandType.Setu);
             if (useCount < BotConfig.SetuConfig.MaxDaily) return false;
             await command.ReplyGroupMessageWithQuoteAsync("你今天的使用次数已经达到上限了，明天再来吧");
             return true;
@@ -293,7 +293,7 @@ namespace TheresaBot.Main.Handler
         {
             if (BotConfig.SaucenaoConfig.MaxDaily == 0) return false;
             if (command.MemberId.IsLimitlessMember()) return false;
-            int useCount = new RequestRecordService().getUsedCountToday(command.GroupId, command.MemberId, CommandType.Saucenao);
+            int useCount = new RequestRecordService().GetUsedCountToday(command.GroupId, command.MemberId, CommandType.Saucenao);
             if (useCount < BotConfig.SaucenaoConfig.MaxDaily) return false;
             await command.ReplyGroupMessageWithQuoteAsync("你今天的使用次数已经达到上限了，明天再来吧");
             return true;

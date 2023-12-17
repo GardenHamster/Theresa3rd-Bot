@@ -24,7 +24,7 @@ namespace TheresaBot.Main.Services
         public Dictionary<SubscribeType, List<SubscribeTask>> LoadSubscribeTasks()
         {
             var subscribeTaskMap = new Dictionary<SubscribeType, List<SubscribeTask>>();
-            var subscribeInfoList = subscribeDao.getSubscribeInfo();
+            var subscribeInfoList = subscribeDao.GetSubscribeInfo();
             foreach (SubscribeInfo subscribeInfo in subscribeInfoList)
             {
                 SubscribeType subscribeType = subscribeInfo.SubscribeType;
@@ -44,7 +44,7 @@ namespace TheresaBot.Main.Services
             return subscribeTaskMap;
         }
 
-        public SubscribePO AddSubscribe(MysUserInfo userInfo, string userId)
+        public SubscribePO InsertSubscribe(MysUserInfo userInfo, string userId)
         {
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
@@ -55,7 +55,7 @@ namespace TheresaBot.Main.Services
             return subscribeDao.Insert(dbSubscribe);
         }
 
-        public SubscribePO AddSurscribe(PixivUserProfileTop pixivUserInfoDto, string userId)
+        public SubscribePO InsertSubscribe(PixivUserProfileTop pixivUserInfoDto, string userId)
         {
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = userId;
@@ -66,7 +66,7 @@ namespace TheresaBot.Main.Services
             return subscribeDao.Insert(dbSubscribe);
         }
 
-        public SubscribePO AddSurscribe(PixivFollowUser pixivFollowUser, DateTime createDate)
+        public SubscribePO InsertSubscribe(PixivFollowUser pixivFollowUser, DateTime createDate)
         {
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = pixivFollowUser.userId;
@@ -77,7 +77,7 @@ namespace TheresaBot.Main.Services
             return subscribeDao.Insert(dbSubscribe);
         }
 
-        public SubscribePO AddSurscribe(string pixivTag)
+        public SubscribePO InsertSubscribe(string pixivTag)
         {
             SubscribePO dbSubscribe = new SubscribePO();
             dbSubscribe.SubscribeCode = pixivTag;
@@ -90,12 +90,12 @@ namespace TheresaBot.Main.Services
 
         public SubscribePO GetSubscribe(int subscribeId)
         {
-            return subscribeDao.getSubscribe(subscribeId);
+            return subscribeDao.GetSubscribe(subscribeId);
         }
 
         public SubscribePO GetSubscribe(string subscribeCode, SubscribeType subscribeType)
         {
-            return subscribeDao.getSubscribe(subscribeCode, subscribeType);
+            return subscribeDao.GetSubscribe(subscribeCode, subscribeType);
         }
 
     }

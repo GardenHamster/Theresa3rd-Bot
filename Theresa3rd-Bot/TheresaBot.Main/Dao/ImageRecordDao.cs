@@ -5,7 +5,7 @@ namespace TheresaBot.Main.Dao
 {
     public class ImageRecordDao : DbContext<ImageRecordPO>
     {
-        public List<ImageRecordPO> getRecords(PlatformType platformType, long msgId, long groupId)
+        public List<ImageRecordPO> GetRecords(PlatformType platformType, long msgId, long groupId)
         {
             return Db.Queryable<ImageRecordPO>().Where(o => o.MessageId == msgId && o.PlatformType == platformType && o.GroupId == groupId).ToList();
         }

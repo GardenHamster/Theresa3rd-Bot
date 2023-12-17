@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheresaBot.Main.Dao;
+﻿using TheresaBot.Main.Dao;
 using TheresaBot.Main.Model.PO;
 
 namespace TheresaBot.Main.Services
@@ -17,27 +12,51 @@ namespace TheresaBot.Main.Services
             banPixiverDao = new BanPixiverDao();
         }
 
-        public List<BanPixiverPO> getBanPixivers()
+        public List<BanPixiverPO> GetBanPixivers()
         {
-            return banPixiverDao.getBanPixivers();
+            return banPixiverDao.GetBanPixivers();
         }
 
-        public BanPixiverPO getBanPixiver(long pixiverId)
+        public BanPixiverPO GetBanPixiver(long pixiverId)
         {
-            return banPixiverDao.getBanPixiver(pixiverId);
+            return banPixiverDao.GetBanPixiver(pixiverId);
         }
 
-        public BanPixiverPO insertBanPixivers(long pixiverId)
+        public void InsertBanPixivers(long[] pixiverIds)
         {
-            BanPixiverPO banPixiver = new BanPixiverPO();
-            banPixiver.PixiverId = pixiverId;
-            banPixiver.CreateDate = DateTime.Now;
-            return banPixiverDao.Insert(banPixiver);
+            foreach (var pixiverId in pixiverIds)
+            {
+                InsertBanPixivers(pixiverId);
+            }
+        }
+
+        public BanPixiverPO InsertBanPixivers(long pixiverId)
+        {
+            var banPixiver = banPixiverDao.GetBanPixiver(pixiverId);
+            if (banPixiver is not null)
+            {
+                return banPixiver;
+            }
+            else
+            {
+                banPixiver = new BanPixiverPO();
+                banPixiver.PixiverId = pixiverId;
+                banPixiver.CreateDate = DateTime.Now;
+                return banPixiverDao.Insert(banPixiver);
+            }
+        }
+
+        public void DelBanPixiver(long[] pixiverIds)
+        {
+            foreach (var pixiverId in pixiverIds)
+            {
+                DelBanPixiver(pixiverId);
+            }
         }
 
         public int DelBanPixiver(long pixiverId)
         {
-            return banPixiverDao.delBanPixiver(pixiverId);
+            return banPixiverDao.DeleteBanPixiver(pixiverId);
         }
 
         public int DelById(int id)

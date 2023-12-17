@@ -12,7 +12,7 @@ namespace TheresaBot.Main.Datas
         {
             try
             {
-                BanPixiverList = new BanPixiverService().getBanPixivers();
+                BanPixiverList = new BanPixiverService().GetBanPixivers();
             }
             catch (Exception ex)
             {

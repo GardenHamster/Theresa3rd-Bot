@@ -13,7 +13,7 @@ namespace TheresaBot.Main.Services
             ucWordDao = new UCWordDao();
         }
 
-        public void AddWords(string word1, string word2)
+        public void InsertWords(string word1, string word2)
         {
             UCWordPO wordPO = new UCWordPO
             {
@@ -26,7 +26,7 @@ namespace TheresaBot.Main.Services
             ucWordDao.Insert(wordPO);
         }
 
-        public void AddWords(string word1, string word2, long memberId)
+        public void InsertWords(string word1, string word2, long memberId)
         {
             UCWordPO wordPO = new UCWordPO
             {
@@ -64,12 +64,12 @@ namespace TheresaBot.Main.Services
             return ucWordDao.GetUnauthorizedCount(memberId);
         }
 
-        public int deleteWords(int id)
+        public int DeleteWords(int id)
         {
             return ucWordDao.DeleteById(id);
         }
 
-        public int deleteWords(List<int> ids)
+        public int DeleteWords(List<int> ids)
         {
             return ucWordDao.DeleteByIds(ids);
         }

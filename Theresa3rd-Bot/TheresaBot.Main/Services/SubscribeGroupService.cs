@@ -22,7 +22,7 @@ namespace TheresaBot.Main.Services
         /// <param name="subscribeId"></param>
         /// <param name="groupId"></param>
         /// <param name="pushType"></param>
-        public void AddGroupSubscribe(int subscribeId, PushType pushType, long groupId)
+        public void InsertGroupSubscribe(int subscribeId, PushType pushType, long groupId)
         {
             var subscribeGroupId = pushType == PushType.SubscribableGroup ? 0 : groupId;
             var subscribeGroupList = subscribeGroupDao.GetList(subscribeId, groupId);

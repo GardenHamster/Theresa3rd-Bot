@@ -98,7 +98,7 @@ namespace TheresaBot.Main.Handler
                 if (subscribe is null)
                 {
                     PixivUserProfileTop pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(userId);
-                    subscribe = subscribeService.AddSurscribe(pixivUserInfo, userId);
+                    subscribe = subscribeService.InsertSubscribe(pixivUserInfo, userId);
                 }
 
                 if (subscribeGroupService.IsSubscribed(subscribe.Id, command.GroupId))
@@ -107,7 +107,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                subscribeGroupService.AddGroupSubscribe(subscribe.Id, pushType, command.GroupId);
+                subscribeGroupService.InsertGroupSubscribe(subscribe.Id, pushType, command.GroupId);
                 SubscribeDatas.LoadSubscribeTask();
                 await command.ReplyGroupMessageWithAtAsync($"画师【{subscribe.SubscribeName}】订阅成功，正在读取最新作品~");
                 await Task.Delay(1000);
@@ -142,7 +142,7 @@ namespace TheresaBot.Main.Handler
                 await command.ReplyGroupMessageWithAtAsync("正在获取Pixiv账号中已关注的画师列表...");
                 await Task.Delay(1000);
 
-                var followUsers = await pixivService.getFollowUserList();
+                var followUsers = await pixivService.FetchFollowUsers();
                 if (followUsers.Count == 0)
                 {
                     await command.ReplyGroupMessageWithQuoteAsync("Pixiv账号中还没有关注任何画师");
@@ -176,7 +176,7 @@ namespace TheresaBot.Main.Handler
                 foreach (var item in followUsers)
                 {
                     var subscribe = subscribeService.GetSubscribe(item.userId, SubscribeType.P站画师);
-                    if (subscribe is null) subscribe = subscribeService.AddSurscribe(item, syncDate);
+                    if (subscribe is null) subscribe = subscribeService.InsertSubscribe(item, syncDate);
                     subscribeList.Add(subscribe);
                 }
 
@@ -189,7 +189,7 @@ namespace TheresaBot.Main.Handler
                 //插入关联数据，如果数据已存在则跳过
                 foreach (var subscribeId in subscribeIds)
                 {
-                    subscribeGroupService.AddGroupSubscribe(subscribeId, pushType, groupId);
+                    subscribeGroupService.InsertGroupSubscribe(subscribeId, pushType, groupId);
                 }
 
                 DbScoped.SugarScope.CommitTran();//提交事务
@@ -271,7 +271,7 @@ namespace TheresaBot.Main.Handler
                     pushType = typeStep.Answer;
                 }
 
-                var searchWord = pixivService.toPixivSearchWords(pixivTag.ToActualPixivTags());
+                var searchWord = pixivService.ToPixivSearchWords(pixivTag.ToActualPixivTags());
                 var pageOne = await PixivHelper.GetPixivSearchAsync(searchWord, 1, false, true);
                 if (pageOne?.getIllust()?.data is null || pageOne.getIllust().data.Count == 0)
                 {
@@ -282,7 +282,7 @@ namespace TheresaBot.Main.Handler
                 var subscribe = subscribeService.GetSubscribe(pixivTag, SubscribeType.P站标签);
                 if (subscribe is null)
                 {
-                    subscribe = subscribeService.AddSurscribe(pixivTag);
+                    subscribe = subscribeService.InsertSubscribe(pixivTag);
                 }
 
                 if (subscribeGroupService.IsSubscribed(subscribe.Id, command.GroupId))
@@ -291,7 +291,7 @@ namespace TheresaBot.Main.Handler
                     return;
                 }
 
-                subscribeGroupService.AddGroupSubscribe(subscribe.Id, pushType, command.GroupId);
+                subscribeGroupService.InsertGroupSubscribe(subscribe.Id, pushType, command.GroupId);
                 SubscribeDatas.LoadSubscribeTask();
                 await command.ReplyGroupMessageWithQuoteAsync($"标签【{pixivTag}】订阅成功，作品总数为：{pageOne.illust.total}");
             }
@@ -355,7 +355,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 var isShowR18 = command.GroupId.IsShowR18();
-                var pixivSubscribeList = await pixivService.getUserNewestAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, 1);
+                var pixivSubscribeList = await pixivService.FetchNewestWorkAsync(dbSubscribe.SubscribeCode, dbSubscribe.Id, 1);
                 if (pixivSubscribeList is null || pixivSubscribeList.Count == 0)
                 {
                     await command.ReplyGroupMessageWithAtAsync($"画师【{dbSubscribe.SubscribeName}】还没有发布任何作品~");
@@ -374,7 +374,7 @@ namespace TheresaBot.Main.Handler
                 var workMsgs = new List<BaseContent>
                 {
                     new PlainContent($"pixiv画师【{pixivWorkInfo.userName}】的最新作品："),
-                    new PlainContent(pixivService.getWorkInfo(pixivWorkInfo))
+                    new PlainContent(pixivService.GetWorkInfo(pixivWorkInfo))
                 };
                 var setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
                 var setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);

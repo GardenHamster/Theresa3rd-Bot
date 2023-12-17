@@ -14,12 +14,12 @@ namespace TheresaBot.Main.Services
 
         public List<SugarTagPO> GetList()
         {
-            return sugarTagDao.getSugars();
+            return sugarTagDao.GetSugars();
         }
 
         public Dictionary<string, string> LoadSugarTags()
         {
-            var tagList = sugarTagDao.getSugars();
+            var tagList = sugarTagDao.GetSugars();
             var tagDic = new Dictionary<string, string>();
             foreach (SugarTagPO tag in tagList)
             {
@@ -41,7 +41,7 @@ namespace TheresaBot.Main.Services
         public SugarTagPO SetSugarTags(string keyWord, string bindTags)
         {
             keyWord = keyWord.Trim().ToUpper();
-            var sugarTag = sugarTagDao.getSugar(keyWord);
+            var sugarTag = sugarTagDao.GetSugar(keyWord);
             if (sugarTag is null)
             {
                 sugarTag = new SugarTagPO();
@@ -68,7 +68,7 @@ namespace TheresaBot.Main.Services
         public int DelByKeyword(string keyWord)
         {
             keyWord = keyWord.Trim().ToUpper();
-            return sugarTagDao.delSugar(keyWord);
+            return sugarTagDao.DeleteSugar(keyWord);
         }
 
         public int DelById(int id)

@@ -246,7 +246,7 @@ namespace TheresaBot.Main.Services
         public int GetLeftToday(long groupId, long memberId)
         {
             if (BotConfig.SaucenaoConfig.MaxDaily == 0) return 0;
-            int todayUseCount = requestRecordDao.getUsedCountToday(groupId, memberId, CommandType.Saucenao);
+            int todayUseCount = requestRecordDao.GetUsedCountToday(groupId, memberId, CommandType.Saucenao);
             int leftToday = BotConfig.SaucenaoConfig.MaxDaily - todayUseCount - 1;
             return leftToday < 0 ? 0 : leftToday;
         }
@@ -302,7 +302,7 @@ namespace TheresaBot.Main.Services
         private async static Task<string> RequestHtmlAsync(string imgHttpUrl)
         {
             Dictionary<string, string> paramDic = new Dictionary<string, string>() { { "url", imgHttpUrl } };
-            Dictionary<string, string> headerDic = getSaucenaoHeader();
+            Dictionary<string, string> headerDic = GetHeader();
             HttpResponseMessage response = await HttpHelper.PostFormForHtml(HttpUrl.SaucenaoUrl, paramDic, headerDic);
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -316,7 +316,7 @@ namespace TheresaBot.Main.Services
         /// 获取Header
         /// </summary>
         /// <returns></returns>
-        private static Dictionary<string, string> getSaucenaoHeader()
+        private static Dictionary<string, string> GetHeader()
         {
             Dictionary<string, string> headerDic = new Dictionary<string, string>();
             string cookie = WebsiteDatas.Saucenao.Cookie;

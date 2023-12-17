@@ -6,7 +6,7 @@ namespace TheresaBot.Main.Services
 {
     internal class LocalSetuService : SetuService
     {
-        public List<LocalSetuInfo> loadRandomDir(string localPath, int count, bool fromOneDir = false)
+        public List<LocalSetuInfo> LoadRandomDir(string localPath, int count, bool fromOneDir = false)
         {
             List<LocalSetuInfo> setuList = new List<LocalSetuInfo>();
             DirectoryInfo localDir = new DirectoryInfo(localPath);
@@ -26,7 +26,7 @@ namespace TheresaBot.Main.Services
             return setuList;
         }
 
-        public List<LocalSetuInfo> loadTargetDir(string localPath, string dirName, int count)
+        public List<LocalSetuInfo> LoadTargetDir(string localPath, string dirName, int count)
         {
             List<LocalSetuInfo> setuList = new List<LocalSetuInfo>();
             DirectoryInfo localDir = new DirectoryInfo(localPath);
@@ -46,10 +46,10 @@ namespace TheresaBot.Main.Services
         }
 
 
-        public string getSetuInfo(LocalSetuInfo setuInfo, long todayLeft, string template = "")
+        public string GetSetuInfo(LocalSetuInfo setuInfo, long todayLeft, string template = "")
         {
             template = template?.Trim()?.TrimLine();
-            if (string.IsNullOrWhiteSpace(template)) return getDefaultSetuInfo(setuInfo);
+            if (string.IsNullOrWhiteSpace(template)) return GetDefaultSetuInfo(setuInfo);
             template = template.Replace("{FileName}", setuInfo.FileInfo.Name);
             template = template.Replace("{SizeMB}", MathHelper.ByteToMB(setuInfo.FileInfo.Length).ToString());
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
@@ -58,7 +58,7 @@ namespace TheresaBot.Main.Services
             return template;
         }
 
-        public string getDefaultSetuInfo(LocalSetuInfo setuInfo)
+        public string GetDefaultSetuInfo(LocalSetuInfo setuInfo)
         {
             return $"文件名：{setuInfo.FileInfo.Name}，大小：{MathHelper.ByteToMB(setuInfo.FileInfo.Length)}MB";
         }

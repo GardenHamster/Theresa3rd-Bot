@@ -176,7 +176,7 @@ namespace TheresaBot.Main.Handler
                 long groupId = groupCommand.GroupId;
                 CoolingCache.SetWordCloudHanding(groupId);
                 await groupCommand.ReplyProcessingMessageAsync(BotConfig.WordCloudConfig.ProcessingMsg);
-                List<string> words = wordCloudService.getCloudWords(groupId, startTime, endTime);
+                List<string> words = wordCloudService.GetWords(groupId, startTime, endTime);
                 if (words is null || words.Count == 0)
                 {
                     await groupCommand.ReplyGroupMessageWithQuoteAsync("未能获取足够数量的聊天记录，词云生成失败了");
@@ -257,7 +257,7 @@ namespace TheresaBot.Main.Handler
                 CoolingCache.SetWordCloudHanding(groupId);
                 DateTime endTime = DateTime.Now;
                 DateTime startTime = endTime.AddHours(-1 * timer.HourRange);
-                List<string> words = wordCloudService.getCloudWords(groupId, startTime, endTime);
+                List<string> words = wordCloudService.GetWords(groupId, startTime, endTime);
                 if (words is null || words.Count == 0) return;
                 List<BaseContent> contents = new List<BaseContent>();
                 if (string.IsNullOrWhiteSpace(timer.Template) == false)

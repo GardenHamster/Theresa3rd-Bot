@@ -13,27 +13,27 @@ namespace TheresaBot.Main.Services
             dictionaryDao = new DictionaryDao();
         }
 
-        public List<DictionaryPO> getDictionary(WordType wordType)
+        public List<DictionaryPO> GetDictionary(WordType wordType)
         {
-            return dictionaryDao.getDictionary(wordType);
+            return dictionaryDao.GetDictionary(wordType);
         }
 
-        public List<DictionaryPO> getDictionary(WordType wordType, int subType)
+        public List<DictionaryPO> GetDictionary(WordType wordType, int subType)
         {
-            return dictionaryDao.getDictionary(wordType, subType);
+            return dictionaryDao.GetDictionary(wordType, subType);
         }
 
-        public List<DictionaryPO> getDictionary(WordType wordType, string word)
+        public List<DictionaryPO> GetDictionary(WordType wordType, string word)
         {
-            return dictionaryDao.getDictionary(wordType, word);
+            return dictionaryDao.GetDictionary(wordType, word);
         }
 
-        public List<DictionaryPO> getDictionary(WordType wordType, int subType, string word)
+        public List<DictionaryPO> GetDictionary(WordType wordType, int subType, string word)
         {
-            return dictionaryDao.getDictionary(wordType, subType, word);
+            return dictionaryDao.GetDictionary(wordType, subType, word);
         }
 
-        public void addDictionary(WordType wordType, string word, int subType = 0, string translate = "")
+        public void InsertDictionary(WordType wordType, string word, int subType = 0, string translate = "")
         {
             DictionaryPO dictionary = new DictionaryPO();
             dictionary.Words = word;

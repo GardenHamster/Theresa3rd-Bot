@@ -11,10 +11,10 @@ namespace TheresaBot.Main.Services
     {
         private const int eachPage = 5;
 
-        public string getWorkInfo(LolisukiData lolisukiData, long todayLeft, string template = "")
+        public string GetWorkInfo(LolisukiData lolisukiData, long todayLeft, string template = "")
         {
             template = template?.Trim()?.TrimLine();
-            if (string.IsNullOrWhiteSpace(template)) return getDefaultWorkInfo(lolisukiData);
+            if (string.IsNullOrWhiteSpace(template)) return GetDefaultWorkInfo(lolisukiData);
             template = template.Replace("{TodayLeft}", todayLeft.ToString());
             template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
             template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
@@ -30,7 +30,7 @@ namespace TheresaBot.Main.Services
             return template;
         }
 
-        public string getDefaultWorkInfo(LolisukiData lolisukiData)
+        public string GetDefaultWorkInfo(LolisukiData lolisukiData)
         {
             StringBuilder workInfoStr = new StringBuilder();
             workInfoStr.AppendLine($"本条数据来源于Lolisuki Api~");
@@ -40,21 +40,21 @@ namespace TheresaBot.Main.Services
             return workInfoStr.ToString();
         }
 
-        public async Task<List<LolisukiData>> getLolisukiDataListAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
+        public async Task<List<LolisukiData>> FetchDatasAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
         {
             var setuList = new List<LolisukiData>();
             while (quantity > 0)
             {
                 int num = quantity >= eachPage ? eachPage : quantity;
                 quantity = quantity - eachPage;
-                LolisukiResult lolisukiResult = await getLolisukiResultAsync(r18Mode, aiMode, level, num, tags);
+                LolisukiResult lolisukiResult = await FetchResultAsync(r18Mode, aiMode, level, num, tags);
                 if (lolisukiResult?.data is null) continue;
                 setuList.AddRange(lolisukiResult.data);
             }
             return setuList;
         }
 
-        private async Task<LolisukiResult> getLolisukiResultAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
+        private async Task<LolisukiResult> FetchResultAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
         {
             string[] postTags = tags is null || tags.Length == 0 ? new string[0] : tags;
             LolisukiParam param = new LolisukiParam(r18Mode, aiMode, quantity, HttpUrl.DefaultPixivImgProxyHost, postTags, level, 0);

@@ -13,12 +13,12 @@ namespace TheresaBot.Main.Services
             requestRecordDao = new RequestRecordDao();
         }
 
-        public int getUsedCountToday(long groupId, long memberId, params CommandType[] commandTypeArr)
+        public int GetUsedCountToday(long groupId, long memberId, params CommandType[] commandTypeArr)
         {
-            return requestRecordDao.getUsedCountToday(groupId, memberId, commandTypeArr);
+            return requestRecordDao.GetUsedCountToday(groupId, memberId, commandTypeArr);
         }
 
-        public RequestRecordPO addRecord(long groupId, long memberId, CommandType commandType, string sendWord)
+        public RequestRecordPO InsertRecord(long groupId, long memberId, CommandType commandType, string sendWord)
         {
             if (sendWord is null) sendWord = "";
             if (sendWord.Length > 100) sendWord = sendWord.Substring(0, 100);

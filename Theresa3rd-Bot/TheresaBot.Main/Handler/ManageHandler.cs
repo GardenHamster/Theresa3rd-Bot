@@ -37,7 +37,7 @@ namespace TheresaBot.Main.Handler
                 else
                 {
                     var processInfo = ProcessCache.CreateProcess(command);
-                    var tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开", WaitParamsAsync);
+                    var tagStep = processInfo.CreateStep("请在60秒内发送需要屏蔽的标签，多个标签之间用逗号或者换行隔开", CheckBanTagsAsync);
                     var matchStep = processInfo.CreateStep($"请在60秒内发送数字选择标签匹配方式：\r\n{EnumHelper.TagMatchOptions.JoinToString()}", CheckMatchTypeAsync);
                     await processInfo.StartProcessing();
                     banTags = tagStep.Answer;
@@ -61,13 +61,7 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                var tagStr = command.KeyWord;
-                if (string.IsNullOrWhiteSpace(tagStr))
-                {
-                    await command.ReplyGroupMessageWithAtAsync("没有检测到要解除屏蔽的标签，请确保指令格式正确");
-                    return;
-                }
-                var banTags = tagStr.SplitParams();
+                var banTags = await CheckBanTagsAsync(command.KeyWord);
                 banTagService.DelBanTags(banTags);
                 BanTagDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("记录成功");
@@ -86,13 +80,8 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                long memberId = await CheckMemberIdAsync(command.KeyWord);
-                if (memberId.IsSuperManager())
-                {
-                    await command.ReplyGroupMessageWithAtAsync("无法拉黑超级管理员");
-                    return;
-                }
-                banMemberService.insertBanMembers(memberId);
+                var memberIds = await CheckMemberIdsAsync(command.KeyWord);
+                banMemberService.InsertBanMember(memberIds);
                 BanMemberDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
@@ -110,8 +99,8 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                long memberId = await CheckMemberIdAsync(command.KeyWord);
-                banMemberService.DelBanMember(memberId);
+                var memberIds = await CheckMemberIdsAsync(command.KeyWord);
+                banMemberService.DelBanMember(memberIds);
                 BanMemberDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("解除成功");
             }
@@ -129,8 +118,8 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                long pixiverId = await CheckPixiverIdAsync(command.KeyWord);
-                banPixiverService.insertBanPixivers(pixiverId);
+                var pixiverIds = await CheckPixiverIdsAsync(command.KeyWord);
+                banPixiverService.InsertBanPixivers(pixiverIds);
                 BanPixiverDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("记录成功");
             }
@@ -148,8 +137,8 @@ namespace TheresaBot.Main.Handler
         {
             try
             {
-                long pixiverId = await CheckPixiverIdAsync(command.KeyWord);
-                banPixiverService.DelBanPixiver(pixiverId);
+                var pixiverIds = await CheckPixiverIdsAsync(command.KeyWord);
+                banPixiverService.DelBanPixiver(pixiverIds);
                 BanPixiverDatas.LoadDatas();
                 await command.ReplyGroupMessageWithAtAsync("解除成功");
             }
@@ -163,17 +152,16 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-
         private async Task<string[]> CheckBanTagsAsync(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ProcessException("没有检测到需要屏蔽的标签");
+                throw new ProcessException("没有检测到标签");
             }
             var banTags = value.SplitParams();
             if (banTags.Length == 0)
             {
-                throw new ProcessException("没有检测到需要屏蔽的标签");
+                throw new ProcessException("没有检测到标签");
             }
             return await Task.FromResult(banTags);
         }
@@ -192,12 +180,27 @@ namespace TheresaBot.Main.Handler
             return await Task.FromResult((TagMatchType)typeId);
         }
 
+        private async Task<long[]> CheckMemberIdsAsync(string value)
+        {
+            var memberIds = new List<long>();
+            var splitArr = value.SplitParams();
+            if (splitArr.Length == 0)
+            {
+                throw new ProcessException("没有检测到QQ号");
+            }
+            foreach (var idStr in splitArr)
+            {
+                memberIds.Add(await CheckMemberIdAsync(idStr));
+            }
+            return await Task.FromResult(memberIds.ToArray());
+        }
+
         private async Task<long> CheckMemberIdAsync(string value)
         {
             long memberId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ProcessException("没有检测到要解除屏蔽的QQ号");
+                throw new ProcessException("没有检测到QQ号");
             }
             if (long.TryParse(value, out memberId) == false || memberId <= 1000)
             {
@@ -206,12 +209,27 @@ namespace TheresaBot.Main.Handler
             return await Task.FromResult(memberId);
         }
 
+        private async Task<long[]> CheckPixiverIdsAsync(string value)
+        {
+            var pixiverIds = new List<long>();
+            var splitArr = value.SplitParams();
+            if (splitArr.Length == 0)
+            {
+                throw new ProcessException("没有检测到画师ID");
+            }
+            foreach (var idStr in splitArr)
+            {
+                pixiverIds.Add(await CheckPixiverIdAsync(idStr));
+            }
+            return await Task.FromResult(pixiverIds.ToArray());
+        }
+
         private async Task<long> CheckPixiverIdAsync(string value)
         {
             long pixiverId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ProcessException("没有检测到要解除屏蔽的画师ID");
+                throw new ProcessException("没有检测到画师ID");
             }
             if (long.TryParse(value, out pixiverId) == false || pixiverId <= 10)
             {

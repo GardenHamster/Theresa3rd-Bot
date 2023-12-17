@@ -21,25 +21,25 @@ namespace TheresaBot.Main.Services
 
         public List<ImageRecordPO> GetImageRecord(PlatformType platformType, long msgId, long groupId)
         {
-            return imageRecordDao.getRecords(platformType, msgId, groupId);
+            return imageRecordDao.GetRecords(platformType, msgId, groupId);
         }
 
-        public async Task AddImageRecord(List<string> imgUrls, PlatformType platformType, long msgId, long groupId, long memberId)
+        public async Task InsertImageRecord(List<string> imgUrls, PlatformType platformType, long msgId, long groupId, long memberId)
         {
-            foreach (var imgUrl in imgUrls) await AddImageRecord(platformType, imgUrl, msgId, groupId, memberId);
+            foreach (var imgUrl in imgUrls) await InsertImageRecord(platformType, imgUrl, msgId, groupId, memberId);
         }
 
-        public async Task AddPixivRecord(SetuContent setucontent, PlatformType platformType, long[] msgIds, long groupId)
+        public async Task InsertPixivRecord(SetuContent setucontent, PlatformType platformType, long[] msgIds, long groupId)
         {
-            foreach (var msgId in msgIds) await AddPixivRecord(setucontent, platformType, msgId, groupId);
+            foreach (var msgId in msgIds) await InsertPixivRecord(setucontent, platformType, msgId, groupId);
         }
 
-        public async Task AddPixivRecord(List<SetuContent> setucontents, PlatformType platformType, long msgId, long groupId)
+        public async Task InsertPixivRecord(List<SetuContent> setucontents, PlatformType platformType, long msgId, long groupId)
         {
-            foreach (var setucontent in setucontents) await AddPixivRecord(setucontent, platformType, msgId, groupId);
+            foreach (var setucontent in setucontents) await InsertPixivRecord(setucontent, platformType, msgId, groupId);
         }
 
-        public async Task AddPixivRecord(SetuContent setucontent, PlatformType platformType, long msgId, long groupId)
+        public async Task InsertPixivRecord(SetuContent setucontent, PlatformType platformType, long msgId, long groupId)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace TheresaBot.Main.Services
             }
         }
 
-        public async Task AddImageRecord(PlatformType platformType, string imgUrl, long msgId, long groupId, long memberId)
+        public async Task InsertImageRecord(PlatformType platformType, string imgUrl, long msgId, long groupId, long memberId)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace TheresaBot.Main.Services
             }
         }
 
-        public async Task AddMessageRecord(PlatformType platformType, string plainMessage, long msgId, long groupId, long memberId)
+        public async Task InsertMessageRecord(PlatformType platformType, string plainMessage, long msgId, long groupId, long memberId)
         {
             try
             {

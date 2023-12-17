@@ -4,17 +4,17 @@ namespace TheresaBot.Main.Dao
 {
     public class BanPixiverDao : DbContext<BanPixiverPO>
     {
-        public List<BanPixiverPO> getBanPixivers()
+        public List<BanPixiverPO> GetBanPixivers()
         {
             return Db.Queryable<BanPixiverPO>().ToList();
         }
 
-        public BanPixiverPO getBanPixiver(long pixiverId)
+        public BanPixiverPO GetBanPixiver(long pixiverId)
         {
             return Db.Queryable<BanPixiverPO>().Where(o => o.PixiverId == pixiverId).First();
         }
 
-        public int delBanPixiver(long pixiverId)
+        public int DeleteBanPixiver(long pixiverId)
         {
             return Db.Deleteable<BanPixiverPO>().Where(o => o.PixiverId == pixiverId).ExecuteCommand();
         }

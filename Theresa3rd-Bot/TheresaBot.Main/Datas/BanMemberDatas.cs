@@ -12,7 +12,7 @@ namespace TheresaBot.Main.Datas
         {
             try
             {
-                BanMemberList = new BanMemberService().getBanMembers();
+                BanMemberList = new BanMemberService().GetBanMembers();
             }
             catch (Exception ex)
             {

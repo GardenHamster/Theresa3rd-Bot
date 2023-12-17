@@ -5,17 +5,17 @@ namespace TheresaBot.Main.Dao
     public class SugarTagDao : DbContext<SugarTagPO>
     {
 
-        public List<SugarTagPO> getSugars()
+        public List<SugarTagPO> GetSugars()
         {
             return Db.Queryable<SugarTagPO>().ToList();
         }
 
-        public SugarTagPO getSugar(string keyWord)
+        public SugarTagPO GetSugar(string keyWord)
         {
             return Db.Queryable<SugarTagPO>().Where(o => o.KeyWord == keyWord).First();
         }
 
-        public int delSugar(string keyWord)
+        public int DeleteSugar(string keyWord)
         {
             return Db.Deleteable<SugarTagPO>().Where(o => o.KeyWord == keyWord).ExecuteCommand();
         }

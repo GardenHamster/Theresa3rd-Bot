@@ -95,7 +95,7 @@ namespace TheresaBot.Main.Handler
             {
                 CoolingCache.SetPixivRankingHanding();
                 if (rankingMode.IsR18 && rankingTimer.PushGroups.IsShowR18Img() == false) return;
-                PixivRankingInfo rankingInfo = await rankingService.getRankingInfo(rankingItem, rankingMode, String.Empty);
+                PixivRankingInfo rankingInfo = await rankingService.FetchRankingInfo(rankingItem, rankingMode, String.Empty);
                 PixivRankingCache.AddCache(rankingMode, rankingInfo, String.Empty);
                 if (rankingInfo.RankingDetails.Count == 0) return;
                 await SendPreviewFileAsync(rankingTimer, rankingInfo, rankingMode);
@@ -119,7 +119,7 @@ namespace TheresaBot.Main.Handler
             try
             {
                 string template = BotConfig.PixivRankingConfig.Template;
-                string templateMsg = rankingService.getRankingMsg(pixivRankingInfo.RankingDate, rankingMode.Name, template);
+                string templateMsg = rankingService.GetRankingMessage(pixivRankingInfo.RankingDate, rankingMode.Name, template);
 
                 List<string> PreviewFilePaths = pixivRankingInfo.PreviewFilePaths;
                 if (PreviewFilePaths is null || PreviewFilePaths.IsFilesExists() == false)
@@ -139,7 +139,7 @@ namespace TheresaBot.Main.Handler
 
                 List<SetuContent> setuContents = new List<SetuContent>();
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
-                setuContents.AddRange(rankingService.getRankAndPids(pixivRankingInfo, 10));
+                setuContents.AddRange(rankingService.GetRankingAndPids(pixivRankingInfo, 10));
 
                 foreach (var groupId in rankingTimer.PushGroups)
                 {
@@ -182,7 +182,7 @@ namespace TheresaBot.Main.Handler
                     PixivRankingContent rc = detail.RankingContent;
                     PixivWorkInfo workInfo = detail.WorkInfo;
                     List<FileInfo> setuFiles = await GetSetuFilesAsync(workInfo, groupIds);
-                    string workMsg = pixivService.getWorkInfo(detail.WorkInfo);
+                    string workMsg = pixivService.GetWorkInfo(detail.WorkInfo);
                     List<BaseContent> msgContent = new List<BaseContent>();
                     msgContent.Add(new PlainContent($"#{rc.rank} {workInfo.likeRate.ToPercent()}/{workInfo.bookmarkRate.ToPercent()}"));
                     msgContent.Add(new PlainContent(workMsg));
@@ -246,12 +246,12 @@ namespace TheresaBot.Main.Handler
                 if (pixivRankingInfo == null)
                 {
                     await command.ReplyProcessingMessageAsync(BotConfig.PixivRankingConfig.ProcessingMsg);
-                    pixivRankingInfo = await rankingService.getRankingInfo(rankingItem, rankingMode, search_date);
+                    pixivRankingInfo = await rankingService.FetchRankingInfo(rankingItem, rankingMode, search_date);
                     PixivRankingCache.AddCache(rankingMode, pixivRankingInfo, search_date);
                 }
 
                 string template = BotConfig.PixivRankingConfig.Template;
-                string templateMsg = rankingService.getRankingMsg(pixivRankingInfo.RankingDate, rankingMode.Name, template);
+                string templateMsg = rankingService.GetRankingMessage(pixivRankingInfo.RankingDate, rankingMode.Name, template);
 
                 List<string> PreviewFilePaths = pixivRankingInfo.PreviewFilePaths;
                 if (PreviewFilePaths is null || PreviewFilePaths.IsFilesExists() == false)
@@ -271,7 +271,7 @@ namespace TheresaBot.Main.Handler
 
                 List<SetuContent> setuContents = new List<SetuContent>();
                 setuContents.AddRange(PreviewFilePaths.Select(o => new SetuContent(new FileInfo(o))));
-                setuContents.AddRange(rankingService.getRankAndPids(pixivRankingInfo, 10));
+                setuContents.AddRange(rankingService.GetRankingAndPids(pixivRankingInfo, 10));
 
                 await command.ReplyGroupMessageWithQuoteAsync(templateMsg);
                 await Task.Delay(1000);
@@ -314,7 +314,7 @@ namespace TheresaBot.Main.Handler
             if (pixivRankingInfo == null)
             {
                 await command.ReplyProcessingMessageAsync(BotConfig.PixivRankingConfig.ProcessingMsg);
-                pixivRankingInfo = await rankingService.getRankingInfo(rankingItem, rankingMode, search_date);
+                pixivRankingInfo = await rankingService.FetchRankingInfo(rankingItem, rankingMode, search_date);
                 PixivRankingCache.AddCache(rankingMode, pixivRankingInfo, search_date);
             }
 
@@ -329,7 +329,7 @@ namespace TheresaBot.Main.Handler
             foreach (var rankingDetail in rankingDetails)
             {
                 var pixivWorkInfo = rankingDetail.WorkInfo;
-                var setuInfo = new PlainContent(pixivService.getWorkInfo(pixivWorkInfo));
+                var setuInfo = new PlainContent(pixivService.GetWorkInfo(pixivWorkInfo));
                 var setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
                 SetuContent setuContent = new PixivSetuContent(setuInfo, setuFiles, pixivWorkInfo);
                 setuContents.Add(setuContent);

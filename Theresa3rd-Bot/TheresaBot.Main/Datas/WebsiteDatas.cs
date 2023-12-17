@@ -18,9 +18,9 @@ namespace TheresaBot.Main.Datas
             try
             {
                 var websiteService = new WebsiteService();
-                Pixiv = websiteService.getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv));
-                Bili = websiteService.getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Bili));
-                Saucenao = websiteService.getOrInsertWebsite(Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao));
+                Pixiv = websiteService.GetOrInsert(Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv));
+                Bili = websiteService.GetOrInsert(Enum.GetName(typeof(WebsiteType), WebsiteType.Bili));
+                Saucenao = websiteService.GetOrInsert(Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao));
                 LogHelper.Info("网站cookie加载完成...");
             }
             catch (Exception ex)

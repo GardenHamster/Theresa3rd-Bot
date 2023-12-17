@@ -4,17 +4,17 @@ namespace TheresaBot.Main.Dao
 {
     public class BanTagDao : DbContext<BanTagPO>
     {
-        public List<BanTagPO> getBanTags()
+        public List<BanTagPO> GetBanTags()
         {
             return Db.Queryable<BanTagPO>().ToList();
         }
 
-        public BanTagPO getBanTag(string keyWord)
+        public BanTagPO GetBanTag(string keyWord)
         {
             return Db.Queryable<BanTagPO>().Where(o => o.Keyword == keyWord).First();
         }
 
-        public int delBanTag(string keyWord)
+        public int DeleteBanTag(string keyWord)
         {
             return Db.Deleteable<BanTagPO>().Where(o => o.Keyword == keyWord).ExecuteCommand();
         }

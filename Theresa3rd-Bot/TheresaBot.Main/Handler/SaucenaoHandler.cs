@@ -210,7 +210,7 @@ namespace TheresaBot.Main.Handler
             {
                 setuFiles = await GetSetuFilesAsync(pixivWorkInfo, groupId);
             }
-            var workInfo = pixivService.getWorkInfo(pixivWorkInfo);
+            var workInfo = pixivService.GetWorkInfo(pixivWorkInfo);
             var workInfoContent = new PlainContent(workInfo);
             var sourceContent = saucenaoItem.GetSimpleContent();
             var workMsgs = new List<BaseContent>() { sourceContent, workInfoContent };
@@ -265,7 +265,7 @@ namespace TheresaBot.Main.Handler
         private async Task ReplyAndRevoke(GroupCommand command, List<SetuContent> setuContents)
         {
             var result = await command.ReplyGroupSetuAsync(setuContents, BotConfig.SaucenaoConfig.RevokeInterval);
-            var recordTask = recordService.AddPixivRecord(setuContents, Session.PlatformType, result.MessageId, command.GroupId);
+            var recordTask = recordService.InsertPixivRecord(setuContents, Session.PlatformType, result.MessageId, command.GroupId);
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);

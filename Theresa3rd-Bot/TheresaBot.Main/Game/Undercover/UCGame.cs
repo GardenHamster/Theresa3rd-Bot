@@ -265,6 +265,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// <returns></returns>
         private async Task<bool> HandleVoteMessage(GroupRelay relay)
         {
+            if (UCConfig.PrivateVote) return false;
             var voter = CurrentRound.GetVoter(relay.MemberId);
             if (voter is null) return false;
             if (voter.IsOut) return false;
@@ -283,6 +284,33 @@ namespace TheresaBot.Main.Game.Undercover
                 contents.Add(new PlainContent("投票成功！当前票数为："));
                 contents.Add(new PlainContent(CurrentRound.ListVotedCount()));
                 await Session.SendGroupMessageWithQuoteAsync(GroupId, relay.MemberId, relay.MsgId, contents);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 处理投票消息
+        /// </summary>
+        /// <param name="relay"></param>
+        /// <returns></returns>
+        private async Task<bool> HandleVoteMessage(FriendRelay relay)
+        {
+            var voter = CurrentRound.GetVoter(relay.MemberId);
+            if (voter is null) return false;
+            if (voter.IsOut) return false;
+            var target = CurrentRound.GetVoteTarget(relay.Message);
+            if (target is null) return false;
+            if (target.IsOut) return false;
+            if (voter.MemberId == target.MemberId)
+            {
+                await Session.SendTempMessageAsync(GroupId, relay.MemberId, "不能对自己进行投票，请重新投票");
+                return true;
+            }
+            var vote = CurrentRound.AddPlayerVote(voter, target);
+            if (vote is not null)
+            {
+                await Session.SendTempMessageAsync(GroupId, relay.MemberId, "投票成功，正在等待其他玩家~");
                 return true;
             }
             return false;
@@ -377,20 +405,25 @@ namespace TheresaBot.Main.Game.Undercover
                 await CheckEndedAndDelay(1000);
                 await SendSpeechHistory(CurrentRound);
                 await CheckEndedAndDelay(1000);
+
                 if (GameRounds.Count == 1 && Players.Count <= UCConfig.FirstRoundNonVoting)
                 {
                     await Session.SendGroupMessageAsync(GroupId, $"由于当前玩家人数少于等于{UCConfig.FirstRoundNonVoting}人，首轮将不进行投票");
                     await Task.Delay(1000);
                     continue;
                 }
-                var voteResults = await PlayersVote(CurrentRound);//投票环节
-                while (voteResults.Count > 1)
+
+                await PlayersVote(CurrentRound);//投票环节
+                await CheckEndedAndDelay(1000);
+                await VotingCompletedAsync(CurrentRound);//投票完成事件
+                var maxVotes = CurrentRound.GetMaxVotes();
+                while (maxVotes.Count > 1)
                 {
                     await CheckEnded();
-                    var subPlayers = voteResults.Select(o => o.Player).ToList();
-                    CurrentRound = CurrentRound.CreateSubRound(subPlayers, LivePlayers);
+                    var subPlayers = maxVotes.Select(o => o.Player).ToList();
+                    CurrentRound = parentRound.CreateSubRound(subPlayers, LivePlayers);
                     var subMemberIds = subPlayers.Select(o => o.MemberId).ToList();
-                    await Session.SendGroupMessageWithAtAsync(GroupId, subMemberIds, $"投票后仍有{voteResults.Count}位玩家票数相同，请{voteResults.Count}位玩家按照提示继续发言...");
+                    await Session.SendGroupMessageWithAtAsync(GroupId, subMemberIds, $"投票后仍有{maxVotes.Count}位玩家票数相同，请{maxVotes.Count}位玩家按照提示继续发言...");
                     await CheckEndedAndDelay(1000);
                     await PlayersSpeech(CurrentRound);//发言环节
                     await CheckEndedAndDelay(1000);
@@ -398,10 +431,13 @@ namespace TheresaBot.Main.Game.Undercover
                     await CheckEndedAndDelay(1000);
                     await SendSpeechHistory(CurrentRound);
                     await CheckEndedAndDelay(1000);
-                    voteResults = await PlayersVote(CurrentRound);//投票环节
+                    await PlayersVote(CurrentRound);//投票环节
+                    await CheckEndedAndDelay(1000);
+                    await VotingCompletedAsync(CurrentRound);//投票完成事件
+                    maxVotes = CurrentRound.GetMaxVotes();
                 }
 
-                var outPlayer = voteResults.First().Player;
+                var outPlayer = maxVotes.First().Player;
                 parentRound.End(outPlayer);
                 await Session.SendGroupMessageAsync(GroupId, $"玩家{outPlayer.NameAndQQ}出局");
                 await CheckSomeoneWinAsync();//检查是否有某个阵营已经获胜
@@ -631,25 +667,49 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         /// <param name="round"></param>
         /// <returns></returns>
-        private async Task<List<UCVoteResult>> PlayersVote(UCRound round)
+        private async Task PlayersVote(UCRound round)
         {
             try
             {
                 IsVoting = true;
                 await CheckEnded();
                 var votePlayers = round.VotePlayers;
-                var contents = new List<BaseContent>();
-                contents.Add(new PlainContent($"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内发送数字选择投票对象"));
-                contents.Add(new PlainContent(CurrentRound.ListVoteTargets()));
                 var voteMembers = votePlayers.Select(o => o.MemberId).ToList();
-                await Session.SendGroupMessageWithAtAsync(GroupId, voteMembers, contents);
+                var contents = new List<BaseContent>();
+                if (UCConfig.PrivateVote)
+                {
+                    contents.Add(new PlainContent($"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内私聊发送数字选择投票对象"));
+                    contents.Add(new PlainContent(CurrentRound.ListVoteTargets()));
+                    await Session.SendGroupMessageWithAtAsync(GroupId, voteMembers, contents);
+                    await CheckEndedAndDelay(1000);
+                    await Session.SendTempMessageAsync(GroupId, voteMembers,)
+                }
+                else
+                {
+                    contents.Add(new PlainContent($"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内发送或私聊数字选择投票对象"));
+                    contents.Add(new PlainContent(CurrentRound.ListVoteTargets()));
+                    await Session.SendGroupMessageWithAtAsync(GroupId, voteMembers, contents);
+                }
                 await round.WaitForVote(this, votePlayers, UCConfig.VotingSeconds);
-                return round.GetMaxVotes();
             }
             finally
             {
                 IsVoting = false;
             }
+        }
+
+
+        /// <summary>
+        /// 投票环节完毕触发事件
+        /// </summary>
+        /// <param name="round"></param>
+        /// <returns></returns>
+        private async Task VotingCompletedAsync(UCRound round)
+        {
+            var contents = new List<BaseContent>();
+            contents.Add(new PlainContent("投票完毕！本轮投票结果为："));
+            contents.Add(new PlainContent(round.ListVotedCount()));
+            await Session.SendGroupMessageAsync(GroupId, contents);
         }
 
         /// <summary>

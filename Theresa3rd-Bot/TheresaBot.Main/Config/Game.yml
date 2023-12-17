@@ -9,9 +9,10 @@ Undercover:
     SendWordCommands:           ['我的词条']                                     #游戏中获取词条命令
     AddWordLimits:              10                                              #非管理员限制添加的未审核词条数量，0表示不允许添加
     SendIdentity:               false                                           #私聊发送词条的同时告知玩家身份
+    PrivateVote:                false                                           #私聊投票，否则群内投票
     FirstRoundNonVoting:        3                                               #当玩家人数小于等于该数量时，首轮不出现投票环节
     MaxSimilarity:              60                                              #与历史发言的最高相似度(%)
-    MatchSeconds:               60                                             #等待玩家加入的时间(秒)
+    MatchSeconds:               60                                              #等待玩家加入的时间(秒)
     PrepareSeconds:             10                                              #派发词条后进入发言环节前的准备时间(秒)
     SpeakingSeconds:            120                                             #每个玩家的发言时长(秒)
     VotingSeconds:              120                                             #投票环节时长(秒)

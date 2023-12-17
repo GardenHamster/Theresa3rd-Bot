@@ -32,6 +32,8 @@
 
         public bool SendIdentity { get; set; } = false;
 
+        public bool PrivateVote { get; set; } = false;
+
         public int FirstRoundNonVoting { get; set; } = 3;
 
         public decimal MaxSimilarity { get; set; }

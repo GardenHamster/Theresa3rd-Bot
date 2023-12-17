@@ -171,7 +171,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// <returns></returns>
         public List<UCVoteResult> GetVotes()
         {
-            return Votes.GroupBy(o => o.Target).Select(o => new UCVoteResult(o.Key, o.Count())).ToList();
+            return Votes.GroupBy(o => o.Target).Select(o => new UCVoteResult(o.Key, o.Count())).OrderByDescending(o => o.VoteNum).ToList();
         }
 
         /// <summary>

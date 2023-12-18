@@ -20,8 +20,8 @@ namespace TheresaBot.GoCqHttp.Plugin
         {
             try
             {
-                long memberId = args.UserId;
-                long groupId = args.GroupId;
+                var memberId = args.UserId;
+                var groupId = args.GroupId;
                 if (args.Session is not ICqActionSession session) return;
                 if (groupId.IsAuthorized() == false) return;
                 if (memberId == BotConfig.BotQQ) return;

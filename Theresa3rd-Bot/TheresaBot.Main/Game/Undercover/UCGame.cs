@@ -110,6 +110,7 @@ namespace TheresaBot.Main.Game.Undercover
             UcAmount = 1;
             WbAmount = 0;
             MinPlayer = CivAmount + UcAmount + WbAmount;
+            CampScales = new[] { CivAmount, UcAmount, WbAmount };
         }
 
         /// <summary>
@@ -124,6 +125,7 @@ namespace TheresaBot.Main.Game.Undercover
             UcAmount = ucNum >= 0 ? ucNum : 0;
             WbAmount = wbNum >= 0 ? wbNum : 0;
             MinPlayer = CivAmount + UcAmount + WbAmount;
+            CampScales = new[] { CivAmount, UcAmount, WbAmount };
             if (MinPlayer < 3) throw new GameException("游戏创建失败，游戏至少需要3名玩家");
             if (MinPlayer < 5 && WbAmount > 0) throw new GameException("游戏创建失败，玩家达到5人及以上才可以加入白板");
         }
@@ -138,7 +140,7 @@ namespace TheresaBot.Main.Game.Undercover
         {
             CampScales = campScales;
             MinPlayer = campScales.Sum();
-            if (campScales.Length != 3) throw new GameException("游戏创建失败，必须指定每个阵营的人数比例");
+            if (CampScales.Length != 3) throw new GameException("游戏创建失败，必须指定每个阵营的人数比例");
             if (MinPlayer < 3) throw new GameException("游戏创建失败，总比例至少为3");
             if (MinPlayer < 5 && campScales[2] > 0) throw new GameException("游戏创建失败，总比例达到5及以上才可以加入白板");
         }
@@ -520,7 +522,7 @@ namespace TheresaBot.Main.Game.Undercover
         {
             var excludeMembers = MemberIds.Where(o => o.IsSuperManager() == false).ToList();
             GameWords = new UCWordService().GetRandomWord(excludeMembers);
-            if (GameWords is null) throw new GameException("无法获取词条，请艾特管理员添加和审批更多词条");
+            if (GameWords is null) throw new GameException("无法获取词条，请艾特管理员添加或审批更多词条");
             await Task.CompletedTask;
         }
 

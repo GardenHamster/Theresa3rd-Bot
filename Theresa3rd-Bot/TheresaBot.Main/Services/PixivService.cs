@@ -69,29 +69,29 @@ namespace TheresaBot.Main.Services
         /// <returns></returns>
         public async Task<PixivWorkInfo> FetchRandomWorkInSubscribeAsync(long groupId, bool includeR18, bool includeAI)
         {
-            int loopUserTimes = 3;
-            int loopWorkTimes = 5;
+            var loopUserTimes = 3;
+            var loopWorkTimes = 5;
             var subscribeType = SubscribeType.P站画师;
-            var subscribeTaskList = SubscribeDatas.GetSubscribeTasks(subscribeType, groupId);
-            if (subscribeTaskList.Count == 0) return null;
+            var subscribeTasks = SubscribeDatas.GetSubscribeTasks(subscribeType, groupId).Where(o => o.SubscribeCode.IsBanPixiver() == false).ToList();
+            if (subscribeTasks.Count == 0) return null;
             for (int i = 0; i < loopUserTimes; i++)
             {
-                int randomUserIndex = RandomHelper.RandomBetween(0, subscribeTaskList.Count - 1);
-                SubscribeTask subscribeTask = subscribeTaskList[randomUserIndex];
-                PixivUserProfileTop pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(subscribeTask.SubscribeCode);
+                var randomUserIndex = RandomHelper.RandomBetween(0, subscribeTasks.Count - 1);
+                var subscribeTask = subscribeTasks[randomUserIndex];
+                var pixivUserInfo = await PixivHelper.GetPixivUserProfileTopAsync(subscribeTask.SubscribeCode);
                 if (pixivUserInfo is null) continue;
-                Dictionary<string, PixivUserWorkInfo> illusts = pixivUserInfo.illusts;
+                var illusts = pixivUserInfo.illusts;
                 if (illusts is null || illusts.Count == 0) continue;
-                List<PixivUserWorkInfo> workList = illusts.Select(o => o.Value).ToList();
+                var workList = illusts.Select(o => o.Value).ToList();
                 for (int j = 0; j < loopWorkTimes; j++)
                 {
-                    PixivUserWorkInfo pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
+                    var pixivUserWorkInfo = workList[new Random().Next(0, workList.Count)];
                     if (pixivUserWorkInfo.IsImproper) continue;
                     if (pixivUserWorkInfo.userId.IsBanPixiver()) continue;
                     if (pixivUserWorkInfo.HavingBanTags().Count > 0) continue;
                     if (pixivUserWorkInfo.IsR18 && includeR18 == false) continue;
                     if (pixivUserWorkInfo.IsAI && includeAI == false) continue;
-                    PixivWorkInfo pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
+                    var pixivWorkInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivUserWorkInfo.id);
                     if (pixivWorkInfo is null) continue;
                     if (pixivWorkInfo.bookmarkCount < 100) continue;
                     return pixivWorkInfo;
@@ -447,6 +447,7 @@ namespace TheresaBot.Main.Services
             var index = 0;
             var maxScan = 10;
             var userId = subscribeTask.SubscribeCode;
+            if (userId.IsBanPixiver()) return new();
             var subscribeId = subscribeTask.SubscribeId;
             var groupIds = subscribeTask.SubscribeGroups;
             var isShowAIs = groupIds.IsShowAISetu();
@@ -465,7 +466,7 @@ namespace TheresaBot.Main.Services
                     if (++index > maxScan) break;
                     if (userWork is null) continue;
                     if (string.IsNullOrWhiteSpace(userWork.id)) continue;
-                    if (userWork.id.IsBanPixiver()) continue;
+                    if (userWork.userId.IsBanPixiver()) continue;
                     if (userWork.IsImproper) continue;
                     if (userWork.HavingBanTags().Count > 0) continue;
                     if (isShowAIs == false && userWork.IsAI) continue;

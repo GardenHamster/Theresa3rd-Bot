@@ -227,7 +227,7 @@ namespace TheresaBot.Main.Handler
                 var subscribe = subscribeService.GetSubscribe(userId.ToString(), SubscribeType.P站画师);
                 if (subscribe is null)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync($"退订失败，订阅不存在");
+                    await command.ReplyGroupMessageWithQuoteAsync($"退订失败，订阅【{userId}】不存在");
                     return;
                 }
 
@@ -326,13 +326,13 @@ namespace TheresaBot.Main.Handler
                 var subscribe = subscribeService.GetSubscribe(pixivTag, SubscribeType.P站标签);
                 if (subscribe is null)
                 {
-                    await command.ReplyGroupMessageWithQuoteAsync($"退订失败，订阅不存在");
+                    await command.ReplyGroupMessageWithQuoteAsync($"退订失败，订阅【{pixivTag}】不存在");
                     return;
                 }
 
                 subscribeGroupService.DeleteBySubscribeId(subscribe.Id);
                 SubscribeDatas.LoadSubscribeTask();
-                await command.ReplyGroupMessageWithQuoteAsync($"已为所有群退订了标签[{pixivTag}]~");
+                await command.ReplyGroupMessageWithQuoteAsync($"已为所有群退订了标签【{pixivTag}】~");
             }
             catch (ProcessException ex)
             {
@@ -406,15 +406,15 @@ namespace TheresaBot.Main.Handler
             long userId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ProcessException("没有检测到用户id");
+                throw new ProcessException("没有检测到用户ID");
             }
             if (long.TryParse(value, out userId) == false)
             {
-                throw new ProcessException($"用户id{value}必须为数字");
+                throw new ProcessException($"用户ID【{value}】必须为数字");
             }
             if (userId <= 0)
             {
-                throw new ProcessException($"用户id{value}无效");
+                throw new ProcessException($"用户ID【{value}】无效");
             }
             return await Task.FromResult(userId);
         }
@@ -424,11 +424,11 @@ namespace TheresaBot.Main.Handler
             int modeId;
             if (int.TryParse(value, out modeId) == false)
             {
-                throw new ProcessException("模式不在范围内");
+                throw new ProcessException($"模式【{value}】不存在");
             }
             if (Enum.IsDefined(typeof(PixivSyncType), modeId) == false)
             {
-                throw new ProcessException("模式不在范围内");
+                throw new ProcessException($"模式【{value}】不存在");
             }
             return await Task.FromResult((PixivSyncType)modeId);
         }
@@ -438,11 +438,11 @@ namespace TheresaBot.Main.Handler
             int typeId = 0;
             if (int.TryParse(value, out typeId) == false)
             {
-                throw new ProcessException("目标不在范围内");
+                throw new ProcessException($"目标【{value}】不存在");
             }
             if (Enum.IsDefined(typeof(PushType), typeId) == false)
             {
-                throw new ProcessException("目标不在范围内");
+                throw new ProcessException($"目标【{value}】不存在");
             }
             return await Task.FromResult((PushType)typeId);
         }

@@ -171,11 +171,11 @@ namespace TheresaBot.Main.Handler
             int typeId = 0;
             if (int.TryParse(value, out typeId) == false)
             {
-                throw new ProcessException("匹配方式不在范围内");
+                throw new ProcessException($"匹配方式【{value}】不在范围内");
             }
             if (Enum.IsDefined(typeof(TagMatchType), typeId) == false)
             {
-                throw new ProcessException("匹配方式不在范围内");
+                throw new ProcessException($"匹配方式【{value}】不在范围内");
             }
             return await Task.FromResult((TagMatchType)typeId);
         }
@@ -200,11 +200,11 @@ namespace TheresaBot.Main.Handler
             long memberId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ProcessException("没有检测到QQ号");
+                throw new ProcessException($"没有检测到QQ号");
             }
             if (long.TryParse(value, out memberId) == false || memberId <= 1000)
             {
-                throw new ProcessException("QQ号格式错误");
+                throw new ProcessException($"QQ号【{value}】格式错误");
             }
             return await Task.FromResult(memberId);
         }
@@ -215,7 +215,7 @@ namespace TheresaBot.Main.Handler
             var splitArr = value.SplitParams();
             if (splitArr.Length == 0)
             {
-                throw new ProcessException("没有检测到画师ID");
+                throw new ProcessException($"没有检测到画师ID");
             }
             foreach (var idStr in splitArr)
             {
@@ -229,11 +229,11 @@ namespace TheresaBot.Main.Handler
             long pixiverId = 0;
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ProcessException("没有检测到画师ID");
+                throw new ProcessException($"没有检测到画师ID");
             }
             if (long.TryParse(value, out pixiverId) == false || pixiverId <= 10)
             {
-                throw new ProcessException("画师ID格式错误");
+                throw new ProcessException($"画师ID【{value}】格式错误");
             }
             return await Task.FromResult(pixiverId);
         }

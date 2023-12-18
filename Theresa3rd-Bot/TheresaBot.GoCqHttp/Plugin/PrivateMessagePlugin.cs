@@ -28,7 +28,7 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (args.Session is not ICqActionSession session) return;
 
                 var message = args.Message.Text;
-                var plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text?.Trim() ?? string.Empty).ToList();
+                var plainList = args.Message.OfType<CqTextMsg>().Where(o => string.IsNullOrWhiteSpace(o.Text) == false).Select(m => m.Text.Trim()).ToList();
                 var instruction = plainList.FirstOrDefault()?.Trim() ?? string.Empty;
                 var prefix = instruction.MatchPrefix();
                 var isInstruct = prefix.Length > 0;

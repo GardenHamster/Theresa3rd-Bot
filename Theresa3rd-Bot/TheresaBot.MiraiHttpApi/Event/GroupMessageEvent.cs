@@ -30,13 +30,13 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
 
-                var plainList = args.Chain.OfType<PlainMessage>().Select(m => m.Message?.Trim() ?? string.Empty).ToList();
+                var plainList = args.Chain.OfType<PlainMessage>().Where(o => string.IsNullOrWhiteSpace(o.Message) == false).Select(m => m.Message.Trim()).ToList();
                 var instruction = plainList.FirstOrDefault()?.Trim() ?? string.Empty;
                 var message = plainList.Count > 0 ? string.Join(null, plainList)?.Trim() : string.Empty;
                 var prefix = instruction.MatchPrefix();
                 var isInstruct = prefix.Length > 0;
                 var isAt = args.Chain.Any(v => v is AtMessage atMsg && atMsg.Target == session.QQNumber);
-                var isQuote = args.Chain.Any(v => v is QuoteMessage qtMsg && qtMsg.TargetId == session.QQNumber);
+                var isQuote = args.Chain.Any(v => v is QuoteMessage qtMsg) && isAt;
                 if (prefix.Length > 0) instruction = instruction.Remove(0, prefix.Length).Trim();
                 if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 

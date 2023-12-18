@@ -2,14 +2,14 @@ Enable:                          true                                           
 JoinCommands:                   ['加入游戏']										#加入游戏命令
 StartCommands:                  ['开始游戏']										#跳过玩家等待流程，强制开始游戏命令
 StopCommands:                   ['结束游戏']										#强制结束游戏命令
-Undercover:
+Undercover:                                                                     #谁是卧底
     Enable:                     true                                            #是否启用
     CreateCommands:             ['谁是卧底','卧底']						        #创建游戏命令
     AddWordCommands:            ['添加词条','新增词条']                           #新增词条命令，需要私聊使用
     SendWordCommands:           ['我的词条']                                     #游戏中获取词条命令
     AddWordLimits:              10                                              #非管理员限制添加的未审核词条数量，0表示不允许添加
     SendIdentity:               false                                           #私聊发送词条的同时告知玩家身份
-    PrivateVote:                false                                           #私聊投票，否则群内投票
+    PrivateVote:                false                                           #仅允许私聊投票，否则同时允许群聊和私聊投票
     FirstRoundNonVoting:        3                                               #当玩家人数小于等于该数量时，首轮不出现投票环节
     MaxSimilarity:              60                                              #与历史发言的最高相似度(%)
     MatchSeconds:               60                                              #等待玩家加入的时间(秒)

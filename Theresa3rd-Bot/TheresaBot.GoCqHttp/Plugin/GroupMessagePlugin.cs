@@ -34,12 +34,12 @@ namespace TheresaBot.GoCqHttp.Plugin
                 if (args.Session is not ICqActionSession session) return;
 
                 var message = args.Message.Text;
-                var plainList = args.Message.OfType<CqTextMsg>().Select(m => m.Text?.Trim() ?? string.Empty).ToList();
+                var plainList = args.Message.OfType<CqTextMsg>().Where(o => string.IsNullOrWhiteSpace(o.Text) == false).Select(m => m.Text.Trim()).ToList();
                 var instruction = plainList.FirstOrDefault()?.Trim() ?? string.Empty;
                 var prefix = instruction.MatchPrefix();
                 var isInstruct = prefix.Length > 0;
                 var isAt = args.Message.Any(v => v is CqAtMsg atMsg && atMsg.Target == BotConfig.BotQQ);
-                var isQuote = args.Message.Any(v => v is CqReplyMsg qtMsg && qtMsg.UserId == BotConfig.BotQQ);
+                var isQuote = args.Message.Any(v => v is CqReplyMsg qtMsg) && isAt;
                 if (prefix.Length > 0) instruction = instruction.Remove(0, prefix.Length).Trim();
                 if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 

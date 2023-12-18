@@ -25,7 +25,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (memberId == BotConfig.BotQQ) return;
                 if (memberId.IsBanMember()) return; //黑名单成员
 
-                var plainList = args.Chain.OfType<PlainMessage>().Select(m => m.Message?.Trim() ?? string.Empty).ToList();
+                var plainList = args.Chain.OfType<PlainMessage>().Where(o => string.IsNullOrWhiteSpace(o.Message) == false).Select(m => m.Message.Trim()).ToList();
                 var instruction = plainList.FirstOrDefault()?.Trim() ?? string.Empty;
                 var message = plainList.Count > 0 ? string.Join(null, plainList)?.Trim() : string.Empty;
                 var prefix = instruction.MatchPrefix();

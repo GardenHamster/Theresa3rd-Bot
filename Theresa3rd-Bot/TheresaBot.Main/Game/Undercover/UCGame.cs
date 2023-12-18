@@ -284,13 +284,17 @@ namespace TheresaBot.Main.Game.Undercover
         /// <returns></returns>
         private async Task<bool> HandleVoteMessage(GroupRelay relay)
         {
-            if (UCConfig.PrivateVote) return false;
             var voter = CurrentRound.GetVoter(relay.MemberId);
             if (voter is null) return false;
             if (voter.IsOut) return false;
             var target = CurrentRound.GetVoteTarget(relay.Message);
             if (target is null) return false;
             if (target.IsOut) return false;
+            if (UCConfig.PrivateVote)
+            {
+                await Session.SendGroupMessageWithQuoteAsync(GroupId, relay.MemberId, relay.MsgId, "当前为私聊投票模式，请私聊发送数字进行投票");
+                return true;
+            }
             if (voter.MemberId == target.MemberId)
             {
                 await Session.SendGroupMessageWithQuoteAsync(GroupId, relay.MemberId, relay.MsgId, "不能对自己进行投票，请重新投票");
@@ -406,7 +410,7 @@ namespace TheresaBot.Main.Game.Undercover
             await SendWords();//私聊发送词条
             await CheckEnded();
             await Session.SendGroupMessageAsync(GroupId, $"词条派发完毕，请各位查看私聊\r\n如未收到私聊，请尝试添加本Bot为好友，然后在群内发送 {UCConfig.SendWordCommands.JoinCommands()} 重新私发词条。");
-            await CheckEndedAndDelay(1000);
+            await CheckEndedAndDelay(2000);
             await Session.SendGroupMessageAsync(GroupId, $"本次游戏中共有 平民：{CivAmount}个，卧底：{UcAmount}个，白板：{WbAmount}个\r\n请各位组织语言，发言环节将在{UCConfig.PrepareSeconds}秒后开始...");
             await Task.Delay(UCConfig.PrepareSeconds);
             await CheckEnded();

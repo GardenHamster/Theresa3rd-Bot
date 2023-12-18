@@ -34,6 +34,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 
                 var relay = new MiraiFriendRelay(args, message, isInstruct);
+                if (GameCahce.HandleGameMessage(relay)) return; //处理游戏消息
                 if (isInstruct == false && ProcessCache.HandleStep(relay)) return; //分步处理
                 if (string.IsNullOrWhiteSpace(instruction)) return; //空指令
 

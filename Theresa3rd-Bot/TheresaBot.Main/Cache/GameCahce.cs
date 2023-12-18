@@ -26,23 +26,37 @@ namespace TheresaBot.Main.Cache
         }
 
         /// <summary>
-        /// 创建并缓存一个游戏
+        /// 处理游戏消息
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
         public static bool HandleGameMessage(GroupRelay relay)
         {
-            lock (GameDic)
+            var groupId = relay.GroupId;
+            var memberId = relay.MemberId;
+            var game = GetGameByGroup(groupId);
+            if (game is null) return false;
+            if (game.IsEnded) return false;
+            if (game.IsMemberJoined(memberId) == false) return false;
+            return game.HandleGameMessageAsync(relay).Result;
+        }
+
+        /// <summary>
+        /// 处理游戏消息
+        /// </summary>
+        /// <param name="relay"></param>
+        /// <returns></returns>
+        public static bool HandleGameMessage(FriendRelay relay)
+        {
+            var isHandled = false;
+            var memberId = relay.MemberId;
+            var gameList = GetGameByMember(memberId).Where(o => o.IsEnded == false).ToList();
+            if (gameList.Count == 0) return false;
+            foreach (var game in gameList)
             {
-                long groupId = relay.GroupId;
-                long memberId = relay.MemberId;
-                if (!GameDic.ContainsKey(groupId)) return false;
-                var game = GameDic[groupId];
-                if (game is null) return false;
-                if (game.IsEnded) return false;
-                if (game.IsMemberJoined(memberId) == false) return false;
-                return game.HandleGameMessageAsync(relay).Result;
+                isHandled |= game.HandleGameMessageAsync(relay).Result;
             }
+            return isHandled;
         }
 
         /// <summary>
@@ -83,6 +97,19 @@ namespace TheresaBot.Main.Cache
                 {
                     return null;
                 }
+            }
+        }
+
+        /// <summary>
+        /// 获取群内的游戏
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static List<BaseGame> GetGameByMember(long memberId)
+        {
+            lock (GameDic)
+            {
+                return GameDic.Select(o => o.Value).Where(o => o.IsMemberJoined(memberId)).ToList();
             }
         }
 

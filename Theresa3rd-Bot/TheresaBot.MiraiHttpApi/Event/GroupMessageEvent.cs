@@ -41,7 +41,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 
                 var relay = new MiraiGroupRelay(args, message, isAt, isQuote, isInstruct);
-                if (GameCahce.HandleGameMessage(relay)) return; //处理游戏
+                if (GameCahce.HandleGameMessage(relay)) return; //处理游戏消息
 
                 if (args.Chain.Any(v => v is QuoteMessage))//引用指令
                 {

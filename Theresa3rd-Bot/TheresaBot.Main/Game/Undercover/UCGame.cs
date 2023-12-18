@@ -235,6 +235,23 @@ namespace TheresaBot.Main.Game.Undercover
         }
 
         /// <summary>
+        /// 处理游戏消息
+        /// </summary>
+        /// <param name="relay"></param>
+        /// <returns></returns>
+        public override async Task<bool> HandleGameMessageAsync(FriendRelay relay)
+        {
+            if (IsEnded) return false;
+            if (IsStarted == false) return false;
+            if (CurrentRound is null) return false;
+            if (IsVoting)
+            {
+                return await HandleVoteMessage(relay);
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 处理发言消息
         /// </summary>
         /// <param name="relay"></param>
@@ -672,24 +689,23 @@ namespace TheresaBot.Main.Game.Undercover
             try
             {
                 IsVoting = true;
-                await CheckEnded();
-                var votePlayers = round.VotePlayers;
-                var voteMembers = votePlayers.Select(o => o.MemberId).ToList();
-                var contents = new List<BaseContent>();
+                var remindMsg = string.Empty;
                 if (UCConfig.PrivateVote)
                 {
-                    contents.Add(new PlainContent($"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内私聊发送数字选择投票对象"));
-                    contents.Add(new PlainContent(CurrentRound.ListVoteTargets()));
-                    await Session.SendGroupMessageWithAtAsync(GroupId, voteMembers, contents);
-                    await CheckEndedAndDelay(1000);
-                    await Session.SendTempMessageAsync(GroupId, voteMembers,)
+                    remindMsg = $"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内私聊发送数字选择投票对象";
                 }
                 else
                 {
-                    contents.Add(new PlainContent($"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内发送或私聊数字选择投票对象"));
-                    contents.Add(new PlainContent(CurrentRound.ListVoteTargets()));
-                    await Session.SendGroupMessageWithAtAsync(GroupId, voteMembers, contents);
+                    remindMsg = $"下面是投票环节，请各位在{UCConfig.VotingSeconds}秒内发送或私聊数字选择投票对象";
                 }
+                var contents = new List<BaseContent>
+                {
+                    new PlainContent(remindMsg),
+                    new PlainContent(CurrentRound.ListVoteTargets())
+                };
+                var votePlayers = round.VotePlayers;
+                var voteMembers = votePlayers.Select(o => o.MemberId).ToList();
+                await Session.SendGroupMessageWithAtAsync(GroupId, voteMembers, contents);
                 await round.WaitForVote(this, votePlayers, UCConfig.VotingSeconds);
             }
             finally

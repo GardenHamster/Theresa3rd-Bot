@@ -14,8 +14,9 @@ namespace TheresaBot.Main.Dao
             try
             {
                 DbScoped.SugarScope.DbMaintenance.CreateDatabase();
-                DbScoped.SugarScope.CodeFirst.InitTables(typeof(BanMemberPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(BanTagPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(BanMemberPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(BanPixiverPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(DictionaryPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(ImageRecordPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(MessageRecordPO));

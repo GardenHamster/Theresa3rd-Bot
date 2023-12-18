@@ -6,7 +6,7 @@ namespace TheresaBot.Main.Dao
     {
         public List<BanPixiverPO> GetBanPixivers()
         {
-            return Db.Queryable<BanPixiverPO>().ToList();
+            return Db.Queryable<BanPixiverPO>().OrderByDescending(o => o.Id).ToList();
         }
 
         public BanPixiverPO GetBanPixiver(long pixiverId)

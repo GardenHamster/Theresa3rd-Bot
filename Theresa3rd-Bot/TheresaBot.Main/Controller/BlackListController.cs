@@ -29,8 +29,7 @@ namespace TheresaBot.Main.Controller
         [Route("list/member")]
         public ApiResult GetMembers()
         {
-            BanMemberDatas.LoadDatas();
-            var banList = BanMemberDatas.BanMemberList;
+            var banList = banMemberService.GetBanMembers();
             var banInfos = banList.Select(o => new BanMemberVo
             {
                 Id = o.Id,
@@ -66,8 +65,7 @@ namespace TheresaBot.Main.Controller
         [Route("list/tag")]
         public ApiResult GetTags()
         {
-            BanTagDatas.LoadDatas();
-            var banList = BanTagDatas.BanTagList;
+            var banList = banTagService.GetBanTags();
             var banInfos = banList.Select(o => new BanTagVo
             {
                 Id = o.Id,
@@ -105,8 +103,7 @@ namespace TheresaBot.Main.Controller
         [Route("list/pixiver")]
         public ApiResult GetPixivers()
         {
-            BanPixiverDatas.LoadDatas();
-            var banList = BanPixiverDatas.BanPixiverList;
+            var banList = banPixiverService.GetBanPixivers();
             var banInfos = banList.Select(o => new BanPixiverVo
             {
                 Id = o.Id,

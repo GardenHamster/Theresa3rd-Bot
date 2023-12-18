@@ -6,7 +6,7 @@ namespace TheresaBot.Main.Dao
     {
         public List<BanMemberPO> GetBanMembers()
         {
-            return Db.Queryable<BanMemberPO>().ToList();
+            return Db.Queryable<BanMemberPO>().OrderByDescending(o => o.Id).ToList();
         }
 
         public BanMemberPO GetBanMember(long memberId)

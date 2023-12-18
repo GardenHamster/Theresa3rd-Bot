@@ -6,7 +6,7 @@ namespace TheresaBot.Main.Dao
     {
         public List<BanTagPO> GetBanTags()
         {
-            return Db.Queryable<BanTagPO>().ToList();
+            return Db.Queryable<BanTagPO>().OrderByDescending(o => o.Id).ToList();
         }
 
         public BanTagPO GetBanTag(string keyWord)

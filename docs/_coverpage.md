@@ -6,7 +6,7 @@
 
 -   基于 .net core、mirai-api-http、go-cqhttp
 
--   包含：涩图搜索推送，词云，日榜，复读机，小游戏等功能
+-   包含：涩图搜索推送，词云，日榜，复读机，谁是卧底等功能
 
 -   (封面 [PID:73532572](https://www.pixiv.net/artworks/73532572) [画师:82](https://www.pixiv.net/users/14344106))
 

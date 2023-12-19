@@ -77,15 +77,17 @@ addEventListener('fetch', event => {
 
 
 ### 测试
-* 这是pixiv上的一条原图链接https://i.pximg.net/img-original/img/2019/03/06/00/40/39/73532572_p0.jpg
+* 这是Pixiv上的一条原图链接 https://i.pximg.net/img-original/img/2019/03/06/00/40/39/73532572_p0.jpg
 
-* 使用刚才配置的代理域名替换掉i.pximg.net得到链接https://pixiv.gardencavy.site/img-original/img/2019/03/06/00/40/39/73532572_p0.jpg
+* 使用刚才配置的代理域名替换掉 `i.pximg.net` 得到链接 https://pixiv.gardencavy.site/img-original/img/2019/03/06/00/40/39/73532572_p0.jpg
 
-* 关掉梯子然后打开链接测试图片是否能正常打开，并且发送到手机后再测试一下，如果不行就等一段时间后再测试，生效需要一段时间，可能需要几个小时
+* 关掉梯子然后打开链接测试图片是否能正常打开，并且发送到手机后再测试一下，如果不行就等一段时间后再测试，生效需要一段时间，大概可能需要几分钟
 
 ![image](/img/proxy/197010554-f110f621-a20e-4955-a439-370efacc8edc.png)
 
-### 修改配置文件
-将配置好的代理域名替换掉`Pixiv.OriginUrlProxy`中的值
+### 修改配置
+* 将刚才配置的代理链接填写到`后台页面`-->`Pixiv配置`-->`链接代理`中
 
-![image](/img/proxy/197007874-96edc6e3-4860-1d4a-f1ef-3e48ca1cd2f5.jpg)
+![image](/img/proxy/465829cd-f7d2-4d3a-a941-f8e820a9c5c4.png)
+
+* 或者手动修改配置文件`Config目录`-->`Pixiv.yml`-->`OriginUrlProxy`，修改完毕后重启插件

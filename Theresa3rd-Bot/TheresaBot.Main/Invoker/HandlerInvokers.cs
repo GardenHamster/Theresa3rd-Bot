@@ -564,7 +564,24 @@ namespace TheresaBot.Main.Invoker
             }))
         };
 
-        public readonly static List<CommandHandler<FriendCommand>> FriendCommands = new()
+        public readonly static List<CommandHandler<GroupQuoteCommand>> GroupQuoteCommands = new()
+        {
+            //Saucenao
+            new(BotConfig.SaucenaoConfig?.Commands, CommandType.Saucenao, new(async (botCommand, session, reporter) =>
+            {
+                SaucenaoHandler handler = new SaucenaoHandler(session, reporter);
+                if (await handler.CheckSaucenaoEnableAsync(botCommand) == false) return false;
+                if (BotConfig.SaucenaoConfig.PullOrigin && await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
+                if (await handler.CheckMemberSaucenaoCoolingAsync(botCommand)) return false;
+                if (await handler.CheckSaucenaoUseUpAsync(botCommand)) return false;
+                if (await handler.CheckHandingAsync(botCommand)) return false;
+                await handler.SearchSource(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            }))
+        };
+
+        public readonly static List<CommandHandler<PrivateCommand>> FriendCommands = new()
         {
             //PixivCookie
             new(BotConfig.ManageConfig?.PixivCookieCommands, CommandType.SetCookie, new(async (botCommand, session, reporter) =>
@@ -593,25 +610,6 @@ namespace TheresaBot.Main.Invoker
                 return true;
             })),
         };
-
-        public readonly static List<CommandHandler<GroupQuoteCommand>> GroupQuoteCommands = new()
-        {
-            //Saucenao
-            new(BotConfig.SaucenaoConfig?.Commands, CommandType.Saucenao, new(async (botCommand, session, reporter) =>
-            {
-                SaucenaoHandler handler = new SaucenaoHandler(session, reporter);
-                if (await handler.CheckSaucenaoEnableAsync(botCommand) == false) return false;
-                if (BotConfig.SaucenaoConfig.PullOrigin && await handler.CheckPixivCookieAvailableAsync(botCommand) == false) return false;
-                if (await handler.CheckMemberSaucenaoCoolingAsync(botCommand)) return false;
-                if (await handler.CheckSaucenaoUseUpAsync(botCommand)) return false;
-                if (await handler.CheckHandingAsync(botCommand)) return false;
-                await handler.SearchSource(botCommand);
-                await handler.InsertRecord(botCommand);
-                return true;
-            }))
-        };
-
-
 
     }
 }

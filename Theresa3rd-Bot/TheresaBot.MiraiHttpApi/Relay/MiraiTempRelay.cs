@@ -5,15 +5,15 @@ using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Relay
 {
-    public class MiraiFriendRelay : PrivateRelay
+    public class MiraiTempRelay : PrivateRelay
     {
-        public IFriendMessageEventArgs Args { get; set; }
+        public ITempMessageEventArgs Args { get; set; }
 
         public override long MsgId => Args.GetMessageId();
 
         public override long MemberId => Args.Sender.Id;
 
-        public MiraiFriendRelay(IFriendMessageEventArgs args, string message, bool isInstruct) : base(message, isInstruct)
+        public MiraiTempRelay(ITempMessageEventArgs args, string message, bool isInstruct) : base(message, isInstruct)
         {
             this.Args = args;
         }

@@ -4,7 +4,7 @@ using TheresaBot.Main.Relay;
 
 namespace TheresaBot.GoCqHttp.Relay
 {
-    public class CQFriendRelay : FriendRelay
+    public class CQFriendRelay : PrivateRelay
     {
         public CqPrivateMessagePostContext Args { get; set; }
 

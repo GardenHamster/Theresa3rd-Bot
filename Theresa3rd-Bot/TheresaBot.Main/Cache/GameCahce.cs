@@ -46,7 +46,7 @@ namespace TheresaBot.Main.Cache
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        public static bool HandleGameMessage(FriendRelay relay)
+        public static bool HandleGameMessage(PrivateRelay relay)
         {
             var isHandled = false;
             var memberId = relay.MemberId;

@@ -7,7 +7,7 @@ using TheresaBot.MiraiHttpApi.Helper;
 
 namespace TheresaBot.MiraiHttpApi.Command
 {
-    public class MiraiFriendCommand : FriendCommand
+    public class MiraiFriendCommand : PrivateCommand
     {
         private IFriendMessageEventArgs Args { get; init; }
 
@@ -17,7 +17,7 @@ namespace TheresaBot.MiraiHttpApi.Command
 
         public override string MemberName => Args.Sender.Name;
 
-        public MiraiFriendCommand(BaseSession baseSession, CommandHandler<FriendCommand> invoker, IFriendMessageEventArgs args, string instruction, string command, string prefix)
+        public MiraiFriendCommand(BaseSession baseSession, CommandHandler<PrivateCommand> invoker, IFriendMessageEventArgs args, string instruction, string command, string prefix)
             : base(baseSession, invoker, instruction, command, prefix)
         {
             this.Args = args;
@@ -27,9 +27,6 @@ namespace TheresaBot.MiraiHttpApi.Command
         {
             return Args.Chain.OfType<ImageMessage>().Select(o => o.Url).ToList();
         }
-
-
-
 
     }
 }

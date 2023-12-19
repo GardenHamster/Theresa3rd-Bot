@@ -7,7 +7,7 @@ namespace TheresaBot.Main.Model.Process
 {
     public record FriendStep<T> : BaseStep
     {
-        public FriendCommand FriendCommand { get; init; }
+        public PrivateCommand FriendCommand { get; init; }
 
         public Func<string, Task<T>> CheckInputFunc { get; init; }
 
@@ -15,13 +15,13 @@ namespace TheresaBot.Main.Model.Process
 
         public T Answer { get; private set; }
 
-        public FriendStep(FriendCommand command, string question, int waitSecond, Func<string, Task<T>> checkInput) : base(question, waitSecond)
+        public FriendStep(PrivateCommand command, string question, int waitSecond, Func<string, Task<T>> checkInput) : base(question, waitSecond)
         {
             FriendCommand = command;
             CheckInputFunc = checkInput;
         }
 
-        public FriendStep(FriendCommand command, string question, int waitSecond, Func<BaseRelay, Task<T>> checkReply) : base(question, waitSecond)
+        public FriendStep(PrivateCommand command, string question, int waitSecond, Func<BaseRelay, Task<T>> checkReply) : base(question, waitSecond)
         {
             FriendCommand = command;
             CheckReplyFunc = checkReply;

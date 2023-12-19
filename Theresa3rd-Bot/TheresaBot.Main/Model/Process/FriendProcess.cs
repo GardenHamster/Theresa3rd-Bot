@@ -5,9 +5,9 @@ namespace TheresaBot.Main.Model.Process
 {
     public class FriendProcess : BaseProcess
     {
-        public FriendCommand FriendCommand { get; private set; }
+        public PrivateCommand FriendCommand { get; private set; }
 
-        public FriendProcess(FriendCommand command) : base(command.MemberId)
+        public FriendProcess(PrivateCommand command) : base(command.MemberId)
         {
             FriendCommand = command;
         }

@@ -28,26 +28,28 @@ namespace TheresaBot.MiraiHttpApi.Helper
             try
             {
                 LogHelper.Info("尝试连接到mirai-console...");
-                Services = new ServiceCollection().AddMiraiBaseFramework()
-                                                               .Services
-                                                               .AddDefaultMiraiHttpFramework()
-                                                               .AddInvoker<MiraiHttpMessageHandlerInvoker>()
-                                                               .AddHandler<FriendApplyEvent>()
-                                                               .AddHandler<FriendMessageEvent>()
-                                                               .AddHandler<GroupMessageEvent>()
-                                                               .AddHandler<GroupMemberJoinedEvent>()
-                                                               .AddHandler<DisconnectedEvent>()
-                                                               .AddClient<MiraiHttpSession>()
-                                                               .Services
-                                                               .Configure<MiraiHttpSessionOptions>(options =>
-                                                               {
-                                                                   options.Host = MiraiConfig.Host;
-                                                                   options.Port = MiraiConfig.Port;
-                                                                   options.AuthKey = MiraiConfig.AuthKey;
-                                                                   options.SuppressAwaitMessageInvoker = true;
-                                                               })
-                                                               .AddLogging()
-                                                               .BuildServiceProvider();
+                Services = new ServiceCollection()
+                           .AddMiraiBaseFramework()
+                           .Services
+                           .AddDefaultMiraiHttpFramework()
+                           .AddInvoker<MiraiHttpMessageHandlerInvoker>()
+                           .AddHandler<FriendApplyEvent>()
+                           .AddHandler<FriendMessageEvent>()
+                           .AddHandler<TempMessageEvent>()
+                           .AddHandler<GroupMessageEvent>()
+                           .AddHandler<GroupMemberJoinedEvent>()
+                           .AddHandler<DisconnectedEvent>()
+                           .AddClient<MiraiHttpSession>()
+                           .Services
+                           .Configure<MiraiHttpSessionOptions>(options =>
+                           {
+                               options.Host = MiraiConfig.Host;
+                               options.Port = MiraiConfig.Port;
+                               options.AuthKey = MiraiConfig.AuthKey;
+                               options.SuppressAwaitMessageInvoker = true;
+                           })
+                           .AddLogging()
+                           .BuildServiceProvider();
                 Scope = Services.CreateAsyncScope();
                 Services = Scope.ServiceProvider;
                 Session = Services.GetRequiredService<IMiraiHttpSession>();
@@ -152,6 +154,25 @@ namespace TheresaBot.MiraiHttpApi.Helper
         /// <param name="args"></param>
         /// <returns></returns>
         public static int GetMessageId(this IFriendMessageEventArgs args)
+        {
+            try
+            {
+                SourceMessage sourceMessage = (SourceMessage)args.Chain.First();
+                return sourceMessage.Id;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "GetMessageId异常");
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// 获取消息id
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static int GetMessageId(this ITempMessageEventArgs args)
         {
             try
             {

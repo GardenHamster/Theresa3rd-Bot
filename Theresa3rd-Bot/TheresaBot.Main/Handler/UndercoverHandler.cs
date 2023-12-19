@@ -95,7 +95,7 @@ namespace TheresaBot.Main.Handler
             }
         }
 
-        public async Task CreateWords(FriendCommand command)
+        public async Task CreateWords(PrivateCommand command)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace TheresaBot.Main.Handler
             return modeStep.Answer;
         }
 
-        private async Task<List<string[]>> AskNewWords(FriendCommand command)
+        private async Task<List<string[]>> AskNewWords(PrivateCommand command)
         {
             var processInfo = ProcessCache.CreateProcess(command);
             var modeStep = processInfo.CreateStep($"请在60秒内发送词条，每个词条之间用空格隔开，多个词组之间换行隔开，比如：\r\n牛奶 豆浆\r\n苹果 雪梨", CheckNewWordsAsync);

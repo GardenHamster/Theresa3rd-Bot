@@ -6,7 +6,7 @@ using TheresaBot.Main.Session;
 
 namespace TheresaBot.GoCqHttp.Command
 {
-    public class CQFriendCommand : FriendCommand
+    public class CQFriendCommand : PrivateCommand
     {
         private CqPrivateMessagePostContext Args { get; init; }
 
@@ -16,7 +16,7 @@ namespace TheresaBot.GoCqHttp.Command
 
         public override string MemberName => Args.Sender.Nickname;
 
-        public CQFriendCommand(BaseSession baseSession, CommandHandler<FriendCommand> invoker, CqPrivateMessagePostContext args, string instruction, string command, string prefix)
+        public CQFriendCommand(BaseSession baseSession, CommandHandler<PrivateCommand> invoker, CqPrivateMessagePostContext args, string instruction, string command, string prefix)
             : base(baseSession, invoker, instruction, command, prefix)
         {
             Args = args;

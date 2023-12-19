@@ -35,7 +35,7 @@ namespace TheresaBot.Main.Handler
             await Reporter.SendError(ex, message);
         }
 
-        public async Task LogAndReplyError(FriendCommand command, Exception ex, string message = "")
+        public async Task LogAndReplyError(PrivateCommand command, Exception ex, string message = "")
         {
             LogHelper.Error(ex, message);
             await command.ReplyError(ex, message);
@@ -59,7 +59,7 @@ namespace TheresaBot.Main.Handler
             return await Task.FromResult(requestRecordService.InsertRecord(command.GroupId, command.MemberId, command.CommandType, command.Instruction));
         }
 
-        public async Task<RequestRecordPO> InsertRecord(FriendCommand command)
+        public async Task<RequestRecordPO> InsertRecord(PrivateCommand command)
         {
             return await Task.FromResult(requestRecordService.InsertRecord(0, command.MemberId, command.CommandType, command.Instruction));
         }
@@ -230,7 +230,7 @@ namespace TheresaBot.Main.Handler
             return true;
         }
 
-        public async Task<bool> CheckSuperManagersAsync(FriendCommand command)
+        public async Task<bool> CheckSuperManagersAsync(PrivateCommand command)
         {
             if (command.MemberId.IsSuperManager() == false)
             {

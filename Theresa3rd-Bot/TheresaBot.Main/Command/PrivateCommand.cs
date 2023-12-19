@@ -5,11 +5,11 @@ using TheresaBot.Main.Session;
 
 namespace TheresaBot.Main.Command
 {
-    public abstract class FriendCommand : BaseCommand
+    public abstract class PrivateCommand : BaseCommand
     {
-        private CommandHandler<FriendCommand> HandlerInvoker { get; init; }
+        private CommandHandler<PrivateCommand> HandlerInvoker { get; init; }
 
-        public FriendCommand(BaseSession baseSession, CommandHandler<FriendCommand> invoker, string instruction, string command, string prefix)
+        public PrivateCommand(BaseSession baseSession, CommandHandler<PrivateCommand> invoker, string instruction, string command, string prefix)
             : base(baseSession, invoker.CommandType, instruction, command, prefix)
         {
             this.HandlerInvoker = invoker;
@@ -17,7 +17,7 @@ namespace TheresaBot.Main.Command
 
         public abstract List<string> GetImageUrls();
 
-        public virtual async Task Test(FriendCommand command) => await Task.CompletedTask;
+        public virtual async Task Test(PrivateCommand command) => await Task.CompletedTask;
 
         public override async Task<bool> InvokeAsync(BaseSession session, BaseReporter reporter)
         {

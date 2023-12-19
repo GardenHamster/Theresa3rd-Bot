@@ -48,7 +48,7 @@ namespace TheresaBot.Main.Cache
         /// <param name="command"></param>
         /// <returns></returns>
         /// <exception cref="ProcessException"></exception>
-        public static FriendProcess CreateProcess(FriendCommand command)
+        public static FriendProcess CreateProcess(PrivateCommand command)
         {
             lock (FriendProcessDic)
             {
@@ -100,7 +100,7 @@ namespace TheresaBot.Main.Cache
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        public static bool HandleStep(FriendRelay relay)
+        public static bool HandleStep(PrivateRelay relay)
         {
             FriendProcess processInfo;
             lock (FriendProcessDic)

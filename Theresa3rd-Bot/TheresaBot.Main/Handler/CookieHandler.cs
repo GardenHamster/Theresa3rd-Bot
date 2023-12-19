@@ -26,7 +26,7 @@ namespace TheresaBot.Main.Handler
         /// <param name="args"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task UpdatePixivCookieAsync(FriendCommand command)
+        public async Task UpdatePixivCookieAsync(PrivateCommand command)
         {
             string cookie = command.KeyWord;
             if (string.IsNullOrWhiteSpace(cookie))
@@ -78,7 +78,7 @@ namespace TheresaBot.Main.Handler
         /// <param name="args"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task UpdateSaucenaoCookieAsync(FriendCommand command)
+        public async Task UpdateSaucenaoCookieAsync(PrivateCommand command)
         {
             string cookie = command.KeyWord;
             if (string.IsNullOrWhiteSpace(cookie))

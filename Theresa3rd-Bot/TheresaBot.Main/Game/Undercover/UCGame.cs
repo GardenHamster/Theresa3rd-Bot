@@ -241,7 +241,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        public override async Task<bool> HandleGameMessageAsync(FriendRelay relay)
+        public override async Task<bool> HandleGameMessageAsync(PrivateRelay relay)
         {
             if (IsEnded) return false;
             if (IsStarted == false) return false;
@@ -317,7 +317,7 @@ namespace TheresaBot.Main.Game.Undercover
         /// </summary>
         /// <param name="relay"></param>
         /// <returns></returns>
-        private async Task<bool> HandleVoteMessage(FriendRelay relay)
+        private async Task<bool> HandleVoteMessage(PrivateRelay relay)
         {
             var voter = CurrentRound.GetVoter(relay.MemberId);
             if (voter is null) return false;

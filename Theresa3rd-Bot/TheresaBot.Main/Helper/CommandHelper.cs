@@ -279,7 +279,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="ex"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static async Task<BaseResult> ReplyError(this FriendCommand command, Exception ex, string message = "")
+        public static async Task<BaseResult> ReplyError(this PrivateCommand command, Exception ex, string message = "")
         {
             if (ex is null) return BaseResult.Undo;
             List<BaseContent> contents = ex.GetErrorContents(message);
@@ -309,7 +309,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="template"></param>
         /// <param name="defaultmsg"></param>
         /// <returns></returns>
-        public static async Task<BaseResult> ReplyFriendTemplateAsync(this FriendCommand command, string template, string defaultmsg)
+        public static async Task<BaseResult> ReplyFriendTemplateAsync(this PrivateCommand command, string template, string defaultmsg)
         {
             template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
@@ -378,7 +378,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="command"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static async Task<BaseResult> ReplyFriendMessageAsync(this FriendCommand command, string message)
+        public static async Task<BaseResult> ReplyFriendMessageAsync(this PrivateCommand command, string message)
         {
             return await command.Session.SendFriendMessageAsync(command.MemberId, message);
         }
@@ -389,7 +389,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="command"></param>
         /// <param name="contents"></param>
         /// <returns></returns>
-        public static async Task<BaseResult> ReplyFriendMessageAsync(this FriendCommand command, List<BaseContent> contents)
+        public static async Task<BaseResult> ReplyFriendMessageAsync(this PrivateCommand command, List<BaseContent> contents)
         {
             return await command.Session.SendFriendMessageAsync(command.MemberId, contents);
         }

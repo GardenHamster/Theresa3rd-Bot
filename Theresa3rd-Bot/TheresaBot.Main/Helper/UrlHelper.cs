@@ -97,8 +97,8 @@
             httpUrl = httpUrl.Replace("https://", string.Empty);
             httpUrl = httpUrl.Trim();
             var index = httpUrl.IndexOf("?");
-            var baseUrl = index < 0 ? httpUrl : httpUrl.Substring(0, index + 1);
-            var splits = httpUrl.Split("/", StringSplitOptions.RemoveEmptyEntries);
+            var baseUrl = index < 0 ? httpUrl : httpUrl.Substring(0, index);
+            var splits = baseUrl.Split("/", StringSplitOptions.RemoveEmptyEntries);
             if (splits.Length < 2) return string.Empty;
             return splits.Last().Trim();
         }

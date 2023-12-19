@@ -679,7 +679,7 @@ namespace TheresaBot.Main.Game.Undercover
             foreach (var speech in round.Speechs)
             {
                 var player = speech.Player;
-                var content = new ForwardContent(player.MemberId, $"No.{player.PlayerId} {player.MemberName}", $"{speech.Content}");
+                var content = new ForwardContent(player.MemberId, $"{player.MemberName}", $"{speech.Content}");
                 contents.Add(content);
             }
             await Session.SendGroupForwardAsync(GroupId, contents);

@@ -37,13 +37,16 @@ namespace TheresaBot.Main.Helper
 
         private static string FilterMessage(this string message)
         {
-            string msgLower = message.ToLower().Replace(" ", string.Empty);
+            string msgLower = message.ToLower();
+            if (msgLower.Contains("ftp:")) return string.Empty;
             if (msgLower.Contains("http:")) return string.Empty;
             if (msgLower.Contains("https:")) return string.Empty;
             if (msgLower.Contains("<?xml")) return string.Empty;
             if (msgLower.Contains("<xml")) return string.Empty;
             message = Regex.Replace(message, @"\[.*\]", string.Empty);
             message = Regex.Replace(message, @"\{.*\}", string.Empty);
+            message = Regex.Replace(message, @"\<.*\>", string.Empty);
+            message = message.Replace("\r\n", " ").Replace("\r", " ").Replace("\n", " ");
             return message;
         }
 

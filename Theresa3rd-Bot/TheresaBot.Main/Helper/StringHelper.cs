@@ -153,21 +153,22 @@ namespace TheresaBot.Main.Helper
         }
 
         /// <summary>
-        /// 拆分cookie,返回键值对
+        /// 拆分cookie,返回键值对,不区分key大小写
         /// </summary>
         /// <param name="cookie"></param>
         /// <returns></returns>
         public static Dictionary<string, string> SplitCookie(this string cookie)
         {
-            Dictionary<string, string> cookieDic = new Dictionary<string, string>();
-            if (string.IsNullOrEmpty(cookie)) return cookieDic;
-            string[] cookieArr = cookie.Trim().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            if (string.IsNullOrWhiteSpace(cookie)) return new();
+            var cookieDic = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var cookieArr = cookie.Trim().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string item in cookieArr)
             {
-                string[] cookieKVArr = item.Trim().Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
-                if (cookieKVArr.Length == 0) continue;
-                string key = cookieKVArr[0].Trim();
-                string value = cookieKVArr.Length > 1 ? cookieKVArr[1].Trim() : "";
+                var kvArr = item.Trim().Split("=", StringSplitOptions.RemoveEmptyEntries);
+                if (kvArr.Length == 0) continue;
+                var key = kvArr[0].Trim();
+                if (string.IsNullOrWhiteSpace(key)) continue;
+                var value = kvArr.Length > 1 ? kvArr[1].Trim() : string.Empty;
                 cookieDic[key] = value;
             }
             return cookieDic;

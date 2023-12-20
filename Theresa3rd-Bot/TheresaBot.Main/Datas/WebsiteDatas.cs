@@ -9,7 +9,7 @@ namespace TheresaBot.Main.Datas
     {
         public static WebsitePO Pixiv { get; private set; }
 
-        public static WebsitePO Bili { get; private set; }
+        public static WebsitePO BiliBili { get; private set; }
 
         public static WebsitePO Saucenao { get; private set; }
 
@@ -18,9 +18,9 @@ namespace TheresaBot.Main.Datas
             try
             {
                 var websiteService = new WebsiteService();
-                Pixiv = websiteService.GetOrInsert(Enum.GetName(typeof(WebsiteType), WebsiteType.Pixiv));
-                Bili = websiteService.GetOrInsert(Enum.GetName(typeof(WebsiteType), WebsiteType.Bili));
-                Saucenao = websiteService.GetOrInsert(Enum.GetName(typeof(WebsiteType), WebsiteType.Saucenao));
+                Pixiv = websiteService.GetOrInsert(WebsiteType.Pixiv.ToString());
+                BiliBili = websiteService.GetOrInsert(WebsiteType.BiliBili.ToString());
+                Saucenao = websiteService.GetOrInsert(WebsiteType.Saucenao.ToString());
                 LogHelper.Info("网站cookie加载完成...");
             }
             catch (Exception ex)

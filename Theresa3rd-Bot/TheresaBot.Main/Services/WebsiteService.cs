@@ -1,7 +1,5 @@
-﻿using TheresaBot.Main.Command;
-using TheresaBot.Main.Common;
+﻿using TheresaBot.Main.Common;
 using TheresaBot.Main.Dao;
-using TheresaBot.Main.Datas;
 using TheresaBot.Main.Exceptions;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.PO;
@@ -30,6 +28,7 @@ namespace TheresaBot.Main.Services
             cookie = cookie.Replace("\r", string.Empty);
             cookie = cookie.Replace("\n", string.Empty);
             cookie = cookie.Replace("\"", string.Empty);
+            cookie = cookie.Replace("'", string.Empty);
             cookie = cookie.Trim();
 
             var cookieDic = cookie.SplitCookie();
@@ -74,6 +73,7 @@ namespace TheresaBot.Main.Services
             cookie = cookie.Replace("\r", string.Empty);
             cookie = cookie.Replace("\n", string.Empty);
             cookie = cookie.Replace("\"", string.Empty);
+            cookie = cookie.Replace("'", string.Empty);
             cookie = cookie.Trim();
 
             //token=62b9ae236fdf9; user=58109; auth=9cd37025e035f2ed99d096f2b7cf5485b7dd50a7;
@@ -135,7 +135,7 @@ namespace TheresaBot.Main.Services
             if (website != null) return website;
             website = new WebsitePO();
             website.Code = code;
-            website.Cookie = "";
+            website.Cookie = string.Empty;
             website.UserId = 0;
             website.UpdateDate = DateTime.Now;
             website.CookieExpireDate = DateTime.Now;

@@ -7,7 +7,6 @@ using TheresaBot.Main.Model.PO;
 using TheresaBot.Main.Reporter;
 using TheresaBot.Main.Services;
 using TheresaBot.Main.Session;
-using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Handler
 {
@@ -57,16 +56,27 @@ namespace TheresaBot.Main.Handler
         /// <returns></returns>
         public async Task UpdateSaucenaoCookieAsync(PrivateCommand command)
         {
-            var cookie = command.KeyWord;
-            if (string.IsNullOrWhiteSpace(cookie))
+            try
             {
-                await command.ReplyFriendMessageAsync($"未检测到Cookie");
-                return;
+                var cookie = command.KeyWord;
+                if (string.IsNullOrWhiteSpace(cookie))
+                {
+                    await command.ReplyFriendMessageAsync($"未检测到Cookie");
+                    return;
+                }
+                var website = websiteService.UpdateSaucenaoCookie(cookie);
+                WebsiteDatas.LoadWebsite();
+                var expireDate = website.CookieExpireDate.ToSimpleString();
+                await command.ReplyFriendMessageAsync($"Cookie更新完毕，过期时间为：{expireDate}");
             }
-            var website = websiteService.UpdateSaucenaoCookie(cookie);
-            WebsiteDatas.LoadWebsite();
-            var expireDate = website.CookieExpireDate.ToSimpleString();
-            await command.ReplyFriendMessageAsync($"Cookie更新完毕，过期时间为：{expireDate}");
+            catch (HandleException ex)
+            {
+                await command.ReplyFriendMessageAsync(ex.RemindMessage);
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, "PixivCookie更新异常");
+            }
         }
 
         /// <summary>

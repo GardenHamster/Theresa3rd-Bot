@@ -38,6 +38,7 @@ namespace TheresaBot.Main.Services
                 throw new HandleException($"cookie中缺少PHPSESSID，请重新获取cookie");
             }
 
+            //11451419_iUaiFfh68q6INMejIBGcLfhju9Ok70UB
             var splitArr = sessionId.Split('_', StringSplitOptions.RemoveEmptyEntries);
             if (splitArr.Length < 2 || string.IsNullOrWhiteSpace(splitArr[0]))
             {

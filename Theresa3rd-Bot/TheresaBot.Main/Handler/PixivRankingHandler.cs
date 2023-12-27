@@ -89,7 +89,7 @@ namespace TheresaBot.Main.Handler
             await ReplyRanking(command, rankingMode, rankingItem);
         }
 
-        public async Task HandleRankingSubscribeAsync(PixivRankingTimer rankingTimer, PixivRankingItem rankingItem, PixivRankingMode rankingMode)
+        public async Task PushRankingAsync(PixivRankingTimer rankingTimer, PixivRankingItem rankingItem, PixivRankingMode rankingMode)
         {
             try
             {

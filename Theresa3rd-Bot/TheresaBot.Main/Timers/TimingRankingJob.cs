@@ -44,47 +44,47 @@ namespace TheresaBot.Main.Timers
             var rankingHandler = new PixivRankingHandler(session, reporter);
             if (rankingName == "daily")
             {
-                await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Daily, PixivRankingMode.Daily);
+                await rankingHandler.PushRankingAsync(rankingTimer, BotConfig.PixivRankingConfig.Daily, PixivRankingMode.Daily);
                 return;
             }
             if (rankingName == "dailyai")
             {
-                await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.DailyAI, PixivRankingMode.DailyAI);
+                await rankingHandler.PushRankingAsync(rankingTimer, BotConfig.PixivRankingConfig.DailyAI, PixivRankingMode.DailyAI);
                 return;
             }
             if (rankingName == "male")
             {
-                await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Male, PixivRankingMode.Male);
+                await rankingHandler.PushRankingAsync(rankingTimer, BotConfig.PixivRankingConfig.Male, PixivRankingMode.Male);
                 return;
             }
             if (rankingName == "weekly")
             {
-                await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Weekly, PixivRankingMode.Weekly);
+                await rankingHandler.PushRankingAsync(rankingTimer, BotConfig.PixivRankingConfig.Weekly, PixivRankingMode.Weekly);
                 return;
             }
             if (rankingName == "monthly")
             {
-                await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Monthly, PixivRankingMode.Monthly);
+                await rankingHandler.PushRankingAsync(rankingTimer, BotConfig.PixivRankingConfig.Monthly, PixivRankingMode.Monthly);
                 return;
             }
             if (rankingName == "dailyr18")
             {
-                await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Daily, PixivRankingMode.Daily_R18);
+                await rankingHandler.PushRankingAsync(rankingTimer, BotConfig.PixivRankingConfig.Daily, PixivRankingMode.Daily_R18);
                 return;
             }
             if (rankingName == "dailyair18")
             {
-                await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.DailyAI, PixivRankingMode.DailyAI_R18);
+                await rankingHandler.PushRankingAsync(rankingTimer, BotConfig.PixivRankingConfig.DailyAI, PixivRankingMode.DailyAI_R18);
                 return;
             }
             if (rankingName == "maler18")
             {
-                await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Male, PixivRankingMode.Male_R18);
+                await rankingHandler.PushRankingAsync(rankingTimer, BotConfig.PixivRankingConfig.Male, PixivRankingMode.Male_R18);
                 return;
             }
             if (rankingName == "weeklyr18")
             {
-                await rankingHandler.HandleRankingSubscribeAsync(rankingTimer, BotConfig.PixivRankingConfig.Weekly, PixivRankingMode.Weekly_R18);
+                await rankingHandler.PushRankingAsync(rankingTimer, BotConfig.PixivRankingConfig.Weekly, PixivRankingMode.Weekly_R18);
                 return;
             }
         }

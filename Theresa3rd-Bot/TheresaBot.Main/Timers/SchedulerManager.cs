@@ -336,9 +336,8 @@ namespace TheresaBot.Main.Timers
             try
             {
                 if (scheduler is null) return;
-                if (scheduler.IsShutdown) return;
                 await scheduler.Shutdown(false);
-                await scheduler.DestroyAsync();
+                await scheduler.Clear();
             }
             catch (Exception ex)
             {

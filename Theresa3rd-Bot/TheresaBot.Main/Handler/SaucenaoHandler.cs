@@ -258,7 +258,7 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);
-                await command.SendTempMessageAsync(contentList);
+                await command.SendPrivateMessageAsync(contentList);
             }
         }
 
@@ -269,7 +269,7 @@ namespace TheresaBot.Main.Handler
             if (BotConfig.SaucenaoConfig.SendPrivate)
             {
                 await Task.Delay(1000);
-                await command.SendTempSetuAsync(setuContents);
+                await command.SendPrivateSetuAsync(setuContents);
             }
         }
 

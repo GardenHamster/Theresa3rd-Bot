@@ -162,10 +162,10 @@ namespace TheresaBot.Main.Helper
         /// <param name="command"></param>
         /// <param name="setuContents"></param>
         /// <returns></returns>
-        public static async Task<BaseResult> SendTempSetuAsync(this GroupCommand command, List<SetuContent> setuContents)
+        public static async Task<BaseResult> SendPrivateSetuAsync(this GroupCommand command, List<SetuContent> setuContents)
         {
             List<BaseContent> contentList = setuContents.ToBaseContent().SetDefaultImage();
-            return await command.SendTempMessageAsync(contentList);
+            return await command.SendPrivateMessageAsync(contentList);
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="setuContent"></param>
         /// <param name="sendImgBehind"></param>
         /// <returns></returns>
-        public static async Task<BaseResult[]> SendTempSetuAsync(this GroupCommand command, SetuContent setuContent, bool sendImgBehind)
+        public static async Task<BaseResult[]> SendPrivateSetuAsync(this GroupCommand command, SetuContent setuContent, bool sendImgBehind)
         {
             List<BaseResult> results = new List<BaseResult>();
             List<BaseContent> msgContents = setuContent.SetuInfos ?? new();
@@ -183,14 +183,14 @@ namespace TheresaBot.Main.Helper
 
             if (sendImgBehind)
             {
-                results.Add(await command.SendTempMessageAsync(msgContents));
+                results.Add(await command.SendPrivateMessageAsync(msgContents));
                 await Task.Delay(1000);
-                results.Add(await command.SendTempMessageAsync(imgContents));
+                results.Add(await command.SendPrivateMessageAsync(imgContents));
             }
             else
             {
                 List<BaseContent> contentList = msgContents.Concat(imgContents).ToList();
-                results.Add(await command.SendTempMessageAsync(contentList));
+                results.Add(await command.SendPrivateMessageAsync(contentList));
             }
 
             return results.ToArray();
@@ -310,7 +310,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="template"></param>
         /// <param name="defaultmsg"></param>
         /// <returns></returns>
-        public static async Task<BaseResult> ReplyFriendTemplateAsync(this PrivateCommand command, string template, string defaultmsg)
+        public static async Task<BaseResult> ReplyPrivateTemplateAsync(this PrivateCommand command, string template, string defaultmsg)
         {
             template = template?.Trim()?.TrimLine();
             if (string.IsNullOrWhiteSpace(template)) template = defaultmsg;
@@ -368,7 +368,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="command"></param>
         /// <param name="contents"></param>
         /// <returns></returns>
-        public static async Task<BaseResult> SendTempMessageAsync(this GroupCommand command, List<BaseContent> contents)
+        public static async Task<BaseResult> SendPrivateMessageAsync(this GroupCommand command, List<BaseContent> contents)
         {
             return await command.Session.SendTempMessageAsync(command.GroupId, command.MemberId, contents);
         }
@@ -379,7 +379,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="command"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static async Task<BaseResult> ReplyFriendMessageAsync(this PrivateCommand command, string message)
+        public static async Task<BaseResult> ReplyPrivateMessageAsync(this PrivateCommand command, string message)
         {
             return await command.Session.SendFriendMessageAsync(command.MemberId, message);
         }
@@ -390,7 +390,7 @@ namespace TheresaBot.Main.Helper
         /// <param name="command"></param>
         /// <param name="contents"></param>
         /// <returns></returns>
-        public static async Task<BaseResult> ReplyFriendMessageAsync(this PrivateCommand command, List<BaseContent> contents)
+        public static async Task<BaseResult> ReplyPrivateMessageAsync(this PrivateCommand command, List<BaseContent> contents)
         {
             return await command.Session.SendFriendMessageAsync(command.MemberId, contents);
         }

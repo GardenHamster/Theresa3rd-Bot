@@ -70,7 +70,7 @@ namespace TheresaBot.Main.Handler
                 if (BotConfig.SetuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = command.SendTempSetuAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    Task sendTempTask = command.SendPrivateSetuAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
                 }
 
                 CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);

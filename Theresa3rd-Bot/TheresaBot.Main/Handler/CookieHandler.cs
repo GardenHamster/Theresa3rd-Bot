@@ -31,17 +31,17 @@ namespace TheresaBot.Main.Handler
                 var cookie = command.KeyWord;
                 if (string.IsNullOrWhiteSpace(cookie))
                 {
-                    await command.ReplyFriendMessageAsync($"未检测到Cookie");
+                    await command.ReplyPrivateMessageAsync($"未检测到Cookie");
                     return;
                 }
                 var website = websiteService.UpdatePixivCookie(cookie);
                 WebsiteDatas.LoadWebsite();
                 var expireDate = website.CookieExpireDate.ToSimpleString();
-                await command.ReplyFriendMessageAsync($"Cookie更新完毕，过期时间为：{expireDate}");
+                await command.ReplyPrivateMessageAsync($"Cookie更新完毕，过期时间为：{expireDate}");
             }
             catch (HandleException ex)
             {
-                await command.ReplyFriendMessageAsync(ex.RemindMessage);
+                await command.ReplyPrivateMessageAsync(ex.RemindMessage);
             }
             catch (Exception ex)
             {
@@ -61,17 +61,17 @@ namespace TheresaBot.Main.Handler
                 var cookie = command.KeyWord;
                 if (string.IsNullOrWhiteSpace(cookie))
                 {
-                    await command.ReplyFriendMessageAsync($"未检测到Cookie");
+                    await command.ReplyPrivateMessageAsync($"未检测到Cookie");
                     return;
                 }
                 var website = websiteService.UpdateSaucenaoCookie(cookie);
                 WebsiteDatas.LoadWebsite();
                 var expireDate = website.CookieExpireDate.ToSimpleString();
-                await command.ReplyFriendMessageAsync($"Cookie更新完毕，过期时间为：{expireDate}");
+                await command.ReplyPrivateMessageAsync($"Cookie更新完毕，过期时间为：{expireDate}");
             }
             catch (HandleException ex)
             {
-                await command.ReplyFriendMessageAsync(ex.RemindMessage);
+                await command.ReplyPrivateMessageAsync(ex.RemindMessage);
             }
             catch (Exception ex)
             {

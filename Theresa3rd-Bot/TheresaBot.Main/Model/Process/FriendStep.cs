@@ -29,12 +29,12 @@ namespace TheresaBot.Main.Model.Process
 
         public override async Task SendQuestion()
         {
-            await FriendCommand.ReplyFriendMessageAsync(Question);
+            await FriendCommand.ReplyPrivateMessageAsync(Question);
         }
 
         public override async Task ReplyError(BaseRelay relay, ProcessException ex)
         {
-            await FriendCommand.ReplyFriendMessageAsync(ex.RemindMessage);
+            await FriendCommand.ReplyPrivateMessageAsync(ex.RemindMessage);
         }
 
         public override async Task<bool> CheckInputAsync(BaseRelay relay)
@@ -57,7 +57,7 @@ namespace TheresaBot.Main.Model.Process
             }
             catch (ProcessException ex)
             {
-                await FriendCommand.ReplyFriendMessageAsync(ex.RemindMessage);
+                await FriendCommand.ReplyPrivateMessageAsync(ex.RemindMessage);
                 return false;
             }
         }

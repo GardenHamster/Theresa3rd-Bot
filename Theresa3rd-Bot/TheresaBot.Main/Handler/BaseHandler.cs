@@ -234,7 +234,7 @@ namespace TheresaBot.Main.Handler
         {
             if (command.MemberId.IsSuperManager() == false)
             {
-                await command.ReplyFriendTemplateAsync(BotConfig.GeneralConfig.ManagersRequiredMsg, "该功能需要管理员执行");
+                await command.ReplyPrivateTemplateAsync(BotConfig.GeneralConfig.ManagersRequiredMsg, "该功能需要管理员执行");
                 return false;
             }
             return true;

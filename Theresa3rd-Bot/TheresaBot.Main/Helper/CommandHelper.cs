@@ -151,7 +151,8 @@ namespace TheresaBot.Main.Helper
         public static async Task ReplyProcessingMessageAsync(this GroupCommand command, string template, int delay = 1000)
         {
             if (string.IsNullOrWhiteSpace(template)) return;
-            await command.ReplyGroupMessageWithAtAsync(template);
+            var contents = BusinessHelper.SplitToChainAsync(template);
+            await command.ReplyGroupMessageWithAtAsync(contents);
             if (delay > 0) await Task.Delay(delay);
         }
 

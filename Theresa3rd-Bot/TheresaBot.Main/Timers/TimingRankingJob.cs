@@ -28,6 +28,7 @@ namespace TheresaBot.Main.Timers
                 {
                     LogHelper.Info($"开始执行【{content}】Pixiv榜单推送任务...");
                     await HandleTiming(session, Reporter, rankingTimer, content);
+                    LogHelper.Info($"Pixiv榜单【{content}】推送任务执行完毕...");
                 }
             }
             catch (Exception ex)

@@ -288,7 +288,7 @@ namespace TheresaBot.Main.Services
             List<SaucenaoItem> sortList = new List<SaucenaoItem>();
             List<SaucenaoItem> selectList = itemList.OrderByDescending(o => o.Similarity).Take(20).ToList();
             sortList.AddRange(selectList.Where(o => o.SourceType == SetuSourceType.Pixiv && o.Similarity >= BotConfig.SaucenaoConfig.PixivPriority).ToList());
-            sortList.AddRange(selectList.Where(o => o.Similarity >= 80).OrderByDescending(o => o.SourceType));
+            sortList.AddRange(selectList.Where(o => o.Similarity >= 80).OrderBy(o => o.SourceType));
             sortList.AddRange(selectList.OrderByDescending(o => o.Similarity).ThenBy(o => o.SourceType));
             return sortList.Distinct().ToList();
         }

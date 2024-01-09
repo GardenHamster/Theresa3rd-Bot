@@ -147,10 +147,18 @@ namespace TheresaBot.Main.Handler
                 if (filterList.Count == 0) return false;
 
                 var sortList = saucenaoService.SortItems(filterList);
+                var sendList = new List<SaucenaoItem>();
                 var maxSimilarity = sortList.Max(o => o.Similarity);
                 var singlePriority = BotConfig.SaucenaoConfig.SinglePriority;
-                var showCount = maxSimilarity >= singlePriority ? 1 : readCount;
-                var sendList = sortList.Take(showCount).ToList();
+
+                if (maxSimilarity >= singlePriority)
+                {
+                    sendList = sortList.Where(o => o.SourceType == SetuSourceType.Pixiv).Take(1).ToList();
+                }
+                if (sendList.Count == 0)
+                {
+                    sendList = sortList.Take(readCount).ToList();
+                }
 
                 if (BotConfig.SaucenaoConfig.PullOrigin == false)
                 {

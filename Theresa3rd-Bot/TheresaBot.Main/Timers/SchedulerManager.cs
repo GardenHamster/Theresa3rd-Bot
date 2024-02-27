@@ -45,8 +45,9 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                await TempClearSchedulers.DestroyAndClearAsync();
                 string tempClearCron = "0 0 4 * * ?";
+                await TempClearSchedulers.DestroyAndClearAsync();
+                LogHelper.Info("定时清理任务已停止...");
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(tempClearCron).Build();
                 IJobDetail jobDetail = JobBuilder.Create<TempClearJob>().WithIdentity("TempClearJob", "TempClearJob").Build();
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
@@ -71,6 +72,7 @@ namespace TheresaBot.Main.Timers
             try
             {
                 await DownClearSchedulers.DestroyAndClearAsync();
+                LogHelper.Info("定时清理任务已停止...");
                 string downloadClearCron = BotConfig.GeneralConfig.ClearCron;
                 if (string.IsNullOrWhiteSpace(downloadClearCron)) return;
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(downloadClearCron).Build();
@@ -99,8 +101,9 @@ namespace TheresaBot.Main.Timers
         {
             try
             {
-                await CookieJobSchedulers.DestroyAndClearAsync();
                 string cookieCron = "0 0 9 * * ?";
+                await CookieJobSchedulers.DestroyAndClearAsync();
+                LogHelper.Info("Cookie检查定时器已停止...");
                 ICronTrigger trigger = (ICronTrigger)TriggerBuilder.Create().WithCronSchedule(cookieCron).Build();
                 IJobDetail jobDetail = JobBuilder.Create<CookieJob>().WithIdentity("CookieJob", "CookieJob").Build();
                 IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
@@ -126,12 +129,17 @@ namespace TheresaBot.Main.Timers
             try
             {
                 await ReminderSchedulers.DestroyAndClearAsync();
+                LogHelper.Info("定时提醒任务已停止...");
                 var reminderConfig = BotConfig.ReminderConfig;
                 if (reminderConfig is null) return;
                 if (reminderConfig.Enable == false) return;
-                foreach (var item in reminderConfig.Timers)
+                var timers = reminderConfig.Timers;
+                foreach (var timer in timers)
                 {
-                    IScheduler scheduler = await CreateReminderJobAsync(item, session, reporter);
+                    if (timer is null) continue;
+                    if (timer.Enable == false) continue;
+                    var scheduler = await CreateReminderJobAsync(timer, session, reporter);
+                    if (scheduler is null) continue;
                     ReminderSchedulers.Add(scheduler);
                 }
             }
@@ -175,15 +183,19 @@ namespace TheresaBot.Main.Timers
             try
             {
                 await TimingSetuSchedulers.DestroyAndClearAsync();
+                LogHelper.Info("涩图定时推送任务已停止...");
                 var timingSetuConfig = BotConfig.TimingSetuConfig;
                 if (timingSetuConfig is null) return;
                 if (timingSetuConfig.Enable == false) return;
                 if (timingSetuConfig.Timers is null) return;
                 if (timingSetuConfig.Timers.Count == 0) return;
-                List<TimingSetuTimer> timers = timingSetuConfig.Timers.Take(10).ToList();
-                foreach (var item in timers)
+                var timers = timingSetuConfig.Timers.Take(10).ToList();
+                foreach (var timer in timers)
                 {
-                    IScheduler scheduler = await CreateTimingSetuJobAsync(item, session, reporter);
+                    if (timer is null) continue;
+                    if (timer.Enable == false) continue;
+                    var scheduler = await CreateTimingSetuJobAsync(timer, session, reporter);
+                    if (scheduler is null) continue;
                     TimingSetuSchedulers.Add(scheduler);
                 }
             }
@@ -223,15 +235,19 @@ namespace TheresaBot.Main.Timers
             try
             {
                 await TimingRankingSchedulers.DestroyAndClearAsync();
+                LogHelper.Info("Pixiv榜单定时推送任务已停止...");
                 var rankingConfig = BotConfig.PixivRankingConfig;
                 if (rankingConfig is null) return;
                 if (rankingConfig.Enable == false) return;
                 if (rankingConfig.Subscribes is null) return;
                 if (rankingConfig.Subscribes.Count == 0) return;
-                List<PixivRankingTimer> timers = rankingConfig.Subscribes;
-                foreach (var item in timers)
+                var subscribes = rankingConfig.Subscribes;
+                foreach (var subscribe in subscribes)
                 {
-                    IScheduler scheduler = await CreateTimingRankingJobAsync(item, session, reporter);
+                    if (subscribe is null) continue;
+                    if (subscribe.Enable == false) continue;
+                    var scheduler = await CreateTimingRankingJobAsync(subscribe, session, reporter);
+                    if (scheduler is null) continue;
                     TimingRankingSchedulers.Add(scheduler);
                 }
             }
@@ -275,13 +291,18 @@ namespace TheresaBot.Main.Timers
             try
             {
                 await WordCloudSchedulers.DestroyAndClearAsync();
+                LogHelper.Info("词云定时推送任务已停止...");
                 var wordCloudConfig = BotConfig.WordCloudConfig;
+                if (wordCloudConfig is null) return;
+                if (wordCloudConfig.Enable == false) return;
                 var subscribes = wordCloudConfig?.Subscribes;
                 if (subscribes is null || subscribes.Count == 0) return;
                 foreach (var subscribe in subscribes)
                 {
+                    if (subscribe is null) continue;
                     if (subscribe.Enable == false) continue;
-                    IScheduler scheduler = await CreateWordCloudJobAsync(subscribe, session, reporter);
+                    var scheduler = await CreateWordCloudJobAsync(subscribe, session, reporter);
+                    if (scheduler is null) continue;
                     WordCloudSchedulers.Add(scheduler);
                 }
             }
@@ -336,8 +357,8 @@ namespace TheresaBot.Main.Timers
             try
             {
                 if (scheduler is null) return;
+                if (scheduler.IsShutdown) return;
                 await scheduler.Shutdown(false);
-                await scheduler.Clear();
             }
             catch (Exception ex)
             {

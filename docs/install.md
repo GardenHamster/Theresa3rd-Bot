@@ -5,12 +5,12 @@
 ?> 不推荐你将文件解压到非英文目录和路径下，避免出现不必要的错误和问题
 
 ## 安装数据库
-数据库为Mysql，需要自行安装，推荐安装 [v8.0.31](https://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-8.0.31.0.msi) 及以上，[点击查看新手教程](mysqlInstall.md)
+数据库为Mysql，需要自行安装，推荐安装 [v8.0.31](https://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-8.0.31.0.msi) 及以上，新手可以百度[mysql8.0免安装教程](https://www.baidu.com/s?wd=mysql8.0%E5%85%8D%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B)
 
 ## 安装机器人库
 在下面两个机器人库中选择一个安装，你可以两个都安装，但是同一时间只能运行其中一个，**推荐安装Mirai**
 
-- **安装Mirai(二选一)：**参照 [mirai-console-loader](https://github.com/iTXTech/mirai-console-loader) 文档进行安装，然后参考 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 文档配置`mirai-api-http`插件，然后配置bot账号密码，你可以 [点击这里查看新手教程](miraiInstall.md)
+- **安装Mirai(二选一)：**参照 [mirai-console-loader](https://github.com/iTXTech/mirai-console-loader) 文档安装，参考 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 文档配置`mirai-api-http`插件，参考 [登录方案](https://mirai.mamoe.net/topic/223/%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95%E7%9A%84%E4%B8%B4%E6%97%B6%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88) 登录Bot
 
 - **安装GoCQ(二选一)：**参照 [go-cqhttp 帮助中心](https://docs.go-cqhttp.org/guide/quick_start.html#%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B) 进行安装，并配置bot账号密码。如果你需要使用私聊相关功能，记得把配置 `allow-temp-session` 设置为true
 
@@ -46,16 +46,6 @@ GoCQ正常启动结果如下
 [2023-08-05 22:52:11] [INFO]: 开始诊断网络情况
 [2023-08-05 22:52:13] [INFO]: 网络诊断完成. 未发现问题
 ```
-
-## 部署签名服务(可选)
-
-如果你在登录bot账号的过程中出现了 `code=45` 等无法登录的问题，可以考虑部署签名服务，但是由于使用签名服务可能会存在账号被 `冻结/封号`的风险，请在考虑清楚后再决定是否使用，**你在使用该服务过程中出现的任何风险和问题都和本人无关，**
-
-你可以参考 [unidbg-fetch-qsign/wiki](https://github.com/fuqiuluo/unidbg-fetch-qsign/wiki) 自行搭建签名服务
-
-Mirai库 参考 [fix-protocol-version](https://github.com/cssxsh/fix-protocol-version#mirai-console-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95) 文档接入签名服务
-
-Gocq库 参考 [签名服务器相关问题](https://github.com/Mrs4s/go-cqhttp/discussions/2245) 接入签名服务
 
 ## 下载插件
 从 [Releases](https://github.com/GardenHamster/Theresa3rd-Bot/releases) 中下载最新版本的`Theresa3rd-Bot.zip`压缩包，然后解压到某个英文 目录/路径 下，并不需要放到mcl目录下
@@ -105,7 +95,7 @@ yum update ca-certificates -y
 cd TheresaBot.MiraiHttpApi.dll所在目录
 ```
 
-4. 后台运行dll，这里的端口为前端页面端口，可以随意填，但是不要使用 mirai-http-api 或 go-cqhttp 的端口
+4. 后台运行dll，这里的端口为**前端页面端口**，可以随意填，但是不要使用 mirai-http-api 或 go-cqhttp 的端口
 
 - 使用Mirai
 
@@ -203,9 +193,11 @@ info: Microsoft.Hosting.Lifetime[0]
 ```
 
 ## 配置Bot
-访问插件启动后列出的后台地址，比如上面列出的地址：http://127.0.0.1:8088，根据自己的需要修改配置，配置保存后将会立即生效
+- 访问插件启动后列出的后台地址，比如上面列出的地址：http://127.0.0.1:8088
 
-你也可以手动修改[插件目录/Config]目录下的配置文件，但是这种方式修改后需要手动重启插件
+- 根据自己的需要修改配置，配置保存后将会立即生效
+
+- 你也可以手动修改[插件目录/Config]目录下的配置文件，但是这种方式修改后需要手动重启插件
 
 ## 开启VPN
 Pixiv需要一个可以访问外网的环境，你需要自行购买机场。

@@ -2,12 +2,12 @@
 [![release](https://img.shields.io/github/v/release/GardenHamster/Theresa3rd-Bot)](https://github.com/GardenHamster/Theresa3rd-Bot/releases) [![download](https://img.shields.io/github/downloads/GardenHamster/Theresa3rd-Bot/total)](https://github.com/GardenHamster/Theresa3rd-Bot/releases)
 
 ## 简介
- - 某舰团长利用 ~~摸鱼时间~~ 写出来的自用的Bot
+ - 某舰团长利用~~业余时间~~写出来的自用的Bot
  - 基于 .net core 8.0，可以在 Windows 或 Linux 上运行
  - 对接了 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) (使用SDK [Mirai-CSharp](https://github.com/Executor-Cheng/mirai-CSharp)) 
  - 对接了 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) (使用SDK [EleCho.GoCqHttpSdk](https://github.com/OrgEleCho/EleCho.GoCqHttpSdk))
  - [部署文档和使用教程请点击这里](https://www.theresa3rd.cn)，如果链接失效可以访问 [github-pages](https://gardenhamster.github.io/Theresa3rd-Bot)
- - 开始白嫖前，请在右上角点一下:star:Star
+ - 开始白嫖前，请给本项目点一下 :star: Star
  
 ## 声明
  - **本项目为个人自娱自乐写出来的项目，并没有任何收益，并不对使用本项目产生的任何问题负责，不得将项目用于任何商业用途**
@@ -38,6 +38,8 @@
 - [x] Pixiv画师作品预览图
 - [x] saucenao搜图(如果图片来源于pixiv时，尝试下载并返回原图，并且优先返回来源于pixiv中的原图)
 - [x] ascii2d搜图(当saucenao中找不到来源时，继续使用ascii2d搜索)
+
+### 词云
 - [x] 每日/周/月/年词云，昨日/上周/上月/去年词云，词云蒙版自定义
 
 ### 订阅推送功能

@@ -75,8 +75,8 @@ addEventListener('fetch', event => {
 
 ![image](/img/proxy/197007874-ea036065-a833-4f97-b98b-29b8784132a7.png)
 
-
 ### 测试
+
 * 这是Pixiv上的一条原图链接 https://i.pximg.net/img-original/img/2019/03/06/00/40/39/73532572_p0.jpg
 
 * 使用刚才配置的代理域名替换掉 `i.pximg.net` 得到链接 https://pixiv.gardencavy.site/img-original/img/2019/03/06/00/40/39/73532572_p0.jpg
@@ -91,3 +91,93 @@ addEventListener('fetch', event => {
 ![image](/img/proxy/465829cd-f7d2-4d3a-a941-f8e820a9c5c4.png)
 
 * 或者手动修改配置文件`Config目录`-->`Pixiv.yml`-->`OriginUrlProxy`，修改完毕后重启插件
+
+### **进阶**
+
+* 搭建一个手动点击后才开始加载图片的页面，降低域名被标记为红链的概率
+
+![image](/img/proxy/20240506152231.jpg)
+
+![image](/img/proxy/20240506152439.jpg)
+
+![image](/img/proxy/20240506153328.jpg)
+
+![image](/img/proxy/20240506153438.jpg)
+
+![image](/img/proxy/20240506161632.jpg)
+
+
+**index.js**
+```js
+import template from './template.html';
+export default {
+  async fetch(request, env) {
+    let url = request.url.replace('preview.gardencavy.site','pixiv.gardencavy.site');
+    const body = template.replace('$URL',url);
+    return new Response(body, {
+      headers: { 'Content-Type': 'text/html' }
+    });
+  }
+};
+```
+
+**template.html**
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>PixivPreview</title>
+    <style>
+      html,body {
+          height: 100%;
+      }
+
+      #btn {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          border: 1px dashed #FE82A5;
+          color: #FE82A5;
+          font-size: 2em;
+          margin-top: 20px;
+          cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="btn" onclick="loadImage()"> + 点击加载</div>
+    <div id="img"></div>
+  </body>
+
+  <script>
+     const imgUrl='$URL';
+     function loadImage(){
+        document.getElementById('btn').style.display = 'none';
+        document.getElementById('img').innerHTML = `<img width='100%' src='${imgUrl}'/>`;
+      }
+  </script>
+</html>
+```
+
+* 将Worker和域名绑定
+
+![image](/img/proxy/20240506162432.jpg)
+
+![image](/img/proxy/20240506162827.jpg)
+
+* 最后和上面一样替换图片地址中的域名，测试一下这个Worker
+
+- https://preview.gardencavy.site/img-original/img/2019/03/06/00/40/39/73532572_p0.jpg
+
+- 如图所示，如果点击粉色区域图片能正常加载就代表搭建成功了
+
+- 到目前为止就创建好两个代理了，**pixiv.gardencavy.site**(通过连接能直接返回图片)，**preview.gardencavy.site**(手动点击后加载图片，防止tx侦测)
+
+- 最后需要做的是将新搭建的代理域名重新设置到后台中
+
+![image](/img/proxy/20240506164443.jpg)
+

@@ -40,22 +40,6 @@ Github 仓库：https://github.com/GardenHamster/Theresa3rd-Bot
 
 MiraiForum：https://mirai.mamoe.net/topic/1364
 
-### 关于Mirai
-![image](/img/introduction/20230323181856.jpg)
-
-Mirai 社区：https://mirai.mamoe.net
-
-Mirai 仓库：https://github.com/mamoe/mirai
-
-Mirai 登录方案：https://mirai.mamoe.net/topic/223
-
-### 关于Go-CQHttp
-![image](/img/introduction/20230805213410.jpg)
-
-GoCQ 仓库：https://github.com/Mrs4s/go-cqhttp
-
-GoCQ 文档：https://docs.go-cqhttp.org
-
 ### 关于提问
 **提问前请至少完整阅读一遍文档，文档范围内的问题不予解答，感谢配合**
 
@@ -65,9 +49,9 @@ GoCQ 文档：https://docs.go-cqhttp.org
 
 ### 最后
 
-如果你也是一位正在打扫甲板，而且会空中劈叉的睿智清洁工，欢迎加入到我的官服舰团 `德丽莎3rd`
+~~如果你也是一位正在打扫甲板，而且会空中劈叉的睿智清洁工，欢迎加入到我的官服舰团`德丽莎3rd`~~。别加了，团长已经爆金币了
 
-舰团群只聊游戏不聊开发，插件问题请移步到隔壁Bug反馈群 `284196625`
+插件问题请移步到隔壁Bug反馈群 `284196625`
 
 ### **德丽莎世界第一可爱**
 

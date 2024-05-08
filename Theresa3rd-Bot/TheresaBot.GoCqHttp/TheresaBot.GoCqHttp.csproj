@@ -5,7 +5,7 @@
 		<RootNamespace>TheresaBot.GoCqHttp</RootNamespace>
 		<StartupObject></StartupObject>
 		<BaseOutputPath></BaseOutputPath>
-		<Version>0.11.3</Version>
+		<Version>0.11.4</Version>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<WarningLevel>3</WarningLevel>
@@ -18,7 +18,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="EleCho.GoCqHttpSdk" Version="1.2.4" />
+		<PackageReference Include="EleCho.GoCqHttpSdk" Version="1.2.5" />
 	</ItemGroup>
 
 	<ItemGroup>

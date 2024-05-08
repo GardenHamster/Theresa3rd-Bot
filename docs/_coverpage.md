@@ -4,7 +4,7 @@
 
 > 一个二次元涩图Bot
 
--   基于 .net core、mirai-api-http、go-cqhttp
+-   基于 Mirai 和 Onebot 协议
 
 -   包含：涩图搜索推送，词云，日榜，复读机，谁是卧底等功能
 

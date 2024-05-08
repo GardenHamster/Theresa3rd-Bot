@@ -18,7 +18,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="EleCho.GoCqHttpSdk" Version="1.2.4" />
+		<PackageReference Include="EleCho.GoCqHttpSdk" Version="1.2.5" />
 	</ItemGroup>
 
 	<ItemGroup>

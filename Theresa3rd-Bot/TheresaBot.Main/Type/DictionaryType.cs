@@ -1,9 +1,8 @@
 ﻿namespace TheresaBot.Main.Type
 {
-    public enum WordType
+    public enum DictionaryType
     {
         Other = 0,
-        WordCloud = 1,
-        PixivTag = 2
+        WordCloud = 1
     }
 }

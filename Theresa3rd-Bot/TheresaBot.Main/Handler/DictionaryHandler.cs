@@ -32,13 +32,13 @@ namespace TheresaBot.Main.Handler
                 List<DictionaryPO> existsList = new List<DictionaryPO>();
                 foreach (string word in wordArr)
                 {
-                    var dictionary = dictionaryService.GetDictionary(WordType.WordCloud, (int)WordCloudSubType.NewWord, word.Trim());
+                    var dictionary = dictionaryService.GetDictionary(DictionaryType.WordCloud, (int)WordCloudType.NewWord, word.Trim());
                     if (dictionary is not null && dictionary.Count > 0)
                     {
                         existsList.AddRange(dictionary);
                         continue;
                     }
-                    dictionaryService.InsertDictionary(WordType.WordCloud, word, (int)WordCloudSubType.NewWord);
+                    dictionaryService.InsertDictionary(DictionaryType.WordCloud, word, (int)WordCloudType.NewWord);
                 }
 
                 if (existsList.Count > 0)
@@ -73,13 +73,13 @@ namespace TheresaBot.Main.Handler
                 List<DictionaryPO> existsList = new List<DictionaryPO>();
                 foreach (string word in wordArr)
                 {
-                    var dictionary = dictionaryService.GetDictionary(WordType.WordCloud, (int)WordCloudSubType.HiddenWord, word.Trim());
+                    var dictionary = dictionaryService.GetDictionary(DictionaryType.WordCloud, (int)WordCloudType.HiddenWord, word.Trim());
                     if (dictionary is not null && dictionary.Count > 0)
                     {
                         existsList.AddRange(dictionary);
                         continue;
                     }
-                    dictionaryService.InsertDictionary(WordType.WordCloud, word, (int)WordCloudSubType.HiddenWord);
+                    dictionaryService.InsertDictionary(DictionaryType.WordCloud, word, (int)WordCloudType.HiddenWord);
                 }
 
                 if (existsList.Count > 0)

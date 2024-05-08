@@ -1,6 +1,6 @@
 ﻿namespace TheresaBot.Main.Type
 {
-    public enum WordCloudSubType
+    public enum WordCloudType
     {
         Other = 0,
         NewWord = 1,

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TheresaBot.Main.Helper;
 using TheresaBot.Main.Model.Result;
+using TheresaBot.Main.Type;
 
 namespace TheresaBot.Main.Controller
 {
@@ -127,6 +128,25 @@ namespace TheresaBot.Main.Controller
                 throw;
             }
         }
+
+        [HttpGet]
+        [Authorize]
+        [Route("list/dictionary/type")]
+        public ApiResult ListDictionaryType()
+        {
+            try
+            {
+                var optionList = EnumHelper.DictionaryTypeOptions.ToOptionList();
+                optionList.AddSubOptions((int)DictionaryType.WordCloud, EnumHelper.WordcloudTypeOptions);
+                return ApiResult.Success(optionList);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+                throw;
+            }
+        }
+
 
     }
 }

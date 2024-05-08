@@ -35,19 +35,16 @@ namespace TheresaBot.Main.Services
 
         public List<string> LoadNewWords()
         {
-            var dicList = dictionaryDao.GetDictionary(WordType.WordCloud, (int)WordCloudSubType.NewWord);
-            return dicList.Select(o => o.Words).ToList();
+            var newWords = dictionaryDao.GetDictionary(DictionaryType.WordCloud, (int)WordCloudType.NewWord);
+            var hiddenWords = dictionaryDao.GetDictionary(DictionaryType.WordCloud, (int)WordCloudType.HiddenWord);
+            return newWords.Concat(hiddenWords).Select(o => o.Words).Distinct().ToList();
         }
 
         public List<string> LoadHiddenWords()
         {
-            var dicList = dictionaryDao.GetDictionary(WordType.WordCloud, (int)WordCloudSubType.HiddenWord);
+            var dicList = dictionaryDao.GetDictionary(DictionaryType.WordCloud, (int)WordCloudType.HiddenWord);
             return dicList.Select(o => o.Words).ToList();
         }
-
-
-
-
 
     }
 }

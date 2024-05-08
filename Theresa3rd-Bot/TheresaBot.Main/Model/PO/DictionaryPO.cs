@@ -10,7 +10,7 @@ namespace TheresaBot.Main.Model.PO
         public string Words { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDescription = "词类型")]
-        public WordType WordType { get; set; }
+        public DictionaryType WordType { get; set; }
 
         [SugarColumn(IsNullable = false, ColumnDescription = "子类型")]
         public int SubType { get; set; }

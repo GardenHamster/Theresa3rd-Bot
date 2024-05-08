@@ -63,6 +63,17 @@ namespace TheresaBot.Main.Helper
             {(int)PixivRankingSortType.RankingRate, "点赞率倒序排序"},
         };
 
+        public static Dictionary<int, string> DictionaryTypeOptions => new()
+        {
+            {(int)DictionaryType.WordCloud, "词云"}
+        };
+
+        public static Dictionary<int, string> WordcloudTypeOptions => new()
+        {
+            {(int)WordCloudType.NewWord, "新词"},
+            {(int)WordCloudType.HiddenWord, "隐藏词"}
+        };
+
         public static Dictionary<int, string> UCGameModes => new()
         {
             {(int)UCGameMode.Standard, "默认(3平1卧)"},
@@ -73,6 +84,13 @@ namespace TheresaBot.Main.Helper
         public static List<OptionVo> ToOptionList(this Dictionary<int, string> options)
         {
             return options.Select(o => new OptionVo(o.Key, o.Value)).ToList();
+        }
+
+        public static List<OptionVo> AddSubOptions(this List<OptionVo> optionList, int optionValue, Dictionary<int, string> subOptions)
+        {
+            var parentOptions = optionList.FirstOrDefault(o => o.Value == optionValue);
+            if (parentOptions is not null) parentOptions.AddSubOptions(subOptions);
+            return optionList;
         }
 
         public static string GetOptionName(this Dictionary<int, string> options, Enum value)

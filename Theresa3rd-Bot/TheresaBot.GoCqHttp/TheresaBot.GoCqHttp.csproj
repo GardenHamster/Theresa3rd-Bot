@@ -5,7 +5,7 @@
 		<RootNamespace>TheresaBot.GoCqHttp</RootNamespace>
 		<StartupObject></StartupObject>
 		<BaseOutputPath></BaseOutputPath>
-		<Version>0.11.4</Version>
+		<Version>1.0.0</Version>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<WarningLevel>3</WarningLevel>

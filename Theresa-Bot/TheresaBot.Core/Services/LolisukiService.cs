@@ -1,0 +1,71 @@
+﻿using Newtonsoft.Json;
+using System.Text;
+using TheresaBot.Core.Common;
+using TheresaBot.Core.Exceptions;
+using TheresaBot.Core.Helper;
+using TheresaBot.Core.Model.Lolisuki;
+
+namespace TheresaBot.Core.Services
+{
+    internal class LolisukiService : SetuService
+    {
+        private const int eachPage = 5;
+
+        public string GetWorkInfo(LolisukiData lolisukiData, long todayLeft, string template = "")
+        {
+            template = template?.Trim()?.TrimLine();
+            if (string.IsNullOrWhiteSpace(template)) return GetDefaultWorkInfo(lolisukiData);
+            template = template.Replace("{TodayLeft}", todayLeft.ToString());
+            template = template.Replace("{MemberCD}", BotConfig.SetuConfig.MemberCD.ToString());
+            template = template.Replace("{RevokeInterval}", BotConfig.SetuConfig.RevokeInterval.ToString());
+            template = template.Replace("{IllustTitle}", lolisukiData.title);
+            template = template.Replace("{PixivId}", lolisukiData.pid.ToString());
+            template = template.Replace("{UserName}", lolisukiData.author);
+            template = template.Replace("{UserId}", lolisukiData.uid.ToString());
+            template = template.Replace("{Level}", lolisukiData.level.ToString());
+            template = template.Replace("{Taste}", lolisukiData.taste.ToString());
+            template = template.Replace("{SizeMB}", "??");
+            template = template.Replace("{Tags}", lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum));
+            template = template.Replace("{Urls}", lolisukiData.urls.original.ToOpenProxyLink());
+            return template;
+        }
+
+        public string GetDefaultWorkInfo(LolisukiData lolisukiData)
+        {
+            StringBuilder workInfoStr = new StringBuilder();
+            workInfoStr.AppendLine($"本条数据来源于Lolisuki Api~");
+            workInfoStr.AppendLine($"标题：{lolisukiData.title}，画师：{lolisukiData.author}，画师id：{lolisukiData.uid}，Level：{lolisukiData.level}，分类：{lolisukiData.taste}");
+            workInfoStr.AppendLine($"标签：{lolisukiData.Tags.JoinPixivTagsStr(BotConfig.PixivConfig.TagShowMaximum)}");
+            workInfoStr.Append(lolisukiData.urls.original.ToOpenProxyLink());
+            return workInfoStr.ToString();
+        }
+
+        public async Task<List<LolisukiData>> FetchDatasAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
+        {
+            var setuList = new List<LolisukiData>();
+            while (quantity > 0)
+            {
+                int num = quantity >= eachPage ? eachPage : quantity;
+                quantity = quantity - eachPage;
+                LolisukiResult lolisukiResult = await FetchResultAsync(r18Mode, aiMode, level, num, tags);
+                if (lolisukiResult?.data is null) continue;
+                setuList.AddRange(lolisukiResult.data);
+            }
+            return setuList;
+        }
+
+        private async Task<LolisukiResult> FetchResultAsync(int r18Mode, int aiMode, string level, int quantity = 1, string[] tags = null)
+        {
+            string[] postTags = tags is null || tags.Length == 0 ? new string[0] : tags;
+            LolisukiParam param = new LolisukiParam(r18Mode, aiMode, quantity, HttpUrl.DefaultPixivImgProxyHost, postTags, level, 0);
+            string httpUrl = HttpUrl.getLolisukiApiUrl();
+            string postJson = JsonConvert.SerializeObject(param);
+            string json = await HttpHelper.PostJsonAsync(httpUrl, postJson);
+            LolisukiResult result = JsonConvert.DeserializeObject<LolisukiResult>(json);
+            if (result.code != 0) throw new ApiException($"lolisuki api error,message = {result.error}");
+            return result;
+        }
+
+
+    }
+}

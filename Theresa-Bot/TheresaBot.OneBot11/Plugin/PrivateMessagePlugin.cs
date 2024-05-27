@@ -35,7 +35,7 @@ namespace TheresaBot.OneBot11.Plugin
                 if (prefix.Length > 0) instruction = instruction.Remove(0, prefix.Length).Trim();
                 if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 
-                var relay = new CQFriendRelay(args, message, isInstruct);
+                var relay = new OBFriendRelay(args, message, isInstruct);
                 if (GameCahce.HandleGameMessage(relay)) return; //处理游戏消息
                 if (isInstruct == false && ProcessCache.HandleStep(relay)) return; //分步处理
                 if (string.IsNullOrWhiteSpace(instruction)) return; //空指令

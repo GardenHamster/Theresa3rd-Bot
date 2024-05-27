@@ -9,18 +9,19 @@ using TheresaBot.Core.Model.Content;
 
 namespace TheresaBot.OneBot11.Helper
 {
-    public static class CQHelper
+    public static class OBHelper
     {
         public static CqWsSession Session;
 
-        public static async Task ConnectGoCqHttp()
+        public static async Task ConnectOneBot()
         {
             try
             {
-                LogHelper.Info("尝试连接到go-cqhttp...");
+                LogHelper.Info("尝试连接到OneBot11...");
                 CqWsSessionOptions options = new CqWsSessionOptions()
                 {
-                    BaseUri = new Uri($"ws://{CQConfig.Host}:{CQConfig.Port}"),
+                    BaseUri = new Uri($"ws://{OBConfig.Host}:{OBConfig.Port}"),
+                    AccessToken = OBConfig.AccessToken,
                     UseApiEndPoint = true,
                     UseEventEndPoint = true,
                 };
@@ -30,23 +31,24 @@ namespace TheresaBot.OneBot11.Helper
                 Session.UsePlugin(new PrivateMessagePlugin());
                 Session.UsePlugin(new GroupMemberIncreasePlugin());
                 await Session.StartAsync();
-                LogHelper.Info("已成功连接到go-cqhttp...");
+                LogHelper.Info("已成功连接到OneBot11...");
             }
             catch (Exception ex)
             {
-                LogHelper.FATAL(ex, "连接到go-cqhttp失败");
+                LogHelper.FATAL(ex, "连接到OneBot11...失败");
                 throw;
             }
         }
 
         /// <summary>
-        /// 加载GoCqHttp配置
+        /// 加载OneBot11配置
         /// </summary>
         public static void LoadAppSettings(IConfiguration configuration)
         {
-            CQConfig.ConnectionString = configuration["Database:ConnectionString"];
-            CQConfig.Host = configuration["GoCqHttp:host"];
-            CQConfig.Port = Convert.ToInt32(configuration["GoCqHttp:port"]);
+            OBConfig.ConnectionString = configuration["Database:ConnectionString"];
+            OBConfig.Host = configuration["OneBot11:host"];
+            OBConfig.Port = Convert.ToInt32(configuration["OneBot11:port"]);
+            OBConfig.AccessToken = configuration["OneBot11:accessToken"];
         }
 
         /// <summary>
@@ -108,7 +110,7 @@ namespace TheresaBot.OneBot11.Helper
         /// </summary>
         /// <param name="contents"></param>
         /// <returns></returns>
-        public static CqMsg[] ToCQMessageAsync(this List<BaseContent> contents)
+        public static CqMsg[] ToOBMessageAsync(this List<BaseContent> contents)
         {
             List<CqMsg> cqMsgs = new List<CqMsg>();
             for (int i = 0; i < contents.Count; i++)
@@ -118,7 +120,7 @@ namespace TheresaBot.OneBot11.Helper
                 {
                     plainContent.FormatNewLine(i == contents.Count - 1);
                 }
-                CqMsg chatMessage = content.ToCQMessageAsync();
+                CqMsg chatMessage = content.ToOBMessageAsync();
                 if (chatMessage is not null) cqMsgs.Add(chatMessage);
             }
             return cqMsgs.ToArray();
@@ -129,7 +131,7 @@ namespace TheresaBot.OneBot11.Helper
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public static CqMsg ToCQMessageAsync(this BaseContent content)
+        public static CqMsg ToOBMessageAsync(this BaseContent content)
         {
             if (content is PlainContent plainContent)
             {
@@ -137,7 +139,7 @@ namespace TheresaBot.OneBot11.Helper
             }
             if (content is LocalImageContent localImageContent)
             {
-                return localImageContent.FileInfo is null ? null : ToCQMessageAsync(localImageContent.FileInfo);
+                return localImageContent.FileInfo is null ? null : ToOBMessageAsync(localImageContent.FileInfo);
             }
             if (content is WebImageContent webImageContent)
             {
@@ -151,7 +153,7 @@ namespace TheresaBot.OneBot11.Helper
         /// </summary>
         /// <param name="fileInfo"></param>
         /// <returns></returns>
-        public static CqMsg ToCQMessageAsync(FileInfo fileInfo)
+        public static CqMsg ToOBMessageAsync(FileInfo fileInfo)
         {
             using FileStream fileStream = File.OpenRead(fileInfo.FullName);
             return CqImageMsg.FromStream(fileStream);

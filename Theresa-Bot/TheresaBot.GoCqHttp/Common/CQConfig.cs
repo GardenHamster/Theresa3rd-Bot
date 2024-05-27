@@ -6,6 +6,8 @@
 
         public static string Host = string.Empty;
 
+        public static string AccessToken = string.Empty;
+
         public static int Port = 0;
 
     }

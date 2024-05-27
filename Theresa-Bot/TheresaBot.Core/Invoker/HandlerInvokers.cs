@@ -553,7 +553,7 @@ namespace TheresaBot.Core.Invoker
             //version
             new(new List<string>() { "版本", "version" }, CommandType.Version, new(async (botCommand, session, reporter) =>
             {
-                await botCommand.ReplyGroupMessageWithQuoteAsync($"Theresa3rd-Bot v{BotConfig.BotVersion}");
+                await botCommand.ReplyGroupMessageWithQuoteAsync($"Theresa-Bot v{BotConfig.BotVersion}");
                 return false;
             })),
             //test

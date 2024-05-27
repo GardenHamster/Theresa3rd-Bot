@@ -6,6 +6,7 @@ using TheresaBot.Core.Common;
 using TheresaBot.Core.Helper;
 using TheresaBot.Core.Model.Bot;
 using TheresaBot.Core.Model.Content;
+using SqlSugar.IOC;
 
 namespace TheresaBot.GoCqHttp.Helper
 {
@@ -21,6 +22,7 @@ namespace TheresaBot.GoCqHttp.Helper
                 CqWsSessionOptions options = new CqWsSessionOptions()
                 {
                     BaseUri = new Uri($"ws://{CQConfig.Host}:{CQConfig.Port}"),
+                    AccessToken = CQConfig.AccessToken,
                     UseApiEndPoint = true,
                     UseEventEndPoint = true,
                 };
@@ -47,6 +49,7 @@ namespace TheresaBot.GoCqHttp.Helper
             CQConfig.ConnectionString = configuration["Database:ConnectionString"];
             CQConfig.Host = configuration["GoCqHttp:host"];
             CQConfig.Port = Convert.ToInt32(configuration["GoCqHttp:port"]);
+            CQConfig.AccessToken = configuration["GoCqHttp:accessToken"];
         }
 
         /// <summary>

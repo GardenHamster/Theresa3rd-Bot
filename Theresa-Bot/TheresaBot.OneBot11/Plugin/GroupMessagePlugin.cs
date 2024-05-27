@@ -43,7 +43,7 @@ namespace TheresaBot.OneBot11.Plugin
                 if (prefix.Length > 0) instruction = instruction.Remove(0, prefix.Length).Trim();
                 if (prefix.Length > 0) message = message.Remove(0, prefix.Length).Trim();
 
-                var relay = new CQGroupRelay(args, message, isAt, isQuote, isInstruct);
+                var relay = new OBGroupRelay(args, message, isAt, isQuote, isInstruct);
                 if (GameCahce.HandleGameMessage(relay)) return; //处理游戏消息
 
                 if (args.Message.Any(v => v is CqReplyMsg))//引用指令
@@ -78,7 +78,7 @@ namespace TheresaBot.OneBot11.Plugin
 
                 if (BotConfig.GeneralConfig.SendRelevantCommands)
                 {
-                    await CQHelper.ReplyRelevantCommandsAsync(instruction, groupId, memberId);
+                    await OBHelper.ReplyRelevantCommandsAsync(instruction, groupId, memberId);
                 }
 
             }

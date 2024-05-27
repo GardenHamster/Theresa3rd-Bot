@@ -31,26 +31,26 @@ namespace TheresaBot.OneBot11
                 LogHelper.ConfigureLog();
                 LogHelper.Info($"日志配置完毕...");
 
-                CQHelper.LoadAppSettings(Configuration);
+                OBHelper.LoadAppSettings(Configuration);
                 ConfigHelper.LoadBotConfig();
                 LogHelper.Info($"配置文件加载完毕...");
 
-                services.AddScoped<BaseSession, CQSession>();
-                services.AddScoped<BaseReporter, CQReporter>();
+                services.AddScoped<BaseSession, OBSession>();
+                services.AddScoped<BaseReporter, OBReporter>();
                 services.AddControllers();
                 services.ConfigureJWT();
                 services.AddCors(options => options.AddPolicy("cors", p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
                 LogHelper.Info($"后台初始化完毕...");
 
-                CQHelper.ConnectGoCqHttp().Wait();
-                BotHelper.LoadBotProfileAsync(new CQSession()).Wait();
-                BotHelper.LoadGroupInfosAsync(new CQSession()).Wait();
+                OBHelper.ConnectOneBot().Wait();
+                BotHelper.LoadBotProfileAsync(new OBSession()).Wait();
+                BotHelper.LoadGroupInfosAsync(new OBSession()).Wait();
 
                 LogHelper.Info($"开始初始化数据库...");
                 services.AddSqlSugar(new IocConfig()//注入Sqlsuger
                 {
                     DbType = IocDbType.MySql,
-                    ConnectionString = CQConfig.ConnectionString,
+                    ConnectionString = OBConfig.ConnectionString,
                     IsAutoCloseConnection = true//自动释放
                 });
                 new DBClient().CreateDB();
@@ -66,20 +66,20 @@ namespace TheresaBot.OneBot11
             try
             {
                 DataManager.LoadInitDatas();
-                CQSession session = new CQSession();
-                CQReporter reporter = new CQReporter();
+                OBSession session = new OBSession();
+                OBReporter reporter = new OBReporter();
                 TimerManager.InitTimers(session, reporter);
                 SchedulerManager.InitSchedulers(session, reporter).Wait();
-                LogHelper.Info($"Theresa3rd-Bot启动完毕，版本：v{BotConfig.BotVersion}");
+                LogHelper.Info($"Theresa-Bot启动完毕，版本：v{BotConfig.BotVersion}");
                 if (RunningDatas.IsSendStartupMessage())
                 {
-                    Task welcomeTask = CQHelper.SendStartUpMessageAsync();
+                    Task welcomeTask = OBHelper.SendStartUpMessageAsync();
                 }
             }
             catch (Exception ex)
             {
                 LogHelper.Error(ex);
-                new CQReporter().SendErrorForce(ex, "启动异常").Wait();
+                new OBReporter().SendErrorForce(ex, "启动异常").Wait();
                 Environment.Exit(-1);
                 throw;
             }

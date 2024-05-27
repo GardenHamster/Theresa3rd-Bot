@@ -4,7 +4,7 @@ using TheresaBot.Core.Relay;
 
 namespace TheresaBot.OneBot11.Relay
 {
-    public class CQFriendRelay : PrivateRelay
+    public class OBFriendRelay : PrivateRelay
     {
         public CqPrivateMessagePostContext Args { get; set; }
 
@@ -12,7 +12,7 @@ namespace TheresaBot.OneBot11.Relay
 
         public override long MemberId => Args.Sender.UserId;
 
-        public CQFriendRelay(CqPrivateMessagePostContext args, string message, bool isInstruct) : base(message, isInstruct)
+        public OBFriendRelay(CqPrivateMessagePostContext args, string message, bool isInstruct) : base(message, isInstruct)
         {
             Args = args;
         }

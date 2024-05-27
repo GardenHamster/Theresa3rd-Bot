@@ -12,45 +12,45 @@ namespace TheresaBot.OneBot11.Plugin
 {
     public class BasePlugin : CqPostPlugin
     {
-        protected CQSession BaseSession { get; init; }
+        protected OBSession BaseSession { get; init; }
 
-        protected CQReporter baseReporter { get; init; }
+        protected OBReporter baseReporter { get; init; }
 
         public BasePlugin()
         {
-            this.BaseSession = new CQSession();
-            this.baseReporter = new CQReporter();
+            this.BaseSession = new OBSession();
+            this.baseReporter = new OBReporter();
         }
 
-        public CQGroupCommand GetGroupCommand(CqGroupMessagePostContext args, string instruction, string prefix)
+        public OBGroupCommand GetGroupCommand(CqGroupMessagePostContext args, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new CQGroupCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new OBGroupCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public CQFriendCommand GetFriendCommand(CqPrivateMessagePostContext args, string instruction, string prefix)
+        public OBFriendCommand GetFriendCommand(CqPrivateMessagePostContext args, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new CQFriendCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new OBFriendCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public CQGroupQuoteCommand GetGroupQuoteCommand(CqGroupMessagePostContext args, string instruction, string prefix)
+        public OBGroupQuoteCommand GetGroupQuoteCommand(CqGroupMessagePostContext args, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new CQGroupQuoteCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new OBGroupQuoteCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
             }
             return null;
         }

@@ -36,7 +36,7 @@ namespace TheresaBot.OneBot11.Plugin
                     new CqAtMsg(memberId),
                     new CqTextMsg("\r\n")
                 };
-                welcomeMsgs.AddRange(template.SplitToChainAsync().ToCQMessageAsync());
+                welcomeMsgs.AddRange(template.SplitToChainAsync().ToOBMessageAsync());
                 await session.SendGroupMessageAsync(groupId, new CqMessage(welcomeMsgs));
             }
             catch (Exception ex)

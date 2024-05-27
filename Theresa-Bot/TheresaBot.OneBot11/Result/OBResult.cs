@@ -3,7 +3,7 @@ using TheresaBot.Core.Model.Result;
 
 namespace TheresaBot.OneBot11.Result
 {
-    public class CQResult : BaseResult
+    public class OBResult : BaseResult
     {
         private long _messageId { get; init; }
         public CqActionResult ActionResult { get; init; }
@@ -12,9 +12,9 @@ namespace TheresaBot.OneBot11.Result
         public override bool IsSuccess => _messageId != 0;
         public override string ErrorMsg => ActionResult.ErrorMsg;
 
-        public CQResult() { }
+        public OBResult() { }
 
-        public CQResult(CqActionResult result, long messageId)
+        public OBResult(CqActionResult result, long messageId)
         {
             this.ActionResult = result;
             this._messageId = messageId;

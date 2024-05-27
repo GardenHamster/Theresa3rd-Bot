@@ -4,7 +4,7 @@ using TheresaBot.Core.Relay;
 
 namespace TheresaBot.OneBot11.Relay
 {
-    public class CQGroupRelay : GroupRelay
+    public class OBGroupRelay : GroupRelay
     {
         public CqGroupMessagePostContext Args { get; set; }
 
@@ -16,7 +16,7 @@ namespace TheresaBot.OneBot11.Relay
 
         public override long MemberId => Args.Sender.UserId;
 
-        public CQGroupRelay(CqGroupMessagePostContext args, string message, bool isAt, bool isQuote, bool isInstruct) : base(message, isAt, isQuote, isInstruct)
+        public OBGroupRelay(CqGroupMessagePostContext args, string message, bool isAt, bool isQuote, bool isInstruct) : base(message, isAt, isQuote, isInstruct)
         {
             Args = args;
         }

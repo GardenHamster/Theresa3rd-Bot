@@ -210,7 +210,7 @@ namespace TheresaBot.Core.Helper
         public static string GetStartUpMessage()
         {
             StringBuilder msgBuilder = new StringBuilder();
-            msgBuilder.AppendLine($"欢迎使用【Theresa3rd-Bot v{BotConfig.BotVersion}】");
+            msgBuilder.AppendLine($"欢迎使用【Theresa-Bot v{BotConfig.BotVersion}】");
             msgBuilder.AppendLine($"群聊发送【#菜单】可以查看所有指令");
             msgBuilder.AppendLine($"局域网下访问下列地址进行Bot相关配置");
             foreach (var item in IPAddressHelper.GetLocalBackstageUrls())

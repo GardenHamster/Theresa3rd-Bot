@@ -6,7 +6,7 @@ using TheresaBot.Core.Session;
 
 namespace TheresaBot.OneBot11.Command
 {
-    public class CQFriendCommand : PrivateCommand
+    public class OBFriendCommand : PrivateCommand
     {
         private CqPrivateMessagePostContext Args { get; init; }
 
@@ -16,7 +16,7 @@ namespace TheresaBot.OneBot11.Command
 
         public override string MemberName => Args.Sender.Nickname;
 
-        public CQFriendCommand(BaseSession baseSession, CommandHandler<PrivateCommand> invoker, CqPrivateMessagePostContext args, string instruction, string command, string prefix)
+        public OBFriendCommand(BaseSession baseSession, CommandHandler<PrivateCommand> invoker, CqPrivateMessagePostContext args, string instruction, string command, string prefix)
             : base(baseSession, invoker, instruction, command, prefix)
         {
             Args = args;

@@ -6,7 +6,7 @@ using TheresaBot.Core.Session;
 
 namespace TheresaBot.OneBot11.Command
 {
-    public class CQGroupCommand : GroupCommand
+    public class OBGroupQuoteCommand : GroupQuoteCommand
     {
         private CqGroupMessagePostContext Args { get; init; }
 
@@ -20,7 +20,7 @@ namespace TheresaBot.OneBot11.Command
 
         public override string MemberNick => Args.Sender.Nickname;
 
-        public CQGroupCommand(BaseSession baseSession, CommandHandler<GroupCommand> invoker, CqGroupMessagePostContext args, string instruction, string command, string prefix)
+        public OBGroupQuoteCommand(BaseSession baseSession, CommandHandler<GroupQuoteCommand> invoker, CqGroupMessagePostContext args, string instruction, string command, string prefix)
             : base(baseSession, invoker, instruction, command, prefix)
         {
             Args = args;
@@ -35,12 +35,6 @@ namespace TheresaBot.OneBot11.Command
         {
             return Args.Message.OfType<CqReplyMsg>().FirstOrDefault()?.Id ?? 0;
         }
-
-        public override async Task Test(GroupCommand command)
-        {
-            await Task.CompletedTask;
-        }
-
 
     }
 }

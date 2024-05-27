@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<NoWarn>$(NoWarn);NETSDK1206</NoWarn>
+		<RootNamespace>TheresaBot.MiraiHttpApi</RootNamespace>
+		<StartupObject></StartupObject>
+		<BaseOutputPath></BaseOutputPath>
+		<Version>1.0.0</Version>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<WarningLevel>3</WarningLevel>
+		<ServerGarbageCollection>false</ServerGarbageCollection>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Mirai-CSharp" Version="2.1.9" />
+		<PackageReference Include="Mirai-CSharp.HttpApi" Version="2.1.9" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\TheresaBot.Core\TheresaBot.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="appsettings.Development.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="appsettings.Development.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="appsettings.Production.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="运行TheresaBot-MiraiHttpApi-8088.ps1">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<ProjectExtensions>
+		<VisualStudio><UserProperties appsettings_1development_1json__JsonSchema="https://appsemble.app/api.json" appsettings_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio>
+	</ProjectExtensions>
+
+</Project>

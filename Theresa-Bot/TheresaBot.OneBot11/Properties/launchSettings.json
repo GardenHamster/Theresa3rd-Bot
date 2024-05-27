@@ -1,0 +1,22 @@
+﻿{
+  "profiles": {
+    "Development": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://0.0.0.0:5001;http://0.0.0.0:5000",
+      "dotnetRunMessages": true
+    },
+    "Production": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      },
+      "applicationUrl": "https://0.0.0.0:5001;http://0.0.0.0:5000",
+      "dotnetRunMessages": true
+    }
+  }
+}

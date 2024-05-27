@@ -3,6 +3,60 @@ using TheresaBot.Main.Common;
 
 namespace TheresaBot.Main.Helper
 {
+    namespace TheresaBot.Main.Helper
+{
+    public static class ImageHelper
+    {
+        // 其他方法...
+        // 这段是我用GPT生成的你康康能不能用
+        /// <summary>
+        /// 使用原图分辨率添加4-5个噪点在图片的随机位置
+        /// </summary>
+        /// <param name="fileInfo">图片文件信息</param>
+        /// <returns>添加噪点后的图片文件信息</returns>
+        public static FileInfo AddNoiseToOriginalResolution(this FileInfo fileInfo)
+        {
+            if (fileInfo == null) return null;
+
+            // 生成新文件名
+            string fullFileName = $"{fileInfo.GetFileName()}_noise.jpg";
+            string fullSavePath = FilePath.GetTempImgSavePath(fullFileName);
+
+            // 如果文件已存在，则直接返回
+            if (File.Exists(fullSavePath)) return new FileInfo(fullSavePath);
+
+            // 打开原始图像文件流
+            using FileStream originStream = File.OpenRead(fileInfo.FullName);
+
+            // 使用 SkiaSharp 解码图像文件
+            using SKBitmap originBitmap = SKBitmap.Decode(originStream);
+
+            // 随机数生成器
+            Random rand = new Random();
+
+            // 在图像上随机添加4-5个噪点
+            for (int i = 0; i < rand.Next(4, 6); i++)
+            {
+                // 生成随机的噪点坐标
+                int x = rand.Next(originBitmap.Width);
+                int y = rand.Next(originBitmap.Height);
+
+                // 生成随机的噪点颜色
+                SKColor noiseColor = new SKColor((byte)rand.Next(256), (byte)rand.Next(256), (byte)rand.Next(256));
+
+                // 在随机位置绘制噪点
+                originBitmap.SetPixel(x, y, noiseColor);
+            }
+
+            // 保存添加噪点后的图片
+            using SKImage image = SKImage.FromBitmap(originBitmap);
+            using SKData data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
+            using FileStream outputStream = File.OpenWrite(fullSavePath);
+            data.SaveTo(outputStream);
+
+            // 返回新的文件信息
+            return new FileInfo(fullSavePath);
+        }
     public static class ImageHelper
     {
         /// <summary>

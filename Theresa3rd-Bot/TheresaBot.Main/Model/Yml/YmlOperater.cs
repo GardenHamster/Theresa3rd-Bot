@@ -30,8 +30,10 @@ namespace TheresaBot.Main.Model.Yml
         {
             data.FormatConfig();
             var enumConverter = new EnumConverter();
-            var serializer = new SerializerBuilder().WithTypeConverter(enumConverter).Build();
-            var yamlContent = serializer.Serialize(data);
+            var serializer = new SerializerBuilder();
+            serializer.WithTypeConverter(enumConverter);
+            serializer.WithQuotingNecessaryStrings();
+            var yamlContent = serializer.Build().Serialize(data);
             using StreamWriter stream = new StreamWriter(YmlPath, false, Encoding.GetEncoding("gb2312"));
             stream.Write(yamlContent);
             stream.Flush();

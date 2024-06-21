@@ -126,20 +126,6 @@ The remote certificate is invalid because of errors in the certificate chain: No
 yum update ca-certificates -y
 ```
 
-### 日榜发送异常
-```powershell
-replyRankingInfo异常
-System.ArgumentException: 调用http-api失败, 参数错误, 请到 https://github.com/Executor-Cheng/Mirai-CSharp/issues 下提交issue。
-   at Mirai.CSharp.HttpApi.Extensions.ApiResponseExtensions.EnsureApiRespCode(JsonElement root)
-   at Mirai.CSharp.HttpApi.Session.MiraiHttpSession.CommonSendMessageAsync(String action, Nullable`1 qqNumber, Nullable`1 groupNumber, IChatMessage[] chain, Nullable`1 quoteMsgId, CancellationToken token)
-   at TheresaBot.MiraiHttpApi.Session.MiraiSession.SendGroupMergeMessageAsync(Int64 groupId, List`1 setuContents) in D:\project\Theresa3rd-Bot\Theresa3rd-Bot\TheresaBot.MiraiHttpApi\Session\MiraiSession.cs:line 93
-   at TheresaBot.MiraiHttpApi.Session.MiraiSession.SendGroupSetuAsync(List`1 setuContents, Int64 groupId, Boolean sendMerge) in D:\project\Theresa3rd-Bot\Theresa3rd-Bot\TheresaBot.MiraiHttpApi\Session\MiraiSession.cs:line 118
-   at TheresaBot.Main.Handler.PixivRankingHandler.replyRankingInfo(GroupCommand command, PixivRankingMode rankingMode, PixivRankingItem rankingItem) in D:\project\Theresa3rd-Bot\Theresa3rd-Bot\TheresaBot.Main\Handler\PixivRankingHandler.cs:line 196
-```
-
-* 出现这个异常需要将mirai-http-api.jar版本升级到`v2.9.1`及以上
-
-
 ### Ascii2d 403异常
 ```powershell
 SearchWithAscii2d异常

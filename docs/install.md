@@ -10,7 +10,7 @@
 ## 安装协议库
 在下面机器人协议库中选择一个安装，你可以全部都安装，但是同一时间只能运行其中一个
 
-- **安装LLOneBot(推荐)：**参照 [LLOneBot](https://llonebot.github.io/zh-CN/guide/getting-started) 文档安装
+- **安装LLOneBot(推荐)：**参照 [LLOneBot](https://llonebot.github.io/zh-CN/guide/getting-started) 文档安装，(LLOneBot不支持发送临时消息，如需接收临时消息请添加bot为好友)
 
 - ~~安装Mirai(不推荐)：参照 [mirai-console-loader](https://github.com/iTXTech/mirai-console-loader) 文档安装，参考 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 文档配置`mirai-api-http`插件，参考 [登录方案](https://mirai.mamoe.net/topic/223/%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95%E7%9A%84%E4%B8%B4%E6%97%B6%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88) 登录Bot~~
 
@@ -196,6 +196,8 @@ Pixiv 需要一个可以访问外网的网络环境，你需要自行购买机�
 
 2. 替换掉除了以下以外的目录/文件
 * `Config`
+* `BotImg`
+* `Data`
 * `appsettings.json`
 * `appsettings.Production.json`
 

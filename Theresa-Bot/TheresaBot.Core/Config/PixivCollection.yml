@@ -1,0 +1,10 @@
+Enable:                     false 
+Commands:                   ['收藏']
+PixivCollect:               false                                 #开启pixiv收藏功能
+LocalCollect:               false                                 #开启本地收藏功能
+LocalSavePath:              'BotImg/localSave'
+OSSCollect:                 false
+OSSEndpoint:                ''
+OSSAccessKeyId:             ''
+OSSAccessKeySecret:         ''
+OSSBucketName:              ''

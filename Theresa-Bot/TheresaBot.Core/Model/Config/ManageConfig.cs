@@ -4,6 +4,8 @@
     {
         public List<string> PixivCookieCommands { get; set; } = new();
 
+        public List<string> PixivTokenCommands { get; set; } = new();
+
         public List<string> SaucenaoCookieCommands { get; set; } = new();
 
         public List<string> DisableTagCommands { get; set; } = new();

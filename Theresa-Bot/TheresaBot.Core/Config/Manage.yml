@@ -1,4 +1,5 @@
 PixivCookieCommands:        ['pixivcookie','pck']                               #更新pixiv cookie 指令，需要私聊使用
+PixivTokenCommands:			['pixivtoken','ptk']                                #更新pixiv csrf token 指令，需要私聊使用
 SaucenaoCookieCommands:     ['saucenaocookie','sck']                            #更新saucenao cookie 指令，需要私聊使用
 DisableTagCommands:         ['禁止标签','屏蔽标签']                             #禁止一个涩图关键词，禁止后不允许被搜索
 EnableTagCommands:          ['解禁标签','解锁标签']                             #解禁一个涩图关键词

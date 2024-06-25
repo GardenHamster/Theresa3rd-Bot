@@ -24,6 +24,7 @@ namespace TheresaBot.Core.Helper
         public static readonly YmlOperater<TimingSetuConfig> TimingSetuOperater = new(Path.Combine(AppContext.BaseDirectory, "Config", "TimingSetu.yml"));
         public static readonly YmlOperater<PixivRankingConfig> PixivRankingOperater = new(Path.Combine(AppContext.BaseDirectory, "Config", "PixivRanking.yml"));
         public static readonly YmlOperater<WordCloudConfig> WordCloudOperater = new(Path.Combine(AppContext.BaseDirectory, "Config", "WordCloud.yml"));
+        public static readonly YmlOperater<PixivCollectionConfig> PixivCollectionOperater = new(Path.Combine(AppContext.BaseDirectory, "Config", "PixivCollection.yml"));
         public static readonly YmlOperater<GameConfig> GameOperater = new(Path.Combine(AppContext.BaseDirectory, "Config", "Game.yml"));
 
         public static void LoadBotConfig()
@@ -44,6 +45,7 @@ namespace TheresaBot.Core.Helper
             BotConfig.TimingSetuConfig = TimingSetuOperater.LoadConfig();
             BotConfig.PixivRankingConfig = PixivRankingOperater.LoadConfig();
             BotConfig.WordCloudConfig = WordCloudOperater.LoadConfig();
+            BotConfig.PixivCollectionConfig = PixivCollectionOperater.LoadConfig();
             BotConfig.GameConfig = GameOperater.LoadConfig();
 
             if (BotConfig.BackstageConfig is null) BotConfig.BackstageConfig = new();

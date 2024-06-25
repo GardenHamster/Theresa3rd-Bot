@@ -7,6 +7,7 @@ using TheresaBot.Core.Model.PO;
 using TheresaBot.Core.Reporter;
 using TheresaBot.Core.Services;
 using TheresaBot.Core.Session;
+using TheresaBot.Core.Type;
 
 namespace TheresaBot.Core.Handler
 {
@@ -68,6 +69,36 @@ namespace TheresaBot.Core.Handler
                 WebsiteDatas.LoadWebsite();
                 var expireDate = website.CookieExpireDate.ToSimpleString();
                 await command.ReplyPrivateMessageAsync($"Cookie更新完毕，过期时间为：{expireDate}");
+            }
+            catch (HandleException ex)
+            {
+                await command.ReplyPrivateMessageAsync(ex.RemindMessage);
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, "PixivCookie更新异常");
+            }
+        }
+
+        /// <summary>
+        /// 更新Pixiv Cookie
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public async Task UpdatePixivCSRFTokenAsync(PrivateCommand command)
+        {
+            try
+            {
+                var token = command.KeyWord;
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    await command.ReplyPrivateMessageAsync($"未检测到csrf-token");
+                    return;
+                }
+                var pixivCode = WebsiteType.Pixiv.ToString();
+                var website = websiteService.UpdateCsrfToken(pixivCode, token);
+                WebsiteDatas.LoadWebsite();
+                await command.ReplyPrivateMessageAsync($"Token更新完毕");
             }
             catch (HandleException ex)
             {

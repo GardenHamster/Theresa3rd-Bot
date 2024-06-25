@@ -26,6 +26,7 @@ namespace TheresaBot.Core.Common
         public static SubscribeConfig SubscribeConfig = new SubscribeConfig();
         public static TimingSetuConfig TimingSetuConfig = new TimingSetuConfig();
         public static PixivRankingConfig PixivRankingConfig = new PixivRankingConfig();
+        public static PixivCollectionConfig PixivCollectionConfig = new PixivCollectionConfig();
         public static WordCloudConfig WordCloudConfig = new WordCloudConfig();
         public static GameConfig GameConfig = new GameConfig();
 

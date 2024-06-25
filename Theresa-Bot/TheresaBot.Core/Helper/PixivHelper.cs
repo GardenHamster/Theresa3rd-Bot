@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Net.Sockets;
 using TheresaBot.Core.Common;
@@ -137,12 +138,44 @@ namespace TheresaBot.Core.Helper
             return await GetPixivRankingAsync<PixivRankingData>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
+        public static async Task<object> PostPixivBookmarkAsync(string workId)
+        {
+            var operation = $"收藏作品Pid:{workId}";
+            var referer = HttpUrl.getPixivArtworksReferer(workId);
+            var headerDic = GetPixivHeader(referer);
+            headerDic.Add("X-Csrf-Token", WebsiteDatas.Pixiv.CsrfToken);
+            var param = new PIxivBookmarkParam(workId);
+            var postJsonStr = JsonConvert.SerializeObject(param);
+            var postUrl = HttpUrl.getPixivWorkInfoUrl(workId);
+            return await PostPixivResultAsync<object>(postUrl, operation, postJsonStr, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
+        }
+
+        /// <summary>
+        /// 下载Pixiv图片到临时目录
+        /// </summary>
+        /// <param name="downloadUrl"></param>
+        /// <param name="pixivIdStr"></param>
+        /// <param name="fullFileName"></param>
+        /// <returns></returns>
         public static async Task<FileInfo> DownPixivImgAsync(string downloadUrl, string pixivIdStr, string fullFileName = null)
+        {
+            return await DownPixivImgAsync(downloadUrl, pixivIdStr, fullFileName, string.Empty);
+        }
+
+        /// <summary>
+        /// 下载Pixiv图片到指定目录
+        /// </summary>
+        /// <param name="downloadUrl"></param>
+        /// <param name="pixivIdStr"></param>
+        /// <param name="fullFileName"></param>
+        /// <param name="dirSavePath"></param>
+        /// <returns></returns>
+        public static async Task<FileInfo> DownPixivImgAsync(string downloadUrl, string pixivIdStr, string fullFileName = null, string dirSavePath = null)
         {
             int pixivId = Convert.ToInt32(pixivIdStr);
             string referer = HttpUrl.getPixivArtworksReferer(pixivIdStr);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
-            return await DownPixivImgAsync(downloadUrl, pixivId, headerDic, fullFileName, BotConfig.PixivConfig.ImgRetryTimes);
+            return await DownPixivImgAsync(downloadUrl, pixivId, headerDic, fullFileName, dirSavePath, BotConfig.PixivConfig.ImgRetryTimes);
         }
 
         public static async Task<FileInfo> DownPixivImgBySizeAsync(string pixivIdStr, string originUrl)
@@ -246,7 +279,76 @@ namespace TheresaBot.Core.Helper
             }
         }
 
+        private static async Task<T> PostPixivResultAsync<T>(string url, string postJsonStr, string operation, Dictionary<string, string> headerDic = null, int retryTimes = 0, int timeout = 60000) where T : class
+        {
+            if (retryTimes < 0) retryTimes = 0;
+            while (retryTimes >= 0)
+            {
+                try
+                {
+                    string json = await PostPixivJsonAsync(url, postJsonStr, headerDic, timeout);
+                    json = json.Replace("[]", "null");
+                    PixivResult<T> jsonDto = JsonConvert.DeserializeObject<PixivResult<T>>(json);
+                    if (jsonDto.error) throw new ApiException($"{operation}失败，pixiv api error，api message={jsonDto.message}");
+                    return jsonDto.body;
+                }
+                catch (ApiException)
+                {
+                    if (--retryTimes < 0) throw;
+                    await Task.Delay(2000);
+                }
+                catch (Exception ex)
+                {
+                    if (--retryTimes < 0) throw new PixivException(ex, $"{operation}失败");
+                    await Task.Delay(2000);
+                }
+            }
+            return null;
+        }
+
+        private static async Task<string> PostPixivJsonAsync(string url, string postJsonStr, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        {
+            if (BotConfig.PixivConfig.FreeProxy)
+            {
+                return await PixivHelper.PostAsync(url, postJsonStr, headerDic, timeout);
+            }
+            else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
+            {
+                return await HttpHelper.PostJsonWithProxyAsync(url, postJsonStr, headerDic, timeout);
+            }
+            else
+            {
+                return await HttpHelper.PostJsonAsync(url, postJsonStr, headerDic, timeout);
+            }
+        }
+
+        /// <summary>
+        /// 下载Pixiv图片到临时目录
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="pixivId"></param>
+        /// <param name="headerDic"></param>
+        /// <param name="fullFileName"></param>
+        /// <param name="retryTimes"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
         private static async Task<FileInfo> DownPixivImgAsync(string url, int pixivId, Dictionary<string, string> headerDic = null, string fullFileName = null, int retryTimes = 0, int timeout = 60000)
+        {
+            return await DownPixivImgAsync(url, pixivId, headerDic, fullFileName, string.Empty, retryTimes, timeout);
+        }
+
+        /// <summary>
+        /// 下载Pixiv图片到指定目录
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="pixivId"></param>
+        /// <param name="headerDic"></param>
+        /// <param name="fullFileName"></param>
+        /// <param name="dirSavePath"></param>
+        /// <param name="retryTimes"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        private static async Task<FileInfo> DownPixivImgAsync(string url, int pixivId, Dictionary<string, string> headerDic = null, string fullFileName = null, string dirSavePath = null, int retryTimes = 0, int timeout = 120000)
         {
             if (retryTimes < 0) retryTimes = 0;
             while (retryTimes >= 0)
@@ -254,9 +356,10 @@ namespace TheresaBot.Core.Helper
                 try
                 {
                     if (string.IsNullOrWhiteSpace(fullFileName)) fullFileName = new HttpFileInfo(url).FullFileName;
-                    string fullImgSavePath = Path.Combine(FilePath.GetPixivImgDirectory(pixivId), fullFileName);
-                    if (File.Exists(fullImgSavePath)) return new FileInfo(fullImgSavePath);
-                    return await DownPixivImgAsync(url, fullImgSavePath, headerDic, timeout);
+                    if (string.IsNullOrWhiteSpace(dirSavePath)) dirSavePath = FilePath.GetPixivTempDirectory(pixivId);
+                    string fullFileSavePath = Path.Combine(dirSavePath, fullFileName);
+                    if (File.Exists(fullFileSavePath)) return new FileInfo(fullFileSavePath);
+                    return await DownPixivImgAsync(url, fullFileSavePath, headerDic, timeout);
                 }
                 catch (Exception ex)
                 {
@@ -271,27 +374,27 @@ namespace TheresaBot.Core.Helper
             return null;
         }
 
-        private static async Task<FileInfo> DownPixivImgAsync(string url, string fullISavePath, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        private static async Task<FileInfo> DownPixivImgAsync(string url, string fullFileSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
             if (BotConfig.PixivConfig.FreeProxy)
             {
-                return await HttpHelper.DownFileAsync(url.ToDownloadProxyUrl(), fullISavePath, null, timeout);
+                return await HttpHelper.DownFileAsync(url.ToDownloadProxyUrl(), fullFileSavePath, null, timeout);
             }
             else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.ImgProxy) == false)
             {
-                return await HttpHelper.DownFileAsync(url.ToDownloadProxyUrl(), fullISavePath, null, timeout);
+                return await HttpHelper.DownFileAsync(url.ToDownloadProxyUrl(), fullFileSavePath, null, timeout);
             }
             else if (string.IsNullOrWhiteSpace(BotConfig.PixivConfig.HttpProxy) == false)
             {
-                return await HttpHelper.DownFileWithProxyAsync(url.ToPixivOriginUrl(), fullISavePath, headerDic);
+                return await HttpHelper.DownFileWithProxyAsync(url.ToPixivOriginUrl(), fullFileSavePath, headerDic);
             }
             else
             {
-                return await HttpHelper.DownFileAsync(url.ToPixivOriginUrl(), fullISavePath, headerDic);
+                return await HttpHelper.DownFileAsync(url.ToPixivOriginUrl(), fullFileSavePath, headerDic);
             }
         }
 
-        private static async Task<FileInfo> DownPixivFileAsync(string url, Dictionary<string, string> headerDic = null, string fullFileName = null, int retryTimes = 0, int timeout = 60000)
+        private static async Task<FileInfo> DownPixivFileAsync(string url, Dictionary<string, string> headerDic = null, string fullFileName = null, int retryTimes = 0, int timeout = 120000)
         {
             if (retryTimes < 0) retryTimes = 0;
             while (retryTimes >= 0)
@@ -315,7 +418,7 @@ namespace TheresaBot.Core.Helper
             return null;
         }
 
-        private static async Task<FileInfo> DownPixivFileAsync(string url, string fullImgSavePath, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        private static async Task<FileInfo> DownPixivFileAsync(string url, string fullImgSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
             if (BotConfig.PixivConfig.FreeProxy)
             {
@@ -357,7 +460,6 @@ namespace TheresaBot.Core.Helper
         private static async Task<string> GetAsync(string url, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
             using HttpClient client = GetHttpClient();
-            client.BaseAddress = new Uri(url);
             client.AddHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", HttpHelper.GetRandomUserAgent());
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
@@ -365,6 +467,27 @@ namespace TheresaBot.Core.Helper
             using var response = await client.GetAsync(url);
             using var content = response.Content;
             return await content.ReadAsStringAsync();
+        }
+
+        /// <summary>
+        /// HttpPost
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="headerDic"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        private static async Task<string> PostAsync(string url, string postJsonStr, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        {
+            HttpContent content = new StringContent(postJsonStr);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            using HttpClient client = GetHttpClient();
+            client.AddHeaders(headerDic);
+            client.DefaultRequestHeaders.Add("User-Agent", HttpHelper.GetRandomUserAgent());
+            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            if (BotConfig.PixivConfig.FreeProxy) url = url.ToHttpUrl();
+            using var response = await client.PostAsync(url, content);
+            using var result = response.Content;
+            return await result.ReadAsStringAsync();
         }
 
         /// <summary>

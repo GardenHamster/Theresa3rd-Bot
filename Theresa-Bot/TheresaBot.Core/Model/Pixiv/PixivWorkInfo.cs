@@ -15,6 +15,9 @@ namespace TheresaBot.Core.Model.Pixiv
         public int illustType { get; set; }
         public int userId { get; set; }
         public string userName { get; set; }
+        public bool IsOriginal { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
         public DateTime createDate { get; set; }
         public PixivUrls urls { get; set; }
         public int pageCount { get; set; }

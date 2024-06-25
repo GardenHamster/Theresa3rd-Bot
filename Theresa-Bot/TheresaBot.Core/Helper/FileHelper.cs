@@ -116,5 +116,19 @@
             return stList;
         }
 
+        public static void CopyToDirectory(this DirectoryInfo copyDir, string targetDirPath)
+        {
+            var files = copyDir.GetFiles();
+            if (Directory.Exists(targetDirPath) == false)
+            {
+                Directory.CreateDirectory(targetDirPath);
+            }
+            foreach (FileInfo file in files)
+            {
+                var destFileName = Path.Combine(targetDirPath, file.Name);
+                file.CopyTo(destFileName, true);
+            }
+        }
+
     }
 }

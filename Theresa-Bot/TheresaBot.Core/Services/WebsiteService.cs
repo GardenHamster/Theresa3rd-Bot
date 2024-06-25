@@ -59,7 +59,7 @@ namespace TheresaBot.Core.Services
             var websiteCookie = cookieDic.JoinCookie();
             var websiteCode = WebsiteType.Pixiv.ToString();
             var websiteExpire = BotConfig.PixivConfig.CookieExpire;
-            return UpdateWebsite(websiteCode, websiteCookie, userId, websiteExpire);
+            return UpdateCookie(websiteCode, websiteCookie, userId, websiteExpire);
         }
 
         /// <summary>
@@ -104,11 +104,11 @@ namespace TheresaBot.Core.Services
             }
 
             var websiteCode = WebsiteType.Saucenao.ToString();
-            return UpdateWebsite(websiteCode, cookie, userId, DateTime.Now.AddYears(1));
+            return UpdateCookie(websiteCode, cookie, userId, DateTime.Now.AddYears(1));
         }
 
 
-        public WebsitePO UpdateWebsite(string code, string cookie, long userid, int expireSeconds)
+        public WebsitePO UpdateCookie(string code, string cookie, long userid, int expireSeconds)
         {
             WebsitePO website = GetOrInsert(code);
             website.Cookie = cookie;
@@ -119,13 +119,22 @@ namespace TheresaBot.Core.Services
             return website;
         }
 
-        public WebsitePO UpdateWebsite(string code, string cookie, long userid, DateTime expireDate)
+        public WebsitePO UpdateCookie(string code, string cookie, long userid, DateTime expireDate)
         {
             WebsitePO website = GetOrInsert(code);
             website.Cookie = cookie;
             website.UserId = userid;
             website.UpdateDate = DateTime.Now;
             website.CookieExpireDate = expireDate;
+            websiteDao.Update(website);
+            return website;
+        }
+
+        public WebsitePO UpdateCsrfToken(string code, string csrfToken)
+        {
+            WebsitePO website = GetOrInsert(code);
+            website.CsrfToken = csrfToken;
+            website.UpdateDate = DateTime.Now;
             websiteDao.Update(website);
             return website;
         }
@@ -137,6 +146,7 @@ namespace TheresaBot.Core.Services
             website = new WebsitePO();
             website.Code = code;
             website.Cookie = string.Empty;
+            website.CsrfToken = string.Empty;
             website.UserId = 0;
             website.UpdateDate = DateTime.Now;
             website.CookieExpireDate = DateTime.Now;

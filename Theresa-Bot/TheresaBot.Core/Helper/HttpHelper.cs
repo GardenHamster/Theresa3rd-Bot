@@ -81,7 +81,7 @@ namespace TheresaBot.Core.Helper
         /// HttpPost
         /// </summary>
         /// <param name="url"></param>
-        /// <param name="paramStr">参数或者json字符串</param>
+        /// <param name="postJsonStr">json</param>
         /// <param name="headerDic"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
@@ -90,6 +90,25 @@ namespace TheresaBot.Core.Helper
             HttpContent content = new StringContent(postJsonStr);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
+            client.AddHeaders(headerDic);
+            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            using var response = await client.PostAsync(url, content);
+            using var result = response.Content;
+            return await result.ReadAsStringAsync();
+        }
+
+        /// <summary>
+        /// HttpPost
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="headerDic"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        public static async Task<string> PostJsonWithProxyAsync(string url, string postJsonStr, Dictionary<string, string> headerDic = null, int timeout = 60000)
+        {
+            HttpContent content = new StringContent(postJsonStr);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            using HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
             using var response = await client.PostAsync(url, content);
@@ -152,32 +171,32 @@ namespace TheresaBot.Core.Helper
         }
 
         /// <summary>
-        /// 下载图片,保存图片名为随机16位uuid
+        /// 下载图片
         /// </summary>
         /// <param name="imgUrl"></param>
         /// <returns></returns>
-        public static async Task<FileInfo> DownImgAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
+        public static async Task<FileInfo> DownImgAsync(string imgUrl, string fullSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
-            return await DownFileAsync(imgUrl, fullImageSavePath, headerDic, timeout);
+            return await DownFileAsync(imgUrl, fullSavePath, headerDic, timeout);
         }
 
         /// <summary>
         /// 下载文件
         /// </summary>
-        /// <param name="imgUrl"></param>
-        /// <param name="fullImageSavePath"></param>
+        /// <param name="httpUrl"></param>
+        /// <param name="fullFileSavePath"></param>
         /// <param name="headerDic"></param>
         /// <returns></returns>
-        public static async Task<FileInfo> DownFileAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
+        public static async Task<FileInfo> DownFileAsync(string httpUrl, string fullFileSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
-            if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
+            if (File.Exists(fullFileSavePath)) return new FileInfo(fullFileSavePath);
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
-            using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
+            byte[] urlContents = await client.GetByteArrayAsync(new Uri(httpUrl));
+            using FileStream fileStream = new FileStream(fullFileSavePath, FileMode.CreateNew);
             fileStream.Write(urlContents, 0, urlContents.Length);
-            FileInfo fileInfo = new FileInfo(fullImageSavePath);
+            FileInfo fileInfo = new FileInfo(fullFileSavePath);
             if (fileInfo.Length == 0) throw new Exception("文件下载失败，文件大小为0kb");
             return fileInfo;
         }
@@ -185,20 +204,20 @@ namespace TheresaBot.Core.Helper
         /// <summary>
         /// 下载文件
         /// </summary>
-        /// <param name="imgUrl"></param>
-        /// <param name="fullImageSavePath"></param>
+        /// <param name="httpUrl"></param>
+        /// <param name="fullFileSavePath"></param>
         /// <param name="headerDic"></param>
         /// <returns></returns>
-        public static async Task<FileInfo> DownFileWithProxyAsync(string imgUrl, string fullImageSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
+        public static async Task<FileInfo> DownFileWithProxyAsync(string httpUrl, string fullFileSavePath, Dictionary<string, string> headerDic = null, int timeout = 120000)
         {
-            if (File.Exists(fullImageSavePath)) return new FileInfo(fullImageSavePath);
+            if (File.Exists(fullFileSavePath)) return new FileInfo(fullFileSavePath);
             using HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
-            byte[] urlContents = await client.GetByteArrayAsync(new Uri(imgUrl));
-            using FileStream fileStream = new FileStream(fullImageSavePath, FileMode.CreateNew);
+            byte[] urlContents = await client.GetByteArrayAsync(new Uri(httpUrl));
+            using FileStream fileStream = new FileStream(fullFileSavePath, FileMode.CreateNew);
             fileStream.Write(urlContents, 0, urlContents.Length);
-            FileInfo fileInfo = new FileInfo(fullImageSavePath);
+            FileInfo fileInfo = new FileInfo(fullFileSavePath);
             if (fileInfo.Length == 0) new Exception("文件下载失败，文件大小为0kb");
             return fileInfo;
         }
@@ -206,9 +225,8 @@ namespace TheresaBot.Core.Helper
         /// <summary>
         /// 添加请求头
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="client"></param>
         /// <param name="headerDic"></param>
-        /// <returns></returns>
         public static void AddHeaders(this HttpClient client, Dictionary<string, string> headerDic)
         {
             if (headerDic is null) headerDic = new Dictionary<string, string>();

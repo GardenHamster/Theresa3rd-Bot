@@ -8,6 +8,7 @@ namespace TheresaBot.Core.Common
         public const string ImgHttpPath = "/img";
         public const string DownDirName = "BotDownload";
         public const string TempDirName = "Temp";
+        public const string UploadDirName = "Upload";
         public const string MiyousheDirName = "Miyoushe";
         public const string PixivWorkDirName = "PixivWork";
         public const string PixivPreviewDirName = "PixivPreview";
@@ -85,6 +86,18 @@ namespace TheresaBot.Core.Common
         }
 
         /// <summary>
+        /// 获取临时上传目录
+        /// </summary>
+        /// <returns></returns>
+        public static string GetTempUploadDirectory()
+        {
+            string downFilePath = GetDownloadDirectory();
+            string dirPath = Path.Combine(downFilePath, TempDirName, UploadDirName);
+            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+            return dirPath;
+        }
+
+        /// <summary>
         /// 获取临时解压目录
         /// </summary>
         /// <param name="pixivId"></param>
@@ -126,11 +139,11 @@ namespace TheresaBot.Core.Common
         /// </summary>
         /// <param name="pixivId"></param>
         /// <returns></returns>
-        public static string GetPixivImgDirectory(int pixivId)
+        public static string GetPixivTempDirectory(int pixivId)
         {
             string downFilePath = GetDownloadDirectory();
-            string pixivImgDir = GetPixivImgDir(pixivId);
-            string dirPath = Path.Combine(downFilePath, PixivWorkDirName, pixivImgDir);
+            string pixivDir = GetPixivDirectory(pixivId);
+            string dirPath = Path.Combine(downFilePath, PixivWorkDirName, pixivDir);
             if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
             return dirPath;
         }
@@ -143,6 +156,33 @@ namespace TheresaBot.Core.Common
         {
             string downFilePath = GetDownloadDirectory();
             string dirPath = Path.Combine(downFilePath, PixivPreviewDirName);
+            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+            return dirPath;
+        }
+
+        /// <summary>
+        /// 获取pixiv图片存放路径
+        /// </summary>
+        /// <param name="pixivId"></param>
+        /// <returns></returns>
+        public static string GetPixivUploadDirectory(int pixivId)
+        {
+            string tempUpload = GetTempUploadDirectory();
+            string pixivDir = GetPixivDirectory(pixivId);
+            string dirPath = Path.Combine(tempUpload, pixivDir);
+            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+            return dirPath;
+        }
+
+        /// <summary>
+        /// 获取pixiv图片收藏路径
+        /// </summary>
+        /// <returns></returns>
+        public static string GetPixivCollectionDirectory(int pixivId)
+        {
+            string localSavePath = BotConfig.PixivCollectionConfig.LocalSavePath;;
+            string pixivDir = GetPixivDirectory(pixivId);
+            string dirPath = Path.Combine(localSavePath, pixivDir);
             if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
             return dirPath;
         }
@@ -208,19 +248,18 @@ namespace TheresaBot.Core.Common
         }
 
         /// <summary>
-        /// 获取pixiv图片存放文件夹名称
+        /// 获取Pixiv图片文件夹
         /// </summary>
         /// <param name="pixivId"></param>
         /// <returns></returns>
-        private static string GetPixivImgDir(int pixivId)
+        public static string GetPixivDirectory(int pixivId)
         {
             //105866144
-            if (pixivId > 100000000) return $"{(pixivId / 100000) * 100000}";
-            if (pixivId > 80000000) return $"{(pixivId / 5000000) * 5000000}";
-            if (pixivId > 50000000) return $"{(pixivId / 10000000) * 10000000}";
-            return "50000000";
+            //1058/105866144
+            var dirName1 = pixivId.ToString().TakeBefore(5).PadLeft(4,'0');
+            var dirName2 = pixivId.ToString();
+            return Path.Combine(dirName1, dirName2);
         }
-
 
     }
 }

@@ -280,7 +280,7 @@ namespace TheresaBot.Core.Handler
                 int gifSigma = 15;
                 bool isR18 = workInfo.IsR18;
                 int pixivId = workInfo.PixivId;
-                string fullGifSavePath = Path.Combine(FilePath.GetPixivImgDirectory(pixivId), $"{pixivId}.gif");
+                string fullGifSavePath = Path.Combine(FilePath.GetPixivTempDirectory(pixivId), $"{pixivId}.gif");
                 if (File.Exists(fullGifSavePath)) return new FileInfo(fullGifSavePath);
 
                 PixivUgoiraMeta pixivUgoiraMetaDto = await PixivHelper.GetPixivUgoiraMetaAsync(pixivId.ToString());

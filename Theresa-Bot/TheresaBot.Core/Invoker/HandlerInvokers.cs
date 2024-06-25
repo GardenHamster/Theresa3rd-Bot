@@ -199,6 +199,15 @@ namespace TheresaBot.Core.Invoker
                 await handler.InsertRecord(botCommand);
                 return true;
             })),
+            //涩图收藏
+            new(BotConfig.PixivCollectionConfig?.Commands, CommandType.Manage, new(async (botCommand, session, reporter) =>
+            {
+                PixivCollectionHandler handler = new PixivCollectionHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.AddCollection(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
             //Pixiv
             new(BotConfig.SetuConfig?.Pixiv?.Commands, CommandType.Setu, new(async (botCommand, session, reporter) =>
             {
@@ -578,7 +587,16 @@ namespace TheresaBot.Core.Invoker
                 await handler.SearchSource(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
-            }))
+            })),
+            //涩图收藏
+            new(BotConfig.PixivCollectionConfig?.Commands, CommandType.Manage, new(async (botCommand, session, reporter) =>
+            {
+                PixivCollectionHandler handler = new PixivCollectionHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.AddCollection(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
         };
 
         public readonly static List<CommandHandler<PrivateCommand>> FriendCommands = new()
@@ -589,6 +607,15 @@ namespace TheresaBot.Core.Invoker
                 CookieHandler handler = new CookieHandler(session, reporter);
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 await handler.UpdatePixivCookieAsync(botCommand);
+                await handler.InsertRecord(botCommand);
+                return true;
+            })),
+            //PixivCsrfToken
+            new(BotConfig.ManageConfig?.PixivTokenCommands, CommandType.SetCookie, new(async (botCommand, session, reporter) =>
+            {
+                CookieHandler handler = new CookieHandler(session, reporter);
+                if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
+                await handler.UpdatePixivCSRFTokenAsync(botCommand);
                 await handler.InsertRecord(botCommand);
                 return true;
             })),

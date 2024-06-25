@@ -14,6 +14,9 @@ namespace TheresaBot.Core.Model.PO
         [SugarColumn(IsNullable = false, Length = 5000, ColumnDescription = "cookie")]
         public string Cookie { get; set; }
 
+        [SugarColumn(IsNullable = false, Length = 500, ColumnDescription = "Csrf-Token")]
+        public string CsrfToken { get; set; }
+        
         [SugarColumn(IsNullable = false, ColumnDescription = "cookie过期时间")]
         public DateTime CookieExpireDate { get; set; }
 

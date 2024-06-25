@@ -404,5 +404,30 @@ namespace TheresaBot.Core.Controller
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("get/pixiv/collection")]
+        public ApiResult GetPixivCollection()
+        {
+            return ApiResult.Success(BotConfig.PixivCollectionConfig);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("set/pixiv/collection")]
+        public ApiResult SetPixivCollection([FromBody] PixivCollectionConfig config)
+        {
+            try
+            {
+                BotConfig.PixivCollectionConfig = config.FormatConfig();
+                ConfigHelper.PixivCollectionOperater.SaveConfig(config);
+                return ApiResult.Success(config);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex);
+            }
+        }
+
     }
 }

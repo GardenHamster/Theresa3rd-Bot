@@ -123,10 +123,10 @@
             {
                 Directory.CreateDirectory(targetDirPath);
             }
-            foreach (FileInfo file in files)
+            for (int i = 0; i < files.Length; i++)
             {
-                var destFileName = Path.Combine(targetDirPath, file.Name);
-                file.CopyTo(destFileName, true);
+                var destFileName = Path.Combine(targetDirPath, files[i].Name);
+                files[i].CopyTo(destFileName, true);
             }
         }
 

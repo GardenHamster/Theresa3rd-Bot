@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
 using TheresaBot.Core.Common;
 
 namespace TheresaBot.Core.Helper
@@ -87,8 +88,7 @@ namespace TheresaBot.Core.Helper
         /// <returns></returns>
         public static async Task<string> PostJsonAsync(string url, string postJsonStr, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            HttpContent content = new StringContent(postJsonStr);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpContent content = new StringContent(postJsonStr, Encoding.UTF8, "application/json");
             using HttpClient client = DefaultHttpClientFactory.CreateClient();
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);
@@ -106,8 +106,7 @@ namespace TheresaBot.Core.Helper
         /// <returns></returns>
         public static async Task<string> PostJsonWithProxyAsync(string url, string postJsonStr, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            HttpContent content = new StringContent(postJsonStr);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpContent content = new StringContent(postJsonStr, Encoding.UTF8, "application/json");
             using HttpClient client = ProxyHttpClientFactory.CreateClient("ProxyClient");
             client.AddHeaders(headerDic);
             client.Timeout = TimeSpan.FromMilliseconds(timeout);

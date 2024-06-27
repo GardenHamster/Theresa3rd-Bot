@@ -237,7 +237,7 @@ namespace TheresaBot.Core.Helper
             if (string.IsNullOrWhiteSpace(errorMsg)) errorMsg = message;
             List<BaseContent> contents = new List<BaseContent>();
             contents.AddRange(template.SplitToChainAsync());
-            contents.Add(new PlainContent(errorMsg, false));
+            contents.Add(new PlainContent(errorMsg));
             return contents;
         }
 

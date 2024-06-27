@@ -147,6 +147,16 @@ namespace TheresaBot.Core.Common
         }
 
         /// <summary>
+        /// 收藏作品接口url
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        public static string getPixivBookmarkAddUrl()
+        {
+            return $"{PixivHomeUrl}/ajax/illusts/bookmarks/add";
+        }
+
+        /// <summary>
         /// 返回pixiv主页referer
         /// </summary>
         /// <param name="searchWord"></param>

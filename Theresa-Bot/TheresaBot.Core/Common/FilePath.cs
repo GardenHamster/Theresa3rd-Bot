@@ -180,7 +180,11 @@ namespace TheresaBot.Core.Common
         /// <returns></returns>
         public static string GetPixivCollectionDirectory(int pixivId)
         {
-            string localSavePath = BotConfig.PixivCollectionConfig.LocalSavePath;;
+            string localSavePath = BotConfig.PixivCollectionConfig.LocalSavePath;
+            if (string.IsNullOrWhiteSpace(localSavePath))
+            {
+                localSavePath = Path.Combine(DownDirName, "PixivCollection");
+            }
             string pixivDir = GetPixivDirectory(pixivId);
             string dirPath = Path.Combine(localSavePath, pixivDir);
             if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
@@ -254,12 +258,22 @@ namespace TheresaBot.Core.Common
         /// <returns></returns>
         public static string GetPixivDirectory(int pixivId)
         {
-            //105866144
-            //1058/105866144
-            var dirName1 = pixivId.ToString().TakeBefore(5).PadLeft(4,'0');
-            var dirName2 = pixivId.ToString();
-            return Path.Combine(dirName1, dirName2);
+            //105866144-->105/10586/105866144
+            //73532572 -->073/07353/73532572
+            //3532572  -->003/00353/3532572
+            var length = pixivId.ToString().Length;
+            var lengthL = length < 6 ? 0 : length - 6;
+            var lengthM = length < 4 ? 0 : length - 4;
+            var dirName1 = pixivId.ToString().Substring(0, lengthL).PadLeft(3, '0');
+            var dirName2 = pixivId.ToString().Substring(0, lengthM).PadLeft(5, '0');
+            var dirName3 = pixivId.ToString();
+            return Path.Combine(dirName1, dirName2, dirName3);
         }
+
+
+
+
+
 
     }
 }

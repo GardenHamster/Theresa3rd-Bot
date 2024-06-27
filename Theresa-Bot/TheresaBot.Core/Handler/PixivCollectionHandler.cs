@@ -42,8 +42,9 @@ namespace TheresaBot.Core.Handler
                 }
                 if (config.OSSCollect)
                 {
-                    await SaveOSS(command);
+                    await UploadOSS(command, param.PixivId, tempDir);
                 }
+                //Directory.Delete(tempDir, true);
                 await command.ReplyGroupMessageWithQuoteAsync("收藏完毕!");
             }
             catch (ProcessException ex)
@@ -106,7 +107,7 @@ namespace TheresaBot.Core.Handler
             }
         }
 
-        private async Task CopyToCollection(GroupCommand command,int pixivId,string copyDirPath)
+        private async Task CopyToCollection(GroupCommand command, int pixivId, string copyDirPath)
         {
             try
             {
@@ -120,12 +121,24 @@ namespace TheresaBot.Core.Handler
             }
         }
 
-
-        private async Task SaveOSS(GroupCommand command)
+        private async Task UploadOSS(GroupCommand command, int pixivId, string uploadDirPath)
         {
-            await Task.CompletedTask;
+            try
+            {
+                var ossDir = FilePath.GetPixivDirectory(pixivId);
+                var directoryInfo = new DirectoryInfo(uploadDirPath);
+                var files = directoryInfo.GetFiles();
+                for (int i = 0; i < files.Length; i++)
+                {
+                    var ossPath = Path.Combine(ossDir, files[i].Name);
+                    await OSSHelper.UploadFile(files[i], ossPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                await LogAndReplyError(command, ex, "上传文件到OSS失败");
+            }
         }
-
 
         private async Task<PixivCollectionParam> CheckParamsAsync(string[] paramArr)
         {

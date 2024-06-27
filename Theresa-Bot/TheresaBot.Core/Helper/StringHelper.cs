@@ -101,18 +101,6 @@ namespace TheresaBot.Core.Helper
         }
 
         /// <summary>
-        /// 提取一个字符串倒数第N个字符之前的所有字符
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="length"></param>
-        /// <returns></returns>
-        public static string TakeBefore(this string str, int length)
-        {
-            if (str.Length <= length) return string.Empty;
-            return str.Substring(str.Length - length);
-        }
-
-        /// <summary>
         /// 根据命令提取关键词(命令后的字符全部视为一条关键词)
         /// </summary>
         /// <param name="instruction"></param>

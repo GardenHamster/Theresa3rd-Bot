@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Text;
 using TheresaBot.Core.Common;
 using TheresaBot.Core.Datas;
 using TheresaBot.Core.Exceptions;
@@ -146,8 +147,8 @@ namespace TheresaBot.Core.Helper
             headerDic.Add("X-Csrf-Token", WebsiteDatas.Pixiv.CsrfToken);
             var param = new PIxivBookmarkParam(workId);
             var postJsonStr = JsonConvert.SerializeObject(param);
-            var postUrl = HttpUrl.getPixivWorkInfoUrl(workId);
-            return await PostPixivResultAsync<object>(postUrl, operation, postJsonStr, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
+            var postUrl = HttpUrl.getPixivBookmarkAddUrl();
+            return await PostPixivResultAsync<object>(postUrl, postJsonStr, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
         /// <summary>
@@ -478,8 +479,7 @@ namespace TheresaBot.Core.Helper
         /// <returns></returns>
         private static async Task<string> PostAsync(string url, string postJsonStr, Dictionary<string, string> headerDic = null, int timeout = 60000)
         {
-            HttpContent content = new StringContent(postJsonStr);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpContent content = new StringContent(postJsonStr, Encoding.UTF8, "application/json");
             using HttpClient client = GetHttpClient();
             client.AddHeaders(headerDic);
             client.DefaultRequestHeaders.Add("User-Agent", HttpHelper.GetRandomUserAgent());

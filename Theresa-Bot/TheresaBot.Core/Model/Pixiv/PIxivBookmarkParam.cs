@@ -14,7 +14,7 @@ namespace TheresaBot.Core.Model.Pixiv
 
         public string comment { get; set; } = string.Empty;
 
-        public string[] tags { get; set; }=new string[0];
+        public string[] tags { get; set; } = new string[0];
 
         public PIxivBookmarkParam(string illustId)
         {

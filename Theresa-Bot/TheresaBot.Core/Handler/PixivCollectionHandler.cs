@@ -27,24 +27,29 @@ namespace TheresaBot.Core.Handler
                 var tempDir = string.Empty;
                 var config = BotConfig.PixivCollectionConfig;
                 var param = await CheckParamsAsync(command.Params);
+                var pixivId = param.PixivId;
+                var ossPath = string.Empty;
+                var localPath = string.Empty;
                 var taskList = new List<Task>();
+                var workInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivId.ToString());
                 if (config.PixivCollect)
                 {
                     await AddBookmark(command, param);
                 }
                 if (config.LocalCollect || config.OSSCollect)
                 {
-                    tempDir = await DownOriginal(command, param);
+                    tempDir = await DownOriginal(command, workInfo);
                 }
                 if (config.LocalCollect)
                 {
-                    await CopyToCollection(command, param.PixivId, tempDir);
+                    localPath = await CopyToCollection(command, pixivId, tempDir);
                 }
                 if (config.OSSCollect)
                 {
-                    await UploadOSS(command, param.PixivId, tempDir);
+                    ossPath = await UploadOSS(command, pixivId, tempDir);
                 }
-                //Directory.Delete(tempDir, true);
+                pixivCollectionService.AddPixivCollection(workInfo,param,localPath,ossPath);
+                Directory.Delete(tempDir, true);
                 await command.ReplyGroupMessageWithQuoteAsync("收藏完毕!");
             }
             catch (ProcessException ex)
@@ -81,20 +86,19 @@ namespace TheresaBot.Core.Handler
             }
         }
 
-        private async Task<string> DownOriginal(GroupCommand command, PixivCollectionParam param)
+        private async Task<string> DownOriginal(GroupCommand command, PixivWorkInfo workInfo)
         {
             try
             {
                 var taskList = new List<Task>();
-                var pixivId = param.PixivId.ToString();
-                var dirSavePath = FilePath.GetPixivUploadDirectory(param.PixivId);
-                var workInfo = await PixivHelper.GetPixivWorkInfoAsync(param.PixivId.ToString());
+                var pixivId = workInfo.illustId;
+                var dirSavePath = FilePath.GetPixivUploadDirectory(pixivId);
                 var orginUrl = workInfo.urls.original;
                 for (int i = 0; i < workInfo.pageCount; i++)
                 {
                     var imgUrl = orginUrl.Replace("_p0.", $"_p{i}.");
                     var fullFileName = new HttpFileInfo(imgUrl).FullFileName;
-                    Task task = PixivHelper.DownPixivImgAsync(imgUrl, pixivId, fullFileName, dirSavePath);
+                    Task task = PixivHelper.DownPixivImgAsync(imgUrl, pixivId.ToString(), fullFileName, dirSavePath);
                     taskList.Add(task);
                 }
                 Task.WaitAll(taskList.ToArray());
@@ -107,21 +111,23 @@ namespace TheresaBot.Core.Handler
             }
         }
 
-        private async Task CopyToCollection(GroupCommand command, int pixivId, string copyDirPath)
+        private async Task<string> CopyToCollection(GroupCommand command, int pixivId, string copyDirPath)
         {
             try
             {
                 var targetDirPath = FilePath.GetPixivCollectionDirectory(pixivId);
                 var directoryInfo = new DirectoryInfo(copyDirPath);
                 directoryInfo.CopyToDirectory(targetDirPath);
+                return targetDirPath;
             }
             catch (Exception ex)
             {
                 await LogAndReplyError(command, ex, "文件复制失败");
+                return string.Empty;
             }
         }
 
-        private async Task UploadOSS(GroupCommand command, int pixivId, string uploadDirPath)
+        private async Task<string> UploadOSS(GroupCommand command, int pixivId, string uploadDirPath)
         {
             try
             {
@@ -133,10 +139,12 @@ namespace TheresaBot.Core.Handler
                     var ossPath = Path.Combine(ossDir, files[i].Name);
                     await OSSHelper.UploadFile(files[i], ossPath);
                 }
+                return ossDir;
             }
             catch (Exception ex)
             {
                 await LogAndReplyError(command, ex, "上传文件到OSS失败");
+                return string.Empty;
             }
         }
 

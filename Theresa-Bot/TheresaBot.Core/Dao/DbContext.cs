@@ -44,6 +44,23 @@ namespace TheresaBot.Core.Dao
         }
 
         /// <summary>
+        /// 插入或更新，id为0时插入，id大于0时更新
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public virtual int InsertOrUpdate(T t)
+        {
+            if (t.Id > 0)
+            {
+                return Db.Updateable(t).ExecuteCommand();
+            }
+            else
+            {
+                return Db.Insertable(t).ExecuteCommand();
+            }
+        }
+
+        /// <summary>
         /// 更新一条记录
         /// </summary>
         /// <returns></returns>

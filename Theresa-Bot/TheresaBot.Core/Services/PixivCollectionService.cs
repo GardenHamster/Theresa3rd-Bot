@@ -20,28 +20,34 @@ namespace TheresaBot.Core.Services
 
         public void AddPixivCollection(PixivWorkInfo workInfo, PixivCollectionParam collectionParam, string localPath, string ossPath)
         {
-            PixivCollectionPO pixivCollection = new PixivCollectionPO();
-            pixivCollection.PixivId = workInfo.PixivId;
-            pixivCollection.Level = collectionParam.Level;
-            pixivCollection.Title = workInfo.illustTitle;
-            pixivCollection.UserId = workInfo.UserId;
-            pixivCollection.UserName = workInfo.UserName;
-            pixivCollection.Pages = workInfo.pageCount;
-            pixivCollection.Thumb = workInfo?.urls?.thumb ?? string.Empty;
-            pixivCollection.Small = workInfo?.urls?.small ?? string.Empty;
-            pixivCollection.Regular = workInfo?.urls?.regular ?? string.Empty;
-            pixivCollection.Original = workInfo?.urls?.original ?? string.Empty;
-            pixivCollection.IsGif = workInfo.IsGif;
-            pixivCollection.IsR18 = workInfo.IsR18;
-            pixivCollection.IsOriginal = workInfo.IsOriginal;
-            pixivCollection.IsAI = workInfo.IsAI;
-            pixivCollection.Width = workInfo.Width;
-            pixivCollection.Height = workInfo.Height;
-            pixivCollection.LocalPath = localPath;
-            pixivCollection.OSSPath = ossPath;
-            pixivCollection.CreateDate = workInfo.createDate;
-            pixivCollection.AddDate = DateTime.Now;
-            pixivCollectionDao.Insert(pixivCollection);
+            var collection = pixivCollectionDao.GetByPixivId(workInfo.PixivId);
+            if (collection == null) collection = new PixivCollectionPO();
+            collection.PixivId = workInfo.PixivId;
+            collection.Level = collectionParam.Level;
+            collection.Title = workInfo.illustTitle;
+            collection.UserId = workInfo.UserId;
+            collection.UserName = workInfo.UserName;
+            collection.Pages = workInfo.pageCount;
+            collection.Thumb = workInfo?.urls?.thumb ?? string.Empty;
+            collection.Small = workInfo?.urls?.small ?? string.Empty;
+            collection.Regular = workInfo?.urls?.regular ?? string.Empty;
+            collection.Original = workInfo?.urls?.original ?? string.Empty;
+            collection.IsGif = workInfo.IsGif;
+            collection.IsR18 = workInfo.IsR18;
+            collection.IsOriginal = workInfo.IsOriginal;
+            collection.IsAI = workInfo.IsAI;
+            collection.Width = workInfo.Width;
+            collection.Height = workInfo.Height;
+            collection.LocalPath = localPath;
+            collection.OSSPath = ossPath;
+            collection.CreateDate = workInfo.createDate;
+            collection.AddDate = DateTime.Now;
+            pixivCollectionDao.InsertOrUpdate(collection);
+        }
+
+        public void AddTags()
+        {
+            
         }
 
         

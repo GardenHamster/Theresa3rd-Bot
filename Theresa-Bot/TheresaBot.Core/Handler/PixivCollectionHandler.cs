@@ -48,7 +48,7 @@ namespace TheresaBot.Core.Handler
                 {
                     ossPath = await UploadOSS(command, pixivId, tempDir);
                 }
-                pixivCollectionService.AddPixivCollection(workInfo,param,localPath,ossPath);
+                await pixivCollectionService.AddPixivCollection(workInfo,param,localPath,ossPath);
                 Directory.Delete(tempDir, true);
                 await command.ReplyGroupMessageWithQuoteAsync("收藏完毕!");
             }

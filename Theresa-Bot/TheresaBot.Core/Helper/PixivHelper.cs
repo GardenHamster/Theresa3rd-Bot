@@ -139,6 +139,15 @@ namespace TheresaBot.Core.Helper
             return await GetPixivRankingAsync<PixivRankingData>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
+        public static async Task<JObject> getPixivTagsAsync(string tagName)
+        {
+            string operation = "获取Pixiv标签详情";
+            string referer = HttpUrl.getPixivTagReferer(tagName);
+            Dictionary<string, string> headerDic = GetPixivHeader(referer);
+            string postUrl = HttpUrl.getPixivTagUrl(tagName);
+            return await GetPixivRankingAsync<JObject>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
+        }
+
         public static async Task<object> PostPixivBookmarkAsync(string workId)
         {
             var operation = $"收藏作品Pid:{workId}";

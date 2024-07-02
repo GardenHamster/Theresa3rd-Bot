@@ -157,6 +157,17 @@ namespace TheresaBot.Core.Common
         }
 
         /// <summary>
+        /// 获取标签详情url
+        /// </summary>
+        /// <param name="workId"></param>
+        /// <returns></returns>
+        public static string getPixivTagUrl(string tagName)
+        {
+            string tagEncode = System.Web.HttpUtility.UrlEncode(tagName);
+            return $"{PixivHomeUrl}/ajax/search/tags/{tagEncode}?lang=zh";
+        }
+
+        /// <summary>
         /// 返回pixiv主页referer
         /// </summary>
         /// <param name="searchWord"></param>
@@ -224,6 +235,17 @@ namespace TheresaBot.Core.Common
         public static string getPixivFollowLatestReferer()
         {
             return $"{PixivHomeUrl}/bookmark_new_illust.php";
+        }
+
+        /// <summary>
+        /// 获取表情详情Referer
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        public static string getPixivTagReferer(string tagName)
+        {
+            string tagEncode = System.Web.HttpUtility.UrlEncode(tagName);
+            return $"{PixivHomeUrl}/tags/{tagEncode}/artworks";
         }
 
         /*---------------------------------------------------------------Lolicon-----------------------------------------------------------------------*/

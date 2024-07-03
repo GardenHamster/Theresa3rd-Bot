@@ -22,35 +22,35 @@ namespace TheresaBot.OneBot11.Plugin
             this.baseReporter = new OBReporter();
         }
 
-        public OBGroupCommand GetGroupCommand(CqGroupMessagePostContext args, string instruction, string prefix)
+        public OBGroupCommand GetGroupCommand(CqGroupMessagePostContext args, string message, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new OBGroupCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new OBGroupCommand(BaseSession, invoker, args, message, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public OBFriendCommand GetFriendCommand(CqPrivateMessagePostContext args, string instruction, string prefix)
+        public OBFriendCommand GetFriendCommand(CqPrivateMessagePostContext args, string message, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new OBFriendCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new OBFriendCommand(BaseSession, invoker, args, message, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public OBGroupQuoteCommand GetGroupQuoteCommand(CqGroupMessagePostContext args, string instruction, string prefix)
+        public OBGroupQuoteCommand GetGroupQuoteCommand(CqGroupMessagePostContext args, string message, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new OBGroupQuoteCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new OBGroupQuoteCommand(BaseSession, invoker, args, message, instruction, commandStr, prefix);
             }
             return null;
         }

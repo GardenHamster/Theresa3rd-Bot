@@ -38,7 +38,7 @@ namespace TheresaBot.MiraiHttpApi.Event
                 if (isInstruct == false && ProcessCache.HandleStep(relay)) return; //分步处理
                 if (string.IsNullOrWhiteSpace(instruction)) return; //空指令
 
-                var botCommand = GetFriendCommand(args, instruction, prefix);
+                var botCommand = GetFriendCommand(args, message, instruction, prefix);
                 if (botCommand is not null)
                 {
                     args.BlockRemainingHandlers = await botCommand.InvokeAsync(BaseSession, BaseReporter);

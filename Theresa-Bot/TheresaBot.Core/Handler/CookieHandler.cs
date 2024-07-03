@@ -29,7 +29,7 @@ namespace TheresaBot.Core.Handler
         {
             try
             {
-                var cookie = command.KeyWord;
+                var cookie = command.Content;
                 if (string.IsNullOrWhiteSpace(cookie))
                 {
                     await command.ReplyPrivateMessageAsync($"未检测到Cookie");
@@ -59,7 +59,7 @@ namespace TheresaBot.Core.Handler
         {
             try
             {
-                var cookie = command.KeyWord;
+                var cookie = command.Content;
                 if (string.IsNullOrWhiteSpace(cookie))
                 {
                     await command.ReplyPrivateMessageAsync($"未检测到Cookie");
@@ -89,7 +89,7 @@ namespace TheresaBot.Core.Handler
         {
             try
             {
-                var token = command.KeyWord;
+                var token = command.Content;
                 if (string.IsNullOrWhiteSpace(token))
                 {
                     await command.ReplyPrivateMessageAsync($"未检测到csrf-token");

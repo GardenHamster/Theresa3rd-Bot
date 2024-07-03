@@ -21,8 +21,8 @@ namespace TheresaBot.MiraiHttpApi.Command
 
         public override string MemberNick => Args.Sender.Name;
 
-        public MiraiGroupCommand(BaseSession baseSession, CommandHandler<GroupCommand> invoker, IGroupMessageEventArgs args, string instruction, string command, string prefix)
-            : base(baseSession, invoker, instruction, command, prefix)
+        public MiraiGroupCommand(BaseSession baseSession, CommandHandler<GroupCommand> invoker, IGroupMessageEventArgs args, string message, string instruction, string command, string prefix)
+            : base(baseSession, invoker, message, instruction, command, prefix)
         {
             this.Args = args;
         }

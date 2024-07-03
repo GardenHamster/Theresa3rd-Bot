@@ -20,8 +20,8 @@ namespace TheresaBot.GoCqHttp.Command
 
         public override string MemberNick => Args.Sender.Nickname;
 
-        public CQGroupCommand(BaseSession baseSession, CommandHandler<GroupCommand> invoker, CqGroupMessagePostContext args, string instruction, string command, string prefix)
-            : base(baseSession, invoker, instruction, command, prefix)
+        public CQGroupCommand(BaseSession baseSession, CommandHandler<GroupCommand> invoker, CqGroupMessagePostContext args, string message, string instruction, string command, string prefix)
+            : base(baseSession, invoker, message, instruction, command, prefix)
         {
             Args = args;
         }

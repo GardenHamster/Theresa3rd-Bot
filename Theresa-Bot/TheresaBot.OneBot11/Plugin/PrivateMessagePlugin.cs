@@ -40,7 +40,7 @@ namespace TheresaBot.OneBot11.Plugin
                 if (isInstruct == false && ProcessCache.HandleStep(relay)) return; //分步处理
                 if (string.IsNullOrWhiteSpace(instruction)) return; //空指令
 
-                var botCommand = GetFriendCommand(args, instruction, prefix);
+                var botCommand = GetFriendCommand(args, message, instruction, prefix);
                 if (botCommand is not null)
                 {
                     await botCommand.InvokeAsync(BaseSession, baseReporter);

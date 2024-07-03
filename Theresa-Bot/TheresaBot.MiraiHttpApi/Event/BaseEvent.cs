@@ -21,35 +21,35 @@ namespace TheresaBot.MiraiHttpApi.Event
             this.BaseReporter = new MiraiReporter();
         }
 
-        public MiraiGroupCommand GetGroupCommand(IGroupMessageEventArgs args, string instruction, string prefix)
+        public MiraiGroupCommand GetGroupCommand(IGroupMessageEventArgs args, string message, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new MiraiGroupCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new MiraiGroupCommand(BaseSession, invoker, args, message, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public MiraiFriendCommand GetFriendCommand(IFriendMessageEventArgs args, string instruction, string prefix)
+        public MiraiFriendCommand GetFriendCommand(IFriendMessageEventArgs args, string message, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new MiraiFriendCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new MiraiFriendCommand(BaseSession, invoker, args, message, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public MiraiGroupQuoteCommand GetGroupQuoteCommand(IGroupMessageEventArgs args, string instruction, string prefix)
+        public MiraiGroupQuoteCommand GetGroupQuoteCommand(IGroupMessageEventArgs args, string message, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new MiraiGroupQuoteCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new MiraiGroupQuoteCommand(BaseSession, invoker, args, message, instruction, commandStr, prefix);
             }
             return null;
         }

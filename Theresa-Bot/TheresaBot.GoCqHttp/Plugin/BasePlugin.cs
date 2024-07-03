@@ -22,35 +22,35 @@ namespace TheresaBot.GoCqHttp.Plugin
             this.baseReporter = new CQReporter();
         }
 
-        public CQGroupCommand GetGroupCommand(CqGroupMessagePostContext args, string instruction, string prefix)
+        public CQGroupCommand GetGroupCommand(CqGroupMessagePostContext args, string message, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new CQGroupCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new CQGroupCommand(BaseSession, invoker, args, message, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public CQFriendCommand GetFriendCommand(CqPrivateMessagePostContext args, string instruction, string prefix)
+        public CQFriendCommand GetFriendCommand(CqPrivateMessagePostContext args, string message, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.FriendCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new CQFriendCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new CQFriendCommand(BaseSession, invoker, args, message, instruction, commandStr, prefix);
             }
             return null;
         }
 
-        public CQGroupQuoteCommand GetGroupQuoteCommand(CqGroupMessagePostContext args, string instruction, string prefix)
+        public CQGroupQuoteCommand GetGroupQuoteCommand(CqGroupMessagePostContext args, string message, string instruction, string prefix)
         {
             foreach (var invoker in HandlerInvokers.GroupQuoteCommands)
             {
                 string commandStr = instruction.CheckCommand(invoker);
                 if (string.IsNullOrWhiteSpace(commandStr)) continue;
-                return new CQGroupQuoteCommand(BaseSession, invoker, args, instruction, commandStr, prefix);
+                return new CQGroupQuoteCommand(BaseSession, invoker, args, message, instruction, commandStr, prefix);
             }
             return null;
         }

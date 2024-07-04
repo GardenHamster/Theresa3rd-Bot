@@ -203,6 +203,7 @@ namespace TheresaBot.Core.Invoker
             new(BotConfig.PixivCollectionConfig?.Commands, CommandType.Manage, new(async (botCommand, session, reporter) =>
             {
                 PixivCollectionHandler handler = new PixivCollectionHandler(session, reporter);
+                if (await handler.CheckPixivCollectionEnableAsync(botCommand) == false) return false;
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 await handler.AddCollection(botCommand);
                 await handler.InsertRecord(botCommand);
@@ -592,6 +593,7 @@ namespace TheresaBot.Core.Invoker
             new(BotConfig.PixivCollectionConfig?.Commands, CommandType.Manage, new(async (botCommand, session, reporter) =>
             {
                 PixivCollectionHandler handler = new PixivCollectionHandler(session, reporter);
+                if (await handler.CheckPixivCollectionEnableAsync(botCommand) == false) return false;
                 if (await handler.CheckSuperManagersAsync(botCommand) == false) return false;
                 await handler.AddCollection(botCommand);
                 await handler.InsertRecord(botCommand);

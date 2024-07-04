@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
@@ -145,7 +144,7 @@ namespace TheresaBot.Core.Helper
             string referer = HttpUrl.getPixivTagReferer(tagName);
             Dictionary<string, string> headerDic = GetPixivHeader(referer);
             string postUrl = HttpUrl.getPixivTagUrl(tagName);
-            return await GetPixivRankingAsync<JObject>(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
+            return await GetPixivResultAsync(postUrl, operation, headerDic, BotConfig.PixivConfig.ErrRetryTimes);
         }
 
         public static async Task<object> PostPixivBookmarkAsync(string workId)
@@ -217,6 +216,33 @@ namespace TheresaBot.Core.Helper
                     PixivResult<T> jsonDto = JsonConvert.DeserializeObject<PixivResult<T>>(json);
                     if (jsonDto.error) throw new ApiException($"{operation}失败，pixiv api error，api message={jsonDto.message}");
                     return jsonDto.body;
+                }
+                catch (ApiException)
+                {
+                    if (--retryTimes < 0) throw;
+                    await Task.Delay(2000);
+                }
+                catch (Exception ex)
+                {
+                    if (--retryTimes < 0) throw new PixivException(ex, $"{operation}失败");
+                    await Task.Delay(2000);
+                }
+            }
+            return null;
+        }
+
+        private static async Task<JObject> GetPixivResultAsync(string url, string operation, Dictionary<string, string> headerDic = null, int retryTimes = 0, int timeout = 60000)
+        {
+            if (retryTimes < 0) retryTimes = 0;
+            while (retryTimes >= 0)
+            {
+                try
+                {
+                    string json = await GetPixivJsonAsync(url, headerDic, timeout);
+                    json = json.Replace("[]", "null");
+                    PixivResult<object> jsonDto = JsonConvert.DeserializeObject<PixivResult<object>>(json);
+                    if (jsonDto.error) throw new ApiException($"{operation}失败，pixiv api error，api message={jsonDto.message}");
+                    return JObject.Parse(json);
                 }
                 catch (ApiException)
                 {

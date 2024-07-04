@@ -19,6 +19,11 @@ namespace TheresaBot.Core.Services
             imageRecordDao = new ImageRecordDao();
         }
 
+        public List<PixivRecordPO> GetPixivRecord(PlatformType platformType, long msgId, long groupId)
+        {
+            return pixivRecordDao.GetRecords(platformType, msgId, groupId);
+        }
+
         public List<ImageRecordPO> GetImageRecord(PlatformType platformType, long msgId, long groupId)
         {
             return imageRecordDao.GetRecords(platformType, msgId, groupId);

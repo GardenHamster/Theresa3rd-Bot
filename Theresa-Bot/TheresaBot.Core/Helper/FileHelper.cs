@@ -49,6 +49,7 @@
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(directoryPath)) return;
                 if (!Directory.Exists(directoryPath)) return;
                 Directory.Delete(directoryPath, true);
             }

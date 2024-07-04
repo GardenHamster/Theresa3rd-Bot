@@ -1,10 +1,6 @@
 using Microsoft.Extensions.FileProviders;
 using SqlSugar.IOC;
 using System.Net;
-using TheresaBot.GoCqHttp.Common;
-using TheresaBot.GoCqHttp.Helper;
-using TheresaBot.GoCqHttp.Reporter;
-using TheresaBot.GoCqHttp.Session;
 using TheresaBot.Core.Common;
 using TheresaBot.Core.Dao;
 using TheresaBot.Core.Datas;
@@ -12,6 +8,10 @@ using TheresaBot.Core.Helper;
 using TheresaBot.Core.Reporter;
 using TheresaBot.Core.Session;
 using TheresaBot.Core.Timers;
+using TheresaBot.GoCqHttp.Common;
+using TheresaBot.GoCqHttp.Helper;
+using TheresaBot.GoCqHttp.Reporter;
+using TheresaBot.GoCqHttp.Session;
 
 namespace TheresaBot.GoCqHttp
 {

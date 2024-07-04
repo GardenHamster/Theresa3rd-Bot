@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TheresaBot.Core.Datas;
 using TheresaBot.Core.Helper;
 using TheresaBot.Core.Model.DTO;
 using TheresaBot.Core.Model.Result;
 using TheresaBot.Core.Model.VO;
 using TheresaBot.Core.Services;
-using TheresaBot.Core.Type;
 
 namespace TheresaBot.Core.Controller
 {

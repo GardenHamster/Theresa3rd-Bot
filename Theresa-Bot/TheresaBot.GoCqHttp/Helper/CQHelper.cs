@@ -1,12 +1,11 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
-using TheresaBot.GoCqHttp.Common;
-using TheresaBot.GoCqHttp.Plugin;
 using TheresaBot.Core.Common;
 using TheresaBot.Core.Helper;
 using TheresaBot.Core.Model.Bot;
 using TheresaBot.Core.Model.Content;
-using SqlSugar.IOC;
+using TheresaBot.GoCqHttp.Common;
+using TheresaBot.GoCqHttp.Plugin;
 
 namespace TheresaBot.GoCqHttp.Helper
 {

@@ -1,11 +1,11 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
-using TheresaBot.OneBot11.Common;
-using TheresaBot.OneBot11.Plugin;
 using TheresaBot.Core.Common;
 using TheresaBot.Core.Helper;
 using TheresaBot.Core.Model.Bot;
 using TheresaBot.Core.Model.Content;
+using TheresaBot.OneBot11.Common;
+using TheresaBot.OneBot11.Plugin;
 
 namespace TheresaBot.OneBot11.Helper
 {

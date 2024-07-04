@@ -1,10 +1,10 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
-using TheresaBot.GoCqHttp.Relay;
 using TheresaBot.Core.Cache;
 using TheresaBot.Core.Common;
 using TheresaBot.Core.Helper;
+using TheresaBot.GoCqHttp.Relay;
 
 namespace TheresaBot.GoCqHttp.Plugin
 {

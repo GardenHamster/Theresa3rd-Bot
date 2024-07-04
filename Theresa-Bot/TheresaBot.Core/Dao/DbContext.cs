@@ -45,15 +45,34 @@ namespace TheresaBot.Core.Dao
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public virtual int InsertOrUpdate(T t)
+        public virtual T InsertOrUpdate(T t)
         {
             if (t.Id > 0)
             {
-                return Db.Updateable(t).ExecuteCommand();
+                Db.Updateable(t).ExecuteCommand();
+                return t;
             }
             else
             {
-                return Db.Insertable(t).ExecuteCommand();
+                return Db.Insertable(t).ExecuteReturnEntity();
+            }
+        }
+
+        /// <summary>
+        /// 查询Id是否存在，如果不存在则插入
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public virtual int InsertIFNotExists(T t)
+        {
+            var model = GetById(t.Id);
+            if (model is null)
+            {
+                return Db.Insertable(t).OffIdentity().ExecuteCommand();
+            }
+            else
+            {
+                return 0;
             }
         }
 

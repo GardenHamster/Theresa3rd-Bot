@@ -1,19 +1,13 @@
 ﻿using Aliyun.OSS;
 using Aliyun.OSS.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TheresaBot.Core.Common;
-using TheresaBot.Core.Dao;
 
 namespace TheresaBot.Core.Helper
 {
     public static class OSSHelper
     {
 
-        public static async Task UploadFile(FileInfo uploadFile,string ossPath)
+        public static async Task UploadFile(FileInfo uploadFile, string ossPath)
         {
             try
             {

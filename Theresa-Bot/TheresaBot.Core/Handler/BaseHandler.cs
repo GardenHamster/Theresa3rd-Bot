@@ -144,6 +144,16 @@ namespace TheresaBot.Core.Handler
             return true;
         }
 
+        public async Task<bool> CheckPixivCollectionEnableAsync(GroupCommand command)
+        {
+            if (BotConfig.PixivCollectionConfig.Enable == false)
+            {
+                await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.GeneralConfig.DisableMsg, "该功能已关闭");
+                return false;
+            }
+            return true;
+        }
+
         public async Task<bool> CheckPixivRankingEnableAsync(GroupCommand command, PixivRankingItem rankingItem)
         {
             if (command.GroupId.IsPixivRankingAuthorized() == false)

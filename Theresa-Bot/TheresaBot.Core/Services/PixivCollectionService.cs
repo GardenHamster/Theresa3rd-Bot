@@ -1,16 +1,8 @@
-﻿using AngleSharp.Dom;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json.Linq;
 using TheresaBot.Core.Dao;
 using TheresaBot.Core.Helper;
 using TheresaBot.Core.Model.Pixiv;
 using TheresaBot.Core.Model.PO;
-using YamlDotNet.Core;
 
 namespace TheresaBot.Core.Services
 {
@@ -52,7 +44,7 @@ namespace TheresaBot.Core.Services
             collection.OSSPath = ossPath;
             collection.CreateDate = workInfo.createDate;
             collection.AddDate = DateTime.Now;
-            pixivCollectionDao.InsertOrUpdate(collection);
+            collection = pixivCollectionDao.InsertOrUpdate(collection);
             await AddPixivTags(collection, workInfo);
             await AddPixivTags(collection, extraTags);
             return collection;
@@ -83,16 +75,21 @@ namespace TheresaBot.Core.Services
         private async Task<PixivCollectionTagPO> AddPixivTag(PixivCollectionPO collection, string tagName, bool isExtra)
         {
             var pixivTag = pixivTagDao.getTag(tagName);
-            if (pixivTag == null)
+            if (pixivTag is null)
             {
                 pixivTag = await GetTagFromPixiv(tagName);
                 pixivTag = pixivTagDao.Insert(pixivTag);
             }
-            var collectionTag = new PixivCollectionTagPO();
-            collectionTag.CollectionId = collection.Id;
-            collectionTag.TagId = pixivTag.Id;
-            collectionTag.IsExtra = isExtra;
-            return pixivCollectionTagDao.Insert(collectionTag);
+            var collectionTag = pixivCollectionTagDao.GetItem(collection.Id, pixivTag.Id);
+            if (collectionTag is null)
+            {
+                collectionTag = new PixivCollectionTagPO();
+                collectionTag.CollectionId = collection.Id;
+                collectionTag.TagId = pixivTag.Id;
+                collectionTag.IsExtra = isExtra;
+                collectionTag = pixivCollectionTagDao.Insert(collectionTag);
+            }
+            return collectionTag;
         }
 
         private async Task<PixivTagPO> GetTagFromPixiv(string tagName)
@@ -107,8 +104,11 @@ namespace TheresaBot.Core.Services
             {
                 PixivTagPO pixivTag = new PixivTagPO(tagName);
                 JObject body = jObject.Value<JObject>("body");
-                JObject translationObj = body.Value<JObject>("tagTranslation");
-                JObject tagObj = translationObj.Value<JObject>(tagName);
+                if (body is null) return pixivTag;
+                JObject tranObj = body.Value<JObject>("tagTranslation");
+                if (tranObj is null) return pixivTag;
+                JObject tagObj = tranObj.Value<JObject>(tagName);
+                if (tagObj is null) return pixivTag;
                 pixivTag.Zh = tagObj.Value<string>("zh") ?? "";
                 pixivTag.ZhTw = tagObj.Value<string>("zh_tw") ?? "";
                 pixivTag.En = tagObj.Value<string>("en") ?? "";

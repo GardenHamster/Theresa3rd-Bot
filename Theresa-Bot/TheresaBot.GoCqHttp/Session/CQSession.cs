@@ -1,13 +1,13 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
-using TheresaBot.GoCqHttp.Helper;
-using TheresaBot.GoCqHttp.Result;
 using TheresaBot.Core.Common;
 using TheresaBot.Core.Model.Bot;
 using TheresaBot.Core.Model.Content;
 using TheresaBot.Core.Model.Result;
 using TheresaBot.Core.Session;
 using TheresaBot.Core.Type;
+using TheresaBot.GoCqHttp.Helper;
+using TheresaBot.GoCqHttp.Result;
 
 namespace TheresaBot.GoCqHttp.Session
 {

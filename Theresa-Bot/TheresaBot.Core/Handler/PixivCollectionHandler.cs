@@ -13,24 +13,36 @@ namespace TheresaBot.Core.Handler
 {
     internal class PixivCollectionHandler : BaseHandler
     {
+        private RecordService recordService;
         private PixivCollectionService pixivCollectionService;
 
         public PixivCollectionHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
+            recordService = new RecordService();
             pixivCollectionService = new PixivCollectionService();
         }
 
         public async Task AddCollection(GroupCommand command)
         {
+            var param = await CheckParamsAsync(command.Params);
+            await AddCollection(command, param);
+        }
+
+        public async Task AddCollection(GroupQuoteCommand command)
+        {
+            var param = await CheckParamsAsync(command, command.Params);
+            await AddCollection(command, param);
+        }
+
+        private async Task AddCollection(GroupCommand command, PixivCollectionParam param)
+        {
             try
             {
                 var tempDir = string.Empty;
                 var config = BotConfig.PixivCollectionConfig;
-                var param = await CheckParamsAsync(command.Params);
                 var pixivId = param.PixivId;
                 var ossPath = string.Empty;
                 var localPath = string.Empty;
-                var taskList = new List<Task>();
                 var workInfo = await PixivHelper.GetPixivWorkInfoAsync(pixivId.ToString());
                 if (config.PixivCollect)
                 {
@@ -48,9 +60,10 @@ namespace TheresaBot.Core.Handler
                 {
                     ossPath = await UploadOSS(command, pixivId, tempDir);
                 }
-                await pixivCollectionService.AddPixivCollection(workInfo,param,localPath,ossPath);
-                Directory.Delete(tempDir, true);
-                await command.ReplyGroupMessageWithQuoteAsync("收藏完毕!");
+                await pixivCollectionService.AddPixivCollection(workInfo, param, localPath, ossPath);
+                FileHelper.DeleteDirectory(tempDir);
+                string remindMsg = $"Pid={param.PixivId}，Level={param.Level}，Title={workInfo.Title}，自定义标签={param.Tags.JoinToString()}";
+                await command.ReplyGroupMessageWithQuoteAsync("收藏完毕，" + remindMsg);
             }
             catch (ProcessException ex)
             {
@@ -60,12 +73,6 @@ namespace TheresaBot.Core.Handler
             {
                 await LogAndReplyError(command, ex, "添加收藏异常");
             }
-        }
-
-
-        public async Task AddCollection(GroupQuoteCommand command)
-        {
-            await Task.CompletedTask;
         }
 
         private async Task AddBookmark(GroupCommand command, PixivCollectionParam param)
@@ -150,8 +157,7 @@ namespace TheresaBot.Core.Handler
 
         private async Task<PixivCollectionParam> CheckParamsAsync(string[] paramArr)
         {
-            var pixivId = 0;
-            var level = 0;
+            int pixivId = 0, level = 0;
             var tags = new List<string>();
             if (paramArr.Length == 0)
             {
@@ -179,6 +185,35 @@ namespace TheresaBot.Core.Handler
             }
             return await Task.FromResult(new PixivCollectionParam(pixivId, level, tags));
         }
+
+        private async Task<PixivCollectionParam> CheckParamsAsync(GroupQuoteCommand command, string[] paramArr)
+        {
+            var level = 0;
+            var groupId = command.GroupId;
+            var tags = new List<string>();
+            var quoteMsgId = command.GetQuoteMessageId();
+            var pixivRecord = recordService.GetPixivRecord(Session.PlatformType, quoteMsgId, groupId).FirstOrDefault();
+            if (pixivRecord is null)
+            {
+                throw new ProcessException("未能读取引用消息中的Pid，请使用收藏指令进行收藏");
+            }
+            var pixivId = pixivRecord.PixivId;
+            if (paramArr.Length == 0)
+            {
+                return await Task.FromResult(new PixivCollectionParam(pixivId, level, tags));
+            }
+            if (int.TryParse(paramArr[0], out level))
+            {
+                tags = paramArr.Skip(1).ToList();
+            }
+            else
+            {
+                tags = paramArr.ToList();
+            }
+            return await Task.FromResult(new PixivCollectionParam(pixivId, level, tags));
+        }
+
+
 
 
 

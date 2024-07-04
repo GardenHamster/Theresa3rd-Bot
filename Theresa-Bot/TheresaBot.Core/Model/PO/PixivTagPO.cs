@@ -1,9 +1,4 @@
 ﻿using SqlSugar;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TheresaBot.Core.Model.PO
 {
@@ -34,7 +29,7 @@ namespace TheresaBot.Core.Model.PO
 
         public PixivTagPO(int id, string tag, string zh, string zhTw, string en, string ko) : base(id)
         {
-            Tag = tag??string.Empty;
+            Tag = tag ?? string.Empty;
             Zh = zh ?? string.Empty;
             ZhTw = zhTw ?? string.Empty;
             En = en ?? string.Empty;

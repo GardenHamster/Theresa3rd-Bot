@@ -1,10 +1,6 @@
 using Microsoft.Extensions.FileProviders;
 using SqlSugar.IOC;
 using System.Net;
-using TheresaBot.OneBot11.Common;
-using TheresaBot.OneBot11.Helper;
-using TheresaBot.OneBot11.Reporter;
-using TheresaBot.OneBot11.Session;
 using TheresaBot.Core.Common;
 using TheresaBot.Core.Dao;
 using TheresaBot.Core.Datas;
@@ -12,6 +8,10 @@ using TheresaBot.Core.Helper;
 using TheresaBot.Core.Reporter;
 using TheresaBot.Core.Session;
 using TheresaBot.Core.Timers;
+using TheresaBot.OneBot11.Common;
+using TheresaBot.OneBot11.Helper;
+using TheresaBot.OneBot11.Reporter;
+using TheresaBot.OneBot11.Session;
 
 namespace TheresaBot.OneBot11
 {

@@ -1,9 +1,9 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
 using EleCho.GoCqHttpSdk.Post;
-using TheresaBot.OneBot11.Helper;
 using TheresaBot.Core.Common;
 using TheresaBot.Core.Helper;
+using TheresaBot.OneBot11.Helper;
 
 namespace TheresaBot.OneBot11.Plugin
 {

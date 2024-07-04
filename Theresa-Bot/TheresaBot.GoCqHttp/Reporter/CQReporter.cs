@@ -1,7 +1,7 @@
 ﻿using EleCho.GoCqHttpSdk;
 using EleCho.GoCqHttpSdk.Message;
-using TheresaBot.GoCqHttp.Helper;
 using TheresaBot.Core.Reporter;
+using TheresaBot.GoCqHttp.Helper;
 
 namespace TheresaBot.GoCqHttp.Reporter
 {

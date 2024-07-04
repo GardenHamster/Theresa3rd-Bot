@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheresaBot.Core.Dao;
+﻿using TheresaBot.Core.Dao;
 using TheresaBot.Core.Helper;
 using TheresaBot.Core.Model.PO;
-using TheresaBot.Core.Services;
 
 namespace TheresaBot.Core.Datas
 {
@@ -34,10 +28,10 @@ namespace TheresaBot.Core.Datas
         {
             int count = 0;
             var pixivTagContext = new DbContext<PixivTagPO>();
-            count += pixivTagContext.InsertOrUpdate(PixivTag_R18);
-            count += pixivTagContext.InsertOrUpdate(PixivTag_Ugoira);
-            count += pixivTagContext.InsertOrUpdate(PixivTag_Original);
-            count += pixivTagContext.InsertOrUpdate(PixivTag_Girl);
+            count += pixivTagContext.InsertIFNotExists(PixivTag_R18);
+            count += pixivTagContext.InsertIFNotExists(PixivTag_Ugoira);
+            count += pixivTagContext.InsertIFNotExists(PixivTag_Original);
+            count += pixivTagContext.InsertIFNotExists(PixivTag_Girl);
             return count;
         }
 

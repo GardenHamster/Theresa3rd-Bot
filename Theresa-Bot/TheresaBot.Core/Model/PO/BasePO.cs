@@ -8,5 +8,11 @@ namespace TheresaBot.Core.Model.PO
         public int Id { get; set; }
 
         public BasePO() { }
+
+        public BasePO(int id)
+        {
+            Id = id;
+        }
+
     }
 }

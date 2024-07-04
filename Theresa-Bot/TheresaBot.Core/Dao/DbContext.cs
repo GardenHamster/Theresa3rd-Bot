@@ -6,10 +6,7 @@ namespace TheresaBot.Core.Dao
 {
     public class DbContext<T> where T : BasePO, new()
     {
-        protected SqlSugarScope Db
-        {
-            get { return DbScoped.SugarScope; }
-        }
+        protected SqlSugarScope Db => DbScoped.SugarScope;
 
         /// <summary>
         /// 根据id查询

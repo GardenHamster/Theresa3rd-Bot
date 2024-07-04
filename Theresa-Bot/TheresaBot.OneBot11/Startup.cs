@@ -65,6 +65,7 @@ namespace TheresaBot.OneBot11
 
             try
             {
+                InitDatas.Init();
                 DataManager.LoadInitDatas();
                 OBSession session = new OBSession();
                 OBReporter reporter = new OBReporter();

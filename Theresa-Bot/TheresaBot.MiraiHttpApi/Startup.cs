@@ -65,6 +65,7 @@ namespace TheresaBot.MiraiHttpApi
 
             try
             {
+                InitDatas.Init();
                 DataManager.LoadInitDatas();
                 MiraiSession session = new MiraiSession();
                 MiraiReporter reporter = new MiraiReporter();

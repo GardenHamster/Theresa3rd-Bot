@@ -28,6 +28,9 @@ namespace TheresaBot.Core.Dao
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(SugarTagPO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(WebsitePO));
                 DbScoped.SugarScope.CodeFirst.InitTables(typeof(UCWordPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(PixivCollectionPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(PixivTagPO));
+                DbScoped.SugarScope.CodeFirst.InitTables(typeof(PixivCollectionTagPO));
             }
             catch (Exception ex)
             {
@@ -35,6 +38,7 @@ namespace TheresaBot.Core.Dao
                 throw;
             }
         }
+
 
         /// <summary>
         /// 检查表是否存在

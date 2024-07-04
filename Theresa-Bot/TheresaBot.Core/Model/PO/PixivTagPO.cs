@@ -29,7 +29,16 @@ namespace TheresaBot.Core.Model.PO
 
         public PixivTagPO(string tag)
         {
-            this.Tag = tag;
+            Tag = tag ?? string.Empty;
+        }
+
+        public PixivTagPO(int id, string tag, string zh, string zhTw, string en, string ko) : base(id)
+        {
+            Tag = tag??string.Empty;
+            Zh = zh ?? string.Empty;
+            ZhTw = zhTw ?? string.Empty;
+            En = en ?? string.Empty;
+            Ko = ko ?? string.Empty;
         }
 
     }

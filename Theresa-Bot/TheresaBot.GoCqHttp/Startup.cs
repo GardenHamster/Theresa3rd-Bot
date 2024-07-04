@@ -65,6 +65,7 @@ namespace TheresaBot.GoCqHttp
 
             try
             {
+                InitDatas.Init();
                 DataManager.LoadInitDatas();
                 CQSession session = new CQSession();
                 CQReporter reporter = new CQReporter();

@@ -10,5 +10,11 @@ namespace TheresaBot.Core.Dao
             return Db.Queryable<ImageRecordPO>().Where(o => o.MessageId == msgId && o.PlatformType == platformType && o.GroupId == groupId).ToList();
         }
 
+        public List<ImageRecordPO> GetRecords(long msgId, long groupId)
+        {
+            return Db.Queryable<ImageRecordPO>().Where(o => o.MessageId == msgId && o.GroupId == groupId).ToList();
+        }
+
+
     }
 }

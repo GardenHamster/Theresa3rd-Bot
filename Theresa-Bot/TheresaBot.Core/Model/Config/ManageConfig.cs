@@ -31,6 +31,7 @@
         public override ManageConfig FormatConfig()
         {
             if (PixivCookieCommands is null) PixivCookieCommands = new();
+            if (PixivTokenCommands is null) PixivTokenCommands = new();
             if (SaucenaoCookieCommands is null) SaucenaoCookieCommands = new();
             if (DisableTagCommands is null) DisableTagCommands = new();
             if (EnableTagCommands is null) EnableTagCommands = new();

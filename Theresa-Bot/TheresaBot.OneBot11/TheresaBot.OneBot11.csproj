@@ -35,8 +35,6 @@
 		</None>
 	</ItemGroup>
 
-	
-
 	<ItemGroup>
 		<Content Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -47,7 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="运行TheresaBot-GoCqHttp-8088.ps1">
+	  <None Update="运行TheresaBot-OneBot11-8088.ps1">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>

@@ -19,7 +19,7 @@ namespace TheresaBot.Core.Model.Yml
         {
             if (File.Exists(YmlPath) == false) return null;
             using FileStream fileStream = new FileStream(YmlPath, FileMode.Open, FileAccess.Read);
-            using TextReader reader = new StreamReader(fileStream, Encoding.GetEncoding("gb2312"));
+            using TextReader reader = new StreamReader(fileStream, Encoding.UTF8);
             Deserializer deserializer = new Deserializer();
             var config = deserializer.Deserialize<T>(reader);
             config.FormatConfig();
@@ -32,7 +32,7 @@ namespace TheresaBot.Core.Model.Yml
             var enumConverter = new EnumConverter();
             var serializer = new SerializerBuilder().WithTypeConverter(enumConverter).Build();
             var yamlContent = serializer.Serialize(data);
-            using StreamWriter stream = new StreamWriter(YmlPath, false, Encoding.GetEncoding("gb2312"));
+            using StreamWriter stream = new StreamWriter(YmlPath, false, Encoding.UTF8);
             stream.Write(yamlContent);
             stream.Flush();
             stream.Close();

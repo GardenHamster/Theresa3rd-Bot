@@ -1,10 +1,10 @@
-Enable:                     false 
-Commands:                   ['�ղ�']
-PixivCollect:               false                                 #����pixiv�ղع���
-LocalCollect:               false                                 #���������ղع���
-LocalSavePath:              'BotImg/localSave'
-OSSCollect:                 false
-OSSEndpoint:                ''
-OSSAccessKeyId:             ''
-OSSAccessKeySecret:         ''
-OSSBucketName:              ''
+Enable:                     false                                 #全局开关，开启收藏功能
+Commands:                   ['收藏']                              #开启收藏功能
+PixivCollect:               false                                 #开启pixiv收藏功能
+LocalCollect:               false                                 #开启本地收藏功能
+LocalSavePath:              'BotImg/localSave'                    #本地收藏图片保存路径
+OSSCollect:                 false                                 #图片保存到Oss
+OSSEndpoint:                ''                                    #OSSEndpoint
+OSSAccessKeyId:             ''                                    #AccessKeyId
+OSSAccessKeySecret:         ''                                    #AccessKeySecret
+OSSBucketName:              ''                                    #用于保存图片的OSS仓库名

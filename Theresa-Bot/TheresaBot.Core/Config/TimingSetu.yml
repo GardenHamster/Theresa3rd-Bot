@@ -1,15 +1,15 @@
-Enable:                     false                                               #ÊÇ·ñÆôÓÃ
-LocalPath:                  'BotImg/localSetu'                                  #±¾µØÍ¼Æ¬ÎÄ¼ş¼ĞÂ·¾¶£¬Í¼Æ¬ĞèÒª·ÖÀà·ÅÔÚ×ÓÄ¿Â¼ÏÂ£¬SourceÎª0Ê±¿ÉÓÃ
-FromOneDir:                 false                                               #true£º´ÓÒ»¸öËæ»úÄ¿Â¼¶ÁÈ¡É¬Í¼£¬false£º´Ó²»Í¬µÄËæ»úÄ¿Â¼¶ÁÈ¡É¬Í¼£¬SourceÎª0Ê±¿ÉÓÃ
-LolisukiLevel:              '0-3'                                               #LolisukiµÄLevel£¬SourceÎª2Ê±¿ÉÓÃ
-Timers:                                                                         #¶¨Ê±ÁĞ±í
-    - Enable:               true                                                #ÊÇ·ñÆôÓÃ
-      Cron:                 '0 0 15 * * ?'                                      #cron±í´ïÊ½(ĞèÒª×ÔĞĞ°Ù¶Ècron¸ñÊ½)
-      Name:                 'ÏÂÎç²è'                                            #¶¨Ê±Æ÷Ãû³Æ
-      Groups:               [284196392]                                         #·¢ËÍµ½Èº
-      Source:               2                                                   #Í¼Ô´£¬0£º±¾µØ£¬1£ºLolicon£¬2£ºLolisuki
-      SendMerge:            true                                                #ºÏ²¢ÏûÏ¢·¢ËÍ
-      Tags:                 []                                                  #É¬Í¼±êÇ©£¬²»Ìî±íÊ¾Ëæ»ú£¬SourceÎª1ºÍ2Ê±¿ÉÓÃ
-      Quantity:             5                                                   #·¢ËÍÉ¬Í¼ÊıÁ¿£¬SourceÎª1ºÍ2Ê±È¡Öµ·¶Î§Îª1~20
-      AtAll:                false                                               #ÊÇ·ñ°¬ÌØÈ«Ìå
-      TimingMsg:            'ÏÂÎç²èÊ±¼ä£¬À´µã{Tags}É¬Í¼£¬Í¼Æ¬À´Ô´£º{SourceName}'
+Enable:                     false                                               #æ˜¯å¦å¯ç”¨
+LocalPath:                  'BotImg/localSetu'                                  #æœ¬åœ°å›¾ç‰‡æ–‡ä»¶å¤¹è·¯å¾„ï¼Œå›¾ç‰‡éœ€è¦åˆ†ç±»æ”¾åœ¨å­ç›®å½•ä¸‹ï¼ŒSourceä¸º0æ—¶å¯ç”¨
+FromOneDir:                 false                                               #trueï¼šä»ä¸€ä¸ªéšæœºç›®å½•è¯»å–æ¶©å›¾ï¼Œfalseï¼šä»ä¸åŒçš„éšæœºç›®å½•è¯»å–æ¶©å›¾ï¼ŒSourceä¸º0æ—¶å¯ç”¨
+LolisukiLevel:              '0-3'                                               #Lolisukiçš„Levelï¼ŒSourceä¸º2æ—¶å¯ç”¨
+Timers:                                                                         #å®šæ—¶åˆ—è¡¨
+    - Enable:               true                                                #æ˜¯å¦å¯ç”¨
+      Cron:                 '0 0 15 * * ?'                                      #cronè¡¨è¾¾å¼(éœ€è¦è‡ªè¡Œç™¾åº¦cronæ ¼å¼)
+      Name:                 'ä¸‹åˆèŒ¶'                                            #å®šæ—¶å™¨åç§°
+      Groups:               [284196392]                                         #å‘é€åˆ°ç¾¤
+      Source:               2                                                   #å›¾æºï¼Œ0ï¼šæœ¬åœ°ï¼Œ1ï¼šLoliconï¼Œ2ï¼šLolisuki
+      SendMerge:            true                                                #åˆå¹¶æ¶ˆæ¯å‘é€
+      Tags:                 []                                                  #æ¶©å›¾æ ‡ç­¾ï¼Œä¸å¡«è¡¨ç¤ºéšæœºï¼ŒSourceä¸º1å’Œ2æ—¶å¯ç”¨
+      Quantity:             5                                                   #å‘é€æ¶©å›¾æ•°é‡ï¼ŒSourceä¸º1å’Œ2æ—¶å–å€¼èŒƒå›´ä¸º1~20
+      AtAll:                false                                               #æ˜¯å¦è‰¾ç‰¹å…¨ä½“
+      TimingMsg:            'ä¸‹åˆèŒ¶æ—¶é—´ï¼Œæ¥ç‚¹{Tags}æ¶©å›¾ï¼Œå›¾ç‰‡æ¥æºï¼š{SourceName}'

@@ -1,13 +1,13 @@
-PixivCookieCommands:        ['pixivcookie','pck']                               #¸üĞÂpixiv cookie Ö¸Áî£¬ĞèÒªË½ÁÄÊ¹ÓÃ
-PixivTokenCommands:         ['pixivtoken','ptk']                                #¸üĞÂpixiv csrf token Ö¸Áî£¬ĞèÒªË½ÁÄÊ¹ÓÃ
-SaucenaoCookieCommands:     ['saucenaocookie','sck']                            #¸üĞÂsaucenao cookie Ö¸Áî£¬ĞèÒªË½ÁÄÊ¹ÓÃ
-DisableTagCommands:         ['½ûÖ¹±êÇ©','ÆÁ±Î±êÇ©']                             #½ûÖ¹Ò»¸öÉ¬Í¼¹Ø¼ü´Ê£¬½ûÖ¹ºó²»ÔÊĞí±»ËÑË÷
-EnableTagCommands:          ['½â½û±êÇ©','½âËø±êÇ©']                             #½â½ûÒ»¸öÉ¬Í¼¹Ø¼ü´Ê
-DisableMemberCommands:      ['ÆÁ±Î³ÉÔ±','À­ºÚ³ÉÔ±']                             #½«Ò»¸öÈº³ÉÔ±À­ÈëºÚÃûµ¥£¬ËùÓĞÈºÉúĞ§
-EnableMemberCommands:       ['½â½û³ÉÔ±']                                        #½«Ò»¸öÈº³ÉÔ±´ÓºÚÃûµ¥ÒÆ³ı£¬ËùÓĞÈºÉúĞ§
-ListSubCommands:            ['¶©ÔÄÁĞ±í','ÒÑ¶©ÁĞ±í']                             #ÁĞ³öËùÓĞ¶©ÔÄÁĞ±í
-RemoveSubCommands:          ['ÒÆ³ı¶©ÔÄ','È¡Ïû¶©ÔÄ']                             #Í¨¹ı¶©ÔÄIdÒÆ³ıÒ»¸ö¶©ÔÄ
-BindTagCommands:            ['°ó¶¨±êÇ©','±êÇ©ÌÇ']                               #½«Ò»¸ö»ò¶à¸öpixiv±êÇ©°ó¶¨µ½Ò»¸ö»ò¶à¸ö¹Ø¼ü´ÊÖĞ
-UnBindTagCommands:          ['½â°ó±êÇ©']                                        #½â³ı¹Ø¼ü´Ê°ó¶¨
-DisablePixiverCommands:     ['ÆÁ±Î»­Ê¦','À­ºÚ»­Ê¦']                             #½«Ò»¸ö»­Ê¦À­ÈëºÚÃûµ¥£¬ËùÓĞÈºÉúĞ§
-EnablePixiverCommands:      ['½â½û»­Ê¦']                                        #½«Ò»¸ö»­Ê¦´ÓºÚÃûµ¥ÒÆ³ı£¬ËùÓĞÈºÉúĞ§
+PixivCookieCommands:        ['pixivcookie','pck']                               #æ›´æ–°pixiv cookie æŒ‡ä»¤ï¼Œéœ€è¦ç§èŠä½¿ç”¨
+PixivTokenCommands:         ['pixivtoken','ptk']                                #æ›´æ–°pixiv csrf token æŒ‡ä»¤ï¼Œéœ€è¦ç§èŠä½¿ç”¨
+SaucenaoCookieCommands:     ['saucenaocookie','sck']                            #æ›´æ–°saucenao cookie æŒ‡ä»¤ï¼Œéœ€è¦ç§èŠä½¿ç”¨
+DisableTagCommands:         ['ç¦æ­¢æ ‡ç­¾','å±è”½æ ‡ç­¾']                             #ç¦æ­¢ä¸€ä¸ªæ¶©å›¾å…³é”®è¯ï¼Œç¦æ­¢åä¸å…è®¸è¢«æœç´¢
+EnableTagCommands:          ['è§£ç¦æ ‡ç­¾','è§£é”æ ‡ç­¾']                             #è§£ç¦ä¸€ä¸ªæ¶©å›¾å…³é”®è¯
+DisableMemberCommands:      ['å±è”½æˆå‘˜','æ‹‰é»‘æˆå‘˜']                             #å°†ä¸€ä¸ªç¾¤æˆå‘˜æ‹‰å…¥é»‘åå•ï¼Œæ‰€æœ‰ç¾¤ç”Ÿæ•ˆ
+EnableMemberCommands:       ['è§£ç¦æˆå‘˜']                                        #å°†ä¸€ä¸ªç¾¤æˆå‘˜ä»é»‘åå•ç§»é™¤ï¼Œæ‰€æœ‰ç¾¤ç”Ÿæ•ˆ
+ListSubCommands:            ['è®¢é˜…åˆ—è¡¨','å·²è®¢åˆ—è¡¨']                             #åˆ—å‡ºæ‰€æœ‰è®¢é˜…åˆ—è¡¨
+RemoveSubCommands:          ['ç§»é™¤è®¢é˜…','å–æ¶ˆè®¢é˜…']                             #é€šè¿‡è®¢é˜…Idç§»é™¤ä¸€ä¸ªè®¢é˜…
+BindTagCommands:            ['ç»‘å®šæ ‡ç­¾','æ ‡ç­¾ç³–']                               #å°†ä¸€ä¸ªæˆ–å¤šä¸ªpixivæ ‡ç­¾ç»‘å®šåˆ°ä¸€ä¸ªæˆ–å¤šä¸ªå…³é”®è¯ä¸­
+UnBindTagCommands:          ['è§£ç»‘æ ‡ç­¾']                                        #è§£é™¤å…³é”®è¯ç»‘å®š
+DisablePixiverCommands:     ['å±è”½ç”»å¸ˆ','æ‹‰é»‘ç”»å¸ˆ']                             #å°†ä¸€ä¸ªç”»å¸ˆæ‹‰å…¥é»‘åå•ï¼Œæ‰€æœ‰ç¾¤ç”Ÿæ•ˆ
+EnablePixiverCommands:      ['è§£ç¦ç”»å¸ˆ']                                        #å°†ä¸€ä¸ªç”»å¸ˆä»é»‘åå•ç§»é™¤ï¼Œæ‰€æœ‰ç¾¤ç”Ÿæ•ˆ

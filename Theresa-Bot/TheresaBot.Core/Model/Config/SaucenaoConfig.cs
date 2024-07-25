@@ -16,6 +16,7 @@
         public decimal ImagePriority { get; set; } = 80;
         public bool PullOrigin { get; set; } = true;
         public bool SendPrivate { get; set; } = true;
+        public bool SendPrivateOrigin { get; set; }
         public int RevokeInterval { get; set; }
         public bool RevokeSearched { get; set; }
         public bool ContinueAscii2d { get; set; } = true;

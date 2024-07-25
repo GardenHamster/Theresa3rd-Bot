@@ -180,7 +180,13 @@ namespace TheresaBot.Core.Handler
                     var content = await GetSaucenaoContentAsync(command, sendList[i]);
                     setuContents.Add(content);
                 }
-                Task sendDetailTask = ReplyAndRevoke(command, setuContents);
+                await ReplyAndRevoke(command, setuContents);
+                var firstPixivItem = sortList.Where(o => o.SourceType == SetuSourceType.Pixiv).FirstOrDefault();
+                if (firstPixivItem.Similarity > singlePriority && firstPixivItem.PixivWorkInfo is not null && BotConfig.SaucenaoConfig.SendPrivate && BotConfig.SaucenaoConfig.SendPrivateOrigin && BotConfig.PixivConfig.ImgSize != PixivImageSize.Original)
+                {
+                    await Task.Delay(1000);
+                    Task task = SendPrivateOriginSetuAsync(firstPixivItem.PixivWorkInfo, command.GroupId, command.MemberId);
+                }
                 return true;
             }
             catch (Exception ex)
@@ -216,7 +222,7 @@ namespace TheresaBot.Core.Handler
             var setuFiles = new List<FileInfo>();
             if (saucenaoItem.Similarity >= imagePriority)
             {
-                setuFiles = await GetSetuFilesAsync(pixivWorkInfo, groupId);
+                setuFiles = await DownSetuFilesAsync(pixivWorkInfo, groupId);
             }
             var workInfo = pixivService.GetWorkInfo(pixivWorkInfo);
             var workInfoContent = new PlainContent(workInfo);

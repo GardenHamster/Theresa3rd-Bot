@@ -13,6 +13,7 @@ SinglePriority:             85                                                  
 ImagePriority:              80                                                  #相似度高于该值时，才显示图片，范围0~100(%)
 PullOrigin:                 true                                                #尝试从源网站中获取图片和详细信息
 SendPrivate:                true                                                #同时私聊发送结果
+SendPrivateOrigin:          false                                               #如果存在匹配度大于SinglePriority的结果时，私聊发送原图
 RevokeInterval:             0                                                   #N秒后撤回，0表示不撤回
 RevokeSearched:             false                                               #是否撤回被查找的图片
 ContinueAscii2d:            true                                                #Saucenao没有匹配结果时是否继续使用Ascii2d搜索，true：是，false：否

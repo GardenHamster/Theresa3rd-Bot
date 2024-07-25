@@ -181,7 +181,7 @@ namespace TheresaBot.Core.Handler
                     PixivRankingDetail detail = pixivRankingInfo.RankingDetails[i];
                     PixivRankingContent rc = detail.RankingContent;
                     PixivWorkInfo workInfo = detail.WorkInfo;
-                    List<FileInfo> setuFiles = await GetSetuFilesAsync(workInfo, groupIds);
+                    List<FileInfo> setuFiles = await DownSetuFilesAsync(workInfo, groupIds);
                     string workMsg = pixivService.GetWorkInfo(detail.WorkInfo);
                     List<BaseContent> msgContent = new List<BaseContent>();
                     msgContent.Add(new PlainContent($"#{rc.rank} {workInfo.likeRate.ToPercent()}/{workInfo.bookmarkRate.ToPercent()}"));
@@ -330,12 +330,20 @@ namespace TheresaBot.Core.Handler
             {
                 var pixivWorkInfo = rankingDetail.WorkInfo;
                 var setuInfo = new PlainContent(pixivService.GetWorkInfo(pixivWorkInfo));
-                var setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
+                var setuFiles = await DownSetuFilesAsync(pixivWorkInfo, command.GroupId);
                 SetuContent setuContent = new PixivSetuContent(setuInfo, setuFiles, pixivWorkInfo);
                 setuContents.Add(setuContent);
             }
 
-            await SendGroupMergeSetuAsync(setuContents, new(), command.GroupId);
+            if (setuContents.Count > 1)
+            {
+                await SendGroupMergeSetuAsync(setuContents, new(), command.GroupId);
+            }
+            else
+            {
+                await SendGroupSetuAsync(setuContents.First(), command.GroupId);
+            }
+
         }
 
         private async Task<List<string>> CreatePreviewImgAsync(PixivRankingInfo rankingInfo)

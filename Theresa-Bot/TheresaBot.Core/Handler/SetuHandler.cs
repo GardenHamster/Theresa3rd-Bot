@@ -6,6 +6,7 @@ using TheresaBot.Core.Helper;
 using TheresaBot.Core.Model.Base;
 using TheresaBot.Core.Model.Config;
 using TheresaBot.Core.Model.Content;
+using TheresaBot.Core.Model.Infos;
 using TheresaBot.Core.Model.Pixiv;
 using TheresaBot.Core.Model.Result;
 using TheresaBot.Core.Reporter;
@@ -22,6 +23,27 @@ namespace TheresaBot.Core.Handler
         public SetuHandler(BaseSession session, BaseReporter reporter) : base(session, reporter)
         {
             recordService = new RecordService();
+        }
+
+        protected async Task SendPrivateOriginSetuAsync(BaseWorkInfo workInfo, long groupId, long memberId)
+        {
+            try
+            {
+                if (workInfo is null) return;
+                if (workInfo.IsR18) return;
+                var setufiles = await DownPixivOriginImgsAsync(workInfo);
+                List<BaseContent> contents = new List<BaseContent>();
+                contents.Add(new PlainContent("原图如下："));
+                foreach (var file in setufiles)
+                {
+                    contents.Add(new LocalImageContent(file));
+                }
+                await Session.SendTempMessageAsync(groupId, memberId, contents);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex, "私聊发送原图时异常");
+            }
         }
 
         protected async Task SendGroupSetuAsync(List<SetuContent> setuContents, long groupId, bool sendMerge, int margeEachPage = 10)
@@ -94,27 +116,34 @@ namespace TheresaBot.Core.Handler
             return setuContents.Select(o => o.ToResendContent(resendType)).ToList();
         }
 
-        public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, long groupId)
+        protected async Task<List<FileInfo>> DownSetuFilesAsync(BaseWorkInfo workInfo, long groupId)
         {
             bool isShowImg = groupId.IsShowSetuImg(workInfo.IsR18);
             if (isShowImg == false) return new List<FileInfo>();
-            return await GetSetuFilesAsync(workInfo);
+            return await DownSetuFilesAsync(workInfo);
         }
 
-        public async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo, List<long> groupIds)
+        protected async Task<List<FileInfo>> DownSetuFilesAsync(BaseWorkInfo workInfo, List<long> groupIds)
         {
             bool isShowImg = groupIds.Any(o => o.IsShowSetuImg(workInfo.IsR18));
             if (isShowImg == false) return new List<FileInfo>();
-            return await GetSetuFilesAsync(workInfo);
+            return await DownSetuFilesAsync(workInfo);
         }
 
-        protected async Task<List<FileInfo>> GetSetuFilesAsync(BaseWorkInfo workInfo)
+        protected async Task<List<FileInfo>> DownSetuFilesAsync(BaseWorkInfo workInfo)
         {
             if (workInfo.IsGif) return new() { await DownAndComposeGifAsync(workInfo) };
             List<FileInfo> setuFiles = await DownPixivImgsAsync(workInfo);
             if (workInfo.IsR18 == false) return setuFiles;
             float sigma = BotConfig.PixivConfig.R18ImgBlur;
             return setuFiles.ReduceAndBlur(sigma, 300);
+        }
+
+        protected async Task<List<FileInfo>> DownSetuOriginFilesAsync(BaseWorkInfo workInfo)
+        {
+            if (workInfo.IsGif) return new() { await DownAndComposeGifAsync(workInfo) };
+            List<FileInfo> setuFiles = await DownPixivOriginImgsAsync(workInfo);
+            return setuFiles;
         }
 
         /// <summary>
@@ -263,6 +292,27 @@ namespace TheresaBot.Core.Handler
             for (int i = 0; i < maxCount && i < originUrls.Count; i++)
             {
                 imgList.Add(await PixivHelper.DownPixivImgBySizeAsync(workInfo.PixivId.ToString(), originUrls[i]));
+            }
+            return imgList;
+        }
+
+
+        /// <summary>
+        /// 根据配置使用代理或者直连下载图片
+        /// </summary>
+        /// <param name="workInfo"></param>
+        /// <returns></returns>
+        protected async Task<List<FileInfo>> DownPixivOriginImgsAsync(BaseWorkInfo workInfo)
+        {
+            List<FileInfo> imgList = new List<FileInfo>();
+            List<string> originUrls = workInfo.GetOriginalUrls();
+            int maxCount = BotConfig.PixivConfig.ImgShowMaximum <= 0 ? originUrls.Count : BotConfig.PixivConfig.ImgShowMaximum;
+            for (int i = 0; i < maxCount && i < originUrls.Count; i++)
+            {
+                var pixivId = workInfo.PixivId.ToString();
+                var fullFileName = new HttpFileInfo(originUrls[i]).FullFileName;
+                var dirSavePath = FilePath.GetPixivUploadDirectory(workInfo.PixivId);
+                imgList.Add(await PixivHelper.DownPixivImgAsync(originUrls[i], pixivId, fullFileName, dirSavePath));
             }
             return imgList;
         }

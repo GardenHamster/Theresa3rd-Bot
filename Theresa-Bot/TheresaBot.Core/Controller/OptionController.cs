@@ -17,7 +17,7 @@ namespace TheresaBot.Core.Controller
         {
             try
             {
-                var sizeList = new string[] { "thumb", "small", "regular", "original" };
+                var sizeList = PixivImageSize.GetAllSizes();
                 return ApiResult.Success(sizeList);
             }
             catch (Exception ex)

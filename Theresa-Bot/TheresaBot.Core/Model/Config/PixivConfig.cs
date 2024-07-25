@@ -11,7 +11,7 @@ namespace TheresaBot.Core.Model.Config
         public int ImgShowMaximum { get; set; } = 1;
         public int TagShowMaximum { get; set; } = 5;
         public int UrlShowMaximum { get; set; } = 3;
-        public string ImgSize { get; set; } = "thumb";
+        public string ImgSize { get; set; } = PixivImageSize.Thumb;
         public ResendType ImgResend { get; set; } = ResendType.None;
         public float R18ImgBlur { get; set; } = 10;
         public string OriginUrlProxy { get; set; }

@@ -193,7 +193,7 @@ namespace TheresaBot.Core.Handler
                     new PlainContent(pixivService.GetWorkInfo(workInfo))
                 };
                 var isShowImg = groupId.IsShowSetuImg(isR18Img);
-                var imgList = isShowImg ? await GetSetuFilesAsync(workInfo, groupId) : new();
+                var imgList = isShowImg ? await DownSetuFilesAsync(workInfo, groupId) : new();
                 var setuContent = new PixivSetuContent(workMsgs, imgList, workInfo);
                 await SendGroupSetuAsync(setuContent, groupId);
             }
@@ -226,7 +226,7 @@ namespace TheresaBot.Core.Handler
                     if (isAISetu && groupId.IsShowAISetu() == false) continue;
                     var remindTemplate = BotConfig.SubscribeConfig.PixivUser.Template;
                     var pixivTemplate = BotConfig.PixivConfig.Template;
-                    var setuFiles = await GetSetuFilesAsync(workInfo, groupId);
+                    var setuFiles = await DownSetuFilesAsync(workInfo, groupId);
                     var workMsgs = new List<BaseContent>
                     {
                         new PlainContent(remindMsg(pixivSubscribe)),

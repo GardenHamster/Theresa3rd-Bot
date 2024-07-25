@@ -28,28 +28,30 @@ namespace TheresaBot.Core.Handler
             try
             {
                 PixivWorkInfo pixivWorkInfo;
-                string keyword = command.KeyWord;
-                bool isShowAI = command.GroupId.IsShowAISetu();
-                bool isShowR18 = command.GroupId.IsShowR18();
+                var keyword = command.KeyWord;
+                var setuConfig = BotConfig.SetuConfig;
+                var pixivConfig = BotConfig.PixivConfig;
+                var isShowAI = command.GroupId.IsShowAISetu();
+                var isShowR18 = command.GroupId.IsShowR18();
 
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
                 if (await CheckSetuTagEnableAsync(command, keyword) == false) return;
-                await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.ProcessingMsg);
+                await command.ReplyProcessingMessageAsync(setuConfig.ProcessingMsg);
 
                 if (BusinessHelper.IsPixivId(keyword))
                 {
                     if (await CheckSetuCustomEnableAsync(command) == false) return;
                     pixivWorkInfo = await pixivService.FetchWorkInfoAsync(keyword);//根据作品id获取作品
                 }
-                else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomType.RandomSubscribe)
+                else if (string.IsNullOrEmpty(keyword) && setuConfig.Pixiv.RandomMode == PixivRandomType.RandomSubscribe)
                 {
                     pixivWorkInfo = await pixivService.FetchRandomWorkInSubscribeAsync(command.GroupId, isShowR18, isShowAI);//获取随机一个订阅中的画师的作品
                 }
-                else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomType.RandomFollow)
+                else if (string.IsNullOrEmpty(keyword) && setuConfig.Pixiv.RandomMode == PixivRandomType.RandomFollow)
                 {
                     pixivWorkInfo = await pixivService.FetchRandomWorkInFollowAsync(isShowR18, isShowAI);//获取随机一个关注中的画师的作品
                 }
-                else if (string.IsNullOrEmpty(keyword) && BotConfig.SetuConfig.Pixiv.RandomMode == PixivRandomType.RandomBookmark)
+                else if (string.IsNullOrEmpty(keyword) && setuConfig.Pixiv.RandomMode == PixivRandomType.RandomBookmark)
                 {
                     pixivWorkInfo = await pixivService.FetchRandomWorkInBookmarkAsync(isShowR18, isShowAI);//获取随机一个收藏中的作品
                 }
@@ -65,16 +67,16 @@ namespace TheresaBot.Core.Handler
 
                 if (pixivWorkInfo is null)
                 {
-                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片或者收藏比过低，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithQuoteAsync(setuConfig.NotFoundMsg, "找不到这类型的图片或者收藏比过低，换个标签试试吧~");
                     return;
                 }
 
                 if (await CheckSetuSendable(command, pixivWorkInfo, isShowR18) == false) return;
 
                 long todayLeft = GetSetuLeftToday(command.GroupId, command.MemberId);
-                List<FileInfo> setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
+                List<FileInfo> setuFiles = await DownSetuFilesAsync(pixivWorkInfo, command.GroupId);
 
-                string remindTemplate = BotConfig.SetuConfig.Pixiv.Template;
+                string remindTemplate = setuConfig.Pixiv.Template;
                 string pixivTemplate = BotConfig.PixivConfig.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 if (string.IsNullOrWhiteSpace(remindTemplate) == false)
@@ -85,13 +87,19 @@ namespace TheresaBot.Core.Handler
                 workMsgs.Add(new PlainContent(pixivService.GetWorkInfo(pixivWorkInfo)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
-                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
+                var results = await command.ReplyGroupSetuAsync(setuContent, setuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
                 var recordTask = recordService.InsertPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
-                if (BotConfig.SetuConfig.SendPrivate)
+                if (setuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = command.SendPrivateSetuAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    Task task = command.SendPrivateSetuAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
+                }
+
+                if (setuConfig.SendPrivate && setuConfig.SendPrivateOrigin && pixivConfig.ImgSize != PixivImageSize.Original)
+                {
+                    await Task.Delay(1000);
+                    Task task = SendPrivateOriginSetuAsync(pixivWorkInfo, command.GroupId, command.MemberId);
                 }
 
                 CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);//进入CD状态

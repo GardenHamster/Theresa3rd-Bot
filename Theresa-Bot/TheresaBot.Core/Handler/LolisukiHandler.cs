@@ -27,16 +27,18 @@ namespace TheresaBot.Core.Handler
             try
             {
                 List<LolisukiData> dataList;
-                string tagStr = command.KeyWord;
-                bool isShowAI = command.GroupId.IsShowAISetu();
-                bool isShowR18 = command.GroupId.IsShowR18();
-                int r18Mode = isShowR18 ? 2 : 0;
-                int aiMode = isShowAI ? 2 : 0;
+                var tagStr = command.KeyWord;
+                var isShowAI = command.GroupId.IsShowAISetu();
+                var isShowR18 = command.GroupId.IsShowR18();
+                var r18Mode = isShowR18 ? 2 : 0;
+                var aiMode = isShowAI ? 2 : 0;
+                var setuConfig = BotConfig.SetuConfig;
+                var pixivConfig = BotConfig.PixivConfig;
 
                 CoolingCache.SetHanding(command.GroupId, command.MemberId);//请求处理中
                 if (await CheckSetuTagEnableAsync(command, tagStr) == false) return;
-                string levelStr = GetLevelStr(isShowR18, BotConfig.SetuConfig?.Lolisuki?.Level);
-                await command.ReplyProcessingMessageAsync(BotConfig.SetuConfig.ProcessingMsg);
+                var levelStr = GetLevelStr(isShowR18, setuConfig?.Lolisuki?.Level);
+                await command.ReplyProcessingMessageAsync(setuConfig.ProcessingMsg);
 
                 if (string.IsNullOrEmpty(tagStr))
                 {
@@ -50,7 +52,7 @@ namespace TheresaBot.Core.Handler
 
                 if (dataList.Count == 0)
                 {
-                    await command.ReplyGroupTemplateWithQuoteAsync(BotConfig.SetuConfig.NotFoundMsg, "找不到这类型的图片，换个标签试试吧~");
+                    await command.ReplyGroupTemplateWithQuoteAsync(setuConfig.NotFoundMsg, "找不到这类型的图片，换个标签试试吧~");
                     return;
                 }
 
@@ -58,20 +60,26 @@ namespace TheresaBot.Core.Handler
                 if (await CheckSetuSendable(command, lolisukiData, isShowR18) == false) return;
 
                 long todayLeftCount = GetSetuLeftToday(command.GroupId, command.MemberId);
-                List<FileInfo> setuFiles = await GetSetuFilesAsync(lolisukiData, command.GroupId);
+                List<FileInfo> setuFiles = await DownSetuFilesAsync(lolisukiData, command.GroupId);
 
-                string template = BotConfig.SetuConfig.Lolisuki.Template;
+                string template = setuConfig.Lolisuki.Template;
                 List<BaseContent> workMsgs = new List<BaseContent>();
                 workMsgs.Add(new PlainContent(lolisukiService.GetWorkInfo(lolisukiData, todayLeftCount, template)));
 
                 PixivSetuContent setuContent = new PixivSetuContent(workMsgs, setuFiles, lolisukiData);
-                var results = await command.ReplyGroupSetuAsync(setuContent, BotConfig.SetuConfig.RevokeInterval, BotConfig.PixivConfig.SendImgBehind);
+                var results = await command.ReplyGroupSetuAsync(setuContent, setuConfig.RevokeInterval, pixivConfig.SendImgBehind);
                 var msgIds = results.Select(o => o.MessageId).ToArray();
                 var recordTask = recordService.InsertPixivRecord(setuContent, Session.PlatformType, msgIds, command.GroupId);
-                if (BotConfig.SetuConfig.SendPrivate)
+                if (setuConfig.SendPrivate)
                 {
                     await Task.Delay(1000);
-                    Task sendTempTask = command.SendPrivateSetuAsync(setuContent, BotConfig.PixivConfig.SendImgBehind);
+                    Task sendTempTask = command.SendPrivateSetuAsync(setuContent, pixivConfig.SendImgBehind);
+                }
+
+                if (setuConfig.SendPrivate && setuConfig.SendPrivateOrigin && pixivConfig.ImgSize != PixivImageSize.Original)
+                {
+                    await Task.Delay(1000);
+                    Task task = SendPrivateOriginSetuAsync(lolisukiData, command.GroupId, command.MemberId);
                 }
 
                 CoolingCache.SetMemberSetuCooling(command.GroupId, command.MemberId);
@@ -124,7 +132,7 @@ namespace TheresaBot.Core.Handler
         private async Task<SetuContent> GetSetuContent(LolisukiData data, long groupId)
         {
             string setuInfo = lolisukiService.GetDefaultWorkInfo(data);
-            List<FileInfo> setuFiles = await GetSetuFilesAsync(data, groupId);
+            List<FileInfo> setuFiles = await DownSetuFilesAsync(data, groupId);
             return new SetuContent(setuInfo, setuFiles);
         }
 

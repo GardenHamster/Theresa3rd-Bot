@@ -376,7 +376,7 @@ namespace TheresaBot.Core.Handler
                     new PlainContent($"pixiv画师【{pixivWorkInfo.userName}】的最新作品："),
                     new PlainContent(pixivService.GetWorkInfo(pixivWorkInfo))
                 };
-                var setuFiles = await GetSetuFilesAsync(pixivWorkInfo, command.GroupId);
+                var setuFiles = await DownSetuFilesAsync(pixivWorkInfo, command.GroupId);
                 var setuContent = new PixivSetuContent(workMsgs, setuFiles, pixivWorkInfo);
                 await SendGroupSetuAsync(setuContent, command.GroupId);
             }

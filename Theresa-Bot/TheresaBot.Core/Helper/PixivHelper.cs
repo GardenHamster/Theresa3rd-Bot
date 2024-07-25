@@ -10,6 +10,7 @@ using TheresaBot.Core.Datas;
 using TheresaBot.Core.Exceptions;
 using TheresaBot.Core.Model.Infos;
 using TheresaBot.Core.Model.Pixiv;
+using TheresaBot.Core.Type;
 
 namespace TheresaBot.Core.Helper
 {
@@ -657,10 +658,10 @@ namespace TheresaBot.Core.Helper
         private static string GetImgUrlBySize(string originalUrl)
         {
             string imgSize = BotConfig.PixivConfig.ImgSize?.ToLower();
-            if (imgSize == "original") return originalUrl;
-            if (imgSize == "regular") return originalUrl.OriginToRegularUrl();
-            if (imgSize == "small") return originalUrl.OriginToSmallUrl();
-            if (imgSize == "thumb") return originalUrl.OriginToThumbUrl();
+            if (imgSize == PixivImageSize.Original) return originalUrl;
+            if (imgSize == PixivImageSize.Regular) return originalUrl.OriginToRegularUrl();
+            if (imgSize == PixivImageSize.Small) return originalUrl.OriginToSmallUrl();
+            if (imgSize == PixivImageSize.Thumb) return originalUrl.OriginToThumbUrl();
             return originalUrl.OriginToThumbUrl();
         }
 
@@ -672,10 +673,10 @@ namespace TheresaBot.Core.Helper
         {
             string imgSize = BotConfig.PixivConfig.ImgSize?.ToLower();
             HttpFileInfo httpFileInfo = new HttpFileInfo(originalUrl);
-            if (imgSize == "original") return httpFileInfo.FullFileName;
-            if (imgSize == "regular") return $"{httpFileInfo.FileName}_regular.{httpFileInfo.FileExtension}";
-            if (imgSize == "small") return $"{httpFileInfo.FileName}_small.{httpFileInfo.FileExtension}";
-            if (imgSize == "thumb") return $"{httpFileInfo.FileName}_thumb.{httpFileInfo.FileExtension}";
+            if (imgSize == PixivImageSize.Original) return httpFileInfo.FullFileName;
+            if (imgSize == PixivImageSize.Regular) return $"{httpFileInfo.FileName}_regular.{httpFileInfo.FileExtension}";
+            if (imgSize == PixivImageSize.Small) return $"{httpFileInfo.FileName}_small.{httpFileInfo.FileExtension}";
+            if (imgSize == PixivImageSize.Thumb) return $"{httpFileInfo.FileName}_thumb.{httpFileInfo.FileExtension}";
             return $"{httpFileInfo.FileName}_thumb.{httpFileInfo.FileExtension}";
         }
 

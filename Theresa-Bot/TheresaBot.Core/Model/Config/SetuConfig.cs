@@ -10,6 +10,7 @@
         public long MaxDaily { get; set; }
         public int RevokeInterval { get; set; }
         public bool SendPrivate { get; set; }
+        public bool SendPrivateOrigin { get; set; }
         public SetuPixivConfig Pixiv { get; set; }
         public LoliconConfig Lolicon { get; set; }
         public LolisukiConfig Lolisuki { get; set; }

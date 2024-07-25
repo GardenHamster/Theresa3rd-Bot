@@ -6,6 +6,7 @@ ProcessingMsg:              '正在使用色图探测器探测你要的色图...
 MaxDaily:                   20                                                  #每人每日最大使用次数，0表示无限制
 RevokeInterval:             0                                                   #N秒后撤回,0表示不撤回
 SendPrivate:                true                                                #同时私聊发送
+SendPrivateOrigin:          false                                               #同时私聊发送原图
 
 Pixiv:                                                                          #Pixiv图床https://www.pixiv.net
     Enable:                 true                                                #是否启用

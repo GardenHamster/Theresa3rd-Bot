@@ -406,7 +406,7 @@ namespace TheresaBot.Core.Controller
 
         [HttpGet]
         [Authorize]
-        [Route("get/pixiv/collection")]
+        [Route("get/collection")]
         public ApiResult GetPixivCollection()
         {
             return ApiResult.Success(BotConfig.PixivCollectionConfig);
@@ -414,7 +414,7 @@ namespace TheresaBot.Core.Controller
 
         [HttpPost]
         [Authorize]
-        [Route("set/pixiv/collection")]
+        [Route("set/collection")]
         public ApiResult SetPixivCollection([FromBody] PixivCollectionConfig config)
         {
             try

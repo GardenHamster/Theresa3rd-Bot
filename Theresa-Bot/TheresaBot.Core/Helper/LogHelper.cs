@@ -1,7 +1,7 @@
 ﻿using log4net;
 using log4net.Config;
 using log4net.Repository;
-using TheresaBot.Core.Model.Log;
+using TheresaBot.Core.Model.Logger;
 using TheresaBot.Core.Type;
 
 namespace TheresaBot.Core.Helper

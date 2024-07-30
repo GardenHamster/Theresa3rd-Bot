@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheresaBot.Core.Helper;
-using TheresaBot.Core.Model.Log;
+using TheresaBot.Core.Model.Logger;
 using TheresaBot.Core.Model.Result;
 using TheresaBot.Core.Model.VO;
 

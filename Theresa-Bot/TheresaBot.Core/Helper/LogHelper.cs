@@ -1,6 +1,8 @@
 ﻿using log4net;
 using log4net.Config;
 using log4net.Repository;
+using TheresaBot.Core.Model.Log;
+using TheresaBot.Core.Type;
 
 namespace TheresaBot.Core.Helper
 {
@@ -11,7 +13,7 @@ namespace TheresaBot.Core.Helper
         private static ILog ConsoleLog { get; set; }
         private static ILog FileLog { get; set; }
         private static ILoggerRepository repository { get; set; }
-
+        private static readonly List<LogRecord> LogRecords = new List<LogRecord>();
         /// <summary>
         /// 初始化日志
         /// </summary>
@@ -32,6 +34,7 @@ namespace TheresaBot.Core.Helper
         public static void Console(string message)
         {
             ConsoleLog.Info(message);
+            AddLogRecords(LogLevel.Info, message.ToString());
         }
 
         /// <summary>
@@ -42,6 +45,7 @@ namespace TheresaBot.Core.Helper
         {
             FileLog.Info(message);
             ConsoleLog.Info(message);
+            AddLogRecords(LogLevel.Info, message.ToString());
         }
 
         /// <summary>
@@ -52,6 +56,7 @@ namespace TheresaBot.Core.Helper
         {
             ConsoleLog.Error(ex.Message);
             RollingLog.Error("", ex);
+            AddLogRecords(ex, LogLevel.Error);
         }
 
         /// <summary>
@@ -63,6 +68,7 @@ namespace TheresaBot.Core.Helper
         {
             ConsoleLog.Error($"{message}：{ex.Message}");
             RollingLog.Error(message, ex);
+            AddLogRecords(ex, LogLevel.Error, message);
         }
 
         /// <summary>
@@ -74,6 +80,7 @@ namespace TheresaBot.Core.Helper
             FileLog.Info(message);
             ConsoleLog.Fatal(message);
             RollingLog.Fatal(message);
+            AddLogRecords(LogLevel.Fatal, message);
         }
 
         /// <summary>
@@ -86,6 +93,39 @@ namespace TheresaBot.Core.Helper
             FileLog.Info(message);
             ConsoleLog.Fatal(message, ex);
             RollingLog.Fatal(message, ex);
+            AddLogRecords(ex, LogLevel.Fatal, message);
+        }
+
+        public static List<LogRecord> GetRecords()
+        {
+            return LogRecords.ToList();
+        }
+
+        public static List<LogRecord> GetRecords(long lastAt)
+        {
+            return LogRecords.Where(o=>o.CreateAt>lastAt).ToList();
+        }
+
+        private static void AddLogRecords(Exception ex, LogLevel level, string message = "")
+        {
+            AddLogRecords(new LogRecord(ex, message, level));
+        }
+
+        private static void AddLogRecords(LogLevel level, string message = "")
+        {
+            AddLogRecords(new LogRecord(null, message, level));
+        }
+
+        private static void AddLogRecords(LogRecord logRecord)
+        {
+            lock (LogRecords)
+            {
+                LogRecords.Add(logRecord);
+                while (LogRecords.Count > 500)
+                {
+                    LogRecords.RemoveAt(0);
+                }
+            }
         }
 
     }

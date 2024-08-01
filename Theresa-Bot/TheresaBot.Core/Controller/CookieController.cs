@@ -24,20 +24,25 @@ namespace TheresaBot.Core.Controller
         [Route("get/pixiv")]
         public ApiResult GetPixiv()
         {
-            var data = new { cookie = WebsiteDatas.Pixiv?.Cookie ?? string.Empty };
+            var data = new
+            {
+                cookie = WebsiteDatas.Pixiv?.Cookie ?? string.Empty,
+                token = WebsiteDatas.Pixiv?.CsrfToken ?? string.Empty,
+            };
             return ApiResult.Success(data);
         }
 
         [HttpPost]
         [Authorize]
         [Route("set/pixiv")]
-        public ApiResult SetPixiv([FromBody] CookieDto cookie)
+        public ApiResult SetPixiv([FromBody] CookieTokenDto cookieToken)
         {
             try
             {
-                var cookieStr = cookie.Cookie;
+                var cookieStr = cookieToken.Cookie;
                 if (string.IsNullOrWhiteSpace(cookieStr)) return ApiResult.ParamError;
-                var website = websiteService.UpdatePixivCookie(cookieStr);
+                websiteService.UpdatePixivCookie(cookieStr);
+                websiteService.UpdatePixivCsrfToken(cookieToken.Token);
                 WebsiteDatas.LoadWebsite();
                 return ApiResult.Success();
             }

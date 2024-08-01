@@ -107,6 +107,12 @@ namespace TheresaBot.Core.Services
             return UpdateCookie(websiteCode, cookie, userId, DateTime.Now.AddYears(1));
         }
 
+        public WebsitePO UpdatePixivCsrfToken(string token)
+        {
+            if (token is null) token = string.Empty;
+            var websiteCode = WebsiteType.Pixiv.ToString();
+            return UpdateCsrfToken(websiteCode, token);
+        }
 
         public WebsitePO UpdateCookie(string code, string cookie, long userid, int expireSeconds)
         {

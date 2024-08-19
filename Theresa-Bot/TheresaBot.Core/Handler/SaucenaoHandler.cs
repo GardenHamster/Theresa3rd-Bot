@@ -182,7 +182,7 @@ namespace TheresaBot.Core.Handler
                 }
                 await ReplyAndRevoke(command, setuContents);
                 var firstPixivItem = sortList.Where(o => o.SourceType == SetuSourceType.Pixiv).FirstOrDefault();
-                if (firstPixivItem.Similarity > singlePriority && firstPixivItem.PixivWorkInfo is not null && BotConfig.SaucenaoConfig.SendPrivate && BotConfig.SaucenaoConfig.SendPrivateOrigin && BotConfig.PixivConfig.ImgSize != PixivImageSize.Original)
+                if (firstPixivItem?.PixivWorkInfo is not null && firstPixivItem.Similarity > singlePriority && BotConfig.SaucenaoConfig.SendPrivate && BotConfig.SaucenaoConfig.SendPrivateOrigin && BotConfig.PixivConfig.ImgSize != PixivImageSize.Original)
                 {
                     await Task.Delay(1000);
                     Task task = SendPrivateOriginSetuAsync(firstPixivItem.PixivWorkInfo, command.GroupId, command.MemberId);

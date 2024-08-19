@@ -127,7 +127,7 @@ namespace TheresaBot.OneBot11.Session
 
         public override async Task<BaseResult> SendTempMessageAsync(long groupId, long memberId, string message)
         {
-            var result = await OBHelper.Session.SendPrivateMessageAsync(memberId, groupId, new CqMessage(message));
+            var result = await OBHelper.Session.SendPrivateMessageAsync(memberId, new CqMessage(message));
             return new OBResult(result, result.MessageId);
         }
 
@@ -135,7 +135,7 @@ namespace TheresaBot.OneBot11.Session
         {
             if (contents.Count == 0) return BaseResult.Undo;
             CqMsg[] msgList = contents.ToOBMessageAsync();
-            var result = await OBHelper.Session.SendPrivateMessageAsync(memberId, groupId, new CqMessage(msgList));
+            var result = await OBHelper.Session.SendPrivateMessageAsync(memberId, new CqMessage(msgList));
             return new OBResult(result, result.MessageId);
         }
 

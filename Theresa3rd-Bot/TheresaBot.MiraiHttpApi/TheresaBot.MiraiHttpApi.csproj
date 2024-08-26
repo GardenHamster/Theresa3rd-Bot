@@ -6,7 +6,7 @@
 		<RootNamespace>TheresaBot.MiraiHttpApi</RootNamespace>
 		<StartupObject></StartupObject>
 		<BaseOutputPath></BaseOutputPath>
-		<Version>0.11.5</Version>
+		<Version>0.11.6</Version>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<WarningLevel>3</WarningLevel>

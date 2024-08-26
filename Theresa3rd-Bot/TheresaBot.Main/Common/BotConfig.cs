@@ -6,7 +6,7 @@ namespace TheresaBot.Main.Common
 {
     public static class BotConfig
     {
-        public const string BotVersion = "0.11.5";
+        public const string BotVersion = "0.11.6";
         public const string BotHomepage = "https://www.theresa3rd.cn";
         public static BotInfos BotInfos = new BotInfos(0, "Bot");
         public static List<long> AcceptGroups = new();
